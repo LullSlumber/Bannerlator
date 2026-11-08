@@ -1072,8 +1072,10 @@ class FusionHudView(
      * drag it to the top or bottom edge and long-press to lock it there — no edge snapping needed.
      */
     private fun buildStrip(s: HudMetrics.Snapshot) {
-        val px = sp(11f); val unitPx = px * 0.62f
-        val pad = sp(7f); val itemGap = sp(9f)
+        // 12sp base / 0.78 label ratio: 0.62 made the GPU/CPU/RAM/lows labels ~6.8sp —
+        // unreadable on a handheld screen. Labels now sit at ~9.4sp.
+        val px = sp(12f); val unitPx = px * 0.78f
+        val pad = sp(7f); val itemGap = sp(10f)
 
         // Full parent width. Parent wins over displayMetrics when attached (real, current size);
         // the 1 s self-refresh rebuild picks up rotations once the parent has laid out.
