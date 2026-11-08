@@ -114,7 +114,18 @@ jobs:
             "$UTILS_FILE"
         fi
 
-        ./gradlew jar --no-daemon 2>&1 | tail -20
+        # Gradle wrapper downloads from services.gradle.org are flaky (504 / EOF mid-stream);
+        # point the wrapper at the Tencent mirror and retry a few times before giving up.
+        if [ -f gradle/wrapper/gradle-wrapper.properties ]; then
+          sed -i 's#https://services.gradle.org/distributions/#https://mirrors.cloud.tencent.com/gradle/#' \
+            gradle/wrapper/gradle-wrapper.properties
+        fi
+        set -o pipefail
+        GRADLE_OK=0
+        for i in 1 2 3; do
+          if ./gradlew jar --no-daemon 2>&1 | tail -20; then GRADLE_OK=1; break; fi
+          echo "gradlew attempt $i failed, retrying in 15s..."; sleep 15
+        done
 
         MAIN_JAR=""
         for j in $(find . -name "*.jar" -path "*/build/libs/*" \
@@ -129,6 +140,10 @@ jobs:
             | grep -v "sources\|javadoc\|test" \
             | while read f; do echo "$(wc -c < "$f") $f"; done \
             | sort -rn | head -1 | cut -d' ' -f2-)
+        fi
+        if [ -z "$MAIN_JAR" ] || [ "$GRADLE_OK" != "1" ]; then
+          echo "::error::JavaSteam build produced no JAR after 3 attempts (gradle dist download kept failing)"
+          exit 1
         fi
 
         DD_JAR=$(find . -name "javasteam-depotdownloader-*.jar" -path "*/build/libs/*" \
