@@ -456,7 +456,7 @@ private fun DownloadManagerScreen(
         ) {
             if (entries.isEmpty()) {
                 Text(
-                    text = "No downloads or installed games yet.",
+                    text = "尚无下载或已安装的游戏。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center).padding(24.dp),
@@ -574,8 +574,8 @@ private fun DownloadCard(
                         ActiveContent(entry, onCancel, onPauseResume)
 
                     DownloadState.INSTALLED -> {
-                        // Amber "有可用更新" mirrors the store list's own language
-                        // (AmazonGamesActivity "✓ 已安装 — 有更新可用"); up-to-date
+                        // Amber "Update available" mirrors the store list's own language
+                        // (AmazonGamesActivity "✓ Installed — Update Available"); up-to-date
                         // stays installed-green. Store-agnostic: any store that sets
                         // entry.updateAvailable gets the same marker.
                         if (entry.updateAvailable) {
@@ -625,7 +625,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
 
                     DownloadState.CANCELLED -> {
@@ -640,7 +640,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }
@@ -719,7 +719,7 @@ private fun ActiveContent(
             ),
             modifier = Modifier.height(32.dp),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-        ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
 
         if (entry.supportsPause) {
             Button(
@@ -809,7 +809,7 @@ private fun QueuedCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("Start next", style = MaterialTheme.typography.labelSmall) }
                         OutlinedButton(
                             onClick = { onMoveUp(entry) },
                             shape = RoundedCornerShape(8.dp),
@@ -825,7 +825,7 @@ private fun QueuedCard(
                         ),
                         modifier = Modifier.height(32.dp),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                    ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+                    ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                 }
             }
         }

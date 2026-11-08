@@ -43,7 +43,7 @@ public class EffectComposer {
     private Effect upscaleSecondary;
     // Scaling-mode 6 (Sharpen) reuses the existing AMD CAS post-effect (FSREffect) rather
     // than the low-res stage. Tracked as a picker-owned instance so switching modes only
-    // ever removes the picker's CAS, never the one the separate "Sharpen (CAS)" toggle adds.
+    // ever removes the picker's CAS, never the one the separate "画面锐化 (CAS)" toggle adds.
     private Effect pickerCasEffect;
 
     // ---- Terminal debanding / dither slot ---------------------------------------------
@@ -386,7 +386,7 @@ public class EffectComposer {
                 break;
         }
         // Mode 6 (Sharpen) reuses the existing AMD CAS post-effect; every other mode drops
-        // the picker's CAS. Tracked separately so the parallel "Sharpen (CAS)" toggle is
+        // the picker's CAS. Tracked separately so the parallel "画面锐化 (CAS)" toggle is
         // never disturbed (both manage their own FSREffect instance).
         // Sharpen is snapped to 5 stops {0,25,50,75,100} in the drawer; stop 0 = OFF
         // (no CAS pass, passthrough) so only sharpness > 0 builds the picker's CAS.
@@ -408,7 +408,7 @@ public class EffectComposer {
         com.winlator.star.renderer.effects.FSREffect cas = new com.winlator.star.renderer.effects.FSREffect();
         cas.setMode(com.winlator.star.renderer.effects.FSREffect.MODE_SUPER_RESOLUTION);
         // FSREffect's level scale is INVERTED: level 1 == CAS sharpness 0.90 (sharpest),
-        // level 5 == 0.12 (softest). So a higher "Sharpness" slider must map to a LOWER
+        // level 5 == 0.12 (softest). So a higher "锐化度" slider must map to a LOWER
         // level. Invert the 0..1 slider: 1.0 -> level 1 (sharpest), 0 -> level 5 (softest).
         cas.setLevel((1.0f - upscaleSharpness) * 4.0f + 1.0f);
         addEffect(cas);

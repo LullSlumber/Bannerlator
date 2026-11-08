@@ -56,7 +56,7 @@ fun SyncModeSelector(
     onPick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focused: Boolean = false,
-    // Non-null (game editor, while this game overrides the container) → a "Use container's" action.
+    // Non-null (game editor, while this game overrides the container) → a "使用容器的" action.
     onUseContainer: (() -> Unit)? = null,
     onHelp: (() -> Unit)? = null,
 ) {
@@ -142,7 +142,7 @@ fun SyncModeSelector(
             )
             if (onUseContainer != null) {
                 TextButton(onClick = onUseContainer, modifier = Modifier.heightIn(min = 32.dp)) {
-                    Text("Use container's", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text("使用容器的", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
@@ -151,10 +151,10 @@ fun SyncModeSelector(
 
 /** One-liner for the picked mode. */
 fun syncModeBlurb(mode: String, caps: SyncCaps?): String = when (mode) {
-    SyncMode.NTSYNC -> "ntsync — closest to Windows. New: try it per game."
-    SyncMode.WINESERVER -> "wineserver — slowest, most compatible. For games that misbehave."
+    SyncMode.NTSYNC -> "ntsync — 最接近 Windows。新功能：可按游戏尝试。"
+    SyncMode.WINESERVER -> "wineserver — 最慢，兼容性最好。适用于出现异常的游戏。"
     else -> if (caps == null || caps.defaultMode == SyncMode.ESYNC) "esync — layer default. Fast and well tested."
-            else "esync — fast and well tested."
+            else "esync — 快速且经过充分测试。"
 }
 
 /** Why each greyed pill is greyed, for [layer] (the layer's display name). */
@@ -168,7 +168,7 @@ fun syncGreyedReasons(caps: SyncCaps?, layer: String): List<String> {
 /** The container editor's helper line: the pick's one-liner plus what is greyed and why. */
 fun containerSyncHelper(mode: String, caps: SyncCaps?, layer: String): String =
     if (caps == null) "Checking what $layer supports…"
-    else syncModeBlurb(mode, caps) + "  ·  Greyed: " + syncGreyedReasons(caps, layer).joinToString("; ") + "."
+    else syncModeBlurb(mode, caps) + "  ·  置灰: " + syncGreyedReasons(caps, layer).joinToString("; ") + "."
 
 /** Shown when a layer change (or load) finds the stored pick unavailable and switches to the default. */
 fun syncSwitchedBackNotice(from: String, layer: String, caps: SyncCaps): String {

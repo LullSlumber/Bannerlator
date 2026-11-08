@@ -332,7 +332,7 @@ fun BigPictureScreen(navController: NavController) {
             else SteamGameUpdater.updateNow(context, appId, progress, done)
     }
     // "检查更新": a cheap, network-free probe (shown in the shared progress modal as the animated
-    // "检查中…" indeterminate phase), then BRANCH — never auto-apply. Up-to-date / not-installed inform
+    // "Checking…" indeterminate phase), then BRANCH — never auto-apply. Up-to-date / not-installed inform
     // via a toast; an available (or can't-tell-offline) result opens the couch confirm sheet, whose
     // [Update now] / [Check online] hands off to runSteamMaintenance. onResult lands on the main thread.
     fun checkForUpdatesThenOffer(s: Shortcut) {
@@ -1048,7 +1048,7 @@ fun BigPictureScreen(navController: NavController) {
                 // launchModeRemembered="1"), then stage the picked component and launch.
                 s.putExtra("launchMode", mode)
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
-                // Per-game "记住我的选择" (read only on RealSteam launches; inert otherwise).
+                // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
                 // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
@@ -1107,7 +1107,7 @@ fun BigPictureScreen(navController: NavController) {
                 appId = appId,
                 installDir = installDir,
                 gameName = s.name,
-                pullCloudSaves = savePrefs.getBoolean("Steam 游戏", true),
+                pullCloudSaves = savePrefs.getBoolean("auto_download_steam_on_launch", true),
                 clientPackage = if (s.getExtra("launchMode", "") == "AppSteam") SteamSessionManager.ClientPackage.APP_STEAM
                                 else SteamSessionManager.ClientPackage.STEAMLITE,
             ),
@@ -1967,7 +1967,7 @@ internal fun launchShortcut(activity: Activity, shortcut: Shortcut, preflightDon
             putExtra("disableXinput", shortcut.getExtra("disableXinput", "0"))
             if (preflightDone) putExtra(SteamSessionManager.EXTRA_PREFLIGHT_DONE, true)
         }
-        // Same "在电视上启动此游戏" as the shortcut list (shared helper, so the two launch
+        // Same "Launch this game on the TV" as the shortcut list (shared helper, so the two launch
         // paths can't drift); false = no TV wanted, none connected, or the system refused it.
         if (!launchOnExternalDisplay(activity, shortcut, intent)) activity.startActivity(intent)
     } else {

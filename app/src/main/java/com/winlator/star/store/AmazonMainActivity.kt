@@ -127,7 +127,7 @@ class AmazonMainActivity : ComponentActivity() {
         }
         AmazonCredentialStore.clear(this)
         refreshView()
-        resultBarMsg = "Signed out of Amazon Games"
+        resultBarMsg = "已退出Amazon Games"
     }
 }
 

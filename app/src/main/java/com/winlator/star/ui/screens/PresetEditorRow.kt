@@ -145,7 +145,7 @@ internal fun PresetEditorRow(
             if (isCustom) {
                 if (isFex) FEXCorePresetManager.exportPreset(context, selectedPresetId)
                 else Box64PresetManager.exportPreset(prefix, context, selectedPresetId)
-            } else AppUtils.showToast(context, "无法导出此预设")
+            } else AppUtils.showToast(context, "Cannot export this preset")
         }
         PresetImportAction(
             onInApp = {

@@ -961,7 +961,7 @@ public class Container {
                 v == null || v.equals(ControllerIdentity.GENERIC) ? null : v);
     }
 
-    // Manual controller slot overrides (in-game "Players" sub-tab), per-container. Stored as a raw
+    // Manual controller slot overrides (in-game "玩家" sub-tab), per-container. Stored as a raw
     // JSON object string mapping a stable device descriptor -> desired slot: 0..3 pins the device to
     // that XInput player slot, WinHandler.SLOT_IGNORE (-2) means "never take a slot", and a missing
     // key = auto (FCFS). The on-screen pad uses the WinHandler.OSC_DESCRIPTOR sentinel as its key.
@@ -1221,7 +1221,7 @@ public class Container {
         putExtra("matchRefreshRate", enabled ? "1" : "0");
     }
 
-    // Manual refresh-rate lock (Hz). Used when "Auto (match FPS)" is OFF: the panel is pinned to this
+    // Manual refresh-rate lock (Hz). Used when "自动（匹配帧率）" is OFF: the panel is pinned to this
     // rate regardless of the FPS cap. 0 = no manual lock (panel runs free / native).
     public int getManualRefreshRate() {
         try { return Integer.parseInt(getExtra("manualRefreshRate", "0")); }

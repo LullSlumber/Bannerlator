@@ -208,7 +208,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     Column(Modifier.weight(1f)) {
                         Text("Performance", color = cs.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         Text(
-                            "Applies live to this session · auto-reverts on exit",
+                            "实时应用于本次会话 · 退出时自动恢复",
                             color = cs.onSurfaceVariant, fontSize = 11.sp,
                         )
                     }
@@ -226,7 +226,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 ) {
-                    Text("Panel opacity", color = cs.onSurfaceVariant, fontSize = 12.sp)
+                    Text("面板不透明度", color = cs.onSurfaceVariant, fontSize = 12.sp)
                     Slider(
                         value = opacity,
                         onValueChange = { PerformanceSettings.setDialogOpacity(it) },
@@ -286,9 +286,9 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                         ) {
                             Column(Modifier.weight(1f)) {
-                                Text("Enable Galaxy Performance", color = cs.onSurface, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                                Text("启用Galaxy性能", color = cs.onSurface, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                                 Text(
-                                    "No-root CPU/GPU/RAM control via Samsung's SDK. Off by default; saved per game.",
+                                    "通过三星SDK进行无root CPU/GPU/RAM控制。默认关闭；按游戏保存。",
                                     color = cs.onSurfaceVariant, fontSize = 11.sp,
                                 )
                             }
@@ -316,7 +316,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                                 }
                             }
                             Text(
-                                "Tip: set the Power profile above to \"Off\" so Galaxy alone controls the clocks (they otherwise conflict).",
+                                "提示：将上述电源配置设置为“关闭”，以便仅由Galaxy控制频率（否则它们会冲突）。",
                                 color = cs.onSurfaceVariant, fontSize = 10.sp,
                                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 3.dp),
                             )
@@ -331,28 +331,28 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     PerfCard {
                         ToggleRowLocal(
                             "持续性能模式",
-                            "Holds a stable clock to avoid thermal throttling.",
+                            "保持稳定时钟以避免热调节降频。",
                             checked = sustained, enabled = true,
                             overridden = "sustainedPerfMode" in overridden,
-                            onInfo = { info = "持续性能模式" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
+                            onInfo = { info = "持续性能模式" to "保持稳定时钟，使SoC不会突增和降频。无需root。" },
                             onReset = { state.onResetPerfKey?.accept("sustainedPerfMode") },
                         ) { setSustained(it) }
                         Divider()
                         ToggleRowLocal(
                             "线程优先级提升",
-                            "Raises emulator thread priority so the scheduler favours the game.",
+                            "提高模拟器线程优先级，使调度器优先处理游戏。",
                             checked = priority, enabled = true,
                             overridden = "perfPriorityBoost" in overridden,
-                            onInfo = { info = "线程优先级提升" to "Raises the emulator's thread priority so the CPU scheduler favours the game over background work." },
+                            onInfo = { info = "线程优先级提升" to "提高模拟器的线程优先级，使CPU调度器优先处理游戏而非后台任务。" },
                             onReset = { state.onResetPerfKey?.accept("perfPriorityBoost") },
                         ) { setPriority(it) }
                         Divider()
                         ToggleRowLocal(
                             "优先使用大核",
-                            "Routes emulator threads onto the big / prime cluster.",
+                            "将模拟器线程路由到大核/首要核心集群。",
                             checked = bigCores, enabled = true,
                             overridden = "preferBigCores" in overridden,
-                            onInfo = { info = "优先使用大核" to "Pins the emulator's hot threads onto the big / prime CPU cluster instead of the efficiency cores." },
+                            onInfo = { info = "优先使用大核" to "将模拟器的热线程固定到大核/首要CPU集群，而非能效核心。" },
                             onReset = { state.onResetPerfKey?.accept("preferBigCores") },
                         ) { setBig(it) }
                         Divider()
@@ -361,11 +361,11 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                         val gpuEnabled = granted || PerfGpuTurbo.isSupported
                         ToggleRowLocal(
                             "锁定 GPU 最高频率",
-                            if (gpuEnabled) "Adreno: pinned via /dev/kgsl-3d0 — works without root."
-                            else "Needs an Adreno GPU, or root on other GPUs.",
+                            if (gpuEnabled) "Adreno：通过/dev/kgsl-3d0固定 — 无需root即可工作。"
+                            else "需要Adreno GPU，或其他GPU上的root权限。",
                             checked = toggles[gpuKey] ?: false, enabled = gpuEnabled,
                             overridden = gpuKey in overridden,
-                            onInfo = { info = "锁定 GPU 最高频率" to "Pins the GPU to its top power level. On Adreno this uses the app-owned KGSL turbo property (no root); other GPUs use the root sysfs pin." },
+                            onInfo = { info = "锁定 GPU 最高频率" to "将GPU固定到其最高功率级别。在Adreno上，这使用应用拥有的KGSL加速属性（无需root）；其他GPU使用root sysfs固定。" },
                             onReset = { state.onResetPerfKey?.accept(gpuKey) },
                         ) { setRoot(gpuKey, it) }
                     }
@@ -375,7 +375,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     if (!granted) {
                         Text(
                             "🔒 " + when (rootState) {
-                                RootManager.RootState.UNAVAILABLE -> "No root manager detected (Magisk / KernelSU / APatch)."
+                                RootManager.RootState.UNAVAILABLE -> "未检测到root管理器（Magisk / KernelSU / APatch）。"
                                 else -> "Grant root above to unlock CPU governor, frequency, cores, thermal & fan."
                             },
                             color = cs.onSurfaceVariant, fontSize = 12.sp,
@@ -385,26 +385,26 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     PerfCard {
                         RootToggle("CPU 调度器 → 性能模式", PerfRootApplier.KEY_CPU_GOVERNOR,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "CPU 调度器 → 性能模式" to "Forces every CPU cluster onto the performance governor for the session." },
+                            onInfo = { info = "CPU 调度器 → 性能模式" to "强制每个CPU集群在本次会话中使用性能调度器。" },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_GOVERNOR) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
                         RootToggle("锁定 CPU 最高频率", PerfRootApplier.KEY_CPU_FREQ_LOCK,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "锁定 CPU 最高频率" to "Sets scaling_min_freq = scaling_max_freq on every cluster." },
+                            onInfo = { info = "锁定 CPU 最高频率" to "在每个集群上设置scaling_min_freq = scaling_max_freq。" },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_FREQ_LOCK) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
                         RootToggle("保持所有核心在线", PerfRootApplier.KEY_CORES_ONLINE,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "保持所有核心在线" to "Prevents the kernel from hot-plugging CPU cores offline." },
+                            onInfo = { info = "保持所有核心在线" to "阻止内核热拔插CPU核心离线。" },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CORES_ONLINE) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
                         RootToggle("Disable thermal throttling", PerfRootApplier.KEY_THERMAL_DISABLE,
                             toggles, overridden, granted, harnessProven,
                             danger = true,
-                            onInfo = { info = "Disable thermal throttling" to "Stops the thermal engine from clamping clocks. The temperature watchdog stays armed and can revert it." },
+                            onInfo = { info = "Disable thermal throttling" to "阻止热引擎限制频率。温度看门狗保持启用并可以恢复它。" },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_THERMAL_DISABLE) },
                             onEnableDanger = { pendingDanger = PendingDanger("Disable thermal throttling") { setRoot(PerfRootApplier.KEY_THERMAL_DISABLE, true) } },
                             setRoot = { k, v -> setRoot(k, v) })
@@ -412,7 +412,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                         RootToggle("风扇最大转速", PerfRootApplier.KEY_FAN_MAX,
                             toggles, overridden, granted, harnessProven,
                             danger = true,
-                            onInfo = { info = "风扇最大转速" to "Forces active cooling to full speed for the session." },
+                            onInfo = { info = "风扇最大转速" to "强制主动散热在本次会话中全速运行。" },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_FAN_MAX) },
                             onEnableDanger = { pendingDanger = PendingDanger("风扇最大转速") { setRoot(PerfRootApplier.KEY_FAN_MAX, true) } },
                             setRoot = { k, v -> setRoot(k, v) })
@@ -456,7 +456,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                         Text("🛡", fontSize = 14.sp)
                         Spacer(Modifier.width(9.dp))
                         Text(
-                            "Auto-revert on exit / background / crash — always on, can't be disabled.",
+                            "退出/后台/崩溃时自动恢复 — 始终开启，无法禁用。",
                             color = cs.onSurfaceVariant, fontSize = 12.sp,
                         )
                     }
@@ -464,7 +464,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     // Reset all per-game overrides.
                     if (overridden.isNotEmpty()) {
                         Text(
-                            "↺ Reset all game overrides to global",
+                            "↺ 将所有游戏覆盖重置为全局",
                             color = cs.primary, fontSize = 13.sp,
                             modifier = Modifier
                                 .fillMaxWidth().padding(horizontal = 16.dp)
@@ -490,7 +490,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
     }
     if (showGrantGate) {
         PerfDisclaimerDialog(
-            title = "启用",
+            title = "高级性能设置 — 请先阅读",
             body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = "Grant Root",
             onConfirm = { showGrantGate = false; scope.launch { RootManager.requestGrant() } },
@@ -518,7 +518,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showGalaxyOffPrompt = false }) { Text("Keep both") }
+                TextButton(onClick = { showGalaxyOffPrompt = false }) { Text("保留两者") }
             },
         )
     }
@@ -632,8 +632,8 @@ private fun RootStrip(granted: Boolean, rootState: RootManager.RootState, onGran
             .background(if (granted) Color(0xFF37C26A) else cs.onSurface.copy(alpha = 0.35f)))
         Spacer(Modifier.width(10.dp))
         Text(
-            if (granted) "Root granted · full CPU/GPU control unlocked"
-            else "No root · no-root controls still available",
+            if (granted) "已授予root · 已解锁完整CPU/GPU控制"
+            else "无root · 无root控制仍可用",
             color = cs.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.weight(1f),
         )
         if (!granted && rootState != RootManager.RootState.UNAVAILABLE) {
@@ -683,12 +683,12 @@ private fun ToggleRowLocal(
         if (enabled) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
                 Text(
-                    if (overridden) "● Per-game override" else "○ Using global default",
+                    if (overridden) "● 每个游戏的覆盖设置" else "○ 使用全局默认值",
                     color = if (overridden) cs.primary else cs.onSurfaceVariant, fontSize = 10.sp,
                     modifier = Modifier.weight(1f),
                 )
                 if (overridden) {
-                    Text("Reset to global", color = cs.primary, fontSize = 10.sp,
+                    Text("重置为全局默认值", color = cs.primary, fontSize = 10.sp,
                         modifier = Modifier.clickable { onReset() })
                 }
             }
@@ -710,7 +710,7 @@ private fun RootToggle(
     val enabled = granted && !gated
     ToggleRowLocal(
         label = label,
-        sub = if (danger) "Root · dangerous — auto-reverts on exit." else "Root control.",
+        sub = if (danger) "Root · 危险 — 退出时自动恢复。" else "Root控制。",
         checked = toggles[key] ?: false, enabled = enabled,
         overridden = key in overridden, danger = danger,
         onInfo = onInfo, onReset = onReset,
@@ -835,7 +835,7 @@ fun PerformanceDashboardDialogPerGame(
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Performance", color = cs.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text("Per-game preset · saved on OK · honored at launch",
+                        Text("每个游戏的预设 · 在确定时保存 · 启动时生效",
                             color = cs.onSurfaceVariant, fontSize = 11.sp)
                     }
                     Box(
@@ -880,56 +880,56 @@ fun PerformanceDashboardDialogPerGame(
                     SectionHead("快速控制 · 无需root")
                     PerfCard {
                         ToggleRowLocal("持续性能模式",
-                            "Holds a stable clock to avoid thermal throttling.",
+                            "保持稳定时钟以避免热调节降频。",
                             checked = sustained, enabled = true, overridden = sustained != globalOf("sustainedPerfMode"),
-                            onInfo = { info = "持续性能模式" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
+                            onInfo = { info = "持续性能模式" to "保持稳定时钟，使SoC不会突增和降频。无需root。" },
                             onReset = { onSustained(globalOf("sustainedPerfMode")) }, onToggle = onSustained)
                         Divider()
                         ToggleRowLocal("线程优先级提升",
-                            "Raises emulator thread priority so the scheduler favours the game.",
+                            "提高模拟器线程优先级，使调度器优先处理游戏。",
                             checked = priority, enabled = true, overridden = priority != globalOf("perfPriorityBoost"),
-                            onInfo = { info = "线程优先级提升" to "Raises the emulator's thread priority so the CPU scheduler favours the game." },
+                            onInfo = { info = "线程优先级提升" to "提高模拟器的线程优先级，使CPU调度器优先处理游戏。" },
                             onReset = { onPriority(globalOf("perfPriorityBoost")) }, onToggle = onPriority)
                         Divider()
                         ToggleRowLocal("优先使用大核",
-                            "Routes emulator threads onto the big / prime cluster.",
+                            "将模拟器线程路由到大核/首要核心集群。",
                             checked = bigCores, enabled = true, overridden = bigCores != globalOf("preferBigCores"),
-                            onInfo = { info = "优先使用大核" to "Pins the emulator's hot threads onto the big / prime CPU cluster." },
+                            onInfo = { info = "优先使用大核" to "将模拟器的热线程固定到大核/首要CPU集群。" },
                             onReset = { onBigCores(globalOf("preferBigCores")) }, onToggle = onBigCores)
                         Divider()
                         val gk = PerfRootApplier.KEY_GPU_CLOCK_LOCK
                         ToggleRowLocal("锁定 GPU 最高频率",
-                            "Adreno: no-root KGSL turbo; sysfs pin with root.",
+                            "Adreno：无root的KGSL加速；有root的sysfs固定。",
                             checked = rootValue(gk), enabled = true, overridden = rootValue(gk) != globalOf(gk),
-                            onInfo = { info = "锁定 GPU 最高频率" to "Pins the GPU to its top power level (Adreno no-root; other GPUs need root)." },
+                            onInfo = { info = "锁定 GPU 最高频率" to "将GPU固定到其最高功率级别（Adreno无需root；其他GPU需要root）。" },
                             onReset = { onRoot(gk, globalOf(gk)) }, onToggle = { onRoot(gk, it) })
                     }
 
                     // Root & danger — settable as presets regardless of the current grant.
                     SectionHead("Root与危险")
-                    Text("Saved for this game · applied at launch when root is available.",
+                    Text("为此游戏保存 · 在启动时若root可用则应用。",
                         color = cs.onSurfaceVariant, fontSize = 11.sp,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp))
                     PerfCard {
                         rootPresetRow("CPU 调度器 → 性能模式", PerfRootApplier.KEY_CPU_GOVERNOR,
-                            "Forces every cluster to the performance governor.", rootValue, onRoot, { k -> globalOf(k) },
+                            "强制每个集群使用性能调度器。", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
                         rootPresetRow("锁定 CPU 最高频率", PerfRootApplier.KEY_CPU_FREQ_LOCK,
-                            "scaling_min_freq = scaling_max_freq on every cluster.", rootValue, onRoot, { k -> globalOf(k) },
+                            "在每个集群上设置 scaling_min_freq = scaling_max_freq。", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
                         rootPresetRow("保持所有核心在线", PerfRootApplier.KEY_CORES_ONLINE,
-                            "Prevents the kernel from hot-plugging cores offline.", rootValue, onRoot, { k -> globalOf(k) },
+                            "阻止内核将核心热拔插离线。", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
                         rootPresetRow("Disable thermal throttling", PerfRootApplier.KEY_THERMAL_DISABLE,
-                            "Runtime watchdog still guards.", rootValue, onRoot, { k -> globalOf(k) },
+                            "运行时看门狗仍然守护。", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = true,
                             arm = { pendingDanger = PendingDanger("Disable thermal throttling") { onRoot(PerfRootApplier.KEY_THERMAL_DISABLE, true) } })
                         Divider()
                         rootPresetRow("风扇最大转速", PerfRootApplier.KEY_FAN_MAX,
-                            "Forces active cooling to full at launch.", rootValue, onRoot, { k -> globalOf(k) },
+                            "在启动时强制主动散热全速运行。", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = true,
                             arm = { pendingDanger = PendingDanger("风扇最大转速") { onRoot(PerfRootApplier.KEY_FAN_MAX, true) } })
                     }
@@ -939,7 +939,7 @@ fun PerformanceDashboardDialogPerGame(
                         bigCores != globalOf("preferBigCores") ||
                         PerfRootApplier.ROOT_KEYS.any { rootValue(it) != globalOf(it) }
                     if (anyOverride) {
-                        Text("↺ Reset all performance toggles to global", color = cs.primary, fontSize = 13.sp,
+                        Text("↺ 重置所有性能开关为全局默认值", color = cs.primary, fontSize = 13.sp,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 .clip(RoundedCornerShape(10.dp)).clickable { onResetAll() }
                                 .padding(horizontal = 12.dp, vertical = 8.dp))
@@ -954,7 +954,7 @@ fun PerformanceDashboardDialogPerGame(
             onConfirm = { pd.enable(); pendingDanger = null }, onDismiss = { pendingDanger = null })
     }
     if (showGrantGate) {
-        PerfDisclaimerDialog(title = "启用", body = PerfDisclaimerCopy.ROOT_RISK,
+        PerfDisclaimerDialog(title = "高级性能设置 — 请先阅读", body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = "Grant Root", onConfirm = { showGrantGate = false; scope.launch { RootManager.requestGrant() } },
             onDismiss = { showGrantGate = false })
     }

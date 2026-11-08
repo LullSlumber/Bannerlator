@@ -262,7 +262,7 @@ fun XServerDrawer() {
                             }
                         }
                         // TV / Cast tab: shown while a TV is wired-connected OR wireless casting is
-                        // available (so the "Cast to a TV" button is always reachable). Gated behind
+                        // available (so the "投屏到电视TV " button is always reachable). Gated behind
                         // FeatureFlags.TV_OUTPUT_ENABLED so the whole tab disappears while the feature
                         // is disabled (issue #339) — belt-and-braces on top of the controller/caster
                         // never being constructed (which already leaves tvConnected/castSupported false).
@@ -304,7 +304,7 @@ fun XServerDrawer() {
             }
         }
 
-        // Accent seam between the tab rail and its content — mirrors the HUD's "灰色" outline
+        // Accent seam between the tab rail and its content — mirrors the HUD's "强调色" outline
         // (full-height cyan), matching the prototype's rail/drawer divider.
         Box(
             modifier = Modifier
@@ -355,7 +355,7 @@ private fun AudioContent(state: XServerDrawerState) {
     val driverId = state.audioDriverId
     var cfg by remember { mutableStateOf(com.winlator.star.ui.components.loadAudioConfig(ctx, driverId)) }
     Text(
-        "音频",
+        "Audio",
         fontSize = 18.sp,
         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface
@@ -368,9 +368,9 @@ private fun AudioContent(state: XServerDrawerState) {
         fontSize = 12.sp
     )
     Spacer(Modifier.height(12.dp))
-    AccentButton("Presets & fine-tuning", Modifier.fillMaxWidth()) { show = true }
+    AccentButton("预设与微调", Modifier.fillMaxWidth()) { show = true }
     Text(
-        "Balance crackle vs delay. Applies live; guest buffer needs a relaunch.",
+        "平衡爆音与延迟。实时生效；客户缓冲区需要重新启动。",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(top = 4.dp)
@@ -378,7 +378,7 @@ private fun AudioContent(state: XServerDrawerState) {
     Spacer(Modifier.height(12.dp))
     AccentButton("Reset audio", Modifier.fillMaxWidth()) { state.onResetAudio?.run() }
     Text(
-        "Fixes lost sound after switching apps.",
+        "修复切换应用后声音丢失的问题。",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(top = 4.dp)
@@ -386,7 +386,7 @@ private fun AudioContent(state: XServerDrawerState) {
     if (show) {
         com.winlator.star.ui.components.AudioSettingsDialog(
             initial = cfg,
-            scopeLabel = "live · this session",
+            scopeLabel = "实时 · 本次会话",
             latencyLive = false,
             driverLabel = engine,
             driverId = driverId,
@@ -430,11 +430,11 @@ internal fun TvContent(state: XServerDrawerState) {
         fontSize = 11.sp,
         modifier = Modifier.padding(bottom = 8.dp)
     )
-    AccentButton("Cast to a TV", Modifier.fillMaxWidth()) {
+    AccentButton("投屏到电视TV ", Modifier.fillMaxWidth()) {
         state.onOpenCastPicker?.run()
     }
     Text(
-        text = "For the lowest lag, a wired USB-C→HDMI cable is still best.",
+        text = "要获得最低延迟，有线 USB‑C→HDMI 线缆仍然是最佳选择。",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(top = 4.dp)
@@ -502,7 +502,7 @@ internal fun TvContent(state: XServerDrawerState) {
         state.onResetAudio?.run()
     }
     Text(
-        text = "Fixes lost sound after switching apps.",
+        text = "修复切换应用后声音丢失的问题。",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(top = 4.dp)
@@ -517,7 +517,7 @@ internal fun TvContent(state: XServerDrawerState) {
 
     // Aspect on TV — reuses the same fullscreen-mode cycle as the handheld (OFF / FIT / STRETCH).
     val fullscreenMode by state.fullscreenMode.collectAsState()
-    Text("Aspect", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp,
+    Text("比例", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 6.dp))
     FullscreenModeButtons(fullscreenMode) { mode ->
         state.setFullscreenMode(mode)
@@ -528,24 +528,24 @@ internal fun TvContent(state: XServerDrawerState) {
     Spacer(Modifier.height(8.dp))
     val overscan by state.tvOverscan.collectAsState()
     var overscanVal by remember(overscan) { mutableIntStateOf(overscan) }
-    IntSlider("Overscan / safe area", overscanVal, 0..8,
+    IntSlider("过扫描 / 安全区域", overscanVal, 0..8,
         onValueChange = { overscanVal = it },
         onValueChangeFinished = {
             state.setTvOverscan(overscanVal)
             state.onTvOverscanChange?.accept(overscanVal)
         },
         steps = 7, enabled = true)
-    Text("Shrinks the picture inward if your TV cuts off the edges.",
+    Text("如果您的TV裁切了边缘，则将画面向内收缩。",
         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
         modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
 
     // Scaling filter (v1) — GL EffectComposer only; grayed on the Vulkan renderer.
     if (rendererIsVulkan) {
-        Text("Scaling filter is available on the OpenGL renderer.",
+        Text("缩放滤镜在 OpenGL 渲染器上可用。",
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
             modifier = Modifier.padding(top = 4.dp))
     } else {
-        ScalingModeHeader("缩放滤镜", MaterialTheme.colorScheme.onSurface,
+        ScalingModeHeader("Scaling filter", MaterialTheme.colorScheme.onSurface,
             Modifier.padding(top = 4.dp, bottom = 6.dp))
         val initGlUpscalerMode by XServerDialogState.glUpscalerMode.collectAsState()
         var glUpscalerMode by remember(initGlUpscalerMode) { mutableIntStateOf(initGlUpscalerMode) }
@@ -562,8 +562,8 @@ internal fun TvContent(state: XServerDrawerState) {
     if (rendererIsVulkan) {
         PresentModeSection(state)
     } else {
-        SectionHeader("Latency")
-        Text("Latency mode (V-Sync / Low latency) is available on the Vulkan renderer.",
+        SectionHeader("延迟")
+        Text("延迟模式（垂直同步/低延迟）在Vulkan渲染器上可用。",
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
             modifier = Modifier.padding(bottom = 6.dp))
     }
@@ -575,7 +575,7 @@ internal fun TvContent(state: XServerDrawerState) {
     val capOptions = listOf("Off", "30 FPS", "60 FPS", "90 FPS", "120 FPS")
     val capValues = listOf(0, 30, 60, 90, 120)
     val capIdx = if (!fpsLimiterEnabled) 0 else capValues.indexOf(fpsLimit).let { if (it >= 0) it else 0 }
-    ReshadeDropdown("Frame cap", capOptions, capIdx) { i ->
+    ReshadeDropdown("帧率上限", capOptions, capIdx) { i ->
         val v = capValues[i]
         state.setFpsLimiterEnabled(v > 0)
         if (v > 0) state.setFpsLimit(v)
@@ -587,29 +587,29 @@ internal fun TvContent(state: XServerDrawerState) {
     FrameGenSection(state)
 
     // TV Game Mode tip (biggest wired-latency win is TV-side; we can only advise).
-    Text("Tip: enable Game Mode on your TV for the lowest input lag.",
+    Text("提示：在TV上启用游戏模式以获得最低输入延迟。",
         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
         modifier = Modifier.padding(top = 8.dp))
 
     // ───────────── Audio & power ─────────────
     HorizontalDivider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 12.dp))
-    SectionHeader("Audio & power")
+    SectionHeader("音频与电源")
 
     val audioOut by state.tvAudioOut.collectAsState()
-    ReshadeDropdown("Audio output", listOf("Follow system", "TV / HDMI", "Handheld"), audioOut) { i ->
+    ReshadeDropdown("音频输出", listOf("跟随系统", "TV / HDMI", "手持设备"), audioOut) { i ->
         state.setTvAudioOut(i)
         state.onTvAudioOutChange?.accept(i)
     }
-    Text("Experimental — the guest audio route may not always follow.",
+    Text("实验性 — 客户音频路由可能并非始终跟随。",
         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
         modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
 
     val dimHandheld by state.tvDimHandheld.collectAsState()
-    ToggleRow("Dim handheld while on TV", dimHandheld) {
+    ToggleRow("在TV投屏时调暗手持设备屏幕", dimHandheld) {
         state.setTvDimHandheld(it)
         state.onTvDimHandheldChange?.accept(it)
     }
-    Text("Saves battery and heat by dimming the phone screen.",
+    Text("通过调暗手机屏幕来节省电量和减少发热。",
         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
         modifier = Modifier.padding(top = 2.dp))
 
@@ -618,23 +618,23 @@ internal fun TvContent(state: XServerDrawerState) {
     SectionHeader("Advanced")
 
     val renderRes by state.tvRenderRes.collectAsState()
-    ReshadeDropdown("TV render resolution", listOf("Match TV", "Match handheld", "1080p", "1440p"), renderRes) { i ->
+    ReshadeDropdown("TV渲染分辨率", listOf("Match TV", "Match handheld", "1080p", "1440p"), renderRes) { i ->
         state.setTvRenderRes(i)
         state.onTvRenderResChange?.accept(i)
     }
-    Text("Applies on the next game launch (the render resolution is fixed at startup).",
+    Text("在下次游戏启动时应用（渲染分辨率在启动时固定）。",
         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
         modifier = Modifier.padding(top = 2.dp))
 
     // ───────────── Streaming (v3 — WiFi caster, not yet available) ─────────────
     HorizontalDivider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 12.dp))
     val disabledColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-    Text("Streaming", style = MaterialTheme.typography.titleSmall.copy(
+    Text("流式传输", style = MaterialTheme.typography.titleSmall.copy(
         fontSize = 15.sp, fontWeight = FontWeight.Bold), color = disabledColor)
     Text("Wireless streaming to a TV without a cable (bitrate, codec, transport) is coming in a " +
         "future update. Wired HDMI / DeX casting works today via the controls above.",
         color = disabledColor, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
-    listOf("Bitrate", "Codec (H.264 / HEVC)", "Transport (WebRTC / DLNA)", "Stream resolution & FPS").forEach {
+    listOf("比特率", "编解码器 (H.264 / HEVC)", "传输协议 (WebRTC / DLNA)", "流分辨率和帧率").forEach {
         Text("• $it — requires WiFi streaming", color = disabledColor, fontSize = 11.sp,
             modifier = Modifier.padding(top = 4.dp))
     }
@@ -913,7 +913,7 @@ private fun GraphicsContent(state: XServerDrawerState) {
 
     // Title on the left, runtime-backend diagnostic chip pinned top-right.
     Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
-        Box(Modifier.weight(1f)) { SectionHeader("显示设置") }
+        Box(Modifier.weight(1f)) { SectionHeader("Graphics") }
         RuntimeBackendChip(state)
     }
 
@@ -1321,7 +1321,7 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
         }
         if (casEnabled) {
             Spacer(Modifier.height(4.dp))
-            IntSlider("CAS Sharpness", casSharpness, 0..100, { casSharpness = it; lookTouched() }, {
+            IntSlider("CAS 锐化度", casSharpness, 0..100, { casSharpness = it; lookTouched() }, {
                 XServerDialogState.setCasSharpness(casSharpness)
                 XServerDialogState.onCasApply?.invoke(casEnabled, casSharpness)
             }, enabled = vkEnabled)
@@ -1382,7 +1382,7 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
         // ---- SurfaceFlinger: direct scanout bypasses the compositor, so no
         //      post-process / scaling controls apply. ----
         Text(
-            "No graphics enhancements are available with the SurfaceFlinger renderer.",
+            "SurfaceFlinger渲染器不支持任何图形增强功能。",
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             fontSize = 12.sp,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
@@ -1397,11 +1397,11 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
     if (nativeRenderingSupported) {
         // Wayland: X11 direct scanout never runs (the X renderer is idle behind the compositor), so
         // the row is greyed and points at Zero-copy presentation, which is the Wayland equivalent.
-        ToggleRow("Native Rendering", nativeRenderingEnabled, enabled = !isWaylandSession) {
+        ToggleRow("原生渲染", nativeRenderingEnabled, enabled = !isWaylandSession) {
             state.onNativeRenderingToggle?.run()
         }
         if (isWaylandSession) {
-            HelperText("X11 direct scanout is not used on Wayland; Zero-copy presentation below is the Wayland equivalent.")
+            HelperText("X11直接扫描输出在Wayland上不使用；下面的零拷贝呈现是Wayland的等效方式。")
         }
     }
 
@@ -1429,10 +1429,10 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
 
     SectionHeader("Steam 客户端")
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        AccentButton("Steam menu", Modifier.weight(1f)) { state.onLinuxSteamGuide?.run() }
-        AccentButton("Quick Access", Modifier.weight(1f)) { state.onLinuxSteamQam?.run() }
+        AccentButton("Steam 菜单", Modifier.weight(1f)) { state.onLinuxSteamGuide?.run() }
+        AccentButton("快速访问", Modifier.weight(1f)) { state.onLinuxSteamQam?.run() }
     }
-    HelperText("Presses the Steam button, or opens Steam's Quick Access Menu, on player one's controller.")
+    HelperText("在玩家一的手柄上按下 Steam 按钮，或打开 Steam 的快速访问菜单。")
 
     Spacer(Modifier.height(6.dp))
     val touch by state.linuxTouch.collectAsState()
@@ -1457,7 +1457,7 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
             }
         }
     }
-    HelperText("Touchscreen: fingers reach Steam as real touches (Big Picture scrolls under one). Touchpad: a drag moves the pointer, a tap clicks. App setting follows the Touchscreen switch every container uses. In Touchpad, Cursor to Touch (Controls > Touch) puts the pointer under the finger instead. Applies now.")
+    HelperText("触摸屏：手指作为真实触摸到达 Steam（大屏幕模式可单指滚动）。触控板：拖动移动指针，点击即为单击。应用设置会遵循每个容器使用的触摸屏开关。在触控板模式下，光标跟随触摸（控制 > 触摸）会将指针置于手指下方。立即应用。")
 
     Spacer(Modifier.height(6.dp))
     ToggleRow("屏幕上的 Steam 和快速访问按钮", on(LinuxTuning.EXTRA_STEAM_BUTTONS)) {
@@ -1466,35 +1466,35 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
     ToggleRow("双击返回打开快速访问", on(LinuxTuning.EXTRA_DOUBLE_BACK_QAM)) {
         flip(LinuxTuning.EXTRA_DOUBLE_BACK_QAM, it)
     }
-    HelperText("One Back press still opens this drawer. Both apply now.")
+    HelperText("按一次返回仍会打开此抽屉。两者均立即应用。")
 
     Spacer(Modifier.height(6.dp))
     ToggleRow("拉伸游戏以填满屏幕", on(LinuxTuning.EXTRA_FILL_SCREEN)) {
         flip(LinuxTuning.EXTRA_FILL_SCREEN, it)
     }
-    HelperText("Keeps a game that shrinks its window (FlatOut after Resume game) filling the screen. Applies now.")
+    HelperText("保持缩小窗口的游戏（恢复游戏后的 FlatOut）填满屏幕。立即应用。")
     ToggleRow("Quake 引擎游戏窗口化", on(LinuxTuning.EXTRA_IDTECH3)) {
         flip(LinuxTuning.EXTRA_IDTECH3, it)
     }
     HelperText("Quake III, Team Arena, Return to Castle Wolfenstein and Jedi Academy run windowed at the session's size, " +
         "the one way they start here. Applies at the next game start.")
-    ToggleRow("Offline mode", on(LinuxTuning.EXTRA_OFFLINE)) {
+    ToggleRow("离线模式", on(LinuxTuning.EXTRA_OFFLINE)) {
         flip(LinuxTuning.EXTRA_OFFLINE, it)
     }
     HelperText("Steam starts without signing in to Valve; installed games still launch. Needs one online sign-in on this device first. " +
         "The client reads it only as it starts, so it applies at the next session.")
 
     Spacer(Modifier.height(6.dp))
-    Text("Steam 客户端", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-    ToggleRow("离线模式（不登录 Valve）", on(LinuxTuning.EXTRA_NO_XALIA)) {
+    Text("故障排除", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+    ToggleRow("Xalia off (PROTON_USE_XALIA=0)", on(LinuxTuning.EXTRA_NO_XALIA)) {
         flip(LinuxTuning.EXTRA_NO_XALIA, it)
     }
-    HelperText("On by default: xalia costs every game CPU time under FEX. Turn off only for a game that needs its gamepad navigation. Applies at the next game start.")
-    ToggleRow("无 seccomp 的 proot", on(LinuxTuning.EXTRA_PROOT_NO_SECCOMP)) {
+    HelperText("默认开启：在 FEX 下，xalia 会消耗每个游戏的 CPU 时间。仅对需要其手柄导航的游戏关闭。在下次游戏启动时应用。")
+    ToggleRow("proot without seccomp", on(LinuxTuning.EXTRA_PROOT_NO_SECCOMP)) {
         flip(LinuxTuning.EXTRA_PROOT_NO_SECCOMP, it)
     }
-    HelperText("Slower; for a device whose seccomp misbehaves. Applies at the next session.")
-    Text("Turnip sysmem rendering", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface,
+    HelperText("较慢；适用于 seccomp 行为异常的设备。在下次会话时应用。")
+    Text("Turnip sysmem 渲染", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(top = 4.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         listOf("" to "自动", "1" to "On", "0" to "Off").forEach { (value, label) ->
@@ -1516,7 +1516,7 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
             }
         }
     }
-    HelperText("Automatic turns it on for the imported A710/A720/A722 Linux drivers. Applies at the next session.")
+    HelperText("自动会为导入的 A710/A720/A722 Linux 驱动程序开启它。在下次会话时应用。")
 
     HorizontalDivider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 6.dp))
 }
@@ -1546,8 +1546,8 @@ internal fun LinuxComponentsContent(state: XServerDrawerState) {
         return
     }
     val running = s.protons.filter { it.inUseByGame }
-    Text("Running now", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-    if (running.isEmpty()) HelperText("No game is running on a Proton. Changes apply the next time a game starts.")
+    Text("正在运行", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+    if (running.isEmpty()) HelperText("没有游戏正在 Proton 上运行。更改将在下次游戏启动时应用。")
     else for (r in running) {
         Text(r.proton.name, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary,
             maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 4.dp, top = 2.dp))
@@ -1601,10 +1601,10 @@ internal fun LinuxComponentsContent(state: XServerDrawerState) {
         if (detail != null) HelperText(detail)
     }
     HelperText(
-        if (view.inUseByGame) "A game is running on this Proton: a change waits until it closes."
-        else "Changes apply the next time a game starts."
+        if (view.inUseByGame) "有游戏正在此 Proton 上运行：更改会等到它关闭后应用。"
+        else "更改将在下次游戏启动时应用。"
     )
-    HelperText("Downloads, importing and deleting are on the Components tab of the Steam (Linux) entry's settings.")
+    HelperText("下载、导入和删除位于 Steam (Linux) 条目设置的组件选项卡中。")
 }
 
 // ───── Wayland: HDR output (live, HDR sessions only) ─────
@@ -1638,16 +1638,16 @@ private fun WaylandHdrOutputRow(state: XServerDrawerState) {
         "Applies immediately, for this session only; the game's own HDR setting is left alone.")
     HelperText(
         when {
-            checked && onScreen    -> "On: HDR frames on screen now."
+            checked && onScreen    -> "开启：HDR帧现在在屏幕上。"
             checked && noHeadroom  -> "On, but the screen gives HDR no headroom right now: brightness at maximum, " +
                                       "or the screen is being recorded (Android turns HDR headroom off while recording)."
-            checked && toneMapped  -> "On, but shown tone-mapped: frame generation on a screen with no HDR swapchain."
+            checked && toneMapped  -> "开启，但显示为色调映射：在没有HDR交换链的屏幕上进行帧生成。"
             checked && !screenCapable -> "On, but this screen has no HDR10: Android tone-maps the picture for it. " +
                                       "The game keeps the HDR it was offered until it closes."
-            checked                -> "On: no HDR frames right now (is HDR on in the game's settings?)."
-            onScreen || noHeadroom -> "Off, but these frames cannot be tone-mapped here: they stay HDR."
-            toneMapped             -> "Off: HDR frames shown tone-mapped to SDR."
-            else                   -> "Off: no HDR frames right now."
+            checked                -> "开启：当前没有HDR帧（游戏设置中是否开启了HDR？）。"
+            onScreen || noHeadroom -> "关闭，但这些帧无法在此进行色调映射：它们保持HDR。"
+            toneMapped             -> "关闭：HDR帧显示为色调映射到SDR。"
+            else                   -> "关闭：当前没有HDR帧。"
         }
     )
 }
@@ -1668,7 +1668,7 @@ private fun WaylandGlSafeModeRow(state: XServerDrawerState) {
     var checked by remember(safeMode) { mutableStateOf(safeMode) }
 
     Spacer(Modifier.height(6.dp))
-    ToggleRow("OpenGL safe mode", checked) {
+    ToggleRow("OpenGL安全模式", checked) {
         checked = it
         state.setWaylandGlSafeMode(it)
         state.onWaylandGlSafeModeToggle?.accept(it)
@@ -1706,7 +1706,7 @@ private fun WaylandZeroCopyRow(state: XServerDrawerState, effectsAvailable: Bool
         state.setWaylandZeroCopyRequested(it)
         state.onWaylandZeroCopyToggle?.accept(it)
     }
-    HelperText("Fullscreen games are shown on their own display layer with no compositor copy. Applies immediately, and is kept as this game's default.")
+    HelperText("全屏游戏显示在其自己的显示层上，无合成器复制。立即生效，并保留为此游戏的默认设置。")
 
     // Polled whichever way the switch is set: the line has to be able to say "switching off" too.
     LaunchedEffect(Unit) {
@@ -1720,12 +1720,12 @@ private fun WaylandZeroCopyRow(state: XServerDrawerState, effectsAvailable: Bool
     val effectsOn = effectsAvailable && waylandCompositorEffectsOn()
     HelperText(
         when {
-            checked && effectsOn  -> "On: screen effects are drawn into the game's display layer, so it keeps hardware composition."
-            checked && !live      -> "Switching on… the game is rebuilding its swapchain on display buffers."
+            checked && effectsOn  -> "开启：屏幕效果绘制到游戏的显示层中，因此保持硬件合成。"
+            checked && !live      -> "正在开启… 游戏正在显示缓冲区上重建其交换链。"
             checked && frames > 0 -> "On: $frames zero-copy frames in the last 10 s"
-            checked               -> "On: frames are going straight to the display layer."
-            live                  -> "Switching off… the game's last display-layer frames are still on screen."
-            else                  -> "Off: the compositor copies each frame into its own swapchain."
+            checked               -> "开启：帧直接发送到显示层。"
+            live                  -> "正在关闭… 游戏最后的显示层帧仍在屏幕上。"
+            else                  -> "关闭：合成器将每帧复制到其自己的交换链中。"
         }
     )
 }
@@ -1823,7 +1823,7 @@ private fun HelperText(text: String) {
 
 /** The one reason line for a control the Wayland compositor does not drive in this build. */
 @Composable
-private fun WaylandNotYetNote() = HelperText("Not on Wayland in this build yet")
+private fun WaylandNotYetNote() = HelperText("此版本尚未在Wayland上支持")
 
 // ───── Runtime-backend diagnostic chip (Graphics tab header) ─────
 // Read-only status: arch · translator, plus the FEX unixlib mode. unixlib (native .so loaded) =
@@ -1912,7 +1912,7 @@ internal fun FrameGenSection(state: XServerDrawerState) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("更稳定的帧节奏和更凉的设备。在游戏中从侧边菜单设置限制。", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        Text("插帧生成", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -2016,7 +2016,7 @@ internal fun FrameGenSection(state: XServerDrawerState) {
             Column {
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "模型",
+                    "Model",
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
@@ -2044,12 +2044,12 @@ internal fun FrameGenSection(state: XServerDrawerState) {
             Column {
                 Spacer(Modifier.height(8.dp))
                 LabeledSlider(
-                    "Flow Scale", fgFlow, 0.2f..1.0f,
+                    "光流精度", fgFlow, 0.2f..1.0f,
                     { fgFlow = it }, { applyFg() },
                     format = { "%.2f".format(it) }
                 )
                 Text(
-                    "Higher flow scale = smoother motion estimate, more GPU cost.",
+                    "光流精度越高 = 运动估计越平滑，GPU开销越大。",
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                     fontSize = 11.sp,
                     modifier = Modifier.padding(start = 4.dp, top = 2.dp)
@@ -2072,7 +2072,7 @@ internal fun FrameGenSection(state: XServerDrawerState) {
                 modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
             )
             Text(
-                "采集分辨率",
+                "Capture resolution",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
@@ -2096,13 +2096,13 @@ internal fun FrameGenSection(state: XServerDrawerState) {
         if (engine == "lsfg" && !waylandFgBlocked) {
             var lsfgPerf by remember(initLsfgPerf) { mutableStateOf(initLsfgPerf) }
             Spacer(Modifier.height(8.dp))
-            ToggleRow("Performance mode", lsfgPerf) {
+            ToggleRow("性能模式", lsfgPerf) {
                 lsfgPerf = it
                 state.setLsfgPerformanceMode(it)
                 applyFg()
             }
             Text(
-                "Lower quality for higher FPS — helps on low-end devices.",
+                "降低质量以提高 FPS — 有助于低端设备。",
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontSize = 11.sp,
                 modifier = Modifier.padding(start = 4.dp, top = 2.dp)
@@ -2112,7 +2112,7 @@ internal fun FrameGenSection(state: XServerDrawerState) {
         WaylandNotYetNote()
     } else {
         Text(
-            "Enable Frame Generation in this container's settings to tune it here.",
+            "在此容器的设置中启用帧生成，以在此处进行调节。",
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             fontSize = 11.sp,
             modifier = Modifier.padding(start = 4.dp, top = 2.dp)
@@ -2258,7 +2258,7 @@ private fun FgModelButtons(selected: Int, onSelect: (Int) -> Unit) {
     // win-fg's two optical-flow models: 3 = single-direction flow, 4 = block-grid
     // bidirectional flow with occlusion gating (softer at occlusion edges). Legacy
     // stored values 0-2 map to the standard flow (model 3), matching the layer's clamp.
-    val options = listOf(3 to "Optical flow", 4 to "光流")
+    val options = listOf(3 to "光流", 4 to "双向")
     val sel = if (selected < 3) 3 else selected
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -2423,7 +2423,7 @@ internal fun ReshadeSection() {
 
     if (!supported || seed.isEmpty()) {
         Text(
-            "No ReShade effects selected. Add one or more in this game's settings (or the container's) to switch and tune them here.",
+            "未选择任何 ReShade 滤镜效果。请在此游戏（或容器）的设置中添加一个或多个滤镜效果，以便在此处切换和调整。",
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             fontSize = 11.sp,
             modifier = Modifier.padding(start = 4.dp, top = 6.dp)
@@ -2752,7 +2752,7 @@ private fun ReshadeColorControl(
         }
         if (expanded) {
             GradientSlider(
-                "Hue", hue, 0f..360f,
+                "色相", hue, 0f..360f,
                 Brush.horizontalGradient((0..12).map { Color(android.graphics.Color.HSVToColor(floatArrayOf(it * 30f, 1f, 1f))) }),
                 { hue = it; emit() }
             )
@@ -2848,7 +2848,7 @@ private fun DebandControls(enabled: Boolean = true, onUserChange: () -> Unit = {
     val initDebandStrength by XServerDialogState.debandStrength.collectAsState()
     var debandEnabled  by remember(initDebandEnabled)  { mutableStateOf(initDebandEnabled) }
     var debandStrength by remember(initDebandStrength) { mutableIntStateOf(initDebandStrength) }
-    ToggleRow("Debanding", debandEnabled, enabled) {
+    ToggleRow("色带消除", debandEnabled, enabled) {
         debandEnabled = it
         XServerDialogState.setDebandEnabled(it)
         onUserChange()
@@ -2856,7 +2856,7 @@ private fun DebandControls(enabled: Boolean = true, onUserChange: () -> Unit = {
     }
     if (debandEnabled) {
         Spacer(Modifier.height(4.dp))
-        IntSlider("Dither strength", debandStrength, 0..200,
+        IntSlider("抖动强度", debandStrength, 0..200,
             onValueChange = { debandStrength = it },
             onValueChangeFinished = {
                 XServerDialogState.setDebandStrength(debandStrength)
@@ -2883,7 +2883,7 @@ private fun LooksRow(selected: Int?, enabled: Boolean, onPick: (Int) -> Unit) {
     } + if (selected == null) listOf(ToggleChipItem(ScreenEffectLooks.CUSTOM_LABEL, true, enabled) { }) else emptyList<ToggleChipItem>()
 
     Text(
-        "Looks",
+        "外观",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(bottom = 4.dp)
@@ -2893,7 +2893,7 @@ private fun LooksRow(selected: Int?, enabled: Boolean, onPick: (Int) -> Unit) {
         val look = looks[selected]
         if (look.desc.isEmpty()) look.name else "${look.name} — ${look.desc}"
     } else {
-        "Adjusted — everything below is yours. Tap a look to go back."
+        "已调整 — 以下所有都是您的。点击外观以返回。"
     }
     Text(
         note,
@@ -3010,7 +3010,7 @@ private fun ScalingModeHeader(title: String, color: Color, modifier: Modifier = 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(title, color = color, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置", tint = color, modifier = Modifier.size(16.dp))
+            Icon(Icons.Default.Help, contentDescription = "What is this?", tint = color, modifier = Modifier.size(16.dp))
         }
     }
     if (showHelp) HelpDialog(R.string.help_scaling_mode) { showHelp = false }
@@ -3021,9 +3021,9 @@ private fun UpscalerModeButtons(selected: Int, enabled: Boolean, onSelect: (Int)
     val accent = MaterialTheme.colorScheme.primary
     val accentDim = LocalAccentDim.current
     val options = listOf(
-        0 to "None", 1 to "Linear", 2 to "Nearest",
+        0 to "None", 1 to "线性过滤", 2 to "邻近采样",
         3 to "SGSR", 8 to "SGSR HQ", 4 to "FSR",
-        5 to "FSR (Fit)", 6 to "画面锐化", 7 to "NIS"
+        5 to "FSR (适应)", 6 to "画面锐化", 7 to "NIS"
     )
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         options.chunked(3).forEach { row ->
@@ -3076,7 +3076,7 @@ private fun RumbleMotorsHeader() {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "What is this?",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
         }
     }
@@ -3274,7 +3274,7 @@ private fun RefreshRateSlider(rates: List<Int>, selected: Int, enabled: Boolean,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Rate", style = MaterialTheme.typography.bodySmall, color = if (enabled) MaterialTheme.colorScheme.onSurface else dim)
+            Text("帧率", style = MaterialTheme.typography.bodySmall, color = if (enabled) MaterialTheme.colorScheme.onSurface else dim)
             Text(
                 rightText,
                 style = MaterialTheme.typography.bodySmall,
@@ -3382,7 +3382,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     val accent = MaterialTheme.colorScheme.primary
     val fpsConfig by state.fpsConfig.collectAsState()
 
-    // Re-read the live display refresh rate when this tab opens so the "Rate" readout is fresh on
+    // Re-read the live display refresh rate when this tab opens so the "帧率" readout is fresh on
     // open; the display listener keeps it current while the drawer stays open.
     LaunchedEffect(Unit) { state.onRefreshRatePoll?.run() }
 
@@ -3563,12 +3563,12 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     fun apply() { state.onFpsConfigApply?.invoke(buildConfig()) }
 
     // ═══ Master toggle: hides every HUD group below when off (matches the approved prototype). ═══
-    ToggleRow("显示 HUD", hudEnabled) { hudEnabled = it; apply() }
+    ToggleRow("Show HUD", hudEnabled) { hudEnabled = it; apply() }
 
     // ── Performance group: always shown. The limiter + refresh live here regardless of the HUD. ──
     if (!embedded) HudGroupLabel("Performance")
-    if (!embedded) CollapsibleSection("Frame rate & refresh", lead = "always on", initiallyExpanded = true) {
-        Text("渲染器驱动程序", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+    if (!embedded) CollapsibleSection("帧率与刷新率", lead = "始终开启", initiallyExpanded = true) {
+        Text("FPS限制器", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         Spacer(Modifier.height(4.dp))
         val nativeFgLocks by state.nativeFgLocks.collectAsState()
         val fgEngine by state.frameGenEngine.collectAsState()
@@ -3578,7 +3578,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
         // nativeFgLocks covers both compositor engines; name the one actually running.
         val nativeFgName = if (fgEngine == "lsfg-native") "LSFG Native" else "Win-FG Native"
         // Locked ON while native frame gen generates - see XServerDrawerState.nativeFgLocks.
-        ToggleRow("Limit FPS", limiterOn, enabled = !nativeFgLocks) { limiterOn = it; applyLimiter() }
+        ToggleRow("限制FPS", limiterOn, enabled = !nativeFgLocks) { limiterOn = it; applyLimiter() }
         if (nativeFgLocks) {
             Text(
                 "Locked on while $nativeFgName is generating",
@@ -3588,7 +3588,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
         }
         if (limiterOn) {
             LabeledSlider(
-                "Max FPS", limitVal.toFloat(), 10f..200f,
+                "FPS上限", limitVal.toFloat(), 10f..200f,
                 { limitVal = it.roundToInt() }, { applyLimiter() },
                 format = { "${it.roundToInt()}" }
             )
@@ -3612,9 +3612,9 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
                         "Caps the game's real frames. $nativeFgName adds its own on top, so you'll see up to " +
                             "$limitVal × $fgMult = ${limitVal * fgMult}."
                     lsfgVkMultiplying ->
-                        "Not applied while lsfg-vk is multiplying: it paces frames itself."
+                        "当lsfg-vk正在倍增时不应用：它自己调节帧节奏。"
                     else ->
-                        "Caps the game's frame rate. With LSFG Native or Win-FG Native on, you'll see Max FPS × the multiplier."
+                        "限制游戏的帧率。开启LSFG原生或Win-FG原生后，您将看到最大FPS × 倍数。"
                 },
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontSize = 11.sp,
@@ -3632,7 +3632,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
         }
 
         Spacer(Modifier.height(14.dp))
-        Text("屏幕", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        Text("刷新率", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         Spacer(Modifier.height(4.dp))
         // Auto (match FPS) == the existing VRR toggle. While native frame gen runs it is the
         // session's Auto: switched on at start unless this game opted out, and toggling it off
@@ -3656,24 +3656,24 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
         Text(
             when {
                 !vrrSupported ->
-                    "Unavailable — this display has a single refresh rate, so there's nothing to match."
+                    "不可用 — 此显示器仅支持单一刷新率，因此无法匹配。"
                 matchRefreshOn && nativeFgLocksVrr && fgAutoTurnedOn ->
-                    "Auto was turned on for frame generation — the display follows Max FPS × multiplier. " +
-                        (if (fgAutoPerGame) "Turn it off if you prefer; this game will remember."
-                         else "Turn it off if you prefer (for this session).")
+                    "帧生成已开启自动 — 显示器跟随最大FPS × 倍数。 " +
+                        (if (fgAutoPerGame) "如果您愿意，可以关闭它；此游戏会记住。"
+                         else "如果您愿意，可以关闭它（仅限本次会话）。")
                 matchRefreshOn && nativeFgLocksVrr ->
-                    "Auto is on — with frame generation running, the display follows Max FPS × multiplier."
+                    "自动已开启 — 在帧生成运行时，显示器跟随最大FPS × 倍数。"
                 nativeFgLocksVrr ->
-                    (if (fgAutoPerGame) "Auto is off for this game while frame generation runs. "
-                     else "Auto is off while frame generation runs. ") +
-                        "Turn it on to fit the screen to Max FPS × multiplier." +
+                    (if (fgAutoPerGame) "此游戏在帧生成运行时自动关闭。 "
+                     else "帧生成运行时自动关闭。 ") +
+                        "开启它以将屏幕适配到最大FPS × 倍数。" +
                         (if (manualRefreshRate > 0) " Display locked to ${manualRefreshRate} Hz." else "")
                 matchRefreshOn ->
-                    "Auto is on — the display follows your FPS."
+                    "自动已开启 — 显示器将跟随您的帧率。"
                 manualRefreshRate > 0 ->
                     "Display locked to ${manualRefreshRate} Hz."
                 else ->
-                    "Pick a rate to lock the display, or turn Auto on to follow your FPS."
+                    "选择一个刷新率以锁定显示器，或开启自动以跟随您的FPS。"
             },
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             fontSize = 11.sp,
@@ -3685,14 +3685,14 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     if (hudEnabled) {
         HudGroupLabel("HUD")
 
-        CollapsibleSection("Style & Size") {
+        CollapsibleSection("风格与尺寸") {
             HudChipRow("HUD 风格", listOf("Classic", "GameHub", "GameNative", "Fusion"), styles.indexOf(hudStyle).coerceAtLeast(0)) { hudStyle = styles[it]; apply() }
             Text(
                 when (hudStyle) {
-                    "gamehub" -> "Rich overlay: skins, colored fields, live FPS graph. Style change applies on next launch."
-                    "gamenative" -> "GameNative-style overlay: compact pill or stacked list with live graphs. Style change applies on next launch."
-                    "fusion" -> "Fusion overlay: one color-coded look in 5 sizes with percentile lows, VRAM + a Mega everything-view. Tap the HUD to cycle size."
-                    else -> "Classic Bannerlator overlay."
+                    "gamehub" -> "丰富覆盖层：皮肤、彩色字段、实时FPS图表。样式更改将在下次启动时生效。"
+                    "gamenative" -> "GameNative风格覆盖层：紧凑药丸形或堆叠列表，带实时图表。样式更改将在下次启动时生效。"
+                    "fusion" -> "Fusion 覆盖层：5 种尺寸的配色方案，含百分位低值、显存以及 Mega 综合视图。点击 HUD 可循环切换尺寸。"
+                    else -> "经典Bannerlator覆盖层。"
                 },
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), fontSize = 11.sp,
                 modifier = Modifier.padding(start = 4.dp, top = 2.dp, bottom = 4.dp)
@@ -3746,25 +3746,25 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
             ModeChipGrid(metricChips, perRow = 3)
         }
 
-        CollapsibleSection("Appearance") {
-            LabeledSlider("HUD Scale", scaleValue, 50f..150f, { scaleValue = it }, { apply() }, format = { "${it.toInt()}%" })
-            if (rich) LabeledSlider("HUD Opacity", opacityValue, 0f..100f, { opacityValue = it }, { apply() }, format = { "${it.toInt()}%" })
-            else LabeledSlider("HUD Transparency", transValue, 0f..50f, { transValue = it }, { apply() }, format = { "${it.toInt()}" })
+        CollapsibleSection("外观") {
+            LabeledSlider("HUD大小", scaleValue, 50f..150f, { scaleValue = it }, { apply() }, format = { "${it.toInt()}%" })
+            if (rich) LabeledSlider("HUD透明度", opacityValue, 0f..100f, { opacityValue = it }, { apply() }, format = { "${it.toInt()}%" })
+            else LabeledSlider("HUD透明度", transValue, 0f..50f, { transValue = it }, { apply() }, format = { "${it.toInt()}" })
             if (gameHub) {
-                HudChipRow("HUD皮肤", listOf("Classic", "霓虹", "霓虹"), skins.indexOf(skin)) { skin = skins[it]; apply() }
-                HudChipRow("HUD颜色", listOf("柔和", "柔和", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
-                LabeledSlider("HUD outline", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
-                HudChipRow("轮廓颜色", listOf("灰色", "灰色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
+                HudChipRow("HUD皮肤", listOf("Classic", "霓虹", "黑白"), skins.indexOf(skin)) { skin = skins[it]; apply() }
+                HudChipRow("HUD颜色", listOf("柔和", "适中", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
+                LabeledSlider("HUD轮廓", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
+                HudChipRow("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
             } else if (gameNative || fusion) {
-                HudChipRow("HUD颜色", listOf("柔和", "柔和", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
-                LabeledSlider("HUD outline", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
-                HudChipRow("轮廓颜色", listOf("灰色", "灰色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
+                HudChipRow("HUD颜色", listOf("柔和", "适中", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
+                LabeledSlider("HUD轮廓", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
+                HudChipRow("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
             }
         }
 
         // ── Temperature display ── only worth a section when a temperature is actually on screen.
         if (showTemp || ((gameNative || fusion) && (showGpuTemp || showBattery))) {
-            CollapsibleSection("Alerts & Temp") {
+            CollapsibleSection("警报与温度") {
                 HudChipRow("温度单位", listOf("°C", "°F"), if (tempUnitF) 1 else 0) {
                     tempUnitF = it == 1; apply()
                 }
@@ -3786,10 +3786,10 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
                 if (bandMode == 2) {
                     // Only the red point is exposed; amber is derived. Nobody knows their preferred amber
                     // in the abstract, and three sliders beat six. Values are always °C.
-                    LabeledSlider("CPU red at", tempRedCpu, 50f..110f, { tempRedCpu = it }, { apply() }, format = { "${it.toInt()}°C" })
+                    LabeledSlider("CPU 红色阈值", tempRedCpu, 50f..110f, { tempRedCpu = it }, { apply() }, format = { "${it.toInt()}°C" })
                     if ((gameNative || fusion) && showGpuTemp)
                         LabeledSlider("GPU red at", tempRedGpu, 50f..110f, { tempRedGpu = it }, { apply() }, format = { "${it.toInt()}°C" })
-                    LabeledSlider("Battery red at", tempRedBat, 35f..60f, { tempRedBat = it }, { apply() }, format = { "${it.toInt()}°C" })
+                    LabeledSlider("电池红色阈值", tempRedBat, 35f..60f, { tempRedBat = it }, { apply() }, format = { "${it.toInt()}°C" })
                 }
             }
         }
@@ -3799,7 +3799,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
             // an owner can report which sysfs nodes their SoC actually exposes for any metric showing "—".
             val diagContext = LocalContext.current
             OutlinedButton(onClick = { exportHudDiagnostics(diagContext) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Export HUD diagnostics")
+                Text("导出 HUD 诊断信息")
             }
             Text(
                 "将传感器报告（CPU/GPU/温度/显存…）直接保存到您的下载文件夹。",
@@ -4002,7 +4002,7 @@ internal fun ControlsContent(
     // "Pad" (live controller settings) exists only where LiveControllerSession runs: a Wine session.
     val padSupported = XServerDialogState.pad.collectAsState().value.supported
     val subTabs = listOf(
-        0 to "触摸", 1 to "Mouse", 2 to "震动", 3 to "Gyro", 4 to "Players", 5 to stringResource(R.string.swipe_tab),
+        0 to "触摸", 1 to "Mouse", 2 to "震动", 3 to "陀螺仪", 4 to "Players", 5 to stringResource(R.string.swipe_tab),
         6 to "Pad",
     ).filter { (i, _) -> (pointerAndTouch || i !in setOf(0, 1, 5)) && (playerSlots || i != 4) && (padSupported || i != 6) }
     // A sub-tab this session doesn't offer falls back to the first one it does.
@@ -4021,7 +4021,7 @@ internal fun ControlsContent(
     var showTouchscreen by remember(initTouchscreen) { mutableStateOf(initTouchscreen) }
     var timeoutEnabled by remember(initTimeout) { mutableStateOf(initTimeout) }
     var hapticsEnabled by remember(initHaptics) { mutableStateOf(initHaptics) }
-    val allItems = listOf("-- 已禁用 --") + profiles
+    val allItems = listOf("-- Disabled --") + profiles
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     when (if (subTabs.any { it.first == subTab }) subTab else subTabs.first().first) {
@@ -4032,7 +4032,7 @@ internal fun ControlsContent(
 
             ExposedDropdownMenuBox(expanded = dropdownExpanded, onExpandedChange = { dropdownExpanded = it }) {
                 OutlinedTextField(
-                    value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
+                    value = allItems.getOrElse(selectedIdx) { "-- Disabled --" },
                     onValueChange = {}, readOnly = true,
                     label = { Text("配置", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
@@ -4056,7 +4056,7 @@ internal fun ControlsContent(
             // packed as chips rather than full-width switch rows to keep the sub-tab short.
             ToggleChipGrid(
                 listOf(
-                    ToggleChipItem("Touch Controls", showTouchscreen) {
+                    ToggleChipItem("触摸控件", showTouchscreen) {
                         showTouchscreen = it
                         XServerDialogState.onInputControlsConfirm?.invoke(selectedIdx, showTouchscreen, timeoutEnabled, hapticsEnabled)
                     },
@@ -4064,7 +4064,7 @@ internal fun ControlsContent(
                         timeoutEnabled = it
                         XServerDialogState.onInputControlsConfirm?.invoke(selectedIdx, showTouchscreen, timeoutEnabled, hapticsEnabled)
                     },
-                    ToggleChipItem("Haptics", hapticsEnabled) {
+                    ToggleChipItem("触觉反馈", hapticsEnabled) {
                         hapticsEnabled = it
                         XServerDialogState.onInputControlsConfirm?.invoke(selectedIdx, showTouchscreen, timeoutEnabled, hapticsEnabled)
                     },
@@ -4075,7 +4075,7 @@ internal fun ControlsContent(
             // On-screen controls opacity — live, applied to the visible overlay as you drag.
             var overlayOpacity by remember(initOverlayOpacity) { mutableFloatStateOf(initOverlayOpacity) }
             LabeledSlider(
-                label = "Overlay Opacity",
+                label = "覆盖层透明度",
                 value = overlayOpacity,
                 valueRange = 0f..1f,
                 onValueChange = {
@@ -4091,7 +4091,7 @@ internal fun ControlsContent(
             Spacer(Modifier.height(4.dp))
             ToggleChipGrid(
                 listOf(
-                    ToggleChipItem("App Theme", controlsFollowTheme) {
+                    ToggleChipItem("应用主题", controlsFollowTheme) {
                         state.setControlsFollowTheme(it)
                         state.onControlsColorChange?.run()
                     }
@@ -4100,7 +4100,7 @@ internal fun ControlsContent(
             )
             if (!controlsFollowTheme) {
                 Spacer(Modifier.height(8.dp))
-                Text("Controls Accent", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("控件强调色", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 Spacer(Modifier.height(8.dp))
                 ColorPicker(
                     initialColor = Color(initControlsAccent),
@@ -4125,7 +4125,7 @@ internal fun ControlsContent(
 
             Spacer(Modifier.height(4.dp))
 
-            AccentButton("Apply & Close") {
+            AccentButton("应用并关闭") {
                 XServerDialogState.onInputControlsConfirm?.invoke(selectedIdx, showTouchscreen, timeoutEnabled, hapticsEnabled)
                 state.onClose?.run()
                 Unit
@@ -4134,20 +4134,20 @@ internal fun ControlsContent(
 
         // ── Mouse ──
         1 -> {
-            Text("Mouse & Cursor", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+            Text("鼠标与指针", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             Spacer(Modifier.height(4.dp))
 
             // Each of these flips its flag host-side and stays open — like the fullscreen selector, the
             // drawer keeps rendering so the chip's new on/off state is visible where you tapped it.
             ToggleChipGrid(
                 listOf(
-                    ToggleChipItem("Cursor to Touch", moveCursorToTouch) {
+                    ToggleChipItem("光标移至触摸点", moveCursorToTouch) {
                         state.onMoveCursorToTouchpoint?.run()
                     },
-                    ToggleChipItem("Relative Mouse", isRelativeMouse) {
+                    ToggleChipItem("相对鼠标", isRelativeMouse) {
                         state.onRelativeMouseMovement?.run()
                     },
-                    ToggleChipItem("Disable Mouse", isMouseDisabled) {
+                    ToggleChipItem("禁用鼠标", isMouseDisabled) {
                         state.onDisableMouse?.run()
                     },
                 ),
@@ -4157,7 +4157,7 @@ internal fun ControlsContent(
             if (isWaylandSession) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Wayland: mouse deltas go to the compositor; a game that locks the pointer receives them as relative motion",
+                    "Wayland：鼠标增量发送到合成器；锁定指针的游戏会将其作为相对运动接收",
                     color = LocalAccentDim.current,
                     fontSize = 11.sp,
                     lineHeight = 13.sp
@@ -4191,12 +4191,12 @@ internal fun ControlsContent(
             if (vibrationMasterOn) {
                 // Per-container rumble target + intensity (PC-accurate dual-motor rumble). Keyed on the
                 // incoming config so re-opening the drawer doesn't drift from a stale capture — same pattern
-                // as the lsfg "Performance mode" toggle elsewhere in this drawer.
+                // as the lsfg "性能模式" toggle elsewhere in this drawer.
                 val initVibrationMode by XServerDialogState.vibrationMode.collectAsState()
                 var vibrationMode by remember(initVibrationMode) { mutableIntStateOf(initVibrationMode) }
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Rumble Target",
+                    "震动目标",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -4210,7 +4210,7 @@ internal fun ControlsContent(
                 if (vibrationMode != 0) {
                     val initVibrationIntensity by XServerDialogState.vibrationIntensity.collectAsState()
                     var vibrationIntensity by remember(initVibrationIntensity) { mutableIntStateOf(initVibrationIntensity) }
-                    IntSlider("Intensity", vibrationIntensity, 0..100,
+                    IntSlider("强度", vibrationIntensity, 0..100,
                         onValueChange = { vibrationIntensity = it },
                         onValueChangeFinished = {
                             XServerDialogState.setVibrationIntensity(vibrationIntensity)
@@ -4290,7 +4290,7 @@ private fun SwipeSection(state: XServerDrawerState) {
     Text(stringResource(R.string.swipe_tab), color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
     Spacer(Modifier.height(4.dp))
     Text(
-        "Slide a finger onto a control to press it — chain buttons and roll the d-pad without lifting.",
+        "将手指滑动到控件上即可按下——可连续操作按钮和方向键，无需抬起手指。",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -4332,7 +4332,7 @@ private fun PlayersSection() {
     Text("玩家槽位", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
     Spacer(Modifier.height(4.dp))
     Text(
-        "Assign each device to a player, or ignore it. Applied immediately and saved for this container.",
+        "将每个设备分配给一个玩家，或将其忽略。立即应用并为此容器保存。",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -4345,10 +4345,10 @@ private fun PlayersSection() {
         onClick = { XServerDialogState.show(XServerDialogState.ActiveDialog.CONTROLLER_TEST) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
-    ) { Text("Physical Controller Test / Bind") }
+    ) { Text("物理控制器测试/绑定") }
     Spacer(Modifier.height(4.dp))
     Text(
-        "Test each physical controller, remap its buttons, and confirm every input registers.",
+        "测试每个物理控制器，重新映射其按钮，并确认每个输入均已注册。",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -4433,7 +4433,7 @@ private fun PlayerSlotRowItem(row: XServerDialogState.PlayerSlotRow) {
             OutlinedTextField(
                 value = selectedLabel,
                 onValueChange = {}, readOnly = true,
-                label = { Text("Slot", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                label = { Text("槽位", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor().dpadDropdown { expanded = true },
                 singleLine = true,
@@ -4462,9 +4462,9 @@ private fun PlayerSlotRowItem(row: XServerDialogState.PlayerSlotRow) {
 
 // ───── Controls > Pad — live controller settings (LiveControllerSession in the activity) ─────
 
-// How a change reaches the game: "Live" (at once), "Reconnects controller" (the pad leaves and comes
-// back with the change) or "Restart required" (the next launch).
-private enum class PadApply(val label: String) { LIVE("Live"), RECONNECT("Reconnects controller"), RESTART("Restart required") }
+// How a change reaches the game: "实时" (at once), "重新连接控制器" (the pad leaves and comes
+// back with the change) or "需要重启" (the next launch).
+private enum class PadApply(val label: String) { LIVE("实时"), RECONNECT("重新连接控制器"), RESTART("需要重启") }
 
 @Composable
 private fun PadRowHeader(title: String, apply: PadApply, helpRes: Int) {
@@ -4483,7 +4483,7 @@ private fun PadRowHeader(title: String, apply: PadApply, helpRes: Int) {
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         )
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "What is this?",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
         }
     }
@@ -4515,7 +4515,7 @@ private fun PadSection() {
     // reads once: switching to or from it applies on the next launch.
     val choices = remember { ControllerIdentity.wineChoices() }
     val identityApply = if (pad.nextLaunchOnly.contains("identity")) PadApply.RESTART else PadApply.RECONNECT
-    PadRowHeader("控制器类型", identityApply, R.string.help_controller_identity)
+    PadRowHeader("Controller type", identityApply, R.string.help_controller_identity)
     var identityExpanded by remember { mutableStateOf(false) }
     val identityLocked = pad.identityLockedReason != null
     ExposedDropdownMenuBox(expanded = identityExpanded && !identityLocked,
@@ -4545,15 +4545,15 @@ private fun PadSection() {
     // in-game switching allowed (the forwarding copy is installed then).
     if (pad.xinputAvailable) {
         Spacer(Modifier.height(8.dp))
-        PadRowHeader("XInput 源", if (pad.xinputSwitchable) PadApply.RECONNECT else PadApply.RESTART, R.string.help_bannerin_xinput)
+        PadRowHeader("XInput source", if (pad.xinputSwitchable) PadApply.RECONNECT else PadApply.RESTART, R.string.help_bannerin_xinput)
         ModeChipGrid(
             listOf(
-                Triple<String, Boolean, () -> Unit>("直接", pad.xinputDirect) { if (!pad.xinputDirect) XServerDialogState.onPadXInputDirect?.invoke(true) },
+                Triple<String, Boolean, () -> Unit>("Direct", pad.xinputDirect) { if (!pad.xinputDirect) XServerDialogState.onPadXInputDirect?.invoke(true) },
                 Triple<String, Boolean, () -> Unit>("Wine", !pad.xinputDirect) { if (pad.xinputDirect) XServerDialogState.onPadXInputDirect?.invoke(false) },
             ),
             perRow = 2
         )
-        if (!pad.xinputSwitchable) PadNote("Restart to apply. Turn on \"Allow in-game switching\" to switch without restarting.")
+        if (!pad.xinputSwitchable) PadNote("重启以应用。打开“允许游戏内切换”以在不重启的情况下切换。")
     }
 
     // DirectInput visibility.
@@ -4562,7 +4562,7 @@ private fun PadSection() {
     ModeChipGrid(
         listOf(
             Triple<String, Boolean, () -> Unit>("隐藏", !pad.dinputVisible) { if (pad.dinputVisible) XServerDialogState.onPadDInputVisible?.invoke(false) },
-            Triple<String, Boolean, () -> Unit>("Visible", pad.dinputVisible) { if (!pad.dinputVisible) XServerDialogState.onPadDInputVisible?.invoke(true) },
+            Triple<String, Boolean, () -> Unit>("可见", pad.dinputVisible) { if (!pad.dinputVisible) XServerDialogState.onPadDInputVisible?.invoke(true) },
         ),
         perRow = 2,
         enabled = pad.dinputLockedReason == null
@@ -4584,7 +4584,7 @@ private fun PadSection() {
 
     // Stick updates: BANNERIN's pacing, live.
     Spacer(Modifier.height(8.dp))
-    PadRowHeader("摇杆更新", PadApply.LIVE, R.string.help_stick_pacing)
+    PadRowHeader("Stick updates", PadApply.LIVE, R.string.help_stick_pacing)
     val pacing = StickPacing.parse(pad.pacing) ?: StickPacing.DEFAULT
     val pacingLocked = pad.pacingLockedReason != null
     ModeChipGrid(
@@ -4620,7 +4620,7 @@ private fun PadSection() {
             disabledIndices = setOfNotNull(0.takeIf { down == pacing }, 1.takeIf { up == pacing })
         )
     }
-    PadNote(if (pad.nowHz > 0) "Now: ${pad.nowHz} Hz" else "Now: no game reading the pad yet")
+    PadNote(if (pad.nowHz > 0) "Now: ${pad.nowHz} Hz" else "当前：尚无游戏读取手柄")
     pad.pacingLockedReason?.let { PadNote(it) }
 
     // Pending bar: changes wait for the controller to reconnect (automatically shortly after the last
@@ -4695,10 +4695,10 @@ private fun TouchGestureSettings(state: XServerDrawerState) {
     val longPress by state.gestureLongPressRightClick.collectAsState()
 
     Spacer(Modifier.height(10.dp))
-    Text("Touch Gestures", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+    Text("触摸手势", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
     Spacer(Modifier.height(2.dp))
     Text(
-        "Drag to box-select, hold for right click. Two-finger drag scrolls the wheel.",
+        "拖拽以框选，长按为右键。双指拖拽可滚动滚轮。",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -4706,10 +4706,10 @@ private fun TouchGestureSettings(state: XServerDrawerState) {
 
     ToggleChipGrid(
         listOf(
-            ToggleChipItem("Box Select", dragSelect) {
+            ToggleChipItem("框选", dragSelect) {
                 state.setGestureDragSelect(it); state.onGestureConfigChange?.run()
             },
-            ToggleChipItem("Hold = Right", longPress) {
+            ToggleChipItem("长按 = 右键", longPress) {
                 state.setGestureLongPressRightClick(it); state.onGestureConfigChange?.run()
             },
         ),
@@ -4721,7 +4721,7 @@ private fun TouchGestureSettings(state: XServerDrawerState) {
     if (longPress) {
         val initHoldMs by state.gestureLongPressMs.collectAsState()
         var holdMs by remember(initHoldMs) { mutableIntStateOf(initHoldMs) }
-        IntSlider("Hold Delay", holdMs, 150..800,
+        IntSlider("长按延迟", holdMs, 150..800,
             onValueChange = { holdMs = it },
             onValueChangeFinished = {
                 state.setGestureLongPressMs(holdMs); state.onGestureConfigChange?.run()
@@ -4730,7 +4730,7 @@ private fun TouchGestureSettings(state: XServerDrawerState) {
     }
 }
 
-// ───── Gyro (motion aim) section — Controls tab, "Gyro" sub-tab ─────
+// ───── Gyro (motion aim) section — Controls tab, "陀螺仪" sub-tab ─────
 // Progressive disclosure: the master chip is always visible; everything downstream only appears once
 // the gyro is on, so the tab isn't a wall of dead controls. Order is by how often a control is
 // touched — Enable, target, sensitivity, activation, then the set-once fine tuning. Hidden entirely
@@ -4975,17 +4975,17 @@ private fun AdvancedContent(state: XServerDrawerState) {
     }
     // Lists Wine's X11 windows; a Linux-runtime session has none.
     if (!linuxRuntimeSession) {
-        AdvancedActionRow("活动窗口", R.drawable.icon_active_windows) {
+        AdvancedActionRow("Active Windows", R.drawable.icon_active_windows) {
             state.onClose?.run(); state.onActiveWindows?.run()
         }
     }
-    AdvancedActionRow("Debug Logs", R.drawable.icon_debug) {
+    AdvancedActionRow("调试日志", R.drawable.icon_debug) {
         state.onClose?.run(); state.onLogs?.run()
     }
-    AdvancedActionRow("Picture-in-Picture", R.drawable.ic_picture_in_picture_alt) {
+    AdvancedActionRow("画中画", R.drawable.ic_picture_in_picture_alt) {
         state.onClose?.run(); state.onPipMode?.run()
     }
-    AdvancedActionRow("Show Keyboard", R.drawable.icon_keyboard) {
+    AdvancedActionRow("显示键盘", R.drawable.icon_keyboard) {
         state.onClose?.run(); state.onKeyboard?.run()
     }
 
@@ -4999,7 +4999,7 @@ private fun AdvancedContent(state: XServerDrawerState) {
     AdvancedActionRow(
         "Performance",
         R.drawable.ic_sidebar_performance,
-        subtitle = "CPU / GPU clocks, thermal, memory — live gauges, root-aware.",
+        subtitle = "CPU / GPU频率、温度、内存 — 实时仪表盘，感知root。",
     ) { showPerfDialog = true }
 
     if (showPerfDialog) {
@@ -5016,13 +5016,13 @@ private fun PerfOverrideLine(overridden: Boolean, onReset: () -> Unit) {
         modifier = Modifier.fillMaxWidth().padding(start = 12.dp, top = 1.dp, bottom = 6.dp)
     ) {
         Text(
-            if (overridden) "● Per-game override" else "○ Using global default",
+            if (overridden) "● 每个游戏的覆盖设置" else "○ 使用全局默认值",
             fontSize = 10.sp,
             color = if (overridden) accent else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f)
         )
         if (overridden) {
-            Text("Reset to global", fontSize = 10.sp, color = accent,
+            Text("重置为全局默认值", fontSize = 10.sp, color = accent,
                 modifier = Modifier.clickable { onReset() })
         }
     }
@@ -5080,13 +5080,13 @@ private fun RootPerformanceSection(state: XServerDrawerState) {
         }
     }
 
-    SectionHeader("Root Performance")
+    SectionHeader("Root 性能")
 
     if (!granted) {
         Text(
             "🔒 " + when (rootState) {
-                RootManager.RootState.UNAVAILABLE -> "No root manager detected."
-                else -> "Grant root in App Settings → Performance to enable these."
+                RootManager.RootState.UNAVAILABLE -> "未检测到 Root 管理器。"
+                else -> "在应用设置 → 性能中授予 Root 权限以启用这些功能。"
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -5114,7 +5114,7 @@ private fun RootPerformanceSection(state: XServerDrawerState) {
 
     if (granted && !harnessProven) {
         Text(
-            "Thermal / fan locked until safety-revert is verified on this device.",
+            "温控 / 风扇控制已锁定 直至在此设备上验证安全恢复机制。",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -5342,7 +5342,7 @@ private fun TmProcessRow(proc: XServerDialogState.TmProcess) {
                 modifier = Modifier.outlinedMenuCard()
             ) {
                 DropdownMenuItem(
-                    text = { Text("Processor Affinity") },
+                    text = { Text("核心关联") },
                     leadingIcon = {
                         Icon(
                             Icons.Default.Memory,
@@ -5396,7 +5396,7 @@ private fun TmProcessRow(proc: XServerDialogState.TmProcess) {
 
 /**
  * Windows Task Manager-style "Set affinity" for one running process/service. A checkbox per logical
- * CPU (plus "<All Processors>"), pre-ticked to the process's current mask, pins that PID to the
+ * CPU (plus "<所有处理器>"), pre-ticked to the process's current mask, pins that PID to the
  * chosen cores live via the already-wired [XServerDialogState.onTmSetAffinity]. Not persisted — it
  * resets if the process restarts, exactly like Windows.
  */
@@ -5428,7 +5428,7 @@ internal fun ProcessorAffinityDialog(
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Processor Affinity", fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                Text("核心关联", fontSize = 17.sp, fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -5439,14 +5439,14 @@ internal fun ProcessorAffinityDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
-                // "<All Processors>" is a full-width master toggle. Each CPU is a compact bordered
+                // "<所有处理器>" is a full-width master toggle. Each CPU is a compact bordered
                 // tile (accent checkbox + "CPUn" label) matching the core picker in the container /
                 // game settings (widget/CPUListView -> cpu_list_item). Cores come from the SAME
                 // source the container picker uses (availableProcessors), so the set is identical
                 // regardless of an arm64ec vs x86-64 container. Laid out 4-per-row so 8 cores fit in
                 // two rows without scrolling; a heightIn + scroll fallback covers the 32-core cap.
                 AffinityCheckRow(
-                    label = "<All Processors>",
+                    label = "<所有处理器>",
                     checked = allChecked,
                     bold = true,
                     onToggle = { mask = if (allChecked) 0 else allMask },
@@ -5760,7 +5760,7 @@ private fun TmContainerPanel(info: XServerDialogState.TmContainerInfo?) {
                 // A Linux session runs no Wine of ours and no DX wrapper of ours: a game the client
                 // launches brings Valve's Proton with its own DXVK/VKD3D, which we do not pick and
                 // cannot name from here. Say what is true and leave out what would be invented.
-                ContainerInfoRow(if (info.linuxRuntime) "运行时间" else "Wine", info.wine)
+                ContainerInfoRow(if (info.linuxRuntime) "Runtime" else "Wine", info.wine)
                 ContainerInfoRow("显示后端", info.displayBackend)
                 if (!info.linuxRuntime) ContainerInfoRow("DX wrapper", prettyDxWrapper(info.dxWrapper), accent)
                 // Wayland: the game presents through the embedded compositor's Vulkan backend, and the
@@ -5774,7 +5774,7 @@ private fun TmContainerPanel(info: XServerDialogState.TmContainerInfo?) {
                     },
                     accent,
                 )
-                ContainerInfoRow("DirectX 11 修复会假装是 NVIDIA GPU。", info.graphicsDriver)
+                ContainerInfoRow("显卡驱动", info.graphicsDriver)
                 // Wayland hands the GPU-name spoof to DXVK and leaves the Vulkan device alone, so this
                 // is the only place that can say the game is being told about a GPU that isn't here.
                 // Null (X11, or no spoof) = no row, the block exactly as it was.

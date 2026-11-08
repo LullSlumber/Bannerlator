@@ -45,7 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// The X11 driver configuration's "检测到的设置" for an IMPORTED graphics wrapper (#132): one line
+// The X11 driver configuration's "Detected settings" for an IMPORTED graphics wrapper (#132): one line
 // per environment variable scanned out of the wrapper's binaries at import, minus what a curated row of
 // the Graphics page already edits (WrapperManager.HANDLED_ENV_KEYS), debug and driver-internal keys, and
 // the keys hidden for that wrapper in the wrapper manager's "Edit settings". The kind of control comes
@@ -313,8 +313,8 @@ private fun TextDialog(title: String, hint: String, current: String, onDismiss: 
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    hint.ifBlank { "Passed to the wrapper as it is. Leave blank to leave it unset." } +
-                        " \";\" and \"=\" are left out.",
+                    hint.ifBlank { "按原样传递给包装器。留空则保持未设置。" } +
+                        " 分号和等号会被省略。",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.5.sp,
                 )

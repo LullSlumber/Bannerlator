@@ -360,7 +360,7 @@ private fun SourceListPane(
 
         if (query.isBlank() || !showInlineResults) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("Select Online Repository", style = MaterialTheme.typography.titleMedium,
+                Text("选择在线仓库", style = MaterialTheme.typography.titleMedium,
                     color = cs.onSurface, modifier = Modifier.weight(1f))
                 IconButton(onClick = { vm.reloadSources(); vm.refreshSelected() }) {
                     Icon(Icons.Filled.Refresh, "刷新", tint = cs.primary)
@@ -1002,7 +1002,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             Spacer(Modifier.height(10.dp))
             PrimaryButton("导入Wayland游戏驱动（.zip）…", Icons.Filled.FolderOpen, enabled = true,
                 container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
-                waylandDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "选择 Wayland 游戏驱动 zip"))
+                waylandDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "Select Wayland game driver zip"))
             }
             Spacer(Modifier.height(12.dp))
             if (waylandDrivers.isEmpty()) {
@@ -1258,7 +1258,7 @@ private fun SetDefaultMenuButton(onSetDefault: () -> Unit) {
         IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, "More options", tint = cs.onSurfaceVariant) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }, modifier = Modifier.outlinedMenuCard()) {
             DropdownMenuItem(
-                text = { Text("设为默认…", color = DefaultGold, fontWeight = FontWeight.Bold) },
+                text = { Text("Set as default\u2026", color = DefaultGold, fontWeight = FontWeight.Bold) },
                 leadingIcon = { Icon(Icons.Filled.Star, null, tint = DefaultGold) },
                 onClick = { open = false; onSetDefault() },
             )

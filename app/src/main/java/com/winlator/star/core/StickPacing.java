@@ -88,9 +88,9 @@ public final class StickPacing {
     /** The rate line under the mode: "Up to 60 per second" / "125 per second" / "" (Unpaced). */
     public String rateLabel() {
         switch (mode) {
-            case MODE_FIXED: return hz + " per second";
+            case MODE_FIXED: return hz + " 每秒";
             case MODE_OFF: return "";
-            default: return "最高 " + hz + " per second";
+            default: return "最高 " + hz + " 每秒";
         }
     }
 

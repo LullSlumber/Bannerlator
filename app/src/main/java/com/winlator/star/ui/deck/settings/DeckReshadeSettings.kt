@@ -453,14 +453,14 @@ internal class DeckReshadeSection(
 private fun LoadoutCard(sec: DeckReshadeSection, names: List<String>) {
     val cs = MaterialTheme.colorScheme
     DeckLine(
-        label = "Effects",
-        hint = if (names.isEmpty()) "None. Browse the catalog to add some."
+        label = "效果",
+        hint = if (names.isEmpty()) "无。浏览目录以添加一些。"
                else "${names.size} effect${if (names.size == 1) "" else "s"}, run top to bottom: ${names.joinToString(", ")}",
         icon = Icons.Filled.AutoAwesome,
         trailing = { DeckSmallButton("Browse", Icons.Filled.CloudDownload) { sec.openCatalog() } },
     )
     val notes = buildList {
-        if (names.isNotEmpty() && !sec.supported()) add("ReShade only applies to DXVK/VKD3D (Vulkan) games; it has no effect with this DirectX translation." to true)
+        if (names.isNotEmpty() && !sec.supported()) add("ReShade 仅适用于 DXVK/VKD3D（Vulkan）游戏；对此 DirectX 转换无效。" to true)
         if (names.size > 6) add("${names.size} effects: the game takes longer to compile them at start." to false)
     }
     notes.forEach { (text, bad) ->

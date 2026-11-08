@@ -109,7 +109,7 @@ public class WinHandler {
     private Set<Integer> usedSlots = new HashSet<>();
     private String fakeInputBasePath;
 
-    // Manual per-device slot overrides from the in-game "Players" sub-tab (persisted per-container by
+    // Manual per-device slot overrides from the in-game "玩家" sub-tab (persisted per-container by
     // XServerDisplayActivity in Container.controllerSlotOverrides). Keyed on the stable device
     // descriptor — same key as descriptorToSlot — with the OSC virtual pad using the OSC_DESCRIPTOR
     // sentinel below (it has no real descriptor). A value of 0..MAX_CONTROLLERS-1 PINS the device to
@@ -2717,7 +2717,7 @@ public class WinHandler {
         return false;
     }
 
-    // ---- Manual per-device slot overrides (in-game "Players" sub-tab) ----
+    // ---- Manual per-device slot overrides (in-game "玩家" sub-tab) ----
 
     /** One row for the in-game Players sub-tab. Immutable snapshot — the UI re-reads via
      *  getPlayerSlotAssignments() rather than holding a live handle. */
@@ -2807,7 +2807,7 @@ public class WinHandler {
 
         Integer oscSlot = deviceToSlot.get(OSC_DEVICE_ID);
         Integer oscOverride = manualSlotOverrides.get(OSC_DESCRIPTOR);
-        out.add(new PlayerSlotInfo("MIDI 音乐音色库", OSC_DESCRIPTOR,
+        out.add(new PlayerSlotInfo("On-screen controls", OSC_DESCRIPTOR,
                 oscSlot != null ? oscSlot : -1, false, true,
                 oscOverride != null ? oscOverride : -1));
 

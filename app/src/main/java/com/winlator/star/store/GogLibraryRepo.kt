@@ -109,7 +109,7 @@ object GogLibraryRepo {
             val p = prefs(appCtx)
             val token = validToken(appCtx) ?: return@withContext SyncResult.NotLoggedIn
 
-            onStatus("正在获取游戏列表…")
+            onStatus("Fetching game list…")
             val gamesJson = StoreNet.get("https://embed.gog.com/user/data/games", bearer = token, userAgent = "GOG Galaxy")
                 ?: return@withContext SyncResult.Failed("Couldn't reach GOG")
             val ids = ArrayList<String>()

@@ -115,7 +115,7 @@ private fun PanelContent(
             Choice("播放器引擎", listOf("web" to "网页", "native" to "原生（帧生成）"), settings.playerEngine,
                 pending { it.playerEngine != settings.playerEngine }) { onChange(settings.copy(playerEngine = it)) }
             val lsfg = remember { com.winlator.star.core.LsfgNative.isDllAvailable(ctx) }
-            Choice("帧率", listOf("off" to "Off", "winfg" to "Win-FG 2×") +
+            Choice("Frame generation", listOf("off" to "Off", "winfg" to "Win-FG 2×") +
                 (if (lsfg) listOf("lsfg" to "LSFG 2×", "lsfg3" to "LSFG 3×", "lsfg4" to "LSFG 4×") else emptyList()),
                 settings.frameGen) { onChange(settings.copy(frameGen = it)) }
             Text("Native engine (experimental): Google's WebRTC and Bannerlator's Vulkan compositor, so Win-FG or LSFG " +

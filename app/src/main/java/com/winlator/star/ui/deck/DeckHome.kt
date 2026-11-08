@@ -137,23 +137,23 @@ import kotlinx.coroutines.withContext
 
 /** How the Deck library lays out games. Wall and console live in Big Picture, which the toolbar links to. */
 private enum class LibraryMode(val label: String, val icon: ImageVector) {
-    SHELF("Shelf", Icons.Filled.ViewDay),
-    GRID("Grid", Icons.Filled.GridView),
-    COMPACT("Compact", Icons.Filled.GridOn),
+    SHELF("板面", Icons.Filled.ViewDay),
+    GRID("网格", Icons.Filled.GridView),
+    COMPACT("紧凑", Icons.Filled.GridOn),
     LIST("List", Icons.AutoMirrored.Filled.List),
     // The Games screen's XMB (cover row + options column), drawn in Home's library area.
     XMB("XMB", Icons.Filled.ViewCarousel),
 }
 
 private enum class LibrarySort(val label: String) {
-    NAME("Name A–Z"),
-    NAME_DESC("Name Z–A"),
-    RECENT("Last played"),
-    PLAYTIME("Most played"),
+    NAME("名称 A–Z"),
+    NAME_DESC("名称 Z–A"),
+    RECENT("上次游玩"),
+    PLAYTIME("最多游玩"),
     CONTAINER("Container"),
 }
 
-private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("已玩"), NEVER("Never played") }
+private enum class PlayedFilter(val label: String) { ANY("任意"), PLAYED("已玩"), NEVER("从未游玩") }
 
 private const val PREF_MODE = "deck_library_mode"
 private const val PREF_SORT = "deck_library_sort"
@@ -416,7 +416,7 @@ internal fun DeckHome(
                     DeckShelf(label, "store-$label", list, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { playtimeLabel(stats[it.file.path]?.ms ?: 0L) }
                 }
                 if (shortcuts.size > 1 && filter.activeCount == 0) {
-                    DeckShelf("Recently added", "recent", recentlyAdded, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { storeLabelOf(it) }
+                    DeckShelf("最近添加", "recent", recentlyAdded, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { storeLabelOf(it) }
                 }
             }
             Spacer(Modifier.height(16.dp))
@@ -549,7 +549,7 @@ private fun LibraryToolbar(
             LibraryMode.entries.forEach { m -> ModeButton(m.label, m.icon, selected = m == mode) { onMode(m) } }
         }
         Spacer(Modifier.width(8.dp))
-        DeckButton(if (filterCount > 0) "Filters · $filterCount" else "Filter & sort", Icons.Filled.FilterList, onFilter)
+        DeckButton(if (filterCount > 0) "Filters · $filterCount" else "筛选与排序", Icons.Filled.FilterList, onFilter)
         DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
         IconTile(Icons.Filled.Public, "社区配置", onCommunity)
         // Steam friends and chat; renders only while signed in to Steam.
@@ -559,7 +559,7 @@ private fun LibraryToolbar(
         ) {
             SteamFriendsAction(tint = cs.onSurface)
         }
-        IconTile(Icons.Filled.Tv, "容器管理", onBigPicture)
+        IconTile(Icons.Filled.Tv, "大屏幕模式", onBigPicture)
     }
 }
 
@@ -613,7 +613,7 @@ private fun FilteredEmpty(onClear: () -> Unit, onAddGame: () -> Unit) {
         Text("No games match these filters", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 19.sp)
         Text("Clear the filters to see your whole library.", color = cs.onSurfaceVariant, fontSize = 14.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            DeckButton("Clear filters", Icons.Filled.Close, onClear, primary = true)
+            DeckButton("清除筛选", Icons.Filled.Close, onClear, primary = true)
             DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
         }
     }
@@ -652,10 +652,10 @@ private fun LibraryFilterDialog(
                     .padding(22.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Filter & sort", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
+                    Text("筛选与排序", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
                     Text("Showing $shown of $total", color = cs.onSurfaceVariant, fontSize = 13.5.sp)
                 }
-                DeckSectionLabel("Sort by", Modifier.padding(top = 8.dp))
+                DeckSectionLabel("排序方式", Modifier.padding(top = 8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     LibrarySort.entries.forEachIndexed { i, s ->
                         DeckChoiceChip(
@@ -681,7 +681,7 @@ private fun LibraryFilterDialog(
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(top = 14.dp)) {
-                    DeckButton("Clear filters", Icons.Filled.Close, { onChange(LibraryFilter(sort = filter.sort)) })
+                    DeckButton("清除筛选", Icons.Filled.Close, { onChange(LibraryFilter(sort = filter.sort)) })
                     Spacer(Modifier.weight(1f))
                     DeckButton("Done", null, onDismiss, primary = true, glyph = "B")
                 }
@@ -798,7 +798,7 @@ private fun DeckHero(
                     .padding(6.dp),
             ) {
                 DeckButton("游玩", Icons.Filled.PlayArrow, onPlay, primary = true, big = true, modifier = Modifier.focusRequester(playRequester))
-                DeckButton("Game page", Icons.Filled.Info, onGamePage)
+                DeckButton("游戏页面", Icons.Filled.Info, onGamePage)
                 if (onSettings != null) DeckButton("Settings", Icons.Filled.Tune, onSettings)
                 DeckButton("Options", Icons.Filled.MoreHoriz, onOptions, glyph = "X")
             }
@@ -1015,9 +1015,9 @@ private fun DeckEmptyLibrary(modifier: Modifier, addRequester: FocusRequester, o
                 .padding(28.dp),
         ) {
             Icon(Icons.Filled.SportsEsports, contentDescription = null, tint = cs.primary, modifier = Modifier.size(48.dp))
-            Text("Your library is empty", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Text("您的库为空", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
             Text(
-                "Add a game you already have on this device, or install one from a store on the Stores tab.",
+                "添加您已在此设备上拥有的游戏，或从商店选项卡中的商店安装游戏。",
                 color = cs.onSurfaceVariant,
                 fontSize = 14.sp,
             )

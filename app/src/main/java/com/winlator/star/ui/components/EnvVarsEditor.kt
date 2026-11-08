@@ -164,7 +164,7 @@ internal object KnownEnvVars {
         // Wine extras
         KnownEnvVar("WINE_DISABLE_FULLSCREEN_HACK", EnvVarType.CHECKBOX, listOf("0", "1")),
         KnownEnvVar("WINE_X11FORCEGLX", EnvVarType.CHECKBOX, listOf("0", "1")),
-        // Power-user overrides of the "快速 OpenGL" setting on X11 (core.FastOpenGL / X11Egl):
+        // Power-user overrides of the "Fast OpenGL" setting on X11 (core.FastOpenGL / X11Egl):
         // BANNER_X11_EGL=0 off, =1 EGL route; BANNER_X11_GLX=1 GLX route (server-side GLX).
         KnownEnvVar("BANNER_X11_EGL", EnvVarType.CHECKBOX, listOf("0", "1")),
         KnownEnvVar("BANNER_X11_GLX", EnvVarType.CHECKBOX, listOf("0", "1")),
@@ -246,7 +246,7 @@ internal object KnownEnvVars {
 }
 
 /**
- * Helpers for the "优先使用游戏文件夹中的 DLL" toggle, which is a *view* over the
+ * Helpers for the "Prefer game-folder DLLs" toggle, which is a *view* over the
  * WINEDLLOVERRIDES environment variable rather than a field of its own — there is
  * exactly one source of truth and hand-editing the variable keeps working.
  *
@@ -427,7 +427,7 @@ internal fun EnvVarsEditor(
     modifier: Modifier = Modifier,
     gameDir: File? = null,
     /**
-     * Help text for the "优先使用游戏文件夹中的 DLL" toggle, shown behind a "?" beside it. Null (every
+     * Help text for the "Prefer game-folder DLLs" toggle, shown behind a "?" beside it. Null (every
      * caller but the Linux-entry shortcut editor) draws no button, so the toggle reads as it always has.
      * Passed as text rather than a resource id because what it has to say depends on the caller.
      */
@@ -510,7 +510,7 @@ internal fun EnvVarsEditor(
         // Hidden while the raw text editor is open: there the user is authoring the
         // whole string by hand, and a helper that rewrites it under them would fight
         // the cursor.
-        if (!rawMode) SectionBox(title = "兼容性") {
+        if (!rawMode) SectionBox(title = "Compatibility") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
                     // Master = select-all/none over whatever is in scope. "On" only when every
@@ -527,9 +527,9 @@ internal fun EnvVarsEditor(
                 )
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("优先使用游戏文件夹中的 DLL")
+                    Text("Prefer game-folder DLLs")
                     Text(
-                        "Loads the game's own copies of " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
+                        "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
                             " instead of Wine's. Needed by many wrappers and mod loaders. Graphics DLLs are " +
                             "never included — DXVK/VKD3D own those. A Microsoft xinput DLL in a game folder " +
                             "does not work under Wine (it needs a Windows-only driver); leave it off.",
@@ -569,7 +569,7 @@ internal fun EnvVarsEditor(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Detected in the game folder — toggle each individually:",
+                        "在游戏文件夹中检测到 — 逐一切换：",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f)
@@ -596,7 +596,7 @@ internal fun EnvVarsEditor(
         }
 
         // ── Variables ────────────────────────────────────────────────────────
-        SectionBox(title = "Environment Variables") {
+        SectionBox(title = "环境变量") {
             if (rawMode) {
                 // Escape hatch: edit the whole string by hand. Same format that gets stored,
                 // so anything the typed controls can't express can still be entered here.
@@ -624,7 +624,7 @@ internal fun EnvVarsEditor(
                         {
                             Text(
                                 "已忽略 — 需要 NAME=VALUE： " + malformed.joinToString(", ") +
-                                    ". Values can't contain spaces.",
+                                    "。值不能包含空格。",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -656,10 +656,10 @@ internal fun EnvVarsEditor(
             Button(onClick = { showAddPicker = true }, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(4.dp))
-                Text("Add Variable")
+                Text("添加变量")
             }
             TextButton(onClick = { rawMode = !rawMode }) {
-                Text(if (rawMode) "Done" else "以文本形式编辑")
+                Text(if (rawMode) "Done" else "Edit as text")
             }
         }
     }
@@ -1015,13 +1015,13 @@ private fun AddEnvVarPicker(
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add environment variable") },
+        title = { Text("添加环境变量") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = nameQuery,
                     onValueChange = { nameQuery = it },
-                    label = { Text("Name (search or type)") },
+                    label = { Text("名称（搜索或输入）") },
                     placeholder = { Text("e.g. DXVK_FRAME_RATE") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     singleLine = true,
@@ -1030,8 +1030,8 @@ private fun AddEnvVarPicker(
                 OutlinedTextField(
                     value = valueQuery,
                     onValueChange = { valueQuery = it },
-                    label = { Text("Value (optional)") },
-                    placeholder = { Text("e.g. 60") },
+                    label = { Text("值（可选）") },
+                    placeholder = { Text("例如 60") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1091,7 +1091,7 @@ private fun AddEnvVarPicker(
                     }
                     if (candidates.isEmpty() && !showAddTyped) {
                         Text(
-                            "No matches",
+                            "无匹配项",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(12.dp)

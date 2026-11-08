@@ -298,7 +298,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
     // Pending per-move confirm dialog (move + container label + optional staleness warning).
     private var cloudConfirm by mutableStateOf<CloudConfirm?>(null)
     // One-time third-party disclaimer (persisted in steam_prefs). pendingCloudMove is the move the
-    // user tried to run before accepting; it's dispatched once they tap "我理解".
+    // user tried to run before accepting; it's dispatched once they tap "I understand".
     private var showCloudDisclaimer by mutableStateOf(false)
     private var pendingCloudMove by mutableStateOf<CloudMove?>(null)
 
@@ -417,7 +417,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                                 setCloudDisclaimerAccepted()
                                 pendingCloudMove?.let { prepareCloudConfirm(it) }
                                 pendingCloudMove = null
-                            }) { Text("我理解") }
+                            }) { Text("I understand") }
                         },
                         dismissButton = {
                             TextButton(onClick = {
@@ -493,7 +493,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 // spells out that this stops the download, deletes every downloaded file and resets it
                 // for a fresh, full download. The wipe runs ONLY on confirm; dismiss keeps the partial.
                 if (showCancelDeleteConfirm) {
-                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "此游戏"
+                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "this game"
                     OutlinedAlertDialog(
                         onDismissRequest = { showCancelDeleteConfirm = false },
                         title = { Text("取消并删除下载?") },
@@ -1523,8 +1523,8 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         val g = game ?: return
         cloudBusy = true
         cloudStatus = when (move) {
-            CloudMove.DOWNLOAD  -> "正在准备下载…"
-            CloudMove.UPLOAD    -> "正在准备上传…"
+            CloudMove.DOWNLOAD  -> "Preparing download…"
+            CloudMove.UPLOAD    -> "Preparing upload…"
             CloudMove.APPLY     -> "正在应用到容器…"
             CloudMove.COLLECT   -> "正在从容器收集…"
             CloudMove.SYNC_FROM -> "正在从云端同步…"
@@ -1791,7 +1791,7 @@ private fun SteamGameDetailScreen(
     // DLC tab — the FULL owned-DLC catalogue (broader than the depot-bundled `dlcEntries` picker set:
     // it also lists DLC that are owned but ship no separate download, e.g. Risk of Rain 2's DLC). Loaded
     // like achievements: paint from the cached steam_dlc rows, kick a best-effort PICS resolve for
-    // names/kinds off the UI thread, then re-read. `dlcHasAny` distinguishes "no DLC" 来自 "not resolved
+    // names/kinds off the UI thread, then re-read. `dlcHasAny` distinguishes "no DLC" from "not resolved
     // yet". This never touches the depot-bundled picker/size path (still driven by `dlcEntries`).
     var dlcTabRows by remember(appId) { mutableStateOf<List<DlcTabEntry>>(emptyList()) }
     var dlcHasAny by remember(appId) { mutableStateOf(false) }
@@ -3119,7 +3119,7 @@ private fun GoldbergSection(
                     // A newer build is available — small hint above the Update button.
                     Text(
                         text = if (catalogVersion > 0) "Update available — gbe_fork v$catalogVersion"
-                            else "有可用更新",
+                            else "Update available",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -3621,7 +3621,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "What is this?",
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -3656,7 +3656,7 @@ private fun DownloadSpeedPickerDialog(
                                 val name = when (tier) {
                                     DownloadSpeedConfig.TIER_SLOW -> "慢速"
                                     DownloadSpeedConfig.TIER_MEDIUM -> "中等"
-                                    DownloadSpeedConfig.TIER_FAST -> "快速"
+                                    DownloadSpeedConfig.TIER_FAST -> "Fast"
                                     else -> "极速"
                                 }
                                 val hint = when (tier) {
@@ -3733,7 +3733,7 @@ private fun DownloadSpeedPickerDialog(
                                     IconButton(onClick = { helpRes = tierHelpRes(tier) }) {
                                         Icon(
                                             Icons.Default.Help,
-                                            contentDescription = "音频设置",
+                                            contentDescription = "What is this?",
                                             modifier = Modifier.size(18.dp),
                                         )
                                     }
@@ -3851,7 +3851,7 @@ private fun DownloadSpeedPickerDialog(
                 IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                     Icon(
                         Icons.Default.Help,
-                        contentDescription = "音频设置",
+                        contentDescription = "What is this?",
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -3882,7 +3882,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = tierHelpRes(tier) }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "What is this?",
                                 modifier = Modifier.size(18.dp),
                             )
                         }

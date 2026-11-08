@@ -345,9 +345,9 @@ internal fun xmbEnvVarsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         val allPreferred = DllOverrides.isEnabled(overrides, masterScope)
         val anyPreferred = masterScope.any { DllOverrides.isEnabled(overrides, it) }
 
-        rows += XmbRow.Header("hCompat", "兼容性")
+        rows += XmbRow.Header("hCompat", "Compatibility")
         rows += XmbRow.Toggle(
-            "preferDlls", "优先使用游戏文件夹中的 DLL", Icons.Filled.Extension, allPreferred,
+            "preferDlls", "Prefer game-folder DLLs", Icons.Filled.Extension, allPreferred,
             subtitle = if (anyPreferred && !allPreferred) "Some game-folder DLLs on — see below"
                        else "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") + " 而不是Wine的",
         ) { on ->
@@ -362,7 +362,7 @@ internal fun xmbEnvVarsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             }
         }
 
-        rows += XmbRow.Header("hVars", "环境变量")
+        rows += XmbRow.Header("hVars", "Environment variables")
         if (list.isEmpty()) rows += XmbRow.Info("noVars", "未设置环境变量", Icons.Filled.Info)
         val seen = HashMap<String, Int>()
         list.forEach { r ->
@@ -376,7 +376,7 @@ internal fun xmbEnvVarsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         rows += XmbRow.Link("add", "添加变量", Icons.Filled.Add, subtitle = "选择已知变量或输入您自己的") { p2EnvAddMenu(env) }
         val malformed = env.raw().split(" ").filter { it.isNotBlank() && it.indexOf('=') <= 0 }
         rows += XmbRow.Text(
-            "raw", "以文本形式编辑", Icons.Filled.ShortText, env.raw(),
+            "raw", "Edit as text", Icons.Filled.ShortText, env.raw(),
             subtitle = if (malformed.isEmpty()) "变量名称=变量值, 用空格分隔"
                        else "已忽略 — 需要 NAME=VALUE： " + malformed.joinToString(", "),
         ) { v -> p2Put(xmb, shortcut, "envVars", v.ifEmpty { null }) }

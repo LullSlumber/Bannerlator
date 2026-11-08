@@ -226,7 +226,7 @@ fun PreloaderOverlay() {
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = HeroText),
                     border = BorderStroke(1.dp, HeroText.copy(alpha = 0.45f)),
                 ) {
-                    Text("Cancel launch")
+                    Text("取消启动")
                 }
                 }
             }
@@ -386,7 +386,7 @@ private fun closingClock(since: Long): String {
             value = closingSeconds(since)
         }
     }
-    return String.format(java.util.Locale.US, "%d:%02d 已过 · 仍在处理", seconds / 60, seconds % 60)
+    return String.format(java.util.Locale.US, "%d:%02d elapsed · still working", seconds / 60, seconds % 60)
 }
 
 private fun closingSeconds(since: Long): Long = maxOf(0L, SystemClock.elapsedRealtime() - since) / 1000
@@ -452,7 +452,7 @@ private fun StatusReadout(
             )
         }
         // The clock: a first run is minutes of nothing on screen, and a number that keeps
-        // moving is what separates "still working" 来自 "hung" for the person watching.
+        // moving is what separates "still working" from "hung" for the person watching.
         AnimatedVisibility(visible = !elapsed.isNullOrEmpty()) {
             Text(
                 text = elapsed ?: "",
@@ -588,10 +588,10 @@ private fun GuestProgress(tailLabel: String) {
  * neutral line rather than nothing, so a new action is never left unexplained.
  */
 private fun actionHelp(label: String): String = when (label) {
-    "Retry" -> "runs the Steam checks again and relaunches the game through SteamLite."
-    "Launch with Goldberg" -> "relaunches offline with the stand-in Steam — no online play, no VAC."
-    "Keep going" -> "ignores this and keeps waiting for the game; online features may not work."
-    else -> "does what it says; the log folder has the details if it doesn't help."
+    "Retry" -> "再次运行 Steam 检查并通过 SteamLite 重新启动游戏。"
+    "Launch with Goldberg" -> "使用替代 Steam 离线重新启动 — 无在线游戏，无 VAC。"
+    "Keep going" -> "忽略此问题并继续等待游戏；在线功能可能无法工作。"
+    else -> "如其所说；如果无效，日志文件夹中有详细信息。"
 }
 
 /** The launch popup's corner "?" (LaunchMethodSheet.HelpDot), on the card's primary accent. */
@@ -709,7 +709,7 @@ private fun FailureCard(failure: Failure?) {
                 }
             } else {
                 Text(
-                    text = "Enable logging in Settings → Logs and relaunch to capture the cause.",
+                    text = "在设置 → 日志中启用日志记录，然后重新启动以捕获原因。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

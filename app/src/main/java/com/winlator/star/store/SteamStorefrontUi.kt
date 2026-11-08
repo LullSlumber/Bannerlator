@@ -469,14 +469,14 @@ fun StoreCapsule(
 // ── Price ─────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "免费开玩", or nothing when the endpoint gave us
+ * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "Free to Play", or nothing when the endpoint gave us
  * no price at all. The discount chip and the free label are the ONLY non-scheme colours here.
  */
 @Composable
 fun StorePriceRow(item: SteamStoreCatalog.StoreItem, modifier: Modifier = Modifier) {
     when {
         item.isFree -> Text(
-            text = "免费开玩",
+            text = "Free to Play",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = StoreFreeGreen,

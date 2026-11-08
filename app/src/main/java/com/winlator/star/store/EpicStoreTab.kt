@@ -110,7 +110,7 @@ fun EpicStoreTab(
     ) {
         CatalogSearchField(
             query = query,
-            placeholder = "Search the Epic Games Store…",
+            placeholder = "搜索Epic游戏商店…",
             onQueryChange = { query = it },
             onClear = { query = ""; focusManager.clearFocus() },
             onSearch = { focusManager.clearFocus() },
@@ -123,7 +123,7 @@ fun EpicStoreTab(
                 query = query.trim(),
                 wide = wide,
                 storeLabel = "Epic",
-                emptyBody = "Nothing on the Epic Games Store matched that. Try a shorter or different title.",
+                emptyBody = "Epic游戏商店中没有匹配的内容。请尝试更短或不同的标题。",
                 actionFor = ::actionFor,
                 onOpen = ::open,
                 onAction = ::act,
@@ -140,7 +140,7 @@ fun EpicStoreTab(
                 contentAlignment = Alignment.Center,
             ) {
                 StoreNotice(
-                    title = "Store browsing is unavailable",
+                    title = "商店浏览不可用",
                     body = "Epic's storefront didn't answer. Search still works, and everything you " +
                         "already own is in the Library tab.",
                     actionLabel = "Retry",

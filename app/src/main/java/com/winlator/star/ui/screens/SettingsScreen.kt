@@ -495,8 +495,8 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     if (showBackupDialog) {
         OutlinedAlertDialog(
             onDismissRequest = { showBackupDialog = false },
-            title = { Text("备份数据") },
-            text = { Text("是否要创建应用数据目录的备份？") },
+            title = { Text("Backup Data") },
+            text = { Text("Do you want to create a backup of the app's data directory?") },
             confirmButton = {
                 TextButton(onClick = {
                     showBackupDialog = false
@@ -555,7 +555,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // ── Updates ──────────────────────────────────────────────────
-        FieldSetLabel("更新")
+        FieldSetLabel("Updates")
         FieldSet {
             val latest = updateInfo
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -571,7 +571,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             Spacer(Modifier.height(8.dp))
             if (latest != null && latest.isNewer) {
                 Text(
-                    "有可用更新", color = Color(0xFFFFC107), fontSize = 13.sp, // intentional: amber = update-available status, semantic not themeable
+                    "Update available", color = Color(0xFFFFC107), fontSize = 13.sp, // intentional: amber = update-available status, semantic not themeable
                     fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 4.dp)
                 )
                 if (latest.highlights.isNotEmpty()) {
@@ -620,7 +620,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 },
                 enabled = !checkingUpdate,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text(if (checkingUpdate) "检查中…" else "检查更新", color = MaterialTheme.colorScheme.onPrimary) }
+            ) { Text(if (checkingUpdate) "Checking…" else "检查更新", color = MaterialTheme.colorScheme.onPrimary) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = notifyUpdates, onCheckedChange = {
                     notifyUpdates = it
@@ -670,7 +670,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     steamOfflinePresence = it
                     SteamPrefs.setOfflinePresenceEnabled(context, it)
                 })
-                Text("对离线启动显示我在游戏中", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Show me as in-game for offline launches", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
                     steamHelp = "显示我在游戏中" to
@@ -802,7 +802,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             }
             steamNetResult?.let { net ->
                 Text(
-                    "网络: " + net.verdict() +
+                    "Network: " + net.verdict() +
                         (if (net.nat != NetworkProbe.Nat.OPEN_CONE && net.maskedIp != null) " (IP ${net.maskedIp})" else "") +
                         (if (net.ipv6) " · IPv6" else ""),
                     color = if (net.isWarning) Color(0xFFE1A100) else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -870,7 +870,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 IconButton(onClick = {
                     if (selectedBox64Preset.startsWith(Box64Preset.CUSTOM)) {
                         Box64PresetManager.exportPreset("box64", context, selectedBox64Preset)
-                    } else AppUtils.showToast(context, "无法导出此预设")
+                    } else AppUtils.showToast(context, "Cannot export this preset")
                 }) { Icon(Icons.Default.FileUpload, "导出", tint = MaterialTheme.colorScheme.onSurface) }
                 ImportSourceIconButton(
                     icon = Icons.Default.FileDownload,
@@ -933,7 +933,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 IconButton(onClick = {
                     if (selectedFEXCorePreset.startsWith(FEXCorePreset.CUSTOM)) {
                         FEXCorePresetManager.exportPreset(context, selectedFEXCorePreset)
-                    } else AppUtils.showToast(context, "无法导出此预设")
+                    } else AppUtils.showToast(context, "Cannot export this preset")
                 }) { Icon(Icons.Default.FileUpload, "导出", tint = MaterialTheme.colorScheme.onSurface) }
                 ImportSourceIconButton(
                     icon = Icons.Default.FileDownload,
@@ -1207,7 +1207,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 onClick = { showBackupDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("备份数据", color = Color.White) } // intentional: high-contrast label on green fill
+            ) { Text("Backup Data", color = Color.White) } // intentional: high-contrast label on green fill
             Button(
                 onClick = { restoreFileInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select backup")) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
@@ -1321,7 +1321,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
 
             // ── Capture resolution (global; how the layer sizes the recorded frame) ──
             Spacer(Modifier.height(8.dp))
-            Text("采集分辨率", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Capture resolution", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Text(
                 "\"Match game\" records at your actual play resolution (native, no downscale — best data). " +
                 "720p / 1080p force a fixed size. A mix across contributors is ideal.",
@@ -1453,7 +1453,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         }
     }
 
-    // ── win-fg training-capture consent (gates enabling; needs the "我理解" tick) ──
+    // ── win-fg training-capture consent (gates enabling; needs the "I understand" tick) ──
     if (showCaptureConsent) {
         var consentChecked by remember { mutableStateOf(false) }
         val consentText = remember { context.getString(R.string.winfg_capture_consent_v1) }
@@ -1466,7 +1466,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(checked = consentChecked, onCheckedChange = { consentChecked = it })
-                        Text("我理解", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                        Text("I understand", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                     }
                 }
             },
@@ -1474,7 +1474,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 DeckDialogBars()
                 DeckDialogScaled {
                     TextButton(
-                        enabled = consentChecked, // Enable stays disabled until "我理解" is ticked.
+                        enabled = consentChecked, // Enable stays disabled until "I understand" is ticked.
                         onClick = {
                             WinFgCapture.recordConsentAndEnable(context)
                             captureEnabled = true
@@ -1560,7 +1560,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         FloatingActionButton(
             onClick = {
                 saveSettings()
-                AppUtils.showToast(context, "设置已保存!")
+                AppUtils.showToast(context, "Settings saved!")
                 onSaved()
             },
             containerColor = MaterialTheme.colorScheme.primary,

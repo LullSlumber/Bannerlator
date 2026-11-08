@@ -88,12 +88,12 @@ data class AudioPreset(
 )
 
 val AUDIO_PRESETS = listOf(
-    AudioPreset(PRESET_AUTO, "✨", "Auto / Smart", "Recommended",
-        "Starts low-latency, grows the buffer only if it hears crackle.",
+    AudioPreset(PRESET_AUTO, "✨", "自动 / 智能", "推荐",
+        "以低延迟启动，仅在检测到爆音时增大缓冲区。",
         AudioConfig(PRESET_AUTO, 1, true, 0, 0, 100), 0.46f,
-        "Aims for the lowest delay your device can hold without crackling.", R.string.help_audio_preset_auto),
+        "力求达到您的设备在无爆音情况下的最低延迟。", R.string.help_audio_preset_auto),
     AudioPreset(PRESET_LOW, "⚡", "Low latency", null,
-        "Tightest sync. May crackle under heavy load.",
+        "最紧密同步。在重负载下可能出现爆音。",
         // adaptive TRUE. This rung pinned the buffer with no way to grow, so a title that
         // could not hold it crackled for the whole session with nothing to recover it -
         // the one genuinely dangerous cell in the preset matrix, and on every engine, not
@@ -103,19 +103,19 @@ val AUDIO_PRESETS = listOf(
         // which is where a deliberate choice belongs - not hidden inside a preset named
         // for its latency.
         AudioConfig(PRESET_LOW, 1, true, 0, 0, 40), 0.10f,
-        "Minimal delay; switch to Auto if heavy scenes crackle.", R.string.help_audio_preset_low),
+        "最小延迟；如果重负载场景出现爆音，请切换到自动模式。", R.string.help_audio_preset_low),
     AudioPreset(PRESET_BALANCED, "⚖️", "Balanced", null,
-        "Calmer buffer with an adaptive safety net.",
+        "带有自适应安全网的更平稳缓冲区。",
         AudioConfig(PRESET_BALANCED, 2, true, 0, 0, 100), 0.60f,
-        "Smooth all-rounder for most games.", R.string.help_audio_preset_balanced),
-    AudioPreset(PRESET_STABLE, "🛡️", "Stable (no crackle)", null,
-        "Biggest safety margin for weak devices / demanding games.",
+        "适合大多数游戏的流畅全能型。", R.string.help_audio_preset_balanced),
+    AudioPreset(PRESET_STABLE, "🛡️", "稳定（无爆音）", null,
+        "为性能较弱设备或高要求游戏提供最大的安全余量。",
         AudioConfig(PRESET_STABLE, 0, true, 0, 0, 144), 0.90f,
-        "Maximum crackle protection; most audio delay.", R.string.help_audio_preset_stable),
-    AudioPreset(PRESET_CUSTOM, "🎛️", "Custom", "Fine-tune",
-        "Set every knob yourself.",
+        "最大爆音保护；音频延迟最高。", R.string.help_audio_preset_stable),
+    AudioPreset(PRESET_CUSTOM, "🎛️", "Custom", "微调",
+        "自行设置每个旋钮。",
         AudioConfig(PRESET_CUSTOM, 1, true, 0, 0, 100), 0.46f,
-        "Manual control of every buffer knob.", R.string.help_audio_preset_custom)
+        "手动控制每个缓冲区旋钮。", R.string.help_audio_preset_custom)
 )
 
 /* ---- persistence: PER-ENGINE prefs (each engine remembers its own; no cross-engine bleed) ---- */
@@ -307,7 +307,7 @@ fun audioConfigFromEnv(env: String, driverId: String = ""): AudioConfig {
 }
 
 /**
- * The audio popup. `scopeLabel` names the target ("此容器" / "此游戏" / "live · this
+ * The audio popup. `scopeLabel` names the target ("此容器" / "this game" / "live · this
  * session"). `latencyLive`=false shows the guest-buffer row tagged "next launch" (in-game).
  */
 @Composable
@@ -369,8 +369,8 @@ fun AudioSettingsDialog(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                             Column(Modifier.padding(14.dp)) {
                                 Row(Modifier.fillMaxWidth()) {
-                                    Text("◀ Lower delay", color = cs.onSurfaceVariant, fontSize = 11.sp, modifier = Modifier.weight(1f))
-                                    Text("Fewer crackles ▶", color = cs.onSurfaceVariant, fontSize = 11.sp)
+                                    Text("◀ 降低延迟", color = cs.onSurfaceVariant, fontSize = 11.sp, modifier = Modifier.weight(1f))
+                                    Text("减少爆音 ▶", color = cs.onSurfaceVariant, fontSize = 11.sp)
                                 }
                                 Box(Modifier.fillMaxWidth().padding(top = 8.dp).height(8.dp)
                                     .background(cs.surface, RoundedCornerShape(6.dp))) {
@@ -417,7 +417,7 @@ fun AudioSettingsDialog(
                             }
                         }
 
-                        Text(if (custom) "FINE-TUNE" else "FINE-TUNE — what this preset applies (Custom to edit)",
+                        Text(if (custom) "微调" else "微调 — 此预设应用的内容（自定义可编辑）",
                             color = cs.onSurfaceVariant, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(4.dp, 16.dp, 0.dp, 8.dp))
                         val ftAlpha = if (custom) 1f else 0.4f
@@ -439,8 +439,8 @@ fun AudioSettingsDialog(
                                         // proven 2026-08-14), a wasteful churn. Every DirectAudio preset already
                                         // forces LOW_LATENCY for the same reason, so drop "Power" here too.
                                         val perfOpts = if (driverId == "directaudio")
-                                            listOf("None" to 0, "Low lat." to 1)
-                                        else listOf("None" to 0, "Low lat." to 1, "Power" to 2)
+                                            listOf("None" to 0, "低延迟。" to 1)
+                                        else listOf("None" to 0, "低延迟。" to 1, "Power" to 2)
                                         perfOpts.forEach { (lbl, v) ->
                                             val on = shown.perfMode == v
                                             Text(lbl, color = if (on) cs.onPrimary else cs.onSurfaceVariant, fontSize = 12.sp,
@@ -467,10 +467,10 @@ fun AudioSettingsDialog(
                                     // from the buffer rows below - there is no guest-side latency for this row
                                     // to set, so say that rather than leaving a live-looking slider that does
                                     // nothing.
-                                    if (!latencyUsed) "not used by ALSA — set the buffer rows below"
+                                    if (!latencyUsed) "ALSA不使用 — 请在下方设置缓冲区行数"
                                     else (if (directBuffer) "≈${shown.latencyMsec + ANDROID_OUTPUT_MS} ms total · ${shown.latencyMsec} ms buffer"
                                           else "winepulse · ${shown.latencyMsec} ms") +
-                                        if (!latencyLive) "  · next launch" else "", cs,
+                                        if (!latencyLive) "  · 下次启动" else "", cs,
                                     onHelp = { helpRes = when {
                                         !latencyUsed -> R.string.help_audio_latency_unused
                                         directBuffer -> R.string.help_audio_direct_buffer
@@ -487,13 +487,13 @@ fun AudioSettingsDialog(
                                             onValueChange = { cfg = cfg.copy(latencyMsec = (it / 10).toInt() * 10) },
                                             modifier = Modifier.width(140.dp))
                                 }
-                                FtStepper("初始sink缓冲区", "frames · 0 = auto",
+                                FtStepper("初始sink缓冲区", "帧数 · 0 = 自动",
                                     if (shown.bufferFrames > 0) "${shown.bufferFrames}" else "auto", custom, cs,
                                     onHelp = { helpRes = R.string.help_audio_buffer_frames }) {
                                     cfg = cfg.copy(bufferFrames = (cfg.bufferFrames + it * 256).coerceAtLeast(0))
                                 }
-                                FtStepper("最大sink缓冲区", "growth cap · 0 = device max",
-                                    if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else "device max", custom, cs,
+                                FtStepper("最大sink缓冲区", "增长上限 · 0 = 设备最大值",
+                                    if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else "设备最大值", custom, cs,
                                     onHelp = { helpRes = R.string.help_audio_max_buffer_frames }) {
                                     cfg = cfg.copy(maxBufferFrames = (cfg.maxBufferFrames + it * 256).coerceAtLeast(0))
                                 }

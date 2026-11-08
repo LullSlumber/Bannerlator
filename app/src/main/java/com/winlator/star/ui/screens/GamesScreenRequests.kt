@@ -20,7 +20,7 @@ enum class GameMenuAction(val label: String) {
     RESTORE_SAVES("恢复存档"),
     SCRAPE_COVER("获取封面"),
     COMMUNITY_CONFIGS("社区配置"),
-    VIEW_LOGS("查看日志"),
+    VIEW_LOGS("View logs"),
     PROPERTIES("属性"),
     ADD_GAME("添加游戏"),
 }

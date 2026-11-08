@@ -94,7 +94,7 @@ class SteamForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         instance = this        // re-publish on every (re)start
         // Seed from the LIVE connection state, never a constant. setStatus() only pushes text on a
-        // TRANSITION, so a hardcoded "正在连接 Steam…" here survived forever on every restart
+        // TRANSITION, so a hardcoded "Connecting to Steam…" here survived forever on every restart
         // that produced none — a process restart, or the extra start() calls from
         // SteamGameDetailActivity / SteamSaveManagerActivity / SteamSessionManager on a session
         // that is already up (connect() below then early-returns without touching the status).

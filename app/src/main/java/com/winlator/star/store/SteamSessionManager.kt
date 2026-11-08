@@ -85,7 +85,7 @@ object SteamSessionManager {
                     return SessionResult.NeedsSignIn("Steam 拒绝了已保存的登录")
                 else -> {}
             }
-            progress("正在连接 Steam…")
+            progress("Connecting to Steam…")
             // Bring the service up (initialises + connects if it isn't running) and re-drive the
             // token logon through the same entry point the status pill uses. Both are safe from a
             // worker thread — CM I/O is posted to the pump / engine thread.
@@ -100,10 +100,10 @@ object SteamSessionManager {
                     lastStatus = st
                     progress(
                         when (st) {
-                            SteamRepository.SteamStatus.CONNECTING -> "正在登录Steam…"
+                            SteamRepository.SteamStatus.CONNECTING -> "Signing in to Steam…"
                             SteamRepository.SteamStatus.OFFLINE -> "正在等待Steam连接…"
                             SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE -> "账户已在别处登录…"
-                            else -> "正在连接 Steam…"
+                            else -> "Connecting to Steam…"
                         },
                     )
                 }
@@ -136,9 +136,9 @@ object SteamSessionManager {
                 Log.i(TAG, "refresh token valid for ${(exp - now) / 86_400_000L} more days — no renewal")
                 return false
             }
-            Log.i(TAG, "refresh token " + (if (exp > 0L) "expires in ${(exp - now) / 3_600_000L}h" else "has no readable expiry") + " — renewing")
+            Log.i(TAG, "refresh token " + (if (exp > 0L) "expires in ${(exp - now) / 3_600_000L}h" else "没有可读的到期时间") + " — 正在续期")
             val fresh = BlSteamEngine.renewRefreshToken(RENEW_WAIT_MS)
-            Log.i(TAG, "refresh token renewal " + (if (fresh.isNullOrEmpty()) "did not land" else "OK (len=${fresh.length})"))
+            Log.i(TAG, "refresh token renewal " + (if (fresh.isNullOrEmpty()) "未生效" else "OK (len=${fresh.length})"))
             !fresh.isNullOrEmpty()
         } catch (t: Throwable) {
             Log.w(TAG, "renewRefreshToken errored", t)
@@ -383,7 +383,7 @@ object SteamSessionManager {
                             step(Step.CLIENT, StepState.DONE, "Couldn't check for SteamLite updates — using installed $installed")
                         check.available -> {
                             step(Step.CLIENT, StepState.WARN,
-                                (if (check.required) "需要更新" else "有可用更新") +
+                                (if (check.required) "需要更新" else "Update available") +
                                     " ($installed → v${check.latestVersion})")
                             post { listener.onClientUpdateAvailable(check) }
                             return@Thread

@@ -191,9 +191,9 @@ private const val HELP_VAC =
         "~15 s is fine. Auto-detected from Steam's app info (Valve Anti-Cheat category); flip it if a " +
         "VAC game is misdetected. SteamLite only."
 private const val HELP_REMEMBER =
-    "Saves this launch method for this game and skips the popup next time. You can change it later."
+    "为此游戏保存此启动方法并下次跳过弹出窗口。您可以稍后更改。"
 private const val HELP_DETAILS =
-    "Opens the full Steam game page — achievements grid, DLC and cloud saves."
+    "打开完整的Steam游戏页面 — 成就网格、DLC和云存档。"
 private const val HELP_STEAMLITE_CLIENT =
     "Bannerlator's small Steam client for online (VAC) launches. Newer versions add features the app " +
         "relies on (live launch status, in-game friends). Update downloads ~18 MB and re-stages it into " +
@@ -812,7 +812,7 @@ private fun ColumnScope.OptionsBlock(
     }
     if (isSteam) {
         OptionRow(
-            title = "记住我的选择",
+            title = "Controller passthrough",
             badge = "NEW",
             subtitle = if (compact) null else "将手柄直接发送给游戏。适用于经典游戏（HL2，CS:S）。",
             accent = accent,
@@ -833,9 +833,9 @@ private fun ColumnScope.OptionsBlock(
             title = "Requires secure (VAC) launch",
             badge = "NEW",
             subtitle = if (compact) null else when (detectedVac) {
-                true -> "Detected: VAC-secured. Steam must start it (up to ~60 s wait)."
-                false -> "Detected: no VAC. Direct start after ~15 s is fine."
-                null -> "Auto-detected from Steam's app info."
+                true -> "检测到：VAC保护。Steam必须启动它（最多等待约60秒）。"
+                false -> "检测到：无VAC。约15秒后直接启动即可。"
+                null -> "从Steam的应用信息自动检测。"
             },
             accent = accent,
             compact = compact,
@@ -844,7 +844,7 @@ private fun ColumnScope.OptionsBlock(
         )
     }
     OptionRow(
-        title = "Remember my choice",
+        title = "记住我的选择",
         badge = null,
         subtitle = if (compact) null else "Skip this popup next time for ${shortcut.name}.",
         accent = accent,
@@ -914,7 +914,7 @@ private fun OptionRow(
 /**
  * What the footer's primary button says and does for the selected method: plain "Launch" unless the
  * SteamLite chip is selected and its package check gates the launch ("更新并启动"; disabled
- * "正在更新…" while the download runs). Goldberg / Raw are never gated.
+ * "Updating…" while the download runs). Goldberg / Raw are never gated.
  */
 private fun footerLaunch(
     method: LaunchMethod,
@@ -924,14 +924,14 @@ private fun footerLaunch(
 ): Pair<String, (() -> Unit)?> {
     if (method == LaunchMethod.APPSTEAM && appSteamClient != null) {
         return when {
-            appSteamClient.updating -> "正在更新…" to null
+            appSteamClient.updating -> "Updating…" to null
             appSteamClient.gated -> "更新并启动" to appSteamClient.onUpdateAndLaunch
             else -> "Launch" to doLaunch
         }
     }
     if (method != LaunchMethod.STEAMLITE || client == null) return "Launch" to doLaunch
     return when {
-        client.updating -> "正在更新…" to null
+        client.updating -> "Updating…" to null
         client.gated -> "更新并启动" to client.onUpdateAndLaunch
         else -> "Launch" to doLaunch
     }
@@ -939,7 +939,7 @@ private fun footerLaunch(
 
 /**
  * Under the App Steam chip: the Valve client set's status — not downloaded yet (fetched by the launch,
- * ~18 MB from Valve) / checking / couldn't check / installed build / "有可用更新" — with a "?"
+ * ~18 MB from Valve) / checking / couldn't check / installed build / "Update available" — with a "?"
  * bubble. Absent for the other methods.
  */
 @Composable
@@ -1080,7 +1080,7 @@ private fun SteamLiteClientBlock(
                 val tint = if (check.required) cs.error else accent
                 val shape = RoundedCornerShape(999.dp)
                 Text(
-                    (if (check.required) "需要更新" else "有可用更新") +
+                    (if (check.required) "需要更新" else "Update available") +
                         " ($installed → v${check.latestVersion})",
                     style = lineStyle, color = tint, fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -1332,16 +1332,16 @@ private fun sourceSubline(source: GameSource, appId: Int): String = when (source
 }
 
 private fun methodDescription(method: LaunchMethod, source: GameSource): String = when (method) {
-    LaunchMethod.STEAMLITE -> "Real Steam — VAC servers, real achievements & cloud saves."
-    LaunchMethod.APPSTEAM -> "App's own Steam session — friends & chat stay online. Experimental; VAC unproven."
-    LaunchMethod.GOLDBERG -> "Offline emulator — no login, lightweight, single-player."
+    LaunchMethod.STEAMLITE -> "真正的Steam — VAC服务器、真正的成就和云存档。"
+    LaunchMethod.APPSTEAM -> "应用自身的Steam会话 — 好友和聊天保持在线。实验性；VAC未经验证。"
+    LaunchMethod.GOLDBERG -> "离线模拟器 — 无需登录，轻量级，单人。"
     LaunchMethod.RAW -> when (source) {
-        GameSource.EPIC -> "Run the game's .exe directly."
-        GameSource.GOG -> "Run the DRM-free .exe directly — no launcher."
-        GameSource.AMAZON -> "Run the game's .exe directly — no Amazon Games app."
+        GameSource.EPIC -> "直接运行游戏的.exe。"
+        GameSource.GOG -> "直接运行无DRM的.exe — 无启动器。"
+        GameSource.AMAZON -> "直接运行游戏的.exe — 无需Amazon Games应用。"
         GameSource.XBOX -> "Each launch checks the license with Microsoft and starts the game's .exe; no Xbox app."
         GameSource.CUSTOM -> "直接运行.exe。"
-        GameSource.STEAM -> "Run the game's .exe directly — no Steam layer."
+        GameSource.STEAM -> "直接运行游戏的.exe — 无Steam层。"
     }
     LaunchMethod.STREAM -> "Plays from Xbox Cloud Gaming — nothing runs here; picture, sound and controller go over the network."
 }

@@ -359,7 +359,7 @@ fun FileManagerScreen(
     // full-featured File Manager nav destination unchanged.
     pickMode: Boolean = false,
     // Directory-pick mode (issue #70): only folders are listed, files are hidden, and a
-    // "选择这个文件夹" action returns the current directory via [onPick]. Implies pickMode.
+    // "Select this folder" action returns the current directory via [onPick]. Implies pickMode.
     pickDirMode: Boolean = false,
     pickExtensions: List<String> = emptyList(),
     initialDir: File? = null,
@@ -558,7 +558,7 @@ fun FileManagerScreen(
         containerManager ?: return
         when {
             containers.isEmpty() ->
-                Toast.makeText(context, "No container available — create one first", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "无可用容器 — 请先创建一个", Toast.LENGTH_SHORT).show()
             containers.size == 1 -> runFileInContainer(file, containers.first())
             else -> pendingRun = file   // ask which container
         }
@@ -597,7 +597,7 @@ fun FileManagerScreen(
         containerManager ?: return
         when {
             containers.isEmpty() ->
-                Toast.makeText(context, "No container available — create one first", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "无可用容器 — 请先创建一个", Toast.LENGTH_SHORT).show()
             containers.size == 1 -> addShortcutInContainer(file, containers.first())
             else -> pendingAddShortcut = file   // ask which container
         }
@@ -654,7 +654,7 @@ fun FileManagerScreen(
             val ok = withContext(Dispatchers.IO) { FileUtils.delete(file) }
             isOperationRunning = false
             loadDirectory(currentDir, resetScroll = false)
-            if (!ok) Toast.makeText(context, "Delete failed", Toast.LENGTH_SHORT).show()
+            if (!ok) Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -834,7 +834,7 @@ fun FileManagerScreen(
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    label = { Text("New name") },
+                    label = { Text("新的名称") },
                     singleLine = true,
                 )
             },
@@ -863,7 +863,7 @@ fun FileManagerScreen(
         val file = selectedEntry ?: return
         OutlinedAlertDialog(
             onDismissRequest = { selectedEntry = null },
-            title = { Text("Delete?") },
+            title = { Text("删除?") },
             text = { Text("Delete \"${file.name}\" permanently?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -949,8 +949,8 @@ fun FileManagerScreen(
                     Spacer(Modifier.height(4.dp))
                     listOf(
                         (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to
-                            (if (isDir) "Merge" else "覆盖"),
-                        ConflictChoice.KEEP_BOTH to "Keep both",
+                            (if (isDir) "合并" else "覆盖"),
+                        ConflictChoice.KEEP_BOTH to "保留两者",
                         ConflictChoice.SKIP to "跳过",
                     ).forEach { (choice, label) ->
                         TextButton(
@@ -1003,7 +1003,7 @@ fun FileManagerScreen(
         val file = pendingRun
         OutlinedAlertDialog(
             onDismissRequest = { pendingRun = null },
-            title = { Text("Run in which container?") },
+            title = { Text("在哪个容器中运行?") },
             text = {
                 Column(
                     modifier = Modifier
@@ -1035,7 +1035,7 @@ fun FileManagerScreen(
         val file = pendingAddShortcut
         OutlinedAlertDialog(
             onDismissRequest = { pendingAddShortcut = null },
-            title = { Text("Add to which container?") },
+            title = { Text("添加到哪个容器?") },
             text = {
                 Column(
                     modifier = Modifier
@@ -1087,7 +1087,7 @@ fun FileManagerScreen(
             ) {
                 Icon(Icons.Filled.Folder, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("选择这个文件夹")
+                Text("Select this folder")
             }
         }
         // ── Path bar ──
@@ -1099,7 +1099,7 @@ fun FileManagerScreen(
                 .padding(horizontal = 8.dp, vertical = 6.dp),
         ) {
             IconButton(onClick = { goUp() }, enabled = currentDir != currentRoot) {
-                Icon(Icons.Filled.ArrowBack, "Parent folder", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ArrowBack, "父文件夹", tint = MaterialTheme.colorScheme.primary)
             }
 
             // describeLocation labels C: by matching against the container list, which is empty in the
@@ -1195,7 +1195,7 @@ fun FileManagerScreen(
 
             if (showFavorites) {
                 Text(
-                    text = "★ Favorites",
+                    text = "★ 收藏夹",
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -1255,7 +1255,7 @@ fun FileManagerScreen(
                         Icon(Icons.Filled.Sort, "Sort", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
-                        listOf("name" to "Name", "date" to "Date modified", "size" to "Size")
+                        listOf("name" to "Name", "date" to "修改日期", "size" to "Size")
                             .forEach { (key, label) ->
                                 DropdownMenuItem(
                                     text = {
@@ -1274,7 +1274,7 @@ fun FileManagerScreen(
                             }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                         DropdownMenuItem(
-                            text = { Text(if (compactRows) "Comfortable rows" else "Compact rows") },
+                            text = { Text(if (compactRows) "舒适行" else "紧凑行") },
                             onClick = {
                                 compactRows = !compactRows
                                 browsePrefs.edit().putBoolean("fmCompactRows", compactRows).apply()
@@ -1282,7 +1282,7 @@ fun FileManagerScreen(
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text(if (showHidden) "Hide hidden files" else "Show hidden files") },
+                            text = { Text(if (showHidden) "隐藏隐藏文件" else "显示隐藏文件") },
                             onClick = {
                                 showHidden = !showHidden
                                 browsePrefs.edit().putBoolean("fmShowHidden", showHidden).apply()
@@ -1310,7 +1310,7 @@ fun FileManagerScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 singleLine = true,
-                placeholder = { Text("Filter this folder", fontSize = 13.sp) },
+                placeholder = { Text("筛选此文件夹", fontSize = 13.sp) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
             )
         }
@@ -1393,7 +1393,7 @@ fun FileManagerScreen(
                         selectedPaths = emptySet()
                     },
                     contentPadding = selBarPadding,
-                ) { Text("Cut", fontSize = 12.sp) }
+                ) { Text("剪切", fontSize = 12.sp) }
                 Spacer(Modifier.width(4.dp))
                 OutlinedButton(
                     enabled = selectedPaths.isNotEmpty(),
@@ -1519,9 +1519,9 @@ fun FileManagerScreen(
         val favItems = remember(favTick) { FavoritesStore.list(context).map(::File).filter { it.exists() } }
             .map { d -> RailItem(d.name, Icons.Filled.Star, false) { showFavorites = false; jumpTo(d) } }
         val locationSections = buildList {
-            add(RailSection("STORAGE", storageItems))
-            if (quickItems.isNotEmpty()) add(RailSection("QUICK", quickItems))
-            if (favItems.isNotEmpty()) add(RailSection("★ FAVORITES", favItems))
+            add(RailSection("存储", storageItems))
+            if (quickItems.isNotEmpty()) add(RailSection("快速", quickItems))
+            if (favItems.isNotEmpty()) add(RailSection("★ 收藏夹", favItems))
         }
 
         Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -1529,7 +1529,7 @@ fun FileManagerScreen(
             // the exception — it shows the rail so the "Drive C:" location item is reachable. Pickers
             // that don't pass driveCPath keep the rail hidden exactly as before.
             if (!pickMode || driveCPath != null) {
-                CollapsibleRail(state = fmRailState, title = "Files", sections = locationSections, outlinedItems = true)
+                CollapsibleRail(state = fmRailState, title = "文件", sections = locationSections, outlinedItems = true)
             }
             Box(modifier = Modifier.weight(1f).fillMaxSize()) {
         // ── Favorites list OR file list ──
@@ -1654,7 +1654,7 @@ fun FileManagerScreen(
                             modifier = Modifier.fillParentMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text("Empty directory", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("空目录", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 } else {
@@ -1787,7 +1787,7 @@ private fun FileContextMenuItems(
     // Favorites are directories — only folders get the pin toggle.
     if (isDir) {
         DropdownMenuItem(
-            text = { Text(if (isFavorite) "Remove from Favorites" else "Add to Favorites") },
+            text = { Text(if (isFavorite) "从收藏夹移除" else "添加到收藏夹") },
             leadingIcon = {
                 Icon(
                     if (isFavorite) Icons.Filled.Star else Icons.Filled.StarBorder,
@@ -1812,7 +1812,7 @@ private fun FileContextMenuItems(
     // correct for .exe, so we don't offer it for .bat/.sh/.msi.
     if (!isDir && file.name.lowercase().endsWith(".exe")) {
         DropdownMenuItem(
-            text = { Text("Add to Shortcuts") },
+            text = { Text("添加到快捷方式") },
             leadingIcon = { Icon(Icons.Filled.Add, null, tint = MaterialTheme.colorScheme.primary) },
             onClick = { onDismissMenu(); onAddToShortcuts() },
         )
@@ -1858,7 +1858,7 @@ private fun FileContextMenuItems(
     )
     MenuItemDivider()
     DropdownMenuItem(
-        text = { Text("Cut") },
+        text = { Text("剪切") },
         leadingIcon = { Icon(Icons.Filled.ContentCut, null, tint = MaterialTheme.colorScheme.primary) },
         onClick = { onDismissMenu(); onCut() },
     )
@@ -2058,7 +2058,7 @@ private fun FavoritesList(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 Text(
-                    text = "Favorites",
+                    text = "收藏夹",
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -2071,7 +2071,7 @@ private fun FavoritesList(
                     Icon(Icons.Filled.PushPin, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "Pin current folder",
+                        text = "固定当前文件夹",
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 13.sp,
                     )
@@ -2086,7 +2086,7 @@ private fun FavoritesList(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "No favorites yet — pin a folder with its ⋮ menu to jump back here fast.",
+                        text = "暂无收藏 — 使用文件夹的 ⋮ 菜单将其固定，以便快速返回此处。",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp,
                         modifier = Modifier.padding(horizontal = 32.dp),
@@ -2183,7 +2183,7 @@ private fun FavoriteCard(
                             text = when (loc.storage) {
                                 FavStorage.INTERNAL -> "Internal storage"
                                 FavStorage.SD -> "SD card"
-                                FavStorage.CONTAINER -> "System files (shared)"  // Drive Z:
+                                FavStorage.CONTAINER -> "系统文件（共享）"  // Drive Z:
                                 FavStorage.OTHER -> "Storage"
                             },
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -2204,7 +2204,7 @@ private fun FavoriteCard(
             IconButton(onClick = onUnpin) {
                 Icon(
                     Icons.Filled.Star,
-                    contentDescription = "Remove from favorites",
+                    contentDescription = "从收藏夹中移除",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp),
                 )
@@ -2389,11 +2389,11 @@ private fun FilePropertiesDialog(
                 PropertyLine("Location", file.parent ?: "—")
                 PropertyLine(
                     "Type",
-                    if (file.isDirectory) "Folder"
+                    if (file.isDirectory) "文件夹"
                     else file.extension.uppercase().let { if (it.isBlank()) "File" else "$it file" },
                 )
                 if (!file.isDirectory) PropertyLine("Size", StringUtils.formatBytes(file.length()))
-                PropertyLine("Modified", dateFormat.format(Date(file.lastModified())))
+                PropertyLine("修改时间", dateFormat.format(Date(file.lastModified())))
 
                 Spacer(Modifier.height(10.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
@@ -2402,8 +2402,8 @@ private fun FilePropertiesDialog(
                 val state = attrs
                 // ── Read-only ── checked when the owner can't write (Wine's FILE_ATTRIBUTE_READONLY).
                 AttributeToggleRow(
-                    label = "Read-only",
-                    description = "Stops games (and Wine) from overwriting or deleting this file.",
+                    label = "只读",
+                    description = "阻止游戏（和Wine）覆盖或删除此文件。",
                     checked = state?.readOnly == true,
                     enabled = state != null && !busy,
                     onToggle = { want ->
@@ -2426,8 +2426,8 @@ private fun FilePropertiesDialog(
                 AttributeToggleRow(
                     label = "隐藏",
                     description = if (state != null && !hiddenSupported)
-                        "This storage can't store the hidden flag."
-                    else "Marks the file hidden in Windows (Wine's hidden attribute).",
+                        "此存储无法存储隐藏标志。"
+                    else "在Windows中将文件标记为隐藏（Wine的隐藏属性）。",
                     checked = state?.hidden == true,
                     enabled = state != null && hiddenSupported && !busy,
                     onToggle = { want ->
@@ -2520,14 +2520,14 @@ private fun ParentFolderRow(compact: Boolean, onTap: () -> Unit) {
     ) {
         Icon(
             Icons.Filled.ArrowUpward,
-            contentDescription = "Parent folder",
+            contentDescription = "父文件夹",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(if (compact) 20.dp else 24.dp),
         )
         Spacer(Modifier.width(16.dp))
         Column {
             Text("..", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-            if (!compact) Text("Parent folder", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!compact) Text("父文件夹", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -2545,7 +2545,7 @@ private fun ParentFolderTile(onTap: () -> Unit) {
     ) {
         Icon(
             Icons.Filled.ArrowUpward,
-            contentDescription = "Parent folder",
+            contentDescription = "父文件夹",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(48.dp),
         )

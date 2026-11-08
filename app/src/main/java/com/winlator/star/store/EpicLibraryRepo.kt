@@ -91,10 +91,10 @@ object EpicLibraryRepo {
             if (!force && cachedList.isNotEmpty() && System.currentTimeMillis() - lastSync < THROTTLE_MS) {
                 return@withContext SyncResult.Throttled
             }
-            onStatus("正在检查凭据…")
+            onStatus("Checking credentials…")
             val token = EpicCredentialStore.getValidAccessToken(appCtx) ?: return@withContext SyncResult.NotLoggedIn
 
-            onStatus("正在获取游戏列表…")
+            onStatus("Fetching game list…")
             val rawGames = EpicApiClient.getLibraryItems(token)
             if (rawGames.isNullOrEmpty()) {
                 return@withContext if (cachedList.isEmpty()) SyncResult.Failed("在您的Epic库中未找到游戏")

@@ -377,10 +377,10 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
 
     val header = if (defaultsMode) {
         EditorHeader(
-            overline = "Defaults for every container",
+            overline = "每个容器的默认值",
             title = "所有容器",
             icon = Icons.Filled.Layers,
-            subtitle = "New containers start from these values. Existing containers keep their own.",
+            subtitle = "新容器从这些值开始。现有容器保留自己的值。",
         )
     } else {
         EditorHeader(
@@ -479,7 +479,7 @@ private fun DeckAppSettings(navController: NavHostController, onAbout: () -> Uni
             overline = "Bannerlator",
             title = "Settings",
             icon = Icons.Filled.Settings,
-            subtitle = "Every app setting applies straight away.",
+            subtitle = "每个应用设置都会立即生效。",
         ),
         source = source,
         categories = AppSettingsRegistry.categories,

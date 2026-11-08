@@ -322,7 +322,7 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         rows += XmbRow.Choice("resourceType", ctx.getString(R.string.graphics_driver_resource_type), Icons.Filled.Memory,
             uniq(resourceTypes, cfg.resourceType), cfg.resourceType) { v -> write { it.resourceType = v } }
 
-        rows += XmbRow.Header("hBcn", "驱动程序调优")
+        rows += XmbRow.Header("hBcn", "BCn纹理")
         rows += XmbRow.Info("gpuNote", (if (gpuModel.isNotEmpty()) "GPU: $gpuModel — " else "") +
             "BCn/兼容层适用于 Mali 及其他非高通 GPU", Icons.Filled.Info)
         rows += XmbRow.Choice("bcnEmulation", ctx.getString(R.string.graphics_driver_bcn_emulation), Icons.Filled.Layers,
@@ -391,7 +391,7 @@ internal fun xmbWaylandDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbM
     fun write(key: String, value: String) =
         p2Put(xmb, shortcut, "graphicsDriverConfig", withGraphicsDriverKeys(rawCfg(), mapOf(key to value)))
 
-    return XmbMenu("Wayland 驱动程序设置", Icons.Filled.Tune) {
+    return XmbMenu("Wayland driver settings", Icons.Filled.Tune) {
         val raw = rawCfg()
         val cfg = raw.split(";").associate { elem ->
             val parts = elem.split("=")
@@ -565,7 +565,7 @@ private fun p2BcnLayerMenu(
 /** #132 Layer 1: one control per env key scanned from an imported wrapper, stored under the raw key. */
 private fun p2DetectedMenu(
     xmb: XmbScope, keys: () -> List<String>, raw: () -> String, write: ((P2GfxCfg) -> Unit) -> Unit,
-): XmbMenu = XmbMenu("检测到的设置", Icons.Filled.Science) {
+): XmbMenu = XmbMenu("Detected settings", Icons.Filled.Science) {
     val cfg = P2GfxCfg(raw())
     val rows = mutableListOf<XmbRow>()
     rows += XmbRow.Info("note", "值会按原样传递给wrapper；未知项可安全留空。", Icons.Filled.Info)

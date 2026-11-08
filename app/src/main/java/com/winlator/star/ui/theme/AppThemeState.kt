@@ -22,7 +22,7 @@ object AppThemeState {
     private val _isDarkMode = MutableStateFlow(true)
     val isDarkMode: StateFlow<Boolean> = _isDarkMode
 
-    /** Whether the drawer's "Stores" section (GOG, Epic, Amazon, Steam) is shown. */
+    /** Whether the drawer's "商店" section (GOG, Epic, Amazon, Steam) is shown. */
     private val _showStores = MutableStateFlow(true)
     val showStores: StateFlow<Boolean> = _showStores
 

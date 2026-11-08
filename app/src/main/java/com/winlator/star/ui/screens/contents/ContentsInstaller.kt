@@ -363,7 +363,7 @@ object ContentsInstaller {
     // ── Blocking installers (Activity-free; never touch runOnUiThread) ──────────
 
     /**
-     * A driver zip, routed to the manager that can actually use it. "虚幻引擎 HDR 修复" is three different
+     * A driver zip, routed to the manager that can actually use it. "GPU driver" is three different
      * things now and only one of them is an AdrenoTools package: the zip's own meta.json says which
      * ("kind"), so a "-Linux" (glibc ICD, the Linux runtime and its Steam client) or "-Wayland"
      * (bionic ICD, Wine on Wayland) zip is installed where it belongs instead of landing in the

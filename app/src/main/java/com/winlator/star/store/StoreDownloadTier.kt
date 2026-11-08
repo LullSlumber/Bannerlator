@@ -12,7 +12,7 @@ import androidx.preference.PreferenceManager
  */
 object StoreDownloadTier {
 
-    /** Default-SharedPreferences key (Log Manager row "Store download speed"). */
+    /** Default-SharedPreferences key (Log Manager row "商店下载速度"). */
     const val PREF_KEY = "store_dl_speed_tier"
 
     /** All tiers in ascending order, for the tap-to-cycle row. */
@@ -57,9 +57,9 @@ object StoreDownloadTier {
         val name = when (tier) {
             DownloadSpeedConfig.TIER_SLOW -> "慢速"
             DownloadSpeedConfig.TIER_MEDIUM -> "中等"
-            DownloadSpeedConfig.TIER_FAST -> "快速"
+            DownloadSpeedConfig.TIER_FAST -> "Fast"
             DownloadSpeedConfig.TIER_BLAZING -> "极速"
-            else -> "快速"
+            else -> "Fast"
         }
         return "$name ($window in flight)"
     }

@@ -394,7 +394,7 @@ object GameSaveBackup {
     ): BackupResult {
         val profile = File(driveC, "users/${ImageFs.USER}")
         if (!profile.isDirectory) {
-            return BackupResult(false, null, 0, "No save profile found in this container")
+            return BackupResult(false, null, 0, "在此容器中未找到存档配置")
         }
 
         // The only per-layout state: the entry root prefix + which user segment to write.

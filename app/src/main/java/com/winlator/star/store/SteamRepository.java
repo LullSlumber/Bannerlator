@@ -282,7 +282,7 @@ public final class SteamRepository {
                 }
                 if (realSteamSuspended) return;
                 // Connect-only (no saved sign-in): the channel is up for the login screens; the pill
-                // stays "已登出" like a signed-out JavaSteam session would show nothing.
+                // stays "Signed out" like a signed-out JavaSteam session would show nothing.
                 if (!isLoggedInPrefs()) setStatus(SteamStatus.SIGNED_OUT, "rust engine connected — no saved sign-in");
                 else setStatus(SteamStatus.CONNECTING, "rust engine state " + state);
             } else {
@@ -1043,7 +1043,7 @@ public final class SteamRepository {
             // Without this, if no server list is cached, getNextServerCandidate() returns null
             // and connect() immediately fires DisconnectedCallback without making any connection.
             b.withDirectoryFetch(true);
-            // "Steam连接区域" (Settings → Steam): hands JavaSteam the chosen datacenter's
+            // "Steam connection region" (Settings → Steam): hands JavaSteam the chosen datacenter's
             // TCP CMs on its first connect; returns nothing (→ the directory fetch above, exactly as
             // before) in Auto mode or when the directory lists no TCP CM for that datacenter.
             b.withServerListProvider(SteamRegion.INSTANCE.javaSteamServerListProvider(appContext));
@@ -1069,7 +1069,7 @@ public final class SteamRepository {
         steamFriends = steamClient.getHandler(SteamFriends.class);
 
         registerCallbacks();
-        Log.i(TAG, "SteamRepository initialised");
+        Log.i(TAG, "SteamRepository 已初始化");
     }
 
     private void registerCallbacks() {
@@ -1322,7 +1322,7 @@ public final class SteamRepository {
         slog(prev + " -> " + s + "  (" + reason + ")");
         emit("SteamStatus:" + s.name());
         // Mirror the honest connection state into the foreground-service notification so the FGS is
-        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "正在连接…" string). Static
+        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "Connecting…" string). Static
         // no-op when the service isn't running; guarded so any class-load/order issue on this path
         // can never break the pill. (A live download temporarily overrides this with a "Downloading
         // … N%" line from SteamDepotDownloader, which reverts here via refreshFgsStatus() on finish.)
@@ -1335,8 +1335,8 @@ public final class SteamRepository {
         switch (s) {
             case ONLINE:              return "Steam：在线";
             case CONNECTING:          return "Connecting to Steam…";
-            case SIGNED_IN_ELSEWHERE: return "已在别处登录";
-            case SIGNED_OUT:          return "已登出";
+            case SIGNED_IN_ELSEWHERE: return "Signed in elsewhere";
+            case SIGNED_OUT:          return "Signed out";
             case PAUSED_FOR_GAME:     return "已暂停 — 游戏会话活动";
             case OFFLINE:
             default:                  return "Offline";
@@ -1693,7 +1693,7 @@ public final class SteamRepository {
         // (logged in elsewhere / session replaced by a DIFFERENT client) -> surface it, do NOT recover/loop.
         // We intentionally do NOT auto-reconnect here: a genuine different-client replacement means the
         // account is live elsewhere (e.g. desktop Steam), so relogging would start a logon tug-of-war.
-        // The pill shows "已在别处登录" and the user taps to reconnect once they've signed out there.
+        // The pill shows "Signed in elsewhere" and the user taps to reconnect once they've signed out there.
         if (loggingOut || r == EResult.LoggedInElsewhere || r == EResult.LogonSessionReplaced) {
             setStatus(loggingOut ? SteamStatus.SIGNED_OUT : SteamStatus.SIGNED_IN_ELSEWHERE,
                     loggingOut ? "用户登出" : "replaced by another client: " + r.name());
@@ -2571,7 +2571,7 @@ public final class SteamRepository {
         if (rustEngine) {
             // Tear the engine session down and build a fresh one from the saved token, then wait.
             Log.i(RUST_TAG, "reconnectAndRelogin: forcing a fresh engine session (timeout " + timeoutMs + "ms)");
-            setStatus(SteamStatus.CONNECTING, "forced reconnect+relogin for retry");
+            setStatus(SteamStatus.CONNECTING, "强制重新连接并重新登录以重试");
             loggingOut = false;
             rustReconnectAttempts = 0;
             BlSteamEngine.INSTANCE.stop();
@@ -2582,7 +2582,7 @@ public final class SteamRepository {
         }
         if (steamClient == null) return false;
         Log.i(TAG, "reconnectAndRelogin: forcing a fresh session (timeout " + timeoutMs + "ms)");
-        setStatus(SteamStatus.CONNECTING, "forced reconnect+relogin for retry");
+        setStatus(SteamStatus.CONNECTING, "强制重新连接并重新登录以重试");
         // Arm the involuntary-logoff recovery path so the client-initiated disconnect below re-logs-in
         // instead of being treated as a user sign-out (see onDisconnected/onLoggedOff).
         loggingOut = false;

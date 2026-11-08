@@ -19,7 +19,7 @@ import com.winlator.star.renderer.material.ShaderMaterial;
 //     flat float[36] (p[i*6+j]); the fp32 coef_scale/coef_usm banks are baked as
 //     const float[384] arrays (no UBO/2nd texture).
 //   - the source is the EffectComposer low-res render target (input res =
-//     srcResolution); NIS sharpness is driven live by the drawer "Sharpness"
+//     srcResolution); NIS sharpness is driven live by the drawer "锐化度"
 //     slider via the `sharpness` uniform (0..1), recomputed in-shader exactly as
 //     NVScalerUpdateConfig does (SDR path).
 //   - per-fragment direct texture fetches replace the reference's LDS-tiled

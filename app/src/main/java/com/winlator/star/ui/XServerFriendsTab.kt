@@ -166,8 +166,8 @@ internal fun FriendsContent(state: XServerDrawerState) {
             Spacer(Modifier.weight(1f))
             Text(
                 when (src.kind) {
-                    InGameFriendsSource.Kind.AGENT_RELAY -> "via in-game Steam"
-                    InGameFriendsSource.Kind.APP_SESSION -> "via app session"
+                    InGameFriendsSource.Kind.AGENT_RELAY -> "通过游戏内Steam"
+                    InGameFriendsSource.Kind.APP_SESSION -> "通过应用会话"
                     else -> ""
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

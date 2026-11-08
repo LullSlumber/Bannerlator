@@ -88,7 +88,7 @@ fun AmazonProfileTab(
         val tiles = buildList {
             add("游戏" to libraryCount)
             add("Installed" to installedCount)
-            if (updatableCount > 0) add("更新" to updatableCount)
+            if (updatableCount > 0) add("Updates" to updatableCount)
         }
         val cols = if (wide) 3 else 2
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

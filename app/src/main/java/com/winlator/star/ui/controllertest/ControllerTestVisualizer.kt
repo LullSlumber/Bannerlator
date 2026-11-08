@@ -312,7 +312,7 @@ fun ControllerTestPanel(
             )
             Spacer(Modifier.width(6.dp))
             Text(
-                if (live) "Live input" else "Press a button on the pad…",
+                if (live) "实时输入" else "按手柄上的一个按钮…",
                 fontSize = 12.sp,
                 color = if (live) Color(0xFF57C777) else cs.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
@@ -330,10 +330,10 @@ fun ControllerTestPanel(
         val rs = snapshot?.let { fmt2(it.thumbRX) + ", " + fmt2(it.thumbRY) } ?: "0.00, 0.00"
         val tr = snapshot?.let { pct(it.triggerL) + " · " + pct(it.triggerR) } ?: "0% · 0%"
         val readouts = listOf(
-            "Last input" to lastInput,
-            "右摇杆" to ls,
-            "Right stick" to rs,
-            "Triggers L·R" to tr,
+            "最后输入" to lastInput,
+            "左摇杆" to ls,
+            "右摇杆" to rs,
+            "扳机 L·R" to tr,
         )
         if (landscape) {
             Row(
@@ -411,7 +411,7 @@ private fun ArtSelector(effective: PadArt, manual: PadArt?, onChange: (PadArt?) 
             onDismissRequest = { open = false },
             modifier = Modifier.outlinedMenuCard(),
         ) {
-            DropdownMenuItem(text = { Text("Auto-detect") }, onClick = { open = false; onChange(null) })
+            DropdownMenuItem(text = { Text("自动检测") }, onClick = { open = false; onChange(null) })
             for (a in PadArt.values()) {
                 MenuItemDivider()
                 DropdownMenuItem(text = { Text(padArtLabel(a)) }, onClick = { open = false; onChange(a) })

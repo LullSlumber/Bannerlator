@@ -10,7 +10,7 @@ import com.winlator.star.container.Shortcut;
 import java.util.Locale;
 
 /**
- * The "HDR output" setting of the Wayland backend — one place for everything the container editor,
+ * The "HDR 输出" setting of the Wayland backend — one place for everything the container editor,
  * the game-shortcut editor, XMB game settings and the launch path must agree on.
  *
  * <p><b>What it does.</b> On a screen that reports HDR10, a game that supports HDR gets it: the Wayland

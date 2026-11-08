@@ -137,14 +137,14 @@ internal object PerformanceRows {
     fun defs(): List<SettingDef> =
         WineUtils.STARTUP_SERVICES.mapIndexed { i, entry -> serviceRow(i, entry) } +
             listOf(
-                rootRow(PerfRootApplier.KEY_GPU_CLOCK_LOCK, "Power", "Lock the GPU to its top clock", ADVANCED,
-                    "Adreno: no root needed (KGSL turbo). Other GPUs need root."),
-                rootRow(PerfRootApplier.KEY_CPU_GOVERNOR, "Root controls", "CPU governor: performance", EXPERT,
-                    "Forces every CPU cluster to the performance governor."),
-                rootRow(PerfRootApplier.KEY_CPU_FREQ_LOCK, "Root controls", "锁定 CPU 最高频率", EXPERT,
-                    "Sets every cluster's minimum frequency to its maximum."),
-                rootRow(PerfRootApplier.KEY_CORES_ONLINE, "Root controls", "保持所有核心在线", EXPERT,
-                    "Stops the kernel taking cores offline."),
+                rootRow(PerfRootApplier.KEY_GPU_CLOCK_LOCK, "Power", "将 GPU 锁定到其最高频率", ADVANCED,
+                    "Adreno：无需 root (KGSL turbo)。其他 GPU 需要 root。"),
+                rootRow(PerfRootApplier.KEY_CPU_GOVERNOR, "Root 控制", "CPU 调度器：性能", EXPERT,
+                    "强制每个 CPU 集群使用性能调度器。"),
+                rootRow(PerfRootApplier.KEY_CPU_FREQ_LOCK, "Root 控制", "锁定 CPU 最高频率", EXPERT,
+                    "将每个集群的最低频率设置为其最高频率。"),
+                rootRow(PerfRootApplier.KEY_CORES_ONLINE, "Root 控制", "保持所有核心在线", EXPERT,
+                    "阻止内核将核心离线。"),
             ) +
             DANGER_KEYS.map { k -> hiddenDef(rootId(k), "performance", vm = null, game = appOverride(k), worlds = WINE_LINUX) } +
             listOf(
@@ -533,7 +533,7 @@ internal class DeckPerformanceSection(
         }
         if (grantGate) {
             PerfDisclaimerDialog(
-                title = "启用", body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Grant Root",
+                title = "高级性能设置 — 请先阅读", body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Grant Root",
                 onConfirm = { grantGate = false; requestRoot() },
                 onDismiss = { grantGate = false },
             )
@@ -627,7 +627,7 @@ private fun PowerLines(s: DeckPerformanceSection) {
     val count = s.powerOverrides()
     if (count > 0) {
         DeckLine(
-            label = "已为此游戏设置 1 个开关。",
+            label = "将电源和 root 重置为应用的默认值",
             hint = if (count == 1) "1 switch is set for this game." else "$count switches are set for this game.",
             icon = Icons.Filled.Restore,
             onClick = { s.resetPower() },
@@ -741,7 +741,7 @@ private fun PresetValuesDialog(s: DeckPerformanceSection, edit: DeckPerformanceS
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    "环境变量",
+                    "Environment variables",
                     color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 12.5.sp,
                     modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
                 )

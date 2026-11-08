@@ -159,8 +159,8 @@ fun SettingsControllerTestDialog(
                         } else {
                             ControllerTestPanel(
                                 snapshot = snap,
-                                title = "Test your controller",
-                                subtitle = snap?.deviceName?.takeIf { it.isNotEmpty() } ?: (padName ?: "Press any button on your controller"),
+                                title = "测试您的控制器",
+                                subtitle = snap?.deviceName?.takeIf { it.isNotEmpty() } ?: (padName ?: "按控制器上的任意按钮"),
                                 resetKey = Unit,
                                 manualArt = manualArt,
                                 onArtChange = { manualArt = it },
@@ -187,7 +187,7 @@ internal fun TestBindToggle(bind: Boolean, onChange: (Boolean) -> Unit) {
             .border(1.dp, cs.outline, RoundedCornerShape(10.dp))
     ) {
         SegItem("Test", !bind, cs.primary, cs.onPrimary, cs.onSurfaceVariant) { onChange(false) }
-        SegItem("Bind", bind, cs.primary, cs.onPrimary, cs.onSurfaceVariant) { onChange(true) }
+        SegItem("绑定", bind, cs.primary, cs.onPrimary, cs.onSurfaceVariant) { onChange(true) }
     }
 }
 

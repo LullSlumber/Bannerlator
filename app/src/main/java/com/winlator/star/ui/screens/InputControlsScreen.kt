@@ -827,7 +827,7 @@ fun InputControlsScreen() {
                                 Icon(Icons.Default.Gamepad, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text("默认 / 任何控制器", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                                    Text("Default / Any Controller", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                                     Text("新控制器继承这些绑定", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                             }
@@ -1397,7 +1397,7 @@ private fun GlobalPlayerSlotsSection() {
         Text("玩家槽位", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_player_slots }) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "What is this?",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }
@@ -1463,7 +1463,7 @@ private fun MenuButtonSection() {
         Text("菜单按钮", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_menu_button }) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "What is this?",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }

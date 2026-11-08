@@ -569,7 +569,7 @@ fun shareLogGroup(context: Context, entry: LogInventory.Entry) {
             putExtra(Intent.EXTRA_SUBJECT, if (entry.isAppBucket) "App & crash logs" else entry.name)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(send, "属性"))
+        context.startActivity(Intent.createChooser(send, "Share logs"))
     } catch (e: Exception) {
         Toast.makeText(context, "Couldn't share those logs.", Toast.LENGTH_SHORT).show()
     }

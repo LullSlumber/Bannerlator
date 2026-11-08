@@ -212,7 +212,7 @@ fun LogManagerScreen(onClose: () -> Unit) {
                 PickRow(
                     label = when (locationMode) {
                         LogLocation.MODE_DOWNLOAD -> "Download"
-                        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) "自定义文件夹" else "选择文件夹…"
+                        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) "自定义文件夹" else "Choose folder…"
                         // MODE_DOCUMENTS (default) and the retired MODE_APP_DATA both resolve to Documents.
                         else -> "Documents"
                     },
@@ -236,7 +236,7 @@ fun LogManagerScreen(onClose: () -> Unit) {
                             saveMode(LogLocation.MODE_DOCUMENTS); showLocationMenu = false
                         }
                         MenuItemDivider()
-                        MenuRow("选择文件夹…", Icons.Default.FolderOpen) {
+                        MenuRow("Choose folder…", Icons.Default.FolderOpen) {
                             showLocationMenu = false
                             dirLauncher.launch(InAppFilePicker.buildDirIntent(context, "选择日志文件夹"))
                         }
@@ -253,7 +253,7 @@ fun LogManagerScreen(onClose: () -> Unit) {
             SectionLabel("要记录的内容")
             LogCard {
                 LogToggle("Wine 调试", wineDebug,
-                    hint = "Slows games down — for diagnosing a problem",
+                    hint = "会拖慢游戏运行速度 — 用于诊断问题",
                     onInfo = { info = "Wine 调试" to LogCopy.WINE }) {
                     wineDebug = it; putBool("enable_wine_debug", it)
                 }
@@ -265,38 +265,38 @@ fun LogManagerScreen(onClose: () -> Unit) {
                     )
                 }
                 LogToggle("Box64 / FEXCore", box64Logs,
-                    hint = "Slows games down at higher verbosity",
+                    hint = "详细程度较高时会拖慢游戏运行速度",
                     onInfo = { info = "Box64 / FEXCore" to LogCopy.BOX64 }) {
                     box64Logs = it; putBool("enable_box64_logs", it)
                 }
                 LogToggle("DXVK & VKD3D", dxvkLogs,
-                    hint = "Safe to leave on — mostly written at startup",
+                    hint = "保持开启是安全的 — 主要在启动时写入",
                     onInfo = { info = "DXVK & VKD3D" to LogCopy.DXVK }) {
                     dxvkLogs = it; putBool("enable_dxvk_logs", it)
                 }
-                LogToggle("控制器输入", controllerLogs,
-                    hint = "For controls that don't work — written when the game exits",
-                    onInfo = { info = "控制器输入" to LogCopy.CONTROLLER }) {
+                LogToggle("Controller input", controllerLogs,
+                    hint = "适用于控制不起作用时 — 在游戏退出时写入",
+                    onInfo = { info = "Controller input" to LogCopy.CONTROLLER }) {
                     controllerLogs = it; putBool(com.winlator.star.core.ControllerLog.PREF_KEY, it)
                 }
                 LogToggle("SteamLite（Steam客户端）", steamLite,
-                    hint = "Only when a game launches through SteamLite",
+                    hint = "仅当游戏通过SteamLite启动时",
                     onInfo = { info = "SteamLite（Steam客户端）" to LogCopy.STEAMLITE }) {
                     steamLite = it; putBool("enable_steamlite_logs", it)
                 }
                 LogToggle("无窗口Steam（应用会话主机）", headlessSteam,
-                    hint = "Only when a game launches through Headless Steam",
+                    hint = "仅当游戏通过无窗口Steam启动时",
                     onInfo = { info = "无窗口Steam（应用会话主机）" to LogCopy.HEADLESS_STEAM }) {
                     headlessSteam = it; putBool("enable_headless_steam_logs", it)
                 }
                 LogToggle("Android logcat", logcat,
-                    hint = "Bannerlator's own output only",
+                    hint = "仅包含 Bannerlator 自身的输出",
                     onInfo = { info = "Android logcat" to LogCopy.LOGCAT }) {
                     logcat = it; putBool("enable_logcat", it)
                 }
-                LogToggle("Crash reports", crashReports,
-                    hint = "Nothing runs until something crashes",
-                    onInfo = { info = "Crash reports" to LogCopy.CRASH }) {
+                LogToggle("崩溃报告", crashReports,
+                    hint = "仅在崩溃时运行，无性能开销",
+                    onInfo = { info = "崩溃报告" to LogCopy.CRASH }) {
                     crashReports = it; putBool("enable_crash_reports", it)
                 }
                 // Exit reasons: reads Android's own record of why the process last died — the only way
@@ -304,12 +304,12 @@ fun LogManagerScreen(onClose: () -> Unit) {
                 // Java crash reporter) on an unrooted device. Toggle only auto-saves on launch; the
                 // system keeps the record either way, so the manual button below works even when off.
                 LogToggle(
-                    if (ExitReasonReporter.isSupported()) "Exit reasons (auto-save on launch)"
-                    else "Exit reasons (needs Android 11+)",
+                    if (ExitReasonReporter.isSupported()) "退出原因（启动时自动保存）"
+                    else "退出原因（需要Android 11+）",
                     exitAutosave,
-                    hint = "Records native crashes without root",
+                    hint = "无root记录原生崩溃",
                     enabled = ExitReasonReporter.isSupported(),
-                    onInfo = { info = "Exit reasons" to LogCopy.EXIT_REASONS }) {
+                    onInfo = { info = "退出原因" to LogCopy.EXIT_REASONS }) {
                     exitAutosave = it; putBool(ExitReasonReporter.PREF_AUTOSAVE, it)
                 }
                 // Developer switch for the native Rust Steam engine (docs/STEAM_RUST_ENGINE_PLAN.md).
@@ -317,30 +317,30 @@ fun LogManagerScreen(onClose: () -> Unit) {
                 // next app start. OFF = JavaSteam as today; ON = the full Steam stack (auth, session,
                 // library, downloads, cloud, achievements, social, presence) runs on libblsteam.so and
                 // the engine's steam_engine.txt is folded into the SteamLite log bundle (Phase 3b-4).
-                LogToggle("Native Steam engine (restart required)", rustSteamEngine,
-                    hint = "On by default — the whole Steam session (sign-in, library, downloads, cloud, achievements, friends) runs on the native engine; its log joins the SteamLite bundle. Off = legacy Java engine",
-                    onInfo = { info = "Rust Steam engine" to LogCopy.RUST_ENGINE }) {
+                LogToggle("原生Steam引擎（需要重启）", rustSteamEngine,
+                    hint = "默认开启 — 整个Steam会话（登录、库、下载、云、成就、好友）在原生引擎上运行；其日志会加入SteamLite捆绑包。关闭 = 旧版Java引擎",
+                    onInfo = { info = "Rust Steam 引擎" to LogCopy.RUST_ENGINE }) {
                     rustSteamEngine = it
                     putBool(com.winlator.star.store.blsteam.BlSteamEngineFlag.PREF_KEY, it)
                 }
                 // Per-store switches for the native download engines (docs/RUST_STORE_ENGINES.md).
                 // Read at download start by each store's Java manager, so a flip applies to the next
                 // download — no restart. OFF = that manager's existing Java fetch loop.
-                LogToggle("Rust engine: Epic downloads", rustEpicEngine,
-                    hint = "On by default — Epic file chunks are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：Epic下载", rustEpicEngine,
+                    hint = "默认开启 — Epic文件块由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustEpicEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_EPIC, it)
                 }
-                LogToggle("Rust engine: GOG downloads", rustGogEngine,
-                    hint = "On by default — GOG depot chunks are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：GOG下载", rustGogEngine,
+                    hint = "默认开启 — GOG仓库块由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustGogEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_GOG, it)
                 }
-                LogToggle("Rust engine: Amazon downloads", rustAmazonEngine,
-                    hint = "On by default — Amazon Games files are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：Amazon下载", rustAmazonEngine,
+                    hint = "默认开启 — Amazon游戏文件由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustAmazonEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_AMAZON, it)
                 }
@@ -349,10 +349,10 @@ fun LogManagerScreen(onClose: () -> Unit) {
                 // adaptive window may ramp to, so a weak link still settles below it. Next download.
                 Spacer(Modifier.height(4.dp))
                 PickRow(
-                    "Store download speed",
-                    "Ceiling for the Rust Epic / GOG / Amazon engines. Tap to change; applies to the next download.",
+                    "商店下载速度",
+                    "Rust Epic / GOG / Amazon引擎的上限。点击更改；在下次下载时生效。",
                     action = com.winlator.star.store.StoreDownloadTier.label(storeDlTier),
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES },
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES },
                 ) {
                     storeDlTier = com.winlator.star.store.StoreDownloadTier.next(storeDlTier)
                     com.winlator.star.store.StoreDownloadTier.set(context, storeDlTier)
@@ -396,7 +396,7 @@ fun LogManagerScreen(onClose: () -> Unit) {
                             refreshTick++
                         }
                     }
-                    InfoDot { info = "Exit reasons" to LogCopy.EXIT_REASONS }
+                    InfoDot { info = "退出原因" to LogCopy.EXIT_REASONS }
                 }
             }
 
@@ -556,7 +556,7 @@ fun LogManagerScreen(onClose: () -> Unit) {
         val count = remember(entry.dir) { LogInventory.deletableCount(entry) }
         OutlinedAlertDialog(
             onDismissRequest = { confirmDelete = null },
-            // The loose bucket is already named "更早的日志"/"所有日志", so "Delete ${name} logs?"
+            // The loose bucket is already named "Older logs"/"All logs", so "Delete ${name} logs?"
             // read "Delete Older logs logs?". Only a game name needs the word appending.
             title = {
                 Text(

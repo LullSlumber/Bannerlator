@@ -55,7 +55,7 @@ object XServerDrawerState {
 
     // Wayland runtime capabilities, only read while isWaylandMode. Each Graphics-tab control that
     // lives in the X11 renderer's pass is driven from ONE of these: false = greyed with the short
-    // "Not on Wayland in this build yet" reason, true = fully live with the same callbacks and
+    // "此版本尚未在Wayland上支持" reason, true = fully live with the same callbacks and
     // labels as on X11. Both default false; the activity flips them when the compositor reports
     // the corresponding chain (effects + scaling modes; frame generation).
     private val _waylandEffectsAvailable  = MutableStateFlow(false)
@@ -67,7 +67,7 @@ object XServerDrawerState {
     // compositor at once AND written to the effective env (shortcut override else container) as the
     // next launch's default. `active` = the compositor's live state. `frames` = its zero-copy frames
     // in the last completed 10 s window. `live` = a zero-copy frame reached the display layer in the
-    // last ~1.5 s, which is what separates "switching..." 来自 "running" right after a flip (the
+    // last ~1.5 s, which is what separates "switching..." from "running" right after a flip (the
     // 10 s counter is far too slow for that).
     private val _waylandZeroCopyRequested = MutableStateFlow(false)
     val waylandZeroCopyRequested: StateFlow<Boolean> = _waylandZeroCopyRequested
@@ -546,7 +546,7 @@ object XServerDrawerState {
     // persists it and re-applies the panel refresh-rate vote (reapplyVrr) live.
     @JvmField var onManualRefreshChange: Runnable? = null
     // Fired when the HUD/FPS drawer tab opens; the activity re-reads the live display refresh rate
-    // so the "Rate" readout is fresh on open (the display listener keeps it current thereafter).
+    // so the "帧率" readout is fresh on open (the display listener keeps it current thereafter).
     @JvmField var onRefreshRatePoll: Runnable? = null
     // Fired when the Controls-tab opacity slider moves; the activity reads overlayOpacity,
     // applies it to the live InputControlsView and persists the pref.

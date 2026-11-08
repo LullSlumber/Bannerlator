@@ -54,7 +54,7 @@ internal fun DeckComponentsPage() {
     val tabs = listOf(
         DeckTabItem("Browse", Icons.Filled.Download),
         DeckTabItem("Installed", Icons.Filled.CheckCircle),
-        DeckTabItem("Saved archives", Icons.Filled.Folder),
+        DeckTabItem("已保存的压缩包", Icons.Filled.Folder),
         DeckTabItem("Linux runtime", Icons.Filled.DeveloperBoard),
     )
     DeckHostedPage(
@@ -91,7 +91,7 @@ internal fun DeckControlsPage() {
 
 /**
  * Tools: Files / Saves / Logs / More. Files, Saves and Logs are the File Manager, Save Manager and Log
- * Manager screens hosted in place; More holds the drawer's leftovers and "Run setup again". Unpacking
+ * Manager screens hosted in place; More holds the drawer's leftovers and "再次运行设置". Unpacking
  * an archive starts from a file's menu in the File Manager, since it needs a picked archive.
  */
 @Composable
@@ -102,7 +102,7 @@ internal fun DeckToolsPage(
 ) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf(
-        DeckTabItem("Files", Icons.Filled.FolderOpen),
+        DeckTabItem("文件", Icons.Filled.FolderOpen),
         DeckTabItem("Saves", Icons.Filled.Save),
         DeckTabItem("日志", Icons.Filled.Description),
         DeckTabItem("更多", Icons.Filled.GridView),

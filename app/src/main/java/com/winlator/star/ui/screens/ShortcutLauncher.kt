@@ -128,7 +128,7 @@ class ShortcutLauncher internal constructor(
             steamUpdateFor = null
             steamUpdateHandle = null
             // Every terminal result except a user cancel is worth a one-line toast (offline / failed /
-            // "Files verified" / "Updated" / "已是最新"). A launch never follows.
+            // "Files verified" / "Updated" / "Already up to date"). A launch never follows.
             if (result != SteamGameUpdater.Result.CANCELLED && msg.isNotBlank()) {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
@@ -139,7 +139,7 @@ class ShortcutLauncher internal constructor(
     }
 
     // "检查更新": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
-    // as the animated "检查中…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
+    // as the animated "Checking…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
     // not-installed just inform via a toast; an available (or can't-tell-offline) result opens the confirm
     // dialog, whose [Update now] / [Check online] hands off to runSteamMaintenance (the authoritative
     // updateNow pass). The onResult lands on the main thread (see checkForUpdate's doc).
@@ -467,7 +467,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 // next time (contract literals: launchMode ∈ RealSteam/Goldberg/Raw, launchModeRemembered="1").
                 s.putExtra("launchMode", mode)
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
-                // Per-game "记住我的选择" (read only on RealSteam launches; inert otherwise).
+                // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
                 // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
@@ -527,7 +527,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 appId = appId,
                 installDir = installDir,
                 gameName = s.name,
-                pullCloudSaves = savePrefs.getBoolean("Steam 游戏", true),
+                pullCloudSaves = savePrefs.getBoolean("auto_download_steam_on_launch", true),
                 clientPackage = if (s.getExtra("launchMode", "") == "AppSteam") SteamSessionManager.ClientPackage.APP_STEAM
                                 else SteamSessionManager.ClientPackage.STEAMLITE,
             ),
@@ -623,7 +623,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = {
                 Text(
-                    if (available) "有可用更新" else "Check online?",
+                    if (available) "Update available" else "Check online?",
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             },

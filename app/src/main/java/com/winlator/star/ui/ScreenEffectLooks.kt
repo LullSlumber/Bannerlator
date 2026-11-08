@@ -3,7 +3,7 @@ package com.winlator.star.ui
 import kotlin.math.abs
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Screen Effect "Looks" — one-tap presets for the in-game drawer.
+//  Screen Effect "外观" — one-tap presets for the in-game drawer.
 //
 //  A Look is nothing but a named set of values for controls that ALREADY exist
 //  in the Graphics tab: the colour grade (brightness / contrast / gamma /

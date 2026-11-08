@@ -55,7 +55,7 @@ object InAppFilePicker {
 
     /**
      * Build an intent that opens the File Manager in DIRECTORY-pick mode (issue #70): only folders
-     * are listed and a "选择这个文件夹" action returns the browsed directory's absolute path
+     * are listed and a "Select this folder" action returns the browsed directory's absolute path
      * (read back via [pickedPath]).
      */
     fun buildDirIntent(

@@ -56,12 +56,12 @@ object SteamCloudSaveManager {
     /** Honest message shown when a game has no Steam Cloud store (or an upload didn't persist).
      *  The saves are never lost — they stay in the local Library — we just don't lie about the cloud. */
     private const val NO_CLOUD_MESSAGE =
-        "This game doesn't support Steam Cloud — your saves are backed up locally in the Library."
+        "该游戏不支持 Steam 云 — 您的存档已在本地库中备份。"
 
     /** Honest message when a game ACKS the upload commit but Steam retains nothing (an empty manifest
      *  right after a committed N>0 upload — old titles like FlatOut 2). Saves are safe in the Library. */
     private const val NO_RETENTION_MESSAGE =
-        "This game doesn't keep Steam Cloud saves — your saves are backed up locally in the Library."
+        "该游戏不保留 Steam 云存档 — 您的存档已在本地库中备份。"
 
     /** Per-app cloud-support cache (PICS `ufs/savefiles` is stable per app). Only DEFINITIVE
      *  true/false is cached; an "unknown" (null) is never stored so it can be retried later. */
@@ -84,13 +84,13 @@ object SteamCloudSaveManager {
             try {
                 val steamCloud = requireCloud() ?: run { cb.onError("未登录 Steam"); return@Thread }
 
-                cb.onStatus("正在获取云文件列表…")
+                cb.onStatus("Fetching cloud file list…")
                 val files = steamCloud.listFiles(appId)
                 // With the manifest in hand, move files the old Collect swept in (game data, logs)
                 // out of the Library so they are never applied or uploaded. Best-effort.
                 try { moveAsideNonSaves(ctx, appId, localFolder, files.map { it.remotePath }) }
                 catch (t: Throwable) { Log.w(TAG, "Library cleanup failed for $appId", t) }
-                if (files.isEmpty()) { cb.onDone("No cloud saves found for this game"); return@Thread }
+                if (files.isEmpty()) { cb.onDone("未找到该游戏的云存档"); return@Thread }
 
                 if (!localFolder.exists()) localFolder.mkdirs()
 
@@ -165,7 +165,7 @@ object SteamCloudSaveManager {
             try {
                 val steamCloud = requireCloud() ?: run { cb.onError("未登录 Steam"); return@Thread }
 
-                cb.onStatus("Scanning local saves…")
+                cb.onStatus("正在扫描本地存档…")
                 normalizeLibrary(localFolder, appId)
                 var localFiles = enumerateLocal(localFolder)   // List<Pair<File, cloudRelPath>>
 
@@ -174,7 +174,7 @@ object SteamCloudSaveManager {
                 // beginAppUploadBatch. This makes an empty/absent save folder a pure no-op and
                 // removes any chance of an "upload nothing" turning into a cloud wipe.
                 if (localFiles.isEmpty()) {
-                    cb.onDone("No local save files found — nothing was sent to the cloud")
+                    cb.onDone("未找到本地存档文件 — 未向云端发送任何内容")
                     return@Thread
                 }
 
@@ -204,7 +204,7 @@ object SteamCloudSaveManager {
                 // SHA-1 (AppFileInfo.shaFile — a 20-byte digest). A failed fetch, or an entry with a
                 // missing/short sha, simply leaves that path OUT of the map, so it counts as
                 // "changed" and gets uploaded. We never skip a file we can't prove is byte-identical.
-                cb.onStatus("Comparing with cloud…")
+                cb.onStatus("正在与云端比较…")
                 // Older builds uploaded some saves as `%Token%/rest`; the cloud may still hold that
                 // spelling next to Steam's own `%Token%rest`. Remember those twins (by canonical key)
                 // so a changed save refreshes BOTH names — another PC that downloads either one then
@@ -245,7 +245,7 @@ object SteamCloudSaveManager {
                     } catch (t: Throwable) { Log.w(TAG, "Library cleanup failed for $appId", t) }
                 }
                 if (localFiles.isEmpty()) {
-                    cb.onDone("No local save files found — nothing was sent to the cloud")
+                    cb.onDone("未找到本地存档文件 — 未向云端发送任何内容")
                     return@Thread
                 }
 
@@ -286,7 +286,7 @@ object SteamCloudSaveManager {
                 // deletion list at all, so nothing in this class can produce one. The incremental
                 // diff only ever SHRINKS the upload set; it never produces a deletion.
 
-                cb.onStatus("Opening cloud upload batch…")
+                cb.onStatus("正在打开云上传批次…")
                 // clientId/appBuildId are best-effort 0L inside the backends (classic token logon
                 // exposes no auth-session clientID, and we don't parse the installed build id).
                 val batchId = steamCloud.beginBatch(appId, filesToUpload)

@@ -394,7 +394,7 @@ private fun captionFor(
         return Caption(label, st?.second ?: pendingLine, toneOf(st?.first), trailOf(st?.first), help)
     }
     return when (slide) {
-        0 -> of("Steam登录", Step.SESSION, HELP_SESSION, "正在检查Steam登录…")
+        0 -> of("Steam sign-in", Step.SESSION, HELP_SESSION, "正在检查Steam登录…")
         1 -> {
             // "已登录Steam" only when that's true; a Launch-anyway pass (session skipped)
             // keeps the plain step name so the photo isn't captioned with a claim it can't make.
@@ -403,7 +403,7 @@ private fun captionFor(
         }
         2 -> of("云存档", Step.CLOUD, HELP_CLOUD, "正在同步云存档…")
         else -> when {
-            launching -> Caption("就绪", "Launching $gameName…", Tone.OK, Trail.CHECK, HELP_PREFLIGHT)
+            launching -> Caption("Ready", "Launching $gameName…", Tone.OK, Trail.CHECK, HELP_PREFLIGHT)
             states.containsKey(Step.CLIENT) && appSteam -> of("Valve Steam 客户端", Step.CLIENT, HELP_CLIENT_APPSTEAM, "Checking Valve's Steam client…")
             states.containsKey(Step.CLIENT) -> of("SteamLite 客户端", Step.CLIENT, HELP_CLIENT, "Checking for SteamLite updates…")
             else -> of("游戏文件", Step.UPDATE, HELP_UPDATE, "正在检查更新…")
@@ -457,7 +457,7 @@ private fun failCardFor(
             TextButton(onClick = retry) { Text("Retry", color = cs.primary) }
         }
         updateOffer != null -> FailCardModel(
-            "有可用更新",
+            "Update available",
             if (updateOffer.installedBuild > 0L && updateOffer.liveBuild > 0L)
                 "Build ${updateOffer.installedBuild} → ${updateOffer.liveBuild}. Real Steam may refuse an out-of-date build online."
             else "A newer build of ${shortcut.name} is available.",

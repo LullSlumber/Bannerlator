@@ -1114,11 +1114,11 @@ private fun railCat(type: ContentProfile.ContentType, icon: ImageVector, role: S
 // type = null keeps it OUT of RAIL_TYPES (so loadProfiles/effectiveTypes never try to load a non-existent
 // ContentProfile for it); the right pane renders AdrenoDriverListPane when it's the selected category.
 private val RAIL_GROUPS = listOf(
-    RailGroup("兼容性", listOf(
+    RailGroup("Compatibility", listOf(
         railCat(ContentProfile.ContentType.CONTENT_TYPE_WINE, Icons.Filled.Extension, "Windows API 层"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_PROTON, Icons.Filled.Bolt, "Steam Play runtime"),
     )),
-    RailGroup("显示设置", listOf(
+    RailGroup("Graphics", listOf(
         railCat(ContentProfile.ContentType.CONTENT_TYPE_DXVK, Icons.Filled.GridView, "D3D9/10/11 → Vulkan"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_VKD3D, Icons.Filled.Layers, "D3D12 → Vulkan"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_D7VK, Icons.Filled.ViewInAr, "D3D7/8 → Vulkan"),

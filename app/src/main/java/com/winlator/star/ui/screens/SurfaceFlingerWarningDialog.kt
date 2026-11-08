@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 fun SurfaceFlingerWarningDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("SurfaceFlinger 将游戏帧直接交给 Android 的合成器。它可能更快，但在某些设备上会显示黑屏或颜色错误。如果发生这种情况，请切换回 Vulkan 或 OpenGL。") },
+        title = { Text("SurfaceFlinger渲染器 — 实验性") },
         text = {
             Text(
                 "The SurfaceFlinger renderer composites game frames directly through your device's " +

@@ -320,7 +320,7 @@ object SteamGameUpdater {
 
         // A verify re-resolves live manifests from the CM, so it needs a live session. Check cheaply first
         // so an offline verify fails fast instead of hanging behind the downloader's recovery retries.
-        postProgress(-1f, "正在连接 Steam…")
+        postProgress(-1f, "Connecting to Steam…")
         val online = repo.isLoggedIn || repo.ensureLoggedIn(SESSION_WAIT_MS)
         if (!online) {
             postDone(Result.OFFLINE_UNKNOWN, "Steam is offline — can't verify ${row.name}'s files right now.")
@@ -363,7 +363,7 @@ object SteamGameUpdater {
         if (liveBuild > 0L && installedBuild > 0L && installedBuild == liveBuild &&
             row.isInstalled && filesPresent) {
             Log.i(TAG, "app $appId already on live build $liveBuild ($branch) — no update needed")
-            postDone(Result.CURRENT, "已是最新"); return
+            postDone(Result.CURRENT, "Already up to date"); return
         }
 
         if (handle.isCancelled) { postDone(Result.CANCELLED, "Cancelled"); return }
@@ -379,7 +379,7 @@ object SteamGameUpdater {
         // We know the live build and are NOT confirmed current → a delta update is required. That needs a
         // live session; check cheaply first so an offline launch fails fast instead of hanging on the
         // downloader's session-recovery retries behind the modal.
-        postProgress(-1f, "正在连接 Steam…")
+        postProgress(-1f, "Connecting to Steam…")
         val online = repo.isLoggedIn || repo.ensureLoggedIn(SESSION_WAIT_MS)
         if (!online) {
             Log.i(TAG, "app $appId behind/incomplete but Steam offline — deferring to user")

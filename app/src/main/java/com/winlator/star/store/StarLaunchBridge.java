@@ -271,7 +271,7 @@ public final class StarLaunchBridge {
     /**
      * As above, but tags the written shortcut with its store origin when a Steam
      * {@code steamAppId} is known (> 0): {@code storeSource=steam} + {@code steamAppId=<id>}
-     * in the [Extra Data] block. This makes the Games-tab "云端存档" menu gate robust and
+     * in the [Extra Data] block. This makes the Games-tab "Cloud Saves" menu gate robust and
      * hands the Save Manager the appId directly. A {@code steamAppId} of 0 leaves the shortcut
      * untagged (non-Steam stores).
      */
@@ -457,7 +457,7 @@ public final class StarLaunchBridge {
                 if (artUrl != null && !artUrl.isEmpty()) {
                     saveCoverArt(activity, container, shortcutFile, safeName, artUrl);
                 } else {
-                    Log.d(TAG, "No cover art found for: " + gameName);
+                    Log.d(TAG, "未找到封面图: " + gameName);
                 }
 
                 h.post(() -> cb.onResult(true,

@@ -853,7 +853,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                 }
                 return@Thread
             }
-            runOnUiThread { showCloudStatus(if (up) "正在准备上传…" else "正在准备下载…") }
+            runOnUiThread { showCloudStatus(if (up) "Preparing upload…" else "Preparing download…") }
             val cb = object : GogCloudSaveManager.Callback {
                 override fun onStatus(msg: String) { runOnUiThread { showCloudStatus(msg) } }
                 override fun onDone(msg: String) { runOnUiThread { showCloudStatus(msg); cloudBtnsEnabled = true } }
@@ -1033,7 +1033,7 @@ private fun GogGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新") {
+                StoreSection(title = "Updates") {
                     GogUpdatesContent(
                         installed = updatesInstalled,
                         updateStatusText = updateStatusText,

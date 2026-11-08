@@ -991,7 +991,7 @@ private fun RowInfo(
                         .clip(CircleShape)
                         .clickable(onClick = onHelp),
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "音频设置", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "What is this?", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
         }
@@ -1082,7 +1082,7 @@ private fun labelFor(control: Control, v: String): String = when (control) {
     is Control.Select -> control.options.firstOrNull { it.value == v }?.label ?: SettingsRegistry.prettyResolution(v)
     is Control.Slider -> v.toFloatOrNull()?.let(control.display) ?: v
     is Control.TextField -> v.ifEmpty { "empty" }
-    Control.Cores -> if (v.isEmpty()) "所有核心" else "cores $v"
+    Control.Cores -> if (v.isEmpty()) "all cores" else "cores $v"
     is Control.Checklist -> v.split(',').count { it.isNotEmpty() }.let { if (it == 0) "all on" else "$it off" }
 }
 

@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-// The classic game editor's "Select Icon" (General tab) on the Game page: the entry's icon with a
+// The classic game editor's "选择图标" (General tab) on the Game page: the entry's icon with a
 // preview, picked from the app's own file browser or the system picker. As in the classic editor the
 // picked image is written to the entry's icon file (the PNG its .desktop Icon= line names) the moment it
 // is picked, not on Save: the file is the entry's icon, nothing in the shortcut's extras changes, so
@@ -81,19 +81,19 @@ internal class DeckIconSection(
             PageExtra("icon-preview") {
                 GroupCard(first = true, last = false, highlight = false) {
                     DeckLine(
-                        label = "显示在您的库和主屏幕快捷方式中。选择后即会保存新的图标。",
-                        hint = reason ?: "此条目的图标",
+                        label = "此条目的图标",
+                        hint = reason ?: "显示在您的库和主屏幕快捷方式中。选择后即会保存新的图标。",
                     ) { IconPreview(icon) }
                 }
             },
             PageExtra("icon:files") {
                 GroupCard(first = false, last = false, highlight = false) {
-                    DeckActionRow(DeckAction("files", Icons.Filled.Folder, "Choose an image", "From your files (PNG, JPG, WebP, BMP or GIF).", enabled = ok) { launch = Picker.FILES })
+                    DeckActionRow(DeckAction("files", Icons.Filled.Folder, "选择图像", "从您的文件（PNG、JPG、WebP、BMP 或 GIF）。", enabled = ok) { launch = Picker.FILES })
                 }
             },
             PageExtra("icon:system") {
                 GroupCard(first = false, last = true, highlight = false) {
-                    DeckActionRow(DeckAction("system", Icons.Filled.PhotoLibrary, "Pick with the system picker", "Android's own picker, e.g. for Photos or cloud storage.", enabled = ok) { launch = Picker.SYSTEM })
+                    DeckActionRow(DeckAction("system", Icons.Filled.PhotoLibrary, "使用系统选择器选取", "Android 自身的选择器，例如用于相册或云存储。", enabled = ok) { launch = Picker.SYSTEM })
                 }
             },
         )

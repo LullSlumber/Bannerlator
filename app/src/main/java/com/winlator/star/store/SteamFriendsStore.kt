@@ -1045,13 +1045,13 @@ object SteamFriendsStore {
                 rustSession()?.let { rs ->
                     val ok = if (id64 != null && id64 > STEAMID64_BASE) rs.addFriend(id64) else rs.addFriend(0L, q)
                     _addFeedback.value = when {
-                        !ok -> "未连接到Steam"
+                        !ok -> "Not connected to Steam"
                         id64 != null && id64 > STEAMID64_BASE -> "Friend request sent"
                         else -> "Looking up “$q”…"
                     }
                     return@execute
                 }
-                val sf = repo.steamFriends ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
+                val sf = repo.steamFriends ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
                 if (id64 != null && id64 > STEAMID64_BASE) {
                     sf.addFriend(SteamID(id64)); _addFeedback.value = "Friend request sent"
                 } else {
@@ -1077,10 +1077,10 @@ object SteamFriendsStore {
         io.execute {
             try {
                 rustSession()?.let { rs ->
-                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "未连接到Steam"
+                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "Not connected to Steam"
                     return@execute
                 }
-                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
+                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
                 _addFeedback.value = "Friend request sent"
             } catch (t: Throwable) {
                 Log.w(TAG, "addFriendById failed", t)

@@ -55,7 +55,7 @@ fun SteamStatusPill(
         // A real-Steam (SteamLite) game holds the account in-container; the app's own session is
         // deliberately down and comes back on game exit. Not an error, not tappable (a tap would tug).
         SteamRepository.SteamStatus.PAUSED_FOR_GAME ->
-            Triple(Color(0xFF5B8DEF), "已暂停 — 游戏会话活动", false)
+            Triple(Color(0xFF5B8DEF), "Paused — game session active", false)
     }
 
     val base = Modifier

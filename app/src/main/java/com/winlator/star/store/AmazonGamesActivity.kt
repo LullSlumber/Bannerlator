@@ -1430,7 +1430,7 @@ private fun GameDetailDialog(
                     Button(
                         onClick = onSetExe,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                    ) { Text("设置 .exe…", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    ) { Text("Set .exe\u2026", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 }
             }
         },

@@ -90,7 +90,7 @@ object CopyGameToDriveC {
      */
     fun storageLabel(shortcut: Shortcut): String {
         val info = parse(shortcut)
-        if (info.onDriveC) return "Drive C: — app storage (native, fast)"
+        if (info.onDriveC) return "C盘 — 应用存储（原生，快速）"
         val root = info.exeAndroid?.absolutePath?.let { WinePath.storageVolumeRootOf(it) }
         val where = when {
             root == null -> if (info.driveLetter.isEmpty()) "Unknown location" else "${info.driveLetter}: drive"

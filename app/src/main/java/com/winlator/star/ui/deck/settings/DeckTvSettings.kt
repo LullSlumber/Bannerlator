@@ -43,7 +43,7 @@ internal object TvRows {
     fun defs(): List<SettingDef> = listOf(
         SettingDef(
             id = ID_LAUNCH, category = "display", group = GROUP, level = SIMPLE,
-            label = "在电视上启动此游戏", hint = ExternalDisplay.HELP_LAUNCH, tech = ExternalDisplay.EXTRA_LAUNCH,
+            label = "Launch this game on the TV", hint = ExternalDisplay.HELP_LAUNCH, tech = ExternalDisplay.EXTRA_LAUNCH,
             help = ExternalDisplay.HELP_LAUNCH + "\n\n" + ExternalDisplay.NOTE_UNPLUG + "\n\n" + ExternalDisplay.NOTE_TOUCH,
             control = { _, _ -> Control.Toggle },
             game = onOff(ExternalDisplay.EXTRA_LAUNCH),
@@ -92,7 +92,7 @@ internal object TvRows {
         ),
         SettingDef(
             id = ID_MATCH_RES, category = "display", group = GROUP, level = ADVANCED,
-            label = "匹配电视的分辨率", hint = ExternalDisplay.HELP_MATCH_RES, tech = ExternalDisplay.EXTRA_MATCH_RES,
+            label = "Match the TV's resolution", hint = ExternalDisplay.HELP_MATCH_RES, tech = ExternalDisplay.EXTRA_MATCH_RES,
             control = { _, _ -> Control.Toggle },
             game = onOff(ExternalDisplay.EXTRA_MATCH_RES),
             visible = { env, _ -> shown(env) },

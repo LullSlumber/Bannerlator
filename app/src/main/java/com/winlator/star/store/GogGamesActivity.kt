@@ -1092,7 +1092,7 @@ private fun GogGamesScreen(
                 }
             } else if (!scrollVisible && !isSyncing) {
                 Text(
-                    text = "Your GOG library is empty",
+                    text = "您的GOG库为空",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center).padding(24.dp),

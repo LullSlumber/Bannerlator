@@ -137,7 +137,7 @@ public final class LiveWineRegistry {
             finished = true;
             winHandler.removeProcessInfoListener(this);
             main.removeCallbacksAndMessages(null);
-            Log.i(TAG, "DirectInput joystick entries " + (ok ? "已更新" : "NOT confirmed") + ": " + detail);
+            Log.i(TAG, "DirectInput joystick entries " + (ok ? "updated" : "NOT confirmed") + ": " + detail);
             callback.onDone(ok, detail);
         }
     }

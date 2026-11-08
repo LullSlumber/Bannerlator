@@ -155,8 +155,8 @@ private const val DECK_WIDE_TABS_DP = 1100
 
 /** The seven Deck destinations, in L1/R1 order. [root] is the route the tab lands on. */
 internal enum class DeckTab(val label: String, val icon: ImageVector, val root: String) {
-    HOME("Home", Icons.Filled.Home, DeckRoutes.HOME),
-    STORES("Stores", Icons.Filled.Storefront, DeckRoutes.STORES),
+    HOME("主页", Icons.Filled.Home, DeckRoutes.HOME),
+    STORES("商店", Icons.Filled.Storefront, DeckRoutes.STORES),
     CONTAINERS("容器管理", Icons.Filled.Inventory2, Screen.Containers.route),
     COMPONENTS("Components", Icons.Filled.Extension, DeckRoutes.COMPONENTS),
     CONTROLS("Controls", Icons.Filled.SportsEsports, DeckRoutes.CONTROLS),
@@ -458,7 +458,7 @@ private fun DeckShellContent(
                         )
                         val pageTabs = deckActions.pageTabs.value
                         if (settingsPages) {
-                            val pages = listOf(Screen.Settings.route to DeckTabItem("Settings", Icons.Filled.Settings), Screen.Appearance.route to DeckTabItem("Appearance", Icons.Filled.Palette))
+                            val pages = listOf(Screen.Settings.route to DeckTabItem("Settings", Icons.Filled.Settings), Screen.Appearance.route to DeckTabItem("外观", Icons.Filled.Palette))
                             DeckPageTabRail(
                                 tabs = pages.map { it.second },
                                 selected = pages.indexOfFirst { it.first == currentRoute }.coerceAtLeast(0),
@@ -1364,7 +1364,7 @@ private fun DeckPageBar(
         if (settingsSubTabs) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 // "Settings" is the Deck settings editor; the classic Settings screen it hands off to counts as it.
-                listOf(DeckSettingsRoutes.APP to "Settings", Screen.Appearance.route to "Appearance").forEach { (route, label) ->
+                listOf(DeckSettingsRoutes.APP to "Settings", Screen.Appearance.route to "外观").forEach { (route, label) ->
                     val selected = currentRoute == route || (route == DeckSettingsRoutes.APP && currentRoute == Screen.Settings.route)
                     val shape = RoundedCornerShape(12.dp)
                     Text(

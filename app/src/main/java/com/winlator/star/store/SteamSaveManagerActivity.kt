@@ -240,7 +240,7 @@ internal fun SaveManagerScreen(
     // (same pattern as the store screens). Hoisted here so the bar floats over whichever tab is shown.
     var resultBarMsg by remember { mutableStateOf<String?>(null) }
     // The same one-time third-party cloud disclaimer the game detail page asks for (steam_prefs
-    // "cloud_saves_disclaimer_accepted"). The row buttons and "Sync Now" used to skip it, so a user who
+    // "cloud_saves_disclaimer_accepted"). The row buttons and "立即同步" used to skip it, so a user who
     // only synced from here never set the flag — and the auto-upload on exit, which requires it, never
     // ran. pendingCloudAction = what to run once the user accepts.
     var pendingCloudAction by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -299,7 +299,7 @@ internal fun SaveManagerScreen(
     // progress line, and a per-row status refresh when it settles — so a bulk sync lights up the
     // individual rows exactly like tapping each one would. Returns true on success, false on error;
     // guards a double-run on the same appId. Must be called from the composition (main) scope. Reused
-    // by the per-row buttons ([runQuickMove]) and the banner's "Sync Now" ([runSyncAll]).
+    // by the per-row buttons ([runQuickMove]) and the banner's "立即同步" ([runSyncAll]).
     suspend fun syncOne(appId: Int, syncFrom: Boolean): Boolean {
         if (appId in busyAppIds) return false
         busyAppIds = busyAppIds + appId
@@ -349,7 +349,7 @@ internal fun SaveManagerScreen(
     // warning strip below. (Custom rows load inside their own tab, so this is Steam scope only.)
     val needSync = statuses.count { it.state.needsAttention() }
 
-    // ── Banner "Sync Now" — one-touch sync of every Steam game that needs attention ──────────────
+    // ── Banner "立即同步" — one-touch sync of every Steam game that needs attention ──────────────
     // Runs the needs-attention games SEQUENTIALLY (one at a time, so it doesn't hammer the network and
     // each row's progress stays legible), each in its CORRECT direction, reusing the same per-game path
     // as the row buttons ([syncOne]). Best-effort: one game's failure never aborts the rest.
@@ -527,7 +527,7 @@ internal fun SaveManagerScreen(
                                 Spacer(Modifier.width(8.dp))
                             }
                             Text(
-                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "Sync Now",
+                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "立即同步",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = if (canSyncAll) MaterialTheme.colorScheme.onErrorContainer
@@ -630,7 +630,7 @@ internal fun SaveManagerScreen(
                         context.getSharedPreferences("steam_prefs", Context.MODE_PRIVATE)
                             .edit().putBoolean("cloud_saves_disclaimer_accepted", true).apply()
                         action()
-                    }) { Text("我理解") }
+                    }) { Text("I understand") }
                 },
                 dismissButton = {
                     TextButton(onClick = { pendingCloudAction = null }) { Text("Cancel") }
@@ -652,11 +652,11 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
     val prefs = remember { context.getSharedPreferences("save_manager_prefs", Context.MODE_PRIVATE) }
     var steamOn by remember { mutableStateOf(prefs.getBoolean("auto_collect_steam_on_exit", true)) }
     var steamUpOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_steam_on_exit", true)) }
-    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("Steam 游戏", true)) }
+    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_steam_on_launch", true)) }
     // Goldberg is an offline (emulated) Steam session, so cloud sync during Goldberg launches is OFF by default.
     var goldbergCloudOn by remember { mutableStateOf(prefs.getBoolean("goldberg_cloud_sync", true)) }
     var gogOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_gog_on_exit", true)) }
-    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("GOG 游戏", true)) }
+    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_gog_on_launch", true)) }
     var customOn by remember { mutableStateOf(prefs.getBoolean("auto_backup_custom_on_exit", true)) }
     // Achievement sync-back is owned by SteamPrefs (NOT save_manager_prefs) and is default OFF — it
     // writes unlocks to the user's REAL Steam account, so it's gated behind an ON warning below.
@@ -778,9 +778,9 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
             val prefKey = when (prompt.kind) {
                 ToggleKind.STEAM -> "auto_collect_steam_on_exit"
                 ToggleKind.STEAM_UP -> "auto_upload_steam_on_exit"
-                ToggleKind.STEAM_DL -> "Steam 游戏"
+                ToggleKind.STEAM_DL -> "auto_download_steam_on_launch"
                 ToggleKind.GOG -> "auto_upload_gog_on_exit"
-                ToggleKind.GOG_DL -> "GOG 游戏"
+                ToggleKind.GOG_DL -> "auto_download_gog_on_launch"
                 ToggleKind.CUSTOM -> "auto_backup_custom_on_exit"
                 ToggleKind.ACHV_SYNC -> "" // unreachable — handled above
             }
@@ -1192,14 +1192,14 @@ private fun CustomSaveRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = status.containerLabel?.let { "Container: $it" } ?: "No container",
+                text = status.containerLabel?.let { "Container: $it" } ?: "没有容器",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = if (status.hasBackup) "Backed up ${relTime(status.lastBackupMillis)}" else "No backup yet",
+                text = if (status.hasBackup) "Backed up ${relTime(status.lastBackupMillis)}" else "尚无备份",
                 style = MaterialTheme.typography.bodySmall,
                 color = if (status.hasBackup) MaterialTheme.colorScheme.onSurfaceVariant
                         else MaterialTheme.colorScheme.primary,
@@ -1216,7 +1216,7 @@ private fun CustomSaveRow(
             )
         } else {
             Column(horizontalAlignment = Alignment.End) {
-                TextButton(onClick = onBackup) { Text("Back up") }
+                TextButton(onClick = onBackup) { Text("备份") }
                 // Restore is always available: latest vault snapshot if present, else browse for a
                 // GameHub/Bannerlator save file (the chooser decides).
                 TextButton(onClick = onRestore) { Text("恢复") }
@@ -1247,7 +1247,7 @@ private fun EpicSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMessa
     LaunchedEffect(Unit) { reload() }
 
     // Resolve the container + auto save dir (off-main), then drive the transport. Distinguishes
-    // "not set up in a container" 来自 "no cloud-save folder" so the toast is actionable.
+    // "not set up in a container" from "no cloud-save folder" so the toast is actionable.
     fun runSync(s: EpicCloudSavePaths.EpicSaveStatus, up: Boolean) {
         val key = s.appName
         if (key in busyKeys) return

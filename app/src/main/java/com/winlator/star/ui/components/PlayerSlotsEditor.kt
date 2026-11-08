@@ -60,7 +60,7 @@ fun buildPlayerSlotEditorRows(savedJson: String): List<PlayerSlotEditorRow> {
     val seen = HashSet<String>()
 
     val oscOverride = overrides[WinHandler.OSC_DESCRIPTOR] ?: SLOT_AUTO
-    rows.add(PlayerSlotEditorRow(WinHandler.OSC_DESCRIPTOR, "MIDI 音乐音色库", true, true, oscOverride))
+    rows.add(PlayerSlotEditorRow(WinHandler.OSC_DESCRIPTOR, "屏幕控制", true, true, oscOverride))
     seen.add(WinHandler.OSC_DESCRIPTOR)
 
     for (controller in ExternalController.getControllers()) {
@@ -99,7 +99,7 @@ fun PlayerSlotsEditor(
 
         if (rows.isEmpty()) {
             Text(
-                "No controllers detected. Connect a controller to assign it, or set a pin here to apply when it's plugged in.",
+                "未检测到控制器。连接控制器以分配它，或在此处设置固定，以便在插入时应用。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -162,7 +162,7 @@ private fun PlayerSlotEditorRowItem(row: PlayerSlotEditorRow, onChange: (Int) ->
             OutlinedTextField(
                 value = selectedLabel,
                 onValueChange = {}, readOnly = true,
-                label = { Text("Slot", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                label = { Text("槽位", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
                 singleLine = true,

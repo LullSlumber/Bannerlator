@@ -105,13 +105,13 @@ object AmazonLibraryRepo {
                 backfillPosters(p, cachedList, onStatus)
                 return@withContext SyncResult.Throttled
             }
-            onStatus("正在检查凭据…")
+            onStatus("Checking credentials…")
             val creds = AmazonCredentialStore.load(appCtx)
             if (creds == null || creds.accessToken == null) return@withContext SyncResult.NotLoggedIn
             val token = AmazonCredentialStore.getValidAccessToken(appCtx)
                 ?: return@withContext SyncResult.Failed("Amazon session expired — please sign in again")
 
-            onStatus("正在获取游戏列表…")
+            onStatus("Fetching game list…")
             val all = AmazonApiClient.getEntitlements(token, creds.deviceSerial)
             if (all.isNullOrEmpty()) {
                 return@withContext if (cachedList.isEmpty()) SyncResult.Failed("在您的Amazon库中未找到游戏")

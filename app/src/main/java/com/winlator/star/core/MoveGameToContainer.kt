@@ -240,7 +240,7 @@ object MoveGameToContainer {
             undoFolder()
             return Result.Refused("Couldn't ${if (keepCopy) "copy" else "move"} \"${shortcut.name}\": ${e.message ?: "未知错误"}.")
         }
-        // Keeps its place in "Recently added".
+        // Keeps its place in "最近添加".
         newFile.setLastModified(shortcut.file.lastModified())
 
         if (!keepCopy) {

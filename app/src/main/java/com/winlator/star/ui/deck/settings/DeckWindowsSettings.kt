@@ -66,7 +66,7 @@ import java.util.Locale
 // The Windows page's container-level settings that were in the classic container editor's General,
 // Wine config and Drives tabs: the Wine / Proton layer (read-only once the container exists, as in
 // the classic editor) and its downloads, the desktop background colour and wallpaper, the drive
-// letters, and on All containers "Reset to app defaults". All of it is the container form
+// letters, and on All containers "重置为应用默认值". All of it is the container form
 // (ContainerDetailViewModel): the form is the draft, so Save writes drives, theme and colour through
 // the same applyFormTo the classic ✓ does. Two things happen on the press, as in the classic editor:
 // a picked wallpaper image is written to its file at once (Save then stamps its time into the theme),
@@ -90,7 +90,7 @@ internal object WindowsRows {
     fun defs(): List<SettingDef> = listOf(
         SettingDef(
             id = "windows.wineVersion", category = "windows", group = "Wine", level = SettingLevel.ADVANCED,
-            label = "Wine / Proton version", hint = "The Wine layer this container runs. Download more below.", tech = "Wine Version",
+            label = "Wine / Proton 版本", hint = "此容器运行的 Wine 层。在下方下载更多。", tech = "Wine 版本",
             control = { env, _ -> Control.Select((env.vm?.wineVersionEntries ?: emptyList()).map { Opt(it, it) }) },
             vm = VmBinding(get = { _, vm -> vm.selectedWineVersion }, set = { _, vm, v -> vm.onWineVersionChanged(v) }),
             onDefaults = false, showInGame = false,
@@ -99,14 +99,14 @@ internal object WindowsRows {
             disabled = { env, _ -> if (env.vm?.wineVersionEnabled == false) "Fixed once the container exists: its Windows prefix was built for this layer." else null },
         ),
         SettingDef(
-            id = ID_BG, category = "windows", group = "Wine / Proton 版本", level = SettingLevel.ADVANCED,
-            label = "此容器运行的 Wine 层。在下方下载更多。", tech = "Background",
+            id = ID_BG, category = "windows", group = "Windows 桌面", level = SettingLevel.ADVANCED,
+            label = "桌面背景", tech = "Background",
             control = { _, _ -> Control.Segmented(listOf(Opt("$IMAGE", "Image"), Opt("$COLOR", "纯色"))) },
             vm = VmBinding(get = { _, vm -> vm.desktopBgTypeIndex.toString() }, set = { _, vm, v -> v.toIntOrNull()?.let { vm.desktopBgTypeIndex = it } }),
             showInGame = false,
         ),
         SettingDef(
-            id = "windows.desktopColor", category = "windows", group = "Wine / Proton 版本", level = SettingLevel.ADVANCED,
+            id = "windows.desktopColor", category = "windows", group = "Windows 桌面", level = SettingLevel.ADVANCED,
             label = "Background colour", tech = "背景颜色",
             control = { _, _ ->
                 Control.Select(
@@ -125,8 +125,8 @@ internal object WindowsRows {
             visible = { _, values -> values(ID_BG) == "$COLOR" },
         ),
         SettingDef(
-            id = "windows.wallpaperScope", category = "windows", group = "Wine / Proton 版本", level = SettingLevel.ADVANCED,
-            label = "Windows 桌面", hint = "One image every container shares, or one for this container only.", tech = "背景颜色",
+            id = "windows.wallpaperScope", category = "windows", group = "Windows 桌面", level = SettingLevel.ADVANCED,
+            label = "壁纸图像用于", hint = "所有容器共享的一张图像，或仅此容器使用的一张图像。", tech = "将壁纸应用至",
             control = { _, _ ->
                 Control.Segmented(listOf(
                     Opt("${WineThemeManager.BackgroundScope.GLOBAL.ordinal}", "所有容器"),
@@ -183,8 +183,8 @@ internal class DeckWindowsSection(
         val vm = vm ?: return@buildList
         if (container) {
             addAll(actionItems("windows-wine", null, listOf(
-                DeckAction("wine", Icons.Filled.CloudDownload, "Download Wine and Proton versions",
-                    "Layers from the catalog, or install one from a file. New containers can use them.") { wineSheet = true },
+                DeckAction("wine", Icons.Filled.CloudDownload, "下载 Wine 和 Proton 版本",
+                    "来自目录的层，或从文件安装一个。新容器可以使用它们。") { wineSheet = true },
             )))
         }
         if (vm.desktopBgTypeIndex == WineThemeManager.BackgroundType.IMAGE.ordinal) {
@@ -193,9 +193,9 @@ internal class DeckWindowsSection(
         }
         if (container) addAll(driveItems(vm))
         if (env.scope == EditorScope.DEFAULTS) {
-            addAll(actionItems("windows-reset", "Start over", listOf(
-                DeckAction("reset", Icons.Filled.RestartAlt, "Reset to app defaults",
-                    "Forgets this architecture's defaults profile, its \"Set as default\" picks and default layer.") { confirmReset = true },
+            addAll(actionItems("windows-reset", "重新开始", listOf(
+                DeckAction("reset", Icons.Filled.RestartAlt, "重置为应用默认值",
+                    "忘记此架构的默认配置文件、其 \"设为默认\" 选择以及默认层。") { confirmReset = true },
             )))
         }
     }
@@ -226,8 +226,8 @@ internal class DeckWindowsSection(
         }
         add(PageExtra("windows-drives-add") {
             GroupCard(first = false, last = true, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.Add, "Add a drive",
-                    if (full) "Every letter from D: to Z: is in use." else "Takes the first free letter. Pick its folder with Browse.", enabled = !full) { vm.addDrive() })
+                DeckActionRow(DeckAction("add", Icons.Filled.Add, "添加驱动器",
+                    if (full) "从 D: 到 Z: 的每个字母都在使用中。" else "使用第一个可用字母。使用浏览选择其文件夹。", enabled = !full) { vm.addDrive() })
             }
         })
     }

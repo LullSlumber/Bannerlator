@@ -136,7 +136,7 @@ object DeckInput {
 object DeckSetup {
     const val PREF_DONE = "deck_onboarding_done"
 
-    /** Set by "Run setup again"; MainActivity shows the onboarding while it is true. */
+    /** Set by "再次运行设置"; MainActivity shows the onboarding while it is true. */
     val rerun: MutableState<Boolean> = mutableStateOf(false)
 
     fun requestRerun() { rerun.value = true }

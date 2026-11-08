@@ -12,7 +12,7 @@ import java.io.File
  * starts [UnpackService] with sensible defaults (a new sibling folder, Auto power, 1 MB buffer) and
  * lets the app-wide progress pill take over — no full screen.
  *
- * "快速" means fast-to-START (no folder picker / Power / buffer step), NOT a faster engine: the
+ * "Fast" means fast-to-START (no folder picker / Power / buffer step), NOT a faster engine: the
  * throughput is identical to "Unpack Archive…" because it drives the very same engines
  * (7-Zip / innoextract / native unarc) through the very same service.
  *

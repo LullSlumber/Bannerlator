@@ -420,7 +420,7 @@ object SteamHostComponent {
             if (dest.exists()) dest.deleteRecursively()
             if (!staging.renameTo(dest)) {
                 staging.deleteRecursively()
-                return false to "Couldn't move the Steam client into place."
+                return false to "无法将 Steam 客户端移动到正确位置。"
             }
             File(dest, VERSION_MARKER_REL).writeText(manifest.version)
             progress(1f)

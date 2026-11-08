@@ -175,7 +175,7 @@ public final class GogDownloadManager {
             int expiresIn  = prefs.getInt("bh_gog_expires_in", 3600);
             int nowSec     = (int) (System.currentTimeMillis() / 1000L);
             if (loginTime == 0 || nowSec >= loginTime + expiresIn) {
-                cb.onProgress("正在刷新令牌…", 0);
+                cb.onProgress("Refreshing token…", 0);
                 String newToken = GogTokenRefresh.refresh(ctx);
                 if (newToken == null) { cb.onError("Token expired — please sign in again"); return; }
                 token = newToken;
@@ -686,7 +686,7 @@ public final class GogDownloadManager {
             int expiresIn = prefs.getInt("bh_gog_expires_in", 3600);
             int nowSec    = (int) (System.currentTimeMillis() / 1000L);
             if (loginTime == 0 || nowSec >= loginTime + expiresIn) {
-                cb.onProgress("正在刷新令牌…", 0);
+                cb.onProgress("Refreshing token…", 0);
                 String newToken = GogTokenRefresh.refresh(ctx);
                 if (newToken == null) { cb.onError("Token expired — please sign in again"); return; }
                 token = newToken;

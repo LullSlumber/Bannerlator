@@ -91,8 +91,8 @@ private data class SearchDestination(
 
 /** Everything the search lists besides games. Keywords widen the match beyond the title. */
 private val DESTINATIONS = listOf(
-    SearchDestination("Home", "库", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
-    SearchDestination("Stores", "Steam, Epic, GOG, Amazon, Xbox", Icons.Filled.Storefront, "store sign in library download", route = DeckRoutes.STORES),
+    SearchDestination("主页", "库", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
+    SearchDestination("商店", "Steam, Epic, GOG, Amazon, Xbox", Icons.Filled.Storefront, "store sign in library download", route = DeckRoutes.STORES),
     SearchDestination("Steam", "Stores › Steam", Icons.Filled.Storefront, "steam valve store friends", store = Screen.Steam),
     SearchDestination("Epic 游戏", "Stores › Epic Games", Icons.Filled.Storefront, "epic store free games", store = Screen.Epic),
     SearchDestination("GOG", "Stores › GOG", Icons.Filled.Storefront, "gog galaxy store", store = Screen.Gog),
@@ -107,9 +107,9 @@ private val DESTINATIONS = listOf(
     SearchDestination("Wrappers", "Tools › Graphics wrappers", Icons.Filled.Layers, "wrapper vulkan graphics", route = Screen.Wrappers.route),
     SearchDestination("Adrenotools", "Tools › GPU drivers", Icons.Filled.Memory, "gpu driver adreno turnip mesa", route = Screen.AdrenoTools.route),
     SearchDestination("Settings", "应用设置", Icons.Filled.Settings, "settings preferences performance network storage logs advanced", route = DeckSettingsRoutes.APP),
-    SearchDestination("Appearance", "Settings › Appearance", Icons.Filled.Palette, "appearance theme accent dark light interface style deck classic size font", route = Screen.Appearance.route),
+    SearchDestination("外观", "Settings › Appearance", Icons.Filled.Palette, "appearance theme accent dark light interface style deck classic size font", route = Screen.Appearance.route),
     SearchDestination("日志", "Tools › Logs", Icons.Filled.Description, "logs log manager debug wine dxvk", route = DeckRoutes.TOOLS),
-    SearchDestination("关于", "Version, updates and credits", Icons.Filled.Info, "about version update credits license", about = true),
+    SearchDestination("关于", "版本、更新和鸣谢", Icons.Filled.Info, "about version update credits license", about = true),
 )
 
 /**
@@ -171,7 +171,7 @@ internal fun DeckSearchOverlay(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "Search everything",
+                            "搜索所有内容",
                             color = cs.onSurface,
                             fontFamily = SoraFamily,
                             fontWeight = FontWeight.Bold,
@@ -193,7 +193,7 @@ internal fun DeckSearchOverlay(
                         value = query,
                         onValueChange = { query = it },
                         singleLine = true,
-                        placeholder = { Text("Games, screens and tools") },
+                        placeholder = { Text("游戏、屏幕和工具") },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = {

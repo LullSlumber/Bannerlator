@@ -435,7 +435,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                 // Completion NEVER shows a dialog: auto-record the best-scored exe (list already
                 // sorted best-first) and finalize \u2014 mirrors the Amazon/GOG fix that unwedged the
                 // 100%-stuck card when the user wasn't on the detail page. Exe choice stays
-                // available via "设置 .exe…".
+                // available via "Set .exe\u2026".
                 prefs!!.edit().putString("epic_exe_$an", exeFiles[0].absolutePath).apply()
                 // Detect EOS SDK presence so the library can show an "EOS" badge.
                 EpicEosDetector.scanAsync(appCtx, an, installDir, null)
@@ -637,7 +637,7 @@ class EpicGameDetailActivity : ComponentActivity() {
         val dir = prefs!!.getString("epic_dir_$an", null)
         if (dir == null) { resultBarMsg = "Not installed"; return }
         verifyEnabled = false
-        verifyStatusText = "验证中…"
+        verifyStatusText = "Verifying…"
         val appCtx = applicationContext
         DownloadScope.io.launch {
             try {
@@ -996,7 +996,7 @@ private fun EpicGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新") {
+                StoreSection(title = "Updates") {
                     if (!installed) {
                         StoreStatusText("请先安装游戏以检查更新。")
                     } else {
@@ -1004,7 +1004,7 @@ private fun EpicGameDetailScreen(
                         else {
                             val storedVer = prefs.getString("epic_manifest_version_$appName", null)
                             if (storedVer != null) "Installed: ${storedVer.substring(0, minOf(14, storedVer.length))}…"
-                            else "未记录版本 — 点击检查以验证"
+                            else "Version not recorded — tap Check to verify"
                         }
                         StoreStatusText(displayText)
                         Spacer(Modifier.height(8.dp))
@@ -1075,7 +1075,7 @@ private fun EpicGameDetailScreen(
                                     )
                                     if (dlcInstalled) {
                                         Text(
-                                            text = "✓ 已安装",
+                                            text = "✓ Installed",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = INSTALLED_GREEN,
                                             fontWeight = FontWeight.Bold,

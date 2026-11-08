@@ -465,7 +465,7 @@ object SteamDepotDownloader {
         val steamClient = repo.steamClient
         if (steamClient == null) {
             dlog("FAIL: SteamClient is null — not connected to Steam")
-            emitFailed(appId, "未连接到Steam")
+            emitFailed(appId, "Not connected to Steam")
             return
         }
         dlog("SteamClient: connected=${repo.isConnected}, loggedIn=${repo.isLoggedIn}")

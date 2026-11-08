@@ -117,7 +117,7 @@ private fun p2WineD3DMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
             rows += XmbRow.Choice("videoMem", ctx.getString(R.string.graphics_driver_max_device_memory), Icons.Filled.Memory,
                 videoMemEntries, cur.videoMem) { v -> write(sel().copy(videoMem = v)) }
         }
-        rows += XmbRow.Choice("ssm", "离屏渲染模式（Backbuffer可缓解黑屏）", Icons.Filled.Tune, onOff, cur.ssm) { v -> write(sel().copy(ssm = v)) }
+        rows += XmbRow.Choice("ssm", "严格着色器运算", Icons.Filled.Tune, onOff, cur.ssm) { v -> write(sel().copy(ssm = v)) }
         rows += XmbRow.Choice("orm", "离屏渲染模式（Backbuffer可缓解黑屏）", Icons.Filled.Image, withCur(ormOptions, cur.orm), cur.orm) { v -> write(sel().copy(orm = v)) }
         rows += XmbRow.Choice("renderer", "Renderer", Icons.Filled.Layers, withCur(rendOptions, cur.renderer), cur.renderer) { v -> write(sel().copy(renderer = v)) }
         rows
@@ -282,7 +282,7 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
         }
         rows += XmbRow.Choice("vkd3d", ctx.getString(R.string.vkd3d_version), Icons.Filled.Layers,
             if (cur.vkd3d in vkd3dList) vkd3dList else vkd3dList + cur.vkd3d, cur.vkd3d) { v -> write(sel().copy(vkd3d = v)) }
-        rows += XmbRow.Link("vkd3dDownload", "下载 VEGAS 构建", Icons.Filled.CloudDownload) {
+        rows += XmbRow.Link("vkd3dDownload", "下载VKD3D版本", Icons.Filled.CloudDownload) {
             p2ContentDownloadMenu(xmb, "VKD3D下载", ContentProfile.ContentType.CONTENT_TYPE_VKD3D) { load() }
         }
         if (!isVegas) {
@@ -644,7 +644,7 @@ private class P2Vegas(
                 vocab[key].orEmpty().forEach { opts.add(it) }
                 if (opts.isNotEmpty()) {
                     rows += XmbRow.Choice("value", "Value", Icons.Filled.Tune, opts.toList(), r.value,
-                        subtitle = "Values used in stock configs", disabledReason = gatedReason) { v -> applyValue(key, v) }
+                        subtitle = "默认配置中使用的值", disabledReason = gatedReason) { v -> applyValue(key, v) }
                 }
                 val base = baselineRows().firstOrNull { it.key == key }
                 if (base != null && (base.value != r.value || base.enabled != r.enabled)) {

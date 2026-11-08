@@ -331,7 +331,7 @@ private fun XboxLibraryTab(state: XboxLibraryState, wide: Boolean, onOpen: (Xbox
         }
     }
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        CatalogSearchField(query = query, placeholder = "Search your Xbox library…", onQueryChange = { query = it },
+        CatalogSearchField(query = query, placeholder = "搜索您的 Xbox 库…", onQueryChange = { query = it },
             onClear = { query = ""; focusManager.clearFocus() }, onSearch = { focusManager.clearFocus() })
         Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -346,15 +346,15 @@ private fun XboxLibraryTab(state: XboxLibraryState, wide: Boolean, onOpen: (Xbox
         val downloads by DownloadRegistry.entries.collectAsState()
         when {
             state.games.isEmpty() && state.syncing -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "Syncing your library", body = "Fetching the games your account owns or has through Game Pass…")
+                StoreNotice(title = "正在同步您的库", body = "正在获取您的账户拥有或通过 Game Pass 获得的游戏…")
             }
             state.games.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No games found yet",
-                    body = "Games with a PC version, or that stream with Xbox Cloud Gaming, are listed.",
-                    actionLabel = "Sync now", onAction = { state.refresh(true) })
+                StoreNotice(title = "尚未找到游戏",
+                    body = "列出具有 PC 版本或可通过 Xbox Cloud Gaming 串流的游戏。",
+                    actionLabel = "立即同步", onAction = { state.refresh(true) })
             }
             shown.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
+                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
             }
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(if (wide) 132.dp else 118.dp),
@@ -398,7 +398,7 @@ private fun XboxStoreTab(state: XboxLibraryState, wide: Boolean, onOpen: (XboxGa
     fun open(item: CatalogItem) { (state.games.firstOrNull { it.id == item.id } ?: byId[item.id])?.let(onOpen) }
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        CatalogSearchField(query = query, placeholder = "Search PC games on the Microsoft Store…",
+        CatalogSearchField(query = query, placeholder = "在 Microsoft Store 上搜索 PC 游戏…",
             onQueryChange = { query = it; if (it.isBlank()) results = null },
             onClear = { query = ""; results = null; focusManager.clearFocus() },
             onSearch = {
