@@ -1076,6 +1076,9 @@ class FusionHudView(
         // unreadable on a handheld screen. Labels now sit at ~9.4sp.
         val px = sp(12f); val unitPx = px * 0.78f
         val pad = sp(7f); val itemGap = sp(10f)
+        // Phones have rounded screen corners; the strip spans the full parent width, so
+        // inset both ends further than the vertical pad to keep the first/last item clear.
+        val endPad = sp(16f)
 
         // Full parent width. Parent wins over displayMetrics when attached (real, current size);
         // the 1 s self-refresh rebuild picks up rotations once the parent has laid out.
@@ -1088,7 +1091,7 @@ class FusionHudView(
         val baseline = pad - ascent(px)
         val clockStr = clockTimeString()
         val clockW = if (showClockTime) measure(clockStr, px) else 0f
-        val rightLimit = parentW - pad - (if (showClockTime) clockW + itemGap else 0f)
+        val rightLimit = parentW - endPad - (if (showClockTime) clockW + itemGap else 0f)
 
         // Ordered pieces — priority order, placed while they fit.
         class StripPiece(val w: Float, val place: (Float) -> Unit)
@@ -1108,12 +1111,11 @@ class FusionHudView(
                 graphRect = RectF(x, (contentH - graphH) / 2f, x + graphW, (contentH + graphH) / 2f)
             })
         if (showFPS) {
-            val l = ArrayList<Span>()
-            l += Span("1%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low1Fps) ?: "—", colValue, unitPx)
-            l += gap(unitPx); l += Span("0.1%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low01Fps) ?: "—", colValue, unitPx)
-            if (showLow001) {
-                l += gap(unitPx); l += Span("0.01%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low001Fps) ?: "—", colValue, unitPx)
-            }
+            // Only the 1% low on the Strip: 0.1%/0.01% dropped for readability; the value
+            // runs at full px (it's the headline number) while the label stays a unit.
+            val l = listOf(
+                Span("1%", colLo, unitPx), gap(unitPx),
+                Span(lowText(lows.low1Fps) ?: "—", colValue, px))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showGPU) {
@@ -1166,16 +1168,16 @@ class FusionHudView(
         }
 
         // Place while they fit; from the first overflow onward everything drops (lowest priority first).
-        var x = pad
+        var x = endPad
         for (p in pieces) {
-            val nextGap = if (x > pad) itemGap else 0f
+            val nextGap = if (x > endPad) itemGap else 0f
             if (x + nextGap + p.w > rightLimit) break
             x += nextGap
             p.place(x)
             x += p.w
         }
         if (showClockTime)
-            glyphs.add(Glyph(parentW - pad - clockW, baseline, clockStr, blend(colDim), px))
+            glyphs.add(Glyph(parentW - endPad - clockW, baseline, clockStr, blend(colDim), px))
     }
 
     // ---- Measure / draw ---------------------------------------------------
