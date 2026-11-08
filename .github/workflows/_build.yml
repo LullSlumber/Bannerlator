@@ -260,7 +260,13 @@ jobs:
         D=app/src/main/assets/dxvk-nvapi
         M=$D/manifest.json
         URL=$(jq -r .source "$M"); SHA=$(jq -r .sha256 "$M"); VER=$(jq -r .version "$M")
-        curl -fsSL --retry 5 --retry-delay 5 -o /tmp/dxvk-nvapi.tar.gz "$URL"
+        nvapi_ok=0
+        for nv_att in 1 2 3 4 5 6 7 8; do
+          if curl -fsSL --retry 5 --retry-delay 5 -o /tmp/dxvk-nvapi.tar.gz "$URL"; then nvapi_ok=1; break; fi
+          echo "::warning::dxvk-nvapi download attempt ${nv_att} failed, retrying in 40s"
+          sleep 40
+        done
+        if [ "$nvapi_ok" != "1" ]; then echo "::error::dxvk-nvapi download failed after 8 outer attempts"; exit 1; fi
         echo "$SHA  /tmp/dxvk-nvapi.tar.gz" | sha256sum -c -
         mkdir -p /tmp/dxvk-nvapi
         tar -xzf /tmp/dxvk-nvapi.tar.gz -C /tmp/dxvk-nvapi
@@ -504,7 +510,13 @@ jobs:
       if: steps.pa-src.outputs.cache-hit != 'true'
       run: |
         set -euo pipefail
-        curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o pa.tar.gz https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v13.0.tar.gz
+        pa_ok=0
+        for pa_att in 1 2 3 4 5 6 7 8; do
+          if curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o pa.tar.gz https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v13.0.tar.gz; then pa_ok=1; break; fi
+          echo "::warning::pulseaudio download attempt ${pa_att} failed, retrying in 40s"
+          sleep 40
+        done
+        if [ "$pa_ok" != "1" ]; then echo "::error::pulseaudio download failed after 8 outer attempts"; exit 1; fi
         mkdir -p pa13 && tar -xzf pa.tar.gz -C pa13 --strip-components=1 && rm pa.tar.gz
 
     - name: Build the DirectAudio sink into the audio bundle
