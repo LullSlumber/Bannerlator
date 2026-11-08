@@ -471,6 +471,7 @@ class FusionHudView(
             FusionSize.PILL -> buildPill(s)
             FusionSize.MINIMAL -> buildMinimal(s)
             FusionSize.MEGA -> buildMega(s)
+            FusionSize.STRIP -> buildStrip(s)
         }
     }
 
@@ -1060,6 +1061,88 @@ class FusionHudView(
         contentW = maxRight + pad
         contentH = y + pad
         addSubtleClock(pad)   // subtle time-of-day, consistent with the other sizes
+    }
+
+    /**
+     * STRIP — one full-width horizontal band (the DroidDeck-style strip). A single vertically-centred
+     * row: FPS · frametime graph · a " · "-separated stat run · subtle clock right-aligned. The graph
+     * is ALWAYS drawn here (it is the strip's defining element), so the "FPS graph" chip is not offered
+     * in this size ([FusionSize.STRIP_CHIPS]). The band targets the PARENT's width: before the first
+     * layout pass (parent width unknown) it falls back to a content-sized band, and the 1 s refresh
+     * coroutine widens it once the parent reports its width. The long GPU model name is omitted — it
+     * does not fit a single band.
+     */
+    private fun buildStrip(s: HudMetrics.Snapshot) {
+        val fpsPx = sp(16f); val unitPx = fpsPx * 0.42f; val segPx = sp(11.5f)
+        val pad = sp(9f); val segGap = sp(6f); val gh = sp(20f)
+
+        // ---- stat run (between the graph and the clock) ----
+        val segs = ArrayList<List<Span>>()
+        if (showGPU) segs.add(listOf(Span("GPU ${s.gpuPercent ?: "—"}%", colGpu, segPx)))
+        if (showCPU) segs.add(listOf(Span("CPU ${s.cpuPercent ?: "—"}%", colCpu, segPx)))
+        if (showVram && s.vramText() != null) segs.add(listOf(Span("VRAM ${s.vramText()}", colVram, segPx)))
+        if (showRAM) segs.add(listOf(Span("RAM ${s.ramPercent.roundToInt()}%", colRam, segPx)))
+        if (showBattery || showPower) {
+            val l = ArrayList<Span>(); var any = false
+            if (showBattery && s.battery.percent != null) { l += Span("BAT ${s.battery.percent}%", colBat, segPx); any = true }
+            if (showPower && s.battery.watts > 0f) { if (any) l += Span(" ", colDim, segPx); l += Span("${fmt1(s.battery.watts)}W", colDim, segPx) }
+            if (any) segs.add(l)
+        }
+        if (showFPS) {
+            val l = ArrayList<Span>()
+            l += Span("1% ", colDim, segPx); l += Span(lowText(lows.low1Fps) ?: "—", colLo, segPx)
+            l += Span(" · 0.1% ", colDim, segPx); l += Span(lowText(lows.low01Fps) ?: "—", colLo, segPx)
+            if (showLow001) { l += Span(" · 0.01% ", colDim, segPx); l += Span(lowText(lows.low001Fps) ?: "—", colLo, segPx) }
+            segs.add(l)
+            segs.add(listOf(Span("${fmt1(1000f / max(fpsNow, 1f))}ms", colDim, segPx)))
+        }
+        if (showEngine && engineLabel.isNotBlank()) segs.add(listOf(Span(engineLabel, colDim, segPx)))
+        if (displayServer.isNotBlank()) segs.add(listOf(Span(displayServer, colDisp, segPx)))
+
+        val left = if (showFPS) listOf(
+            Span(fpsText(fpsNow), colValue, fpsPx),
+            Span("fps", colDim, unitPx),
+        ) else emptyList()
+
+        // ---- widths: graph gets whatever the parent width has left over ----
+        val leftW = runWidth(left)
+        val sepW = measure(" · ", segPx)
+        var segsW = 0f
+        for ((i, g) in segs.withIndex()) { if (i > 0) segsW += sepW; segsW += runWidth(g) }
+        val clockPx = sp(9.5f)
+        val clockStr = clockTimeString()
+        val clockW = if (showClockTime) measure(clockStr, clockPx) else 0f
+
+        val graphMinW = sp(80f)
+        val fixedW = pad + leftW + (if (left.isNotEmpty()) segGap else 0f) + segsW +
+            (if (segs.isNotEmpty()) segGap else 0f) + clockW + pad
+        val parentW = (parent as? View)?.width?.toFloat() ?: 0f
+        val targetW = if (parentW > sp(60f)) parentW - sp(10f) else fixedW + graphMinW
+        val graphW = max(graphMinW, targetW - fixedW)
+        contentW = fixedW + graphW
+        contentH = pad * 2f + max(lineH(fpsPx), max(gh, lineH(segPx)))
+
+        // ---- placement: one row, all baselines centred on cy ----
+        val cy = contentH / 2f
+        fun base(px: Float) = cy - ascent(px) - lineH(px) / 2f
+        var x = pad
+        if (left.isNotEmpty()) {
+            placeRun(x, base(fpsPx), left)
+            x += leftW + segGap
+        }
+        graphRect = RectF(x, cy - gh / 2f, x + graphW, cy + gh / 2f)
+        x += graphW
+        if (segs.isNotEmpty()) {
+            x += segGap
+            for ((i, g) in segs.withIndex()) {
+                if (i > 0) { placeRun(x, base(segPx), listOf(Span(" · ", colDim, segPx))); x += sepW }
+                x = placeRun(x, base(segPx), g)
+            }
+        }
+        if (showClockTime) {
+            val cw = measure(clockStr, clockPx)
+            glyphs.add(Glyph(contentW - pad - cw, base(clockPx), clockStr, blend(colDim), clockPx))
+        }
     }
 
     // ---- Measure / draw ---------------------------------------------------
