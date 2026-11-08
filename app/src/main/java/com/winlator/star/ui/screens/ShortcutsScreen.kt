@@ -1181,8 +1181,8 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
             title = { Text("属性") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(if (didReset) "游玩次数: 0" else "Number of times played: $playCount")
-                    Text(if (didReset) "游玩时间: 0d 00h 00m 00s" else "Playtime: $formatted")
+                    Text(if (didReset) "游玩次数: 0" else "游玩次数: $playCount")
+                    Text(if (didReset) "游玩时间: 0d 00h 00m 00s" else "游玩时间: $formatted")
                     Button(
                         onClick = {
                             playtimePrefs.edit().remove(playtimeKey).remove(playCountKey).apply()
@@ -9202,7 +9202,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Components", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             DpButton(dp, "cmpRefresh", onActivate = { refreshCatalog() }) {
-                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "Checking…" else "检查 Nightlies") }
+                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "检查中…" else "检查 Nightlies") }
             }
         }
         Text(

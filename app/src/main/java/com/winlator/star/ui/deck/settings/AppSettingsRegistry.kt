@@ -139,13 +139,13 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.general.updateNotify", "app.general", T("更新s"), T("打开应用时"), SIMPLE,
+            "app.general.updateNotify", "app.general", T("更新"), T("打开应用时"), SIMPLE,
             hint = T("在 Deck 界面中，游戏和大屏幕模式都会在主页打开。"), tech = T("有更新时通知我"),
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(UpdateManager.isNotifyEnabled(c)) }, { c, v -> UpdateManager.setNotifyEnabled(c, v == "1") }),
         ),
         app(
-            "app.general.updatePrerelease", "app.general", T("更新s"), T("Include beta builds"), ADVANCED,
+            "app.general.updatePrerelease", "app.general", T("更新"), T("包含 Beta 测试版"), ADVANCED,
             hint = T("Pre-releases may be less stable."), tech = T("Include pre-releases"),
             control = { Control.Toggle },
             // A channel switch re-checks at once, as classic Settings does: an unforced check would answer from the 6 h cache.

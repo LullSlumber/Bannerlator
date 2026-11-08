@@ -555,7 +555,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // ── Updates ──────────────────────────────────────────────────
-        FieldSetLabel("更新s")
+        FieldSetLabel("更新")
         FieldSet {
             val latest = updateInfo
             Row(verticalAlignment = Alignment.CenterVertically) {

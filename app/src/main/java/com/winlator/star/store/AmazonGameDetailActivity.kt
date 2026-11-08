@@ -863,7 +863,7 @@ private fun AmazonGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新s") {
+                StoreSection(title = "更新") {
                     AmazonUpdatesContent(
                         updateStatusText = updateStatusText,
                         checkUpdatesEnabled = checkUpdatesEnabled,

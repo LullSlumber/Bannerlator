@@ -998,7 +998,7 @@ private fun EpicGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新s") {
+                StoreSection(title = "更新") {
                     if (!installed) {
                         StoreStatusText("请先安装游戏以检查更新。")
                     } else {

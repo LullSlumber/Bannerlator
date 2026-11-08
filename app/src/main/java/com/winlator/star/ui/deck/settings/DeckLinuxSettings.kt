@@ -489,7 +489,7 @@ internal class DeckLinuxSection(
             GroupCard(first = true, last = available.isEmpty(), highlight = false) {
                 DeckActionRow(DeckAction(
                     "check", Icons.Filled.Refresh,
-                    if (checking) L("Checking…") else L("检查 Nightlies"),
+                    if (checking) L("检查中…") else L("检查 Nightlies"),
                     when {
                         catalogAt > 0 && available.isEmpty() -> "Checked ${time(catalogAt)}. Nothing new since then."
                         catalogAt > 0 -> "Checked ${time(catalogAt)}."
