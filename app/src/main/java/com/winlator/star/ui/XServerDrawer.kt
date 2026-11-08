@@ -3456,8 +3456,9 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     val gameNative = hudStyle == "gamenative"
     val fusion = hudStyle == "fusion"
     val rich = gameHub || gameNative || fusion   // opacity + FPS graph + GPU model + color/outline
-    // Fusion size mode (also live-cycled by tapping the Fusion HUD in-game).
-    val fusionSizes = listOf("full", "tiles", "pill", "minimal", "mega")
+    // Fusion size mode (also live-cycled by tapping the Fusion HUD in-game). Derived from the enum
+    // (single source of truth) so a new size can't drift out of this picker.
+    val fusionSizes = com.winlator.star.widget.fusionhud.FusionSize.values().map { it.token }
     var fusionSize by remember(cfg) { mutableStateOf(cfg.getOrDefault("hudSize", "pill")) }
     // Chips the selected Fusion size actually renders (single source of truth in FusionSize).
     val fusionChips = com.winlator.star.widget.fusionhud.FusionSize.from(fusionSize).supportedChips()
@@ -3708,7 +3709,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
                 modifier = Modifier.padding(start = 4.dp, top = 2.dp, bottom = 4.dp)
             )
             if (fusion) {
-                HudChipRow("Size", listOf("Full", "Tiles", "Pill", "Minimal", "Mega"), fusionSizes.indexOf(fusionSize).coerceAtLeast(0)) { fusionSize = fusionSizes[it]; apply() }
+                HudChipRow("Size", com.winlator.star.widget.fusionhud.FusionSize.values().map { it.label }, fusionSizes.indexOf(fusionSize).coerceAtLeast(0)) { fusionSize = fusionSizes[it]; apply() }
             }
         }
 

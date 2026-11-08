@@ -2,7 +2,7 @@ package com.winlator.star.widget.fusionhud
 
 /**
  * Size modes for the Fusion HUD (the 4th selectable in-game overlay style). One shared color-coded
- * visual language, four amounts of detail — see the approved mockup. The config value is the lower-case
+ * visual language, several amounts of detail — see the approved mockup. The config value is the lower-case
  * token stored under the `hudSize` key; the label is the user-facing string.
  */
 enum class FusionSize(val token: String, val label: String) {
@@ -10,9 +10,10 @@ enum class FusionSize(val token: String, val label: String) {
     TILES("tiles", "Tiles"),
     PILL("pill", "Pill"),
     MINIMAL("minimal", "Minimal"),
-    MEGA("mega", "Mega");
+    MEGA("mega", "Mega"),
+    STRIP("strip", "Strip");
 
-    /** Next size in the tap-cycle: Full → Tiles → Pill → Minimal → Mega → Full. */
+    /** Next size in the tap-cycle: Full → Tiles → Pill → Minimal → Mega → Strip → Full. */
     fun next(): FusionSize {
         val all = values()
         return all[(ordinal + 1) % all.size]
@@ -29,6 +30,7 @@ enum class FusionSize(val token: String, val label: String) {
         PILL -> PILL_CHIPS
         FULL, TILES -> STANDARD_CHIPS
         MEGA -> MEGA_CHIPS
+        STRIP -> STRIP_CHIPS
     }
 
     companion object {
@@ -50,6 +52,9 @@ enum class FusionSize(val token: String, val label: String) {
             "Per-core", "Swap", "Network", "Resolution", "Proton", "Wrapper", "DX ver", "Session",
         )
         val MEGA_CHIPS = STANDARD_CHIPS + MEGA_ONLY
+        // Strip renders the same metric set as Full/Tiles (single row across the parent width);
+        // overflow pieces drop off before the clock instead of toggling chips differently.
+        val STRIP_CHIPS = STANDARD_CHIPS
     }
 }
 

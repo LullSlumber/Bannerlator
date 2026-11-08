@@ -6584,8 +6584,9 @@ internal fun FpsCounterConfigDialog(
     val gameNative = hudStyle == "gamenative"
     val fusion = hudStyle == "fusion"
     val rich = gameHub || gameNative || fusion   // opacity + FPS graph + GPU model + color/outline
-    // Fusion size mode (Full/Tiles/Pill/Minimal/Mega); also live-cycled by tapping the Fusion HUD in-game.
-    val fusionSizes = listOf("full", "tiles", "pill", "minimal", "mega")
+    // Fusion size mode (Full/Tiles/Pill/Minimal/Mega/Strip); also live-cycled by tapping the Fusion HUD
+    // in-game. Derived from the enum (single source of truth) so a new size can't drift out of this picker.
+    val fusionSizes = com.winlator.star.widget.fusionhud.FusionSize.values().map { it.token }
     var fusionSize by remember { mutableStateOf(cfg.getOrDefault("hudSize", "pill")) }
     // The chips this Fusion size actually renders (single source of truth in FusionSize) — used below to
     // show only the relevant metric chips for the selected view/size.
@@ -6736,7 +6737,7 @@ internal fun FpsCounterConfigDialog(
                     Spacer(Modifier.height(8.dp))
                     HudThreeStop(
                         "Size",
-                        listOf("Full", "Tiles", "Pill", "Minimal", "Mega"),
+                        com.winlator.star.widget.fusionhud.FusionSize.values().map { it.label },
                         fusionSizes.indexOf(fusionSize).coerceAtLeast(0)
                     ) { fusionSize = fusionSizes[it] }
                 }

@@ -471,6 +471,7 @@ class FusionHudView(
             FusionSize.PILL -> buildPill(s)
             FusionSize.MINIMAL -> buildMinimal(s)
             FusionSize.MEGA -> buildMega(s)
+            FusionSize.STRIP -> buildStrip(s)
         }
     }
 
@@ -1060,6 +1061,119 @@ class FusionHudView(
         contentW = maxRight + pad
         contentH = y + pad
         addSubtleClock(pad)   // subtle time-of-day, consistent with the other sizes
+    }
+
+    /**
+     * Strip — a one-line bar spanning the parent width (ported from DroidDeck PR #1935, GPL-3.0).
+     * Left to right: API + FPS + frametime, [frametime graph], the percentile lows, GPU, CPU, VRAM,
+     * RAM, battery, display server, GPU model, HDR — ordered by priority, so anything that no longer
+     * fits before the clock is dropped from the END (lowest priority first); the clock stays pinned
+     * to the right end. Position still comes from the shared drag + lock ([HudLockController]):
+     * drag it to the top or bottom edge and long-press to lock it there — no edge snapping needed.
+     */
+    private fun buildStrip(s: HudMetrics.Snapshot) {
+        val px = sp(11f); val unitPx = px * 0.62f
+        val pad = sp(7f); val itemGap = sp(9f)
+
+        // Full parent width. Parent wins over displayMetrics when attached (real, current size);
+        // the 1 s self-refresh rebuild picks up rotations once the parent has laid out.
+        val parentW = (parent as? View)?.width?.takeIf { it > 0 }
+            ?: resources.displayMetrics.widthPixels
+
+        val line = lineH(px)
+        contentW = parentW
+        contentH = pad * 2 + line
+        val baseline = pad - ascent(px)
+        val clockStr = clockTimeString()
+        val clockW = if (showClockTime) measure(clockStr, px) else 0f
+        val rightLimit = parentW - pad - (if (showClockTime) clockW + itemGap else 0f)
+
+        // Ordered pieces — priority order, placed while they fit.
+        class StripPiece(val w: Float, val place: (Float) -> Unit)
+        val pieces = ArrayList<StripPiece>()
+        if (showFPS) {
+            val l = ArrayList<Span>()
+            l += Span(apiLabel(), colFps, px); l += gap(unitPx)
+            l += Span(fpsText(fpsNow), colValue, px); l += Span("fps", colDim, unitPx)
+            l += gap(unitPx)
+            l += Span(fmt1(1000f / max(fpsNow, 1f)) + "ms", colDim, unitPx)
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        val graphW = if (showGraph) sp(56f) else 0f
+        val graphH = line * 0.9f
+        if (showGraph)
+            pieces.add(StripPiece(graphW) { x ->
+                graphRect = RectF(x, (contentH - graphH) / 2f, x + graphW, (contentH + graphH) / 2f)
+            })
+        if (showFPS) {
+            val l = ArrayList<Span>()
+            l += Span("1%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low1Fps) ?: "—", colValue, unitPx)
+            l += gap(unitPx); l += Span("0.1%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low01Fps) ?: "—", colValue, unitPx)
+            if (showLow001) {
+                l += gap(unitPx); l += Span("0.01%", colLo, unitPx); l += gap(unitPx); l += Span(lowText(lows.low001Fps) ?: "—", colValue, unitPx)
+            }
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showGPU) {
+            val l = ArrayList<Span>()
+            l += Span("GPU", colGpu, unitPx); l += gap(unitPx)
+            l += numUnit(s.gpuPercent?.toString(), "%", px, unitPx)
+            if (showGpuTemp) tempSpans(s.gpuTempC, HudMetrics.TempSensor.GPU, px, unitPx)
+                .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showCPU) {
+            val l = ArrayList<Span>()
+            l += Span("CPU", colCpu, unitPx); l += gap(unitPx)
+            l += numUnit(s.cpuPercent?.toString(), "%", px, unitPx)
+            if (showCpuTemp) tempSpans(s.cpuTempC, HudMetrics.TempSensor.CPU, px, unitPx)
+                .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showVram && s.vramText() != null) {
+            val l = listOf(Span("VRAM", colVram, unitPx), gap(unitPx)) + valueUnit(s.vramText()!!, px, unitPx)
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showRAM) {
+            val l = listOf(
+                Span("RAM", colRam, unitPx), gap(unitPx),
+                Span(s.ramUsedText(), colValue, px), gap(unitPx),
+                Span("${s.ramPercent.roundToInt()}%", colValue, px))
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showBattery || showPower) {
+            val l = ArrayList<Span>(); var any = false
+            if (showBattery && s.battery.percent != null) { l += Span("${s.battery.percent}%", colValue, px); any = true }
+            if (showPower && s.battery.watts > 0f) { if (any) l += gap(unitPx); l += Span("${fmt1(s.battery.watts)}W", colDim, px); any = true }
+            if (any) {
+                val full = listOf(Span("BAT", colBat, unitPx), gap(unitPx)) + l
+                pieces.add(StripPiece(runWidth(full)) { x -> placeRun(x, baseline, full) })
+            }
+        }
+        if (displayServer.isNotBlank()) {
+            val l = listOf(Span(displayServer, colDisp, unitPx))
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (showGpuModel && gpuNameText().isNotBlank()) {
+            val l = gpuModelSpans(unitPx, colDim, compact = true)
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+        if (hdrState != FusionHdr.NONE) {
+            val l = hdrLine(unitPx)
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
+
+        // Place while they fit; from the first overflow onward everything drops (lowest priority first).
+        var x = pad
+        for (p in pieces) {
+            val nextGap = if (x > pad) itemGap else 0f
+            if (x + nextGap + p.w > rightLimit) break
+            x += nextGap
+            p.place(x)
+            x += p.w
+        }
+        if (showClockTime)
+            glyphs.add(Glyph(parentW - pad - clockW, baseline, clockStr, blend(colDim), px))
     }
 
     // ---- Measure / draw ---------------------------------------------------
