@@ -171,6 +171,9 @@ class FusionHudView(
     private val tileRects = ArrayList<RectF>()
     private var pillBorder: RectF? = null
     private var graphRect: RectF? = null
+    // Strip's accent marker dot (the ● at the left end, DroidDeck-style).
+    private val stripDotPaint = android.graphics.Paint().apply { isAntiAlias = true }
+    private var stripDot: RectF? = null
     private var contentW = 0f
     private var contentH = 0f
 
@@ -462,7 +465,7 @@ class FusionHudView(
 
     // ---- Layout builders --------------------------------------------------
     private fun rebuild() {
-        glyphs.clear(); tileRects.clear(); pillBorder = null; graphRect = null
+        glyphs.clear(); tileRects.clear(); pillBorder = null; graphRect = null; stripDot = null
         val s = snap
         if (s == null) { contentW = 0f; contentH = 0f; return }
         when (size) {
@@ -1072,9 +1075,9 @@ class FusionHudView(
      * drag it to the top or bottom edge and long-press to lock it there — no edge snapping needed.
      */
     private fun buildStrip(s: HudMetrics.Snapshot) {
-        // 12sp base / 0.78 label ratio: 0.62 made the GPU/CPU/RAM/lows labels ~6.8sp —
-        // unreadable on a handheld screen. Labels now sit at ~9.4sp.
-        val px = sp(12f); val unitPx = px * 0.78f
+        // Faithful replica of DroidDeck's Strip (PR #1935): one uniform font size, an
+        // accent marker dot at the left end, coloured labels with white values.
+        val px = sp(12f); val unitPx = px
         val pad = sp(7f); val itemGap = sp(10f)
         // Phones have rounded screen corners; the strip spans the full parent width, so
         // inset both ends further than the vertical pad to keep the first/last item clear.
@@ -1096,12 +1099,17 @@ class FusionHudView(
         // Ordered pieces — priority order, placed while they fit.
         class StripPiece(val w: Float, val place: (Float) -> Unit)
         val pieces = ArrayList<StripPiece>()
+
+        // Marker dot (DroidDeck-style accent ●) — first, so it's the last thing to drop.
+        val dotR = px * 0.35f
+        pieces.add(StripPiece(dotR * 2) { x ->
+            stripDot = RectF(x, contentH / 2f - dotR, x + dotR * 2, contentH / 2f + dotR)
+        })
+
         if (showFPS) {
-            val l = ArrayList<Span>()
-            l += Span(apiLabel(), colFps, px); l += gap(unitPx)
-            l += Span(fpsText(fpsNow), colValue, px); l += Span("fps", colDim, unitPx)
-            l += gap(unitPx)
-            l += Span(fmt1(1000f / max(fpsNow, 1f)) + "ms", colDim, unitPx)
+            val l = listOf(
+                Span(apiLabel(), colFps, px), gap(unitPx),
+                Span(fpsText(fpsNow), colValue, px), Span("fps", colDim, unitPx))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         val graphW = if (showGraph) sp(56f) else 0f
@@ -1111,8 +1119,7 @@ class FusionHudView(
                 graphRect = RectF(x, (contentH - graphH) / 2f, x + graphW, (contentH + graphH) / 2f)
             })
         if (showFPS) {
-            // Only the 1% low on the Strip: 0.1%/0.01% dropped for readability; the value
-            // runs at full px (it's the headline number) while the label stays a unit.
+            // Only the 1% low on the Strip (0.1%/0.01% dropped for readability).
             val l = listOf(
                 Span("1%", colLo, unitPx), gap(unitPx),
                 Span(lowText(lows.low1Fps) ?: "—", colValue, px))
@@ -1141,13 +1148,14 @@ class FusionHudView(
         if (showRAM) {
             val l = listOf(
                 Span("RAM", colRam, unitPx), gap(unitPx),
-                Span(s.ramUsedText(), colValue, px), gap(unitPx),
                 Span("${s.ramPercent.roundToInt()}%", colValue, px))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showBattery || showPower) {
             val l = ArrayList<Span>(); var any = false
             if (showBattery && s.battery.percent != null) { l += Span("${s.battery.percent}%", colValue, px); any = true }
+            if (showBatteryTemp) tempSpans(s.battery.tempC, HudMetrics.TempSensor.BATTERY, px, unitPx)
+                .let { if (it.isNotEmpty()) { if (any) l += gap(unitPx); l += it; any = true } }
             if (showPower && s.battery.watts > 0f) { if (any) l += gap(unitPx); l += Span("${fmt1(s.battery.watts)}W", colDim, px); any = true }
             if (any) {
                 val full = listOf(Span("BAT", colBat, unitPx), gap(unitPx)) + l
@@ -1222,6 +1230,12 @@ class FusionHudView(
             drawPaint.textSize = g.sizePx
             drawPaint.color = g.color
             canvas.drawText(g.text, g.x, g.baseline, drawPaint)
+        }
+
+        // Strip marker dot — accent colour, like DroidDeck's.
+        stripDot?.let {
+            stripDotPaint.color = AppThemeState.getCurrentAccentArgb()
+            canvas.drawCircle(it.centerX(), it.centerY(), it.width() / 2f, stripDotPaint)
         }
 
         // Frametime graph
