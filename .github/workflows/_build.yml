@@ -441,7 +441,13 @@ jobs:
         # Without that file nothing is fetched, the apk carries no gamescope, and sessions keep the runtime's own.
         if [ -f tools/gamescope/release.env ]; then
           . tools/gamescope/release.env
-          curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o gamescope.tzst "${GAMESCOPE_URL}"
+          gs_ok=0
+          for gs_att in 1 2 3 4 5; do
+            if curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o gamescope.tzst "${GAMESCOPE_URL}"; then gs_ok=1; break; fi
+            echo "::warning::gamescope download attempt ${gs_att} failed, retrying in 45s"
+            sleep 45
+          done
+          if [ "$gs_ok" != "1" ]; then echo "::error::gamescope download failed after 5 outer attempts"; exit 1; fi
           echo "${GAMESCOPE_SHA256}  gamescope.tzst" | sha256sum -c -
           tar --use-compress-program=unzstd -xf gamescope.tzst -C "$D"
           test -f "$D/usr/local/bin/gamescope"
@@ -454,14 +460,19 @@ jobs:
         # Each library is stored under the SONAME it is loaded by, as a real file, because assets cannot carry symlinks.
         M="$D/usr/local/lib/mangoapp"
         mkdir -p "$M" mango-pkgs
-        grep -v '^#' tools/mangoapp/packages.txt | while read -r sum url; do
-          [ -n "$url" ] || continue
-          # Valve's package servers sometimes reset a connection, and plain --retry does not retry that, so every error is retried.
-          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 -o mango-pkgs/pkg.tar.zst "$url"
-          echo "$sum  mango-pkgs/pkg.tar.zst" | sha256sum -c -
-          tar --use-compress-program=unzstd -xf mango-pkgs/pkg.tar.zst -C mango-pkgs
-          rm mango-pkgs/pkg.tar.zst
+        mango_done=0
+        for mg_att in 1 2 3 4 5; do
+          if grep -v '^#' tools/mangoapp/packages.txt | while read -r sum url; do
+            [ -n "$url" ] || continue
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 -o mango-pkgs/pkg.tar.zst "$url" || exit 9
+            echo "$sum  mango-pkgs/pkg.tar.zst" | sha256sum -c - || exit 9
+            tar --use-compress-program=unzstd -xf mango-pkgs/pkg.tar.zst -C mango-pkgs || exit 9
+            rm mango-pkgs/pkg.tar.zst
+          done; then mango_done=1; break; fi
+          echo "::warning::mango packages attempt ${mg_att} failed, retrying in 45s"
+          sleep 45
         done
+        if [ "$mango_done" != "1" ]; then echo "::error::mango packages failed after 5 outer attempts"; exit 1; fi
         install -m644 mango-pkgs/usr/bin/mangoapp "$M/mangoapp"
         for so in libfmt.so.10 libspdlog.so.1.13 libglfw.so.3 libtraceevent.so.1 libtracefs.so.1; do
           cp -L "mango-pkgs/usr/lib/$so" "$M/$so"
