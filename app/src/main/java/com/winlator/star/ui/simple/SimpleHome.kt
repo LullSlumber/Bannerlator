@@ -85,7 +85,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /** The Simple home's four sections, in L1/R1 order. */
-internal val SIMPLE_SECTIONS = listOf("Library", "Stores", "Manage", "Settings")
+internal val SIMPLE_SECTIONS = listOf("Library", "商店", "Manage", "Settings")
 internal const val SEC_LIBRARY = 0
 internal const val SEC_STORES = 1
 internal const val SEC_MANAGE = 2
@@ -96,7 +96,7 @@ private val LAYOUTS = listOf(AppThemeState.SIMPLE_LAYOUT_SHELF, AppThemeState.SI
 internal fun layoutLabel(layout: String): String = when (layout) {
     AppThemeState.SIMPLE_LAYOUT_RAIL -> "Rail"
     AppThemeState.SIMPLE_LAYOUT_FOCUS -> "Focus"
-    else -> "Shelf"
+    else -> "板面"
 }
 
 /** The Rail layout's library orders, cycled with Y. */
@@ -228,7 +228,7 @@ internal class SimpleController {
             return listOf(
                 SimpleAction("Play", { d.launch(g) }, primary = true),
                 SimpleAction("Game settings", { d.gameSettings(g) }),
-                SimpleAction("Game menu", { d.gameMenu(g) }),
+                SimpleAction("游戏菜单", { d.gameMenu(g) }),
             )
         }
         val it = focusedItem() ?: return emptyList()
@@ -490,7 +490,7 @@ internal fun SimpleHome(
                 value = layoutLabel(layout),
                 cycle = { d -> AppThemeState.setSimpleLayout(LAYOUTS[wrapIndex(LAYOUTS.indexOf(layout) + d, LAYOUTS.size)]) },
             ),
-            SimpleItem("appearance", "Appearance", "Interface style, theme and accent colour", Icons.Filled.Palette, open = { navigate(Screen.Appearance.route) }),
+            SimpleItem("appearance", "外观", "Interface style, theme and accent colour", Icons.Filled.Palette, open = { navigate(Screen.Appearance.route) }),
             SimpleItem("settings", "Settings", "Everything else about the app", Icons.Filled.Settings, open = { navigate(Screen.Settings.route) }),
             SimpleItem("defaults", "Container defaults", "What every new container starts with", Icons.Filled.Tune, open = { navigate(DeckSettingsRoutes.DEFAULTS) }),
             SimpleItem("about", "关于", "Version and credits", Icons.Filled.Info, open = { about() }),
@@ -565,7 +565,7 @@ private fun SimpleHelp(layout: String, onClose: () -> Unit) {
         add("A" to "Play or open")
         add("B" to "Back")
         add("X" to "Game settings")
-        add("Y" to if (layout == AppThemeState.SIMPLE_LAYOUT_RAIL) "Game order (in the list), game menu" else "Game menu")
+        add("Y" to if (layout == AppThemeState.SIMPLE_LAYOUT_RAIL) "Game order (in the list), game menu" else "游戏菜单")
         add("L1" to "Previous section")
         add("R1" to "Next section")
         add("L2" to if (layout == AppThemeState.SIMPLE_LAYOUT_RAIL) "Page up" else "Previous store filter")

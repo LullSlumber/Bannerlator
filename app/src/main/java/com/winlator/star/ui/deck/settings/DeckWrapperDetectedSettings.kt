@@ -315,8 +315,8 @@ private fun TextDialog(title: String, hint: String, current: String, onDismiss: 
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    hint.ifBlank { L("Passed to the wrapper as it is. Leave blank to leave it unset.") } +
-                        L(" \";\" and \"=\" are left out."),
+                    hint.ifBlank { L("按原样传递给包装器。留空则保持未设置。") } +
+                        L(" 分号和等号会被省略。"),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.5.sp,
                 )

@@ -210,9 +210,9 @@ private const val HELP_VAC =
         "~15 s is fine. Auto-detected from Steam's app info (Valve Anti-Cheat category); flip it if a " +
         "VAC game is misdetected. SteamLite only."
 private const val HELP_REMEMBER =
-    "Saves this launch method for this game and skips the popup next time. You can change it later."
+    "为此游戏保存此启动方法并下次跳过弹出窗口。您可以稍后更改。"
 private const val HELP_DETAILS =
-    "Opens the full Steam game page — achievements grid, DLC and cloud saves."
+    "打开完整的Steam游戏页面 — 成就网格、DLC和云存档。"
 private const val HELP_STEAMLITE_CLIENT =
     "Bannerlator's small Steam client for online (VAC) launches. Newer versions add features the app " +
         "relies on (live launch status, in-game friends). Update downloads ~18 MB and re-stages it into " +
@@ -1092,7 +1092,7 @@ private fun DeckLandscapeCard(
                                     }
                                 }
                                 DeckOptionRow(
-                                    title = "Remember my choice", badge = null,
+                                    title = "记住我的选择", badge = null,
                                     subtitle = if (roomy) rememberSubtitle(shortcut.name) else null,
                                     accent = accent, onHelp = { toggleHelp(HELP_REMEMBER) }, onClick = { onRemember(!rememberChoice) },
                                 ) { DeckPill(rememberChoice, accent) }
@@ -1442,9 +1442,9 @@ private const val SUB_PASSTHROUGH = "将手柄直接发送给游戏。适用于�
 private const val SUB_STEAM_INPUT = "仅适用于仅通过 Steam 看到手柄的游戏（无人深空）。对于已经使用手柄的游戏，请保持关闭。"
 
 private fun vacSubtitle(detectedVac: Boolean?): String = when (detectedVac) {
-    true -> "Detected: VAC-secured. Steam must start it (up to ~60 s wait)."
-    false -> "Detected: no VAC. Direct start after ~15 s is fine."
-    null -> "Auto-detected from Steam's app info."
+    true -> "检测到：VAC保护。Steam必须启动它（最多等待约60秒）。"
+    false -> "检测到：无VAC。约15秒后直接启动即可。"
+    null -> "从Steam的应用信息自动检测。"
 }
 
 private fun rememberSubtitle(gameName: String): String = "Skip this popup next time for $gameName."
@@ -1513,7 +1513,7 @@ private fun ColumnScope.OptionsBlock(
         )
     }
     OptionRow(
-        title = "Remember my choice",
+        title = "记住我的选择",
         badge = null,
         subtitle = if (compact) null else rememberSubtitle(shortcut.name),
         accent = accent,
@@ -2035,16 +2035,16 @@ private fun sourceSubline(source: GameSource, appId: Int): String = when (source
 }
 
 private fun methodDescription(method: LaunchMethod, source: GameSource): String = when (method) {
-    LaunchMethod.STEAMLITE -> "Real Steam — VAC servers, real achievements & cloud saves."
-    LaunchMethod.APPSTEAM -> "App's own Steam session — friends & chat stay online. Experimental; VAC unproven."
-    LaunchMethod.GOLDBERG -> "Offline emulator — no login, lightweight, single-player."
+    LaunchMethod.STEAMLITE -> "真正的Steam — VAC服务器、真正的成就和云存档。"
+    LaunchMethod.APPSTEAM -> "应用自身的Steam会话 — 好友和聊天保持在线。实验性；VAC未经验证。"
+    LaunchMethod.GOLDBERG -> "离线模拟器 — 无需登录，轻量级，单人。"
     LaunchMethod.RAW -> when (source) {
-        GameSource.EPIC -> "Run the game's .exe directly."
-        GameSource.GOG -> "Run the DRM-free .exe directly — no launcher."
-        GameSource.AMAZON -> "Run the game's .exe directly — no Amazon Games app."
+        GameSource.EPIC -> "直接运行游戏的.exe。"
+        GameSource.GOG -> "直接运行无DRM的.exe — 无启动器。"
+        GameSource.AMAZON -> "直接运行游戏的.exe — 无需Amazon Games应用。"
         GameSource.XBOX -> "Each launch checks the license with Microsoft and starts the game's .exe; no Xbox app."
         GameSource.CUSTOM -> "直接运行.exe。"
-        GameSource.STEAM -> "Run the game's .exe directly — no Steam layer."
+        GameSource.STEAM -> "直接运行游戏的.exe — 无Steam层。"
     }
     LaunchMethod.STREAM -> "Plays from Xbox Cloud Gaming — nothing runs here; picture, sound and controller go over the network."
 }

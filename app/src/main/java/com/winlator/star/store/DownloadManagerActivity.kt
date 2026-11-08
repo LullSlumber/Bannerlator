@@ -528,7 +528,7 @@ private fun DownloadManagerScreen(
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     if (entries.isEmpty()) {
                         Text(
-                            text = "No downloads or installed games yet.",
+                            text = "尚无下载或已安装的游戏。",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.align(Alignment.Center).padding(24.dp),
@@ -600,7 +600,7 @@ private fun DownloadManagerScreen(
         ) {
             if (entries.isEmpty()) {
                 Text(
-                    text = "No downloads or installed games yet.",
+                    text = "尚无下载或已安装的游戏。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center).padding(24.dp),
@@ -788,7 +788,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
 
                     DownloadState.CANCELLED -> {
@@ -803,7 +803,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }
@@ -883,7 +883,7 @@ private fun ActiveContent(
             ),
             modifier = Modifier.dmButton(look),
             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-        ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
 
         if (entry.supportsPause) {
             Button(
@@ -991,7 +991,7 @@ private fun QueuedCard(
                         ),
                         modifier = Modifier.dmButton(look),
                         contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                    ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+                    ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                 }
             }
         }

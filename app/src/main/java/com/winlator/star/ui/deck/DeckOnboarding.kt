@@ -90,13 +90,13 @@ import com.winlator.star.ui.theme.themePresets
 
 /** The seven first-run steps, in order. */
 private val ONBOARDING_STEPS = listOf(
-    "Welcome to Bannerlator",
-    "Access to your files",
+    "欢迎使用 Bannerlator",
+    "访问您的文件",
     "Notifications",
-    "Make it yours",
-    "Installing the base system",
-    "Sign in to your stores (optional)",
-    "You're ready",
+    "按您的喜好设置",
+    "正在安装基础系统",
+    "登录您的商店（可选）",
+    "您已准备就绪",
 )
 
 /** The one interface size the first run offers: Compact, Appearance's UI size at 80%. The full slider stays in Appearance. */
@@ -267,7 +267,7 @@ private fun DeckOnboardingContent(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OnboardingMark(40)
                     Spacer(Modifier.width(12.dp))
-                    Text("Set up Bannerlator", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                    Text("设置 Bannerlator", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
                 }
                 Spacer(Modifier.height(14.dp))
                 LinearProgressIndicator(
@@ -307,7 +307,7 @@ private fun StepPanel(step: Int, modifier: Modifier) {
     ) {
         OnboardingMark(64)
         Spacer(Modifier.height(24.dp))
-        Text("Set up Bannerlator", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, lineHeight = 32.sp)
+        Text("设置 Bannerlator", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, lineHeight = 32.sp)
         Spacer(Modifier.height(20.dp))
         ONBOARDING_STEPS.forEachIndexed { i, label ->
             val current = i == step
@@ -407,13 +407,13 @@ private fun StepBody(
     Spacer(Modifier.height(14.dp))
     Text(
         text = when (step) {
-            0 -> "Run Windows and Linux PC games on this device. Setup takes about a minute — the base system installs while you go through it."
-            1 -> "Bannerlator needs \"All files access\" to read games, installers and saves on internal storage, SD cards and USB drives. Nothing is uploaded."
-            2 -> "Get notified about finished downloads, unpacking progress, Steam chat and app updates."
-            3 -> "Pick a colour theme, the interface style and how big things are. All of it can be changed later in Settings › Appearance."
-            4 -> "Wait here if it isn't finished yet. You can't start games until this completes."
-            5 -> "Bring in games you own. Skip if you only play your own installers."
-            else -> "Add a game from a store, or install one from a file with \"Add a game\"."
+            0 -> "在此设备上运行 Windows 和 Linux PC 游戏。设置大约需要一分钟 — 基础系统会在您完成设置的过程中安装。"
+            1 -> "Bannerlator 需要 \"所有文件访问权限\" 才能读取内部存储、SD 卡和 USB 驱动器上的游戏、安装程序和存档。不会上传任何内容。"
+            2 -> "获取有关下载完成、解压进度、Steam 聊天和应用更新的通知。"
+            3 -> "选择颜色主题、界面风格以及元素大小。所有这些都可以稍后在设置 › 外观中更改。"
+            4 -> "如果尚未完成，请在此等待。在此之前您无法启动游戏。"
+            5 -> "导入您拥有的游戏。如果您只玩自己的安装程序，请跳过。"
+            else -> "从商店添加游戏，或使用 \"添加游戏\" 从文件安装游戏。"
         },
         color = cs.onSurfaceVariant,
         fontSize = 16.sp,
@@ -424,28 +424,28 @@ private fun StepBody(
 
     when (step) {
         0 -> DeckCard {
-            DeckRow(title = "Get started", subtitle = "Seven short steps; every one of them can be skipped.", trailing = {
-                DeckButton("Get started", null, onNext)
+            DeckRow(title = "开始使用", subtitle = "七个简短步骤；每一步都可以跳过。", trailing = {
+                DeckButton("开始使用", null, onNext)
             })
         }
         1 -> DeckCard {
             DeckRow(
-                title = "Allow file access",
-                subtitle = if (filesOk) "Granted." else "Opens Android settings; come back and setup continues.",
-                trailing = { if (filesOk) GrantedMark() else DeckButton("Allow file access", null, onRequestFiles) },
+                title = "允许文件访问",
+                subtitle = if (filesOk) "已授予。" else "打开 Android 设置；返回后设置将继续。",
+                trailing = { if (filesOk) GrantedMark() else DeckButton("允许文件访问", null, onRequestFiles) },
             )
             DeckRowDivider()
             DeckRow(
-                title = "Not now",
-                subtitle = "You can grant it later from Android's app settings. Games on shared storage won't open until you do.",
-                trailing = { DeckButton("Not now", null, onNext) },
+                title = "暂不",
+                subtitle = "您可以稍后从 Android 的应用设置中授予。在您授予之前，共享存储上的游戏将无法打开。",
+                trailing = { DeckButton("暂不", null, onNext) },
             )
         }
         2 -> DeckCard {
             DeckRow(
-                title = "Allow notifications",
-                subtitle = if (notifOk) "Granted." else null,
-                trailing = { if (notifOk) GrantedMark() else DeckButton("Allow notifications", null, onRequestNotifications) },
+                title = "允许通知",
+                subtitle = if (notifOk) "已授予。" else null,
+                trailing = { if (notifOk) GrantedMark() else DeckButton("允许通知", null, onRequestNotifications) },
             )
             DeckRowDivider()
             DeckRow(title = "跳过", trailing = { DeckButton("跳过", null, onNext) })
@@ -458,7 +458,7 @@ private fun StepBody(
             LaunchedEffect(Unit) { AppThemeState.setUiScale(UI_SIZE_COMPACT) }
             DeckCard {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Theme", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Text("主题", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         // The last slot is "Custom", which needs Appearance's colour picker.
                         themePresets.forEachIndexed { i, preset ->
@@ -470,7 +470,7 @@ private fun StepBody(
                 }
                 DeckRowDivider()
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Interface style", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Text("界面风格", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     Text(
                         "Simple is a full-screen launcher for controllers; Deck has tabs across the top. Classic is the drawer " +
                             "and top bar; choosing it closes this setup and switches straight away.",
@@ -496,9 +496,9 @@ private fun StepBody(
                 }
                 DeckRowDivider()
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Interface size", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Text("界面大小", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        DeckChoiceChip("Compact", kotlin.math.abs(uiScale - UI_SIZE_COMPACT) < 0.01f) { AppThemeState.setUiScale(UI_SIZE_COMPACT) }
+                        DeckChoiceChip("紧凑", kotlin.math.abs(uiScale - UI_SIZE_COMPACT) < 0.01f) { AppThemeState.setUiScale(UI_SIZE_COMPACT) }
                     }
                 }
             }
@@ -506,10 +506,10 @@ private fun StepBody(
         4 -> {
             DeckCard {
                 DeckRow(
-                    title = if (installReady) "Base system installed" else "正在安装…",
+                    title = if (installReady) "基础系统已安装" else "正在安装…",
                     subtitle = when {
-                        !installing -> "Everything the games need is already on this device."
-                        installReady -> "Done. Continue to finish setting up."
+                        !installing -> "游戏所需的一切已在此设备上。"
+                        installReady -> "完成。继续以完成设置。"
                         else -> "$installProgress% — this runs once and takes about a minute."
                     },
                     trailing = { if (installReady) GrantedMark() },
@@ -540,7 +540,7 @@ private fun StepBody(
                 }
                 DeckRowDivider()
                 DeckRow(
-                    title = "I don't use stores — hide them",
+                    title = "我不使用商店 — 隐藏它们",
                     trailing = { Switch(checked = !showStores, onCheckedChange = { AppThemeState.setShowStores(!it) }) },
                 )
                 DeckRowDivider()
@@ -548,11 +548,11 @@ private fun StepBody(
             }
         }
         else -> DeckCard {
-            DeckRow(title = "Add a game", subtitle = "Pick an installer or a game folder on this device.", trailing = {
+            DeckRow(title = "Add a game", subtitle = "选择此设备上的安装程序或游戏文件夹。", trailing = {
                 DeckButton("Add a game", null, { onFinish(true) })
             })
             DeckRowDivider()
-            DeckRow(title = "Go to library", trailing = { DeckButton("Go to library", null, { onFinish(false) }) })
+            DeckRow(title = "前往库", trailing = { DeckButton("前往库", null, { onFinish(false) }) })
         }
     }
 }
@@ -588,7 +588,7 @@ private fun NavButtons(
     val secondary: @Composable () -> Unit = {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             if (step > 0) OnboardingButton("Back", Icons.AutoMirrored.Filled.ArrowBack, "B" to GlyphKind.B, primary = false, onClick = onBack)
-            OnboardingButton("Skip setup", null, null, primary = false, onClick = onSkip)
+            OnboardingButton("跳过设置", null, null, primary = false, onClick = onSkip)
         }
     }
     if (compact) {

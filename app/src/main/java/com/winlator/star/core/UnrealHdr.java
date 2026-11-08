@@ -72,7 +72,7 @@ public final class UnrealHdr {
 
     /** One line for XMB, whose subtitles are a single line. */
     public static final String HELP_SHORT =
-            "虚幻引擎";
+            "DX12 修复：-dx12 游戏 HDR 选项灰色不可用（安全）。DX11：dxvk-nvapi，实验性。";
 
     /** Under the picker in DirectX 11 mode while the GPU-name spoof isn't an NVIDIA card. */
     public static String nvidiaHint(boolean wayland) {

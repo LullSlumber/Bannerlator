@@ -86,7 +86,7 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
     }
     val deckActions = LocalDeckActions.current
     DisposableEffect(deckActions) {
-        val legend = listOf("B" to L("Back"), "A" to L("Open"), "X" to L("Game menu"), "L1 R1" to L("Section"))
+        val legend = listOf("B" to L("Back"), "A" to L("Open"), "X" to L("游戏菜单"), "L1 R1" to L("Section"))
         deckActions.ownLegend.value = legend
         onDispose { if (deckActions.ownLegend.value === legend) deckActions.ownLegend.value = null }
     }
@@ -167,9 +167,9 @@ internal fun LabStoresPage(onLaunchStore: (Screen) -> Unit, onBack: () -> Unit, 
         )
     }
     SimpleMenuPage(
-        overline = L("Stores"),
+        overline = L("商店"),
         title = L("Your stores"),
-        sections = listOf(MenuSection("stores", L("Stores"), Icons.Filled.Storefront, entries)),
+        sections = listOf(MenuSection("stores", L("商店"), Icons.Filled.Storefront, entries)),
         onBack = onBack,
     )
 }

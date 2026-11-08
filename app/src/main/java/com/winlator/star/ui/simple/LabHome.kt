@@ -186,7 +186,7 @@ internal fun LabHome(
         runCatching { playFocus.requestFocus() }
     }
     DisposableEffect(deckActions) {
-        val legend = listOf("A" to L("Open"), "X" to L("Game menu"), "L1 R1" to L("Section"))
+        val legend = listOf("A" to L("Open"), "X" to L("游戏菜单"), "L1 R1" to L("Section"))
         deckActions.ownLegend.value = legend
         onDispose { if (deckActions.ownLegend.value === legend) deckActions.ownLegend.value = null }
     }
@@ -208,7 +208,7 @@ internal fun LabHome(
         fun ContinueTile(m: Modifier) {
             if (game == null) {
                 LabDashTile(m, onClick = addGame, requester = playFocus) {
-                    LabTileLabel(L("Get started"))
+                    LabTileLabel(L("开始使用"))
                     Text(L("Add your first game"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
                     Text(L("An .exe from your files, or a game from a store."), color = SimpleMuted, fontSize = 13.sp)
                     Spacer(Modifier.weight(1f))
@@ -250,7 +250,7 @@ internal fun LabHome(
                     Spacer(Modifier.weight(1f))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         LabButton(L("Play"), primary = true, icon = Icons.Filled.PlayArrow, requester = playFocus) { launcher.requestLaunch(game) }
-                        LabButton(L("Game page")) { onNavigate(LabRoutes.game(game.file.path)) }
+                        LabButton(L("游戏页面")) { onNavigate(LabRoutes.game(game.file.path)) }
                         LabButton("", icon = Icons.Filled.MoreHoriz) { menuFor = game }
                     }
                 }
@@ -379,7 +379,7 @@ internal fun LabHome(
         @Composable
         fun SystemTile(m: Modifier) {
             LabDashTile(m, onClick = { onNavigate(com.winlator.star.ui.deck.settings.DeckSettingsRoutes.APP) }) {
-                LabTileLabel(L("This device"))
+                LabTileLabel(L("此设备"))
                 if (dev != null) {
                     @Composable fun line(k: String, f: Float, v: String) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -497,7 +497,7 @@ internal fun LabHeroTile(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 LabButton(L("Play"), primary = true, icon = Icons.Filled.PlayArrow, requester = playFocus, onClick = onPlay)
-                LabButton(L("Game page"), onClick = onPage)
+                LabButton(L("游戏页面"), onClick = onPage)
                 LabButton("", icon = Icons.Filled.MoreHoriz, onClick = onMenu)
             }
         }

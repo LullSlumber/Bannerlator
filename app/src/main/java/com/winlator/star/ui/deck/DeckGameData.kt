@@ -121,13 +121,13 @@ internal val STORE_SHELVES: List<Pair<String, (Shortcut) -> Boolean>> = listOf(
     "Amazon Games" to { s: Shortcut -> isAmazonShortcut(s) },
     "Xbox" to { s: Shortcut -> isXboxShortcut(s) },
     "Android" to { s: Shortcut -> AndroidGames.isAndroidEntry(s) },
-    T("Added by me") to { s: Shortcut -> isCustomOriginShortcut(s) },
+    T("由我添加") to { s: Shortcut -> isCustomOriginShortcut(s) },
 )
 
 internal fun storeLabelOf(s: Shortcut): String = when {
     LinuxShortcuts.isLinuxEntry(s) -> "Linux"
-    // Store names stay as they are; "Added by me" is shown in Lab's language.
-    else -> L(STORE_SHELVES.firstOrNull { it.second(s) }?.first ?: "Added by me")
+    // Store names stay as they are; "由我添加" is shown in Lab's language.
+    else -> L(STORE_SHELVES.firstOrNull { it.second(s) }?.first ?: "由我添加")
 }
 
 /**

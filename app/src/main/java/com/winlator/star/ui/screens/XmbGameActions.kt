@@ -61,24 +61,24 @@ internal fun xmbGameActions(
         add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
         add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
         add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
-        add(XmbAction("属性", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
+        add(XmbAction("属性", Icons.Filled.Info, "游玩次数、游玩时间", menu = { xmbPropertiesMenu(it, shortcut) }))
         add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
         return@buildList
     }
     if (settingsAsColumns) {
-        add(XmbAction("Settings", Icons.Filled.Settings, "Display, graphics, controller…", menu = { xmbSettingsMenu(it, shortcut, host) }))
+        add(XmbAction("Settings", Icons.Filled.Settings, "显示、图形、控制器…", menu = { xmbSettingsMenu(it, shortcut, host) }))
     } else {
-        add(XmbAction("Settings", Icons.Filled.Settings, "Display, graphics, controller…") { openSettings(shortcut) })
+        add(XmbAction("Settings", Icons.Filled.Settings, "显示、图形、控制器…") { openSettings(shortcut) })
     }
     add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
     if (isSteamOriginShortcut(shortcut)) {
-        add(XmbAction("云端存档", Icons.Filled.CloudSync, "Steam Cloud sync — opens its own screen") { launchSaveManager(context, steamAppIdOf(shortcut)) })
+        add(XmbAction("云端存档", Icons.Filled.CloudSync, "Steam云同步 — 打开其独立界面") { launchSaveManager(context, steamAppIdOf(shortcut)) })
     }
     if (isCustomShortcut(shortcut)) {
         add(XmbAction("备份存档", Icons.Filled.Archive, menu = { xmbBackupSavesMenu(it, shortcut) }))
         add(XmbAction("恢复存档", Icons.Filled.Unarchive, menu = { xmbRestoreSavesMenu(it, shortcut) }))
     }
-    add(XmbAction("社区配置", Icons.Filled.Public, "Shared settings for this game", menu = { xmbCommunityConfigsMenu(it, shortcut) }))
+    add(XmbAction("社区配置", Icons.Filled.Public, "此游戏的共享设置", menu = { xmbCommunityConfigsMenu(it, shortcut) }))
     add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
     add(XmbAction("View logs", Icons.Filled.Description, menu = { xmbLogsMenu(it, shortcut) }))
     add(XmbAction("属性", Icons.Filled.Share) { shareGameLogs(context, shortcut.name) })
@@ -87,7 +87,7 @@ internal fun xmbGameActions(
     add(XmbAction("更改可执行文件…", Icons.Filled.SwapHoriz, menu = { xmbChangeExeMenu(it, shortcut) }))
     add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
     add(XmbAction("导出", Icons.Filled.Upload) { exportShortcut(context, shortcut) })
-    add(XmbAction("属性", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
+    add(XmbAction("属性", Icons.Filled.Info, "游玩次数、游玩时间", menu = { xmbPropertiesMenu(it, shortcut) }))
     add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
 }
 

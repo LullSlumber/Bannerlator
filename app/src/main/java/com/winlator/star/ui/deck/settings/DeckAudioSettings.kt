@@ -81,10 +81,10 @@ internal object AudioRows {
 
     fun defs(): List<SettingDef> = listOf(
         SettingDef(
-            id = "audio.latencyPreset", category = "audio", group = L("Sound latency"), level = ADVANCED,
-            label = L("Latency preset"), hint = L("Auto starts low and grows the buffer only if it hears crackle. Fine-tune below."),
+            id = "audio.latencyPreset", category = "audio", group = L("声音延迟"), level = ADVANCED,
+            label = L("延迟预设"), hint = L("自动以低延迟启动，仅在检测到爆音时增大缓冲区。在下方微调。"),
             tech = "BANNER_AUDIO_<engine>_PRESET",
-            help = L("Each sound system keeps its own preset, so switching between PulseAudio, ALSA and DirectAudio never mixes their settings. A game without its own keeps following its container."),
+            help = L("每个声音系统保留自己的预设，因此在 PulseAudio、ALSA 和 DirectAudio 之间切换永远不会混淆它们的设置。没有自己设置的游戏会继续遵循其容器。"),
             control = { _, _ -> Control.Select(AUDIO_PRESETS.map { Opt(it.id, it.name + (it.badge?.let { b -> " · $b" } ?: "")) }) },
             vm = VmBinding(
                 get = { _, vm -> audioConfigFromEnv(vm.envVarsStr, vmDriver(vm)).preset },
@@ -116,7 +116,7 @@ internal object AudioRows {
         ),
         SettingDef(
             id = ID_MIC, category = "audio", group = L("麦克风"), level = ADVANCED,
-            label = L("麦克风"), hint = L("Lets games use the mic: DirectAudio captures the input. Android asks for the permission once."),
+            label = L("麦克风"), hint = L("允许游戏使用麦克风：DirectAudio 捕获输入。Android 只请求一次权限。"),
             tech = DirectAudioSupport.MIC_ENV_KEY,
             control = { _, _ -> Control.Toggle },
             vm = VmBinding(
@@ -173,7 +173,7 @@ internal class DeckAudioSection(
         val cfg = audioConfigFromEnv(AudioRows.effectiveEnv(source, driver), driver)
         val preset = AUDIO_PRESETS.firstOrNull { it.id == cfg.preset }?.name ?: cfg.preset
         return actionItems("audio-tune", null, listOf(
-            DeckAction("tune", Icons.Filled.Tune, L("Fine-tune the sound buffer"),
+            DeckAction("tune", Icons.Filled.Tune, L("微调声音缓冲区"),
                 "$preset · ${driverLabel(driver)}. Buffer size, performance mode and adaptive growth.",
                 enabled = access.editable(AudioRows.ID_ENV)) { fineTune = true },
         ))

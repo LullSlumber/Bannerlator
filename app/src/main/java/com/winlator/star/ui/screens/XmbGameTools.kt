@@ -504,14 +504,14 @@ internal fun xmbCopyToDriveCMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 listOf(XmbRow.Info("deleting", "Deleting the original folder…", Icons.Filled.HourglassEmpty))
             } else {
                 listOf<XmbRow>(
-                    XmbRow.Action(key = "keep", label = "移动到C盘", icon = Icons.Filled.Check) {
+                    XmbRow.Action(key = "keep", label = "保留原始文件", icon = Icons.Filled.Check) {
                         if (!decided) {
                             decided = true
                             xmb.toast("已复制到C盘 — 原始文件已保留。")
                             finish()
                         }
                     },
-                    XmbRow.Action(key = "delete", label = "更改", icon = Icons.Filled.Delete, danger = true) {
+                    XmbRow.Action(key = "delete", label = "删除原始文件", icon = Icons.Filled.Delete, danger = true) {
                         if (!decided) {
                             decided = true
                             deleting = true
@@ -660,7 +660,7 @@ internal fun xmbCopyToDriveCMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 add(XmbRow.Info("folder", "要复制的文件夹", Icons.Filled.Folder, value = sourceRoot.name, subtitle = sourceRoot.absolutePath))
                 add(
                     XmbRow.Link(
-                        key = "change", label = "保留原始文件", icon = Icons.Filled.FolderOpen,
+                        key = "change", label = "更改文件夹…", icon = Icons.Filled.FolderOpen,
                         disabledReason = if (copying) "Copying…" else null,
                     ) {
                         val roots = XmbTools.storageRoots(ctx, XmbTools.driveC(container))

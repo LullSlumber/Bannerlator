@@ -3215,8 +3215,8 @@ public class XServerDisplayActivity extends AppCompatActivity {
         preloaderDialog.step(1, "Preparing container…");
 
         // TV render resolution (v2): when launching with an external display connected, honor the TV
-        // render-resolution choice (2 = 1080p, 3 = 1440p) before ScreenInfo is built. "Match TV" (0) /
-        // "Match handheld" (1) keep the container's screen size. Guarded to a TV being present at launch
+        // render-resolution choice (2 = 1080p, 3 = 1440p) before ScreenInfo is built. "匹配TV" (0) /
+        // "匹配手持设备" (1) keep the container's screen size. Guarded to a TV being present at launch
         // so it never changes handheld-only sessions.
         try {
             int tvRes = Integer.parseInt(container.getExtra("tv.renderRes", "0"));
@@ -3351,7 +3351,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 Log.d("XServerDisplayActivity", "onMapWindow: Detected window className: " + window.getClassName());
                 // A window mapped (before its content paints) — nudge the tail label so the user sees
                 // progress past the guest-boot spinner. The real dismiss is still onUpdateWindowContent.
-                if (!winStarted) preloaderDialog.enterGuest("Game window detected…");
+                if (!winStarted) preloaderDialog.enterGuest("游戏窗口已检测到…");
                 assignTaskAffinity(window);
             }
 
@@ -5192,7 +5192,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     // torn down when the app is backgrounded or the HDMI audio route changes, and the sink does not
     // always re-establish it — leaving the game silent (notably after returning to a game on the TV).
     // Rebuilding the sink re-grabs the current default output route. Runs off the main thread (it does
-    // file IO + spawns a process). Exposed to the TV tab's "Reset audio" button and the auto-reset.
+    // file IO + spawns a process). Exposed to the TV tab's "重置音频" button and the auto-reset.
     public void resetGuestAudio() {
         final XEnvironment env = environment;
         if (env == null) return;
@@ -5213,7 +5213,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     // resume in resetGuestAudio() is useless here. Instead we build a fresh sink on the new route and
     // move the guest's streams onto it (see PulseAudioComponent.recreateSinkForRouteChange). Runs off
     // the main thread (native PulseAudio client IO). Distinct from resetGuestAudio(), which stays the
-    // right tool for background/foreground + the TV "Reset audio" button (stream idle, not disconnected).
+    // right tool for background/foreground + the TV "重置音频" button (stream idle, not disconnected).
     public void resetGuestAudioForRouteChange() {
         final XEnvironment env = environment;
         if (env == null) return;
@@ -5367,12 +5367,12 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 castSession = new com.winlator.star.cast.CastSession(device.host,
                         new com.winlator.star.cast.CastSession.Callback() {
                     @Override public void onConnected() {
-                        runOnUiThread(() -> XServerDialogState.INSTANCE.setCastStatusDetail("Loading on the TV…"));
+                        runOnUiThread(() -> XServerDialogState.INSTANCE.setCastStatusDetail("正在电视上加载…"));
                     }
                     @Override public void onLoaded() {
                         runOnUiThread(() -> {
                             XServerDialogState.INSTANCE.setCastStatus(XServerDialogState.CastStatus.CONNECTED);
-                            XServerDialogState.INSTANCE.setCastStatusDetail("Live on your TV (a few seconds behind).");
+                            XServerDialogState.INSTANCE.setCastStatusDetail("在您的电视上实时播放（延迟几秒）。");
                         });
                     }
                     @Override public void onError(String message) { castFail(message); }
@@ -5915,7 +5915,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     }
 
     /**
-     * Whether this launch is a RealSteam (SteamLite) launch with the per-game "记住我的选择"
+     * Whether this launch is a RealSteam (SteamLite) launch with the per-game "控制器直通"
      * toggle ON — the device-proven fix for classic DInput games (Half-Life 2, CS:S) that read the pad
      * directly and get nothing while the genuine client holds it as Steam Input. Gates ALL passthrough
      * behaviour: the prefix levers (in {@link RealSteamLauncher#prepare}) and the DInput input-type
@@ -6503,7 +6503,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             new com.winlator.star.store.SteamAgentChannel.Listener() {
         @Override public void onAgentConnected() {
             agentConnected = true;
-            preloaderHint("Steam client started — signing in…");
+            preloaderHint("Steam 客户端已启动 — 正在登录…");
         }
         @Override public void onAgentDisconnected() {
             // game_exited / shutdown already said why; the Friends tab swaps to its "relay stopped" line.
@@ -6523,7 +6523,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     int er = obj.optInt("eresult", 0);
                     String reason = obj.optString("reason", "");
                     showAgentFailure("Steam登录",
-                            "Steam rejected the sign-in" + (reason.isEmpty() ? "" : " (" + reason + ")"),
+                            "Steam拒绝了登录" + (reason.isEmpty() ? "" : " (" + reason + ")"),
                             (er != 0 ? "EResult " + er + " — " : "")
                                     + "The saved Steam sign-in did not work inside the container. "
                                     + "Retry, sign in again from the Steam tab, or launch offline with Goldberg.");
@@ -6532,16 +6532,16 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 case "appinfo": {
                     String st = obj.optString("state", "");
                     if ("not_installed".equals(st) || "timeout".equals(st))
-                        preloaderHint("Steam doesn't see the game as installed — launching anyway…");
+                        preloaderHint("Steam认为游戏未安装 — 仍尝试启动…");
                     break;
                 }
                 case "launch_accepted":
                     preloaderHint(realSteamEaChain
-                            ? "Steam accepted the launch — starting EA Desktop (sign in to EA if it asks)…"
-                            : "Steam accepted the launch — starting the game…");
+                            ? "Steam接受了启动 — 正在启动EA Desktop（如果它要求，请登录EA）…"
+                            : "Steam接受了启动 — 正在启动游戏…");
                     break;
                 case "launch_refused":
-                    preloaderHint("Steam refused the launch (" + obj.optString("reason", "") + ") — trying a direct start…");
+                    preloaderHint("Steam拒绝了启动（" + obj.optString("reason", "") + "） — 尝试直接启动…");
                     break;
                 case "insecure_fallback": {
                     agentLoginResolved = true;
@@ -6552,16 +6552,16 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     boolean vac = obj.optBoolean("vac", true);
                     agentFallbackVac = vac;
                     if (!vac) {
-                        preloaderHint("Steam couldn't start the game itself — started it directly (fine for this title)");
+                        preloaderHint("Steam无法自行启动游戏 — 已直接启动（对此游戏来说没问题）");
                     } else if (!winStarted) {
-                        showAgentFailure("Steam launch",
-                                "Steam did not start the game — insecure fallback",
-                                "Steam's LaunchApp refused (" + obj.optString("reason", "") + "). The game can still run "
+                        showAgentFailure("Steam启动",
+                                "Steam未启动游戏 — 不安全回退",
+                                "Steam的LaunchApp拒绝了（" + obj.optString("reason", "") + "). The game can still run "
                                         + "WITHOUT Steam protection: VAC servers will reject it and live-service titles may "
                                         + "report a wrong build. Retry, launch offline with Goldberg, or keep going insecure.",
                                 true);
                     } else {
-                        preloaderHint("Running WITHOUT Steam protection (insecure fallback)");
+                        preloaderHint("在没有Steam保护的情况下运行（不安全回退）");
                     }
                     break;
                 }
@@ -6576,7 +6576,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     break;
                 case "direct_exe":
                     agentLoginResolved = true;
-                    preloaderHint("Starting the selected exe directly (no Steam launch)…");
+                    preloaderHint("正在直接启动所选exe（无Steam启动）…");
                     break;
                 case "game_spawned": {
                     agentLoginResolved = true;
@@ -6585,13 +6585,13 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     // An insecure spawn after a vac=false fallback (agentFallbackVac, from the
                     // insecure_fallback event) is the normal outcome for a title without VAC — say
                     // so, instead of the warning that fits a VAC title's fallback.
-                    preloaderHint(secure ? "Game running (secure Steam launch)"
-                            : agentFallbackVac ? "Game running (insecure — no VAC)"
-                            : "Game running (started directly — this title doesn't need a secure launch)");
+                    preloaderHint(secure ? "游戏运行中（安全Steam启动）"
+                            : agentFallbackVac ? "游戏运行中（不安全 — 无VAC）"
+                            : "游戏运行中（直接启动 — 此游戏不需要安全启动）");
                     break;
                 }
                 case "session_lost":
-                    preloaderHint("Steam session lost — online features may drop");
+                    preloaderHint("Steam会话丢失 — 在线功能可能失效");
                     break;
                 // App Steam session host (bl-steam-host) — same channel, a few extra events.
                 case "host_ready":
@@ -6600,7 +6600,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     preloaderHint("Steam 会话就绪 — 正在启动游戏…");
                     break;
                 case "ownership":
-                    preloaderHint(obj.optBoolean("ok", false) ? "Steam ownership ticket ready" : "Steam ownership ticket not confirmed (continuing)");
+                    preloaderHint(obj.optBoolean("ok", false) ? "Steam所有权票据已就绪" : "Steam所有权票据未确认（继续）");
                     break;
                 case "port_busy":
                 case "host_failed": {
@@ -6610,14 +6610,14 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     Log.w(AGENT_TAG, ev + ": " + obj);
                     showAgentFailure("Headless Steam",
                             "port_busy".equals(ev) ? "The Steam session host could not start: its port is in use"
-                                                   : "The Steam session host failed to start",
+                                                   : "Steam会话主机启动失败",
                             (reason.isEmpty() ? "" : reason + "\n\n")
                                     + ("port_busy".equals(ev)
                                         ? "Another Steam client is holding 127.0.0.1:57343 — usually a Steam client "
                                           + "left running in the background by another app (e.g. a Linux Steam session). "
                                           + "Close it and retry. Without the host the game will report "
                                           + "\"Steam client must be running\"."
-                                        : "See the Headless Steam log for the host's own message."),
+                                        : "请查看无窗口Steam日志以获取主机自身的消息。"),
                             true);
                     break;
                 }
@@ -8661,7 +8661,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     }
 
     /** The Wayland compositor's HDR10 output for this launch (waylandcomp/src/banner_color.h,
-     *  display.WaylandHdr). The "HDR output" setting decides — the game shortcut's own choice, else the
+     *  display.WaylandHdr). The "HDR 输出" setting decides — the game shortcut's own choice, else the
      *  container's, the same owner the editors write — and BANNER_WAYLAND_HDR in the container's or
      *  shortcut's environment variables overrides it: 1/true/on = on, 0/false/off = off, force = on
      *  whatever the display says (testing the negotiation on an SDR panel). "On" still only turns
@@ -9375,7 +9375,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         };
 
         // HDR output (HDR sessions only: the row is shown once the sampler below sees the gate open).
-        // A live, per-session switch - nothing is saved: the editors' "HDR output" setting stays the
+        // A live, per-session switch - nothing is saved: the editors' "HDR 输出" setting stays the
         // next launch's choice (DXVK_HDR and the colour-manager offer are decided at launch).
         waylandHdrOutputOn = true;
         state.setWaylandHdrOutput(true);
@@ -13333,12 +13333,12 @@ public class XServerDisplayActivity extends AppCompatActivity {
             // so it's safe to read here — mirrors the ReShade/lsfg seed-after-container pattern.
             // Resolve per-game override (shortcut extra, e.g. an imported community config) else the
             // container value. Live edits are saved for this game or for the container, as the drawer's
-            // "Save for" footer says (ControllerSaveTarget, below).
+            // "保存用于" footer says (ControllerSaveTarget, below).
             int vibMode = resolvedVibrationMode();
             int vibIntensity = resolvedVibrationIntensity();
             winHandler.setVibrationTuning(vibMode, vibIntensity);
             // In-game rumble and Controls › Pad changes save for this game when it was launched from one,
-            // or for every game in the container, as the footer's "Save for" says (ControllerSaveTarget).
+            // or for every game in the container, as the footer's "保存用于" says (ControllerSaveTarget).
             controllerSaveTarget = new ControllerSaveTarget(preferences, container, shortcut);
             controllerSaveTarget.attach();
 
@@ -13636,7 +13636,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             if (enabled && sharpness > 0) {
                 com.winlator.star.renderer.effects.FSREffect newFsr = new com.winlator.star.renderer.effects.FSREffect();
                 // FSREffect level scale is inverted (level 1 = sharpest, level 5 = softest);
-                // map the 0..100 "Sharpness" slider so higher = sharper -> lower level.
+                // map the 0..100 "锐化度" slider so higher = sharper -> lower level.
                 newFsr.setLevel((100.0f - (float)sharpness) / 25.0f + 1.0f);
                 newFsr.setMode(com.winlator.star.renderer.effects.FSREffect.MODE_SUPER_RESOLUTION);
                 glRenderer.getEffectComposer().addEffect(newFsr);
@@ -16466,7 +16466,7 @@ return true;
         winHandler.setReconnectGapMs(preferences.getInt("live_reconnect_gap_ms", (int) com.winlator.star.winhandler.SlotReconnector.GAP_MS_DEFAULT));
         liveControllerSession = new LiveControllerSession(container, shortcut, winHandler, new LiveControllerSession.Host() {
             @Override public void onReconnecting() {
-                XServerDialogState.INSTANCE.showInfoToast("CONTROLLER RECONNECTING…", "just now", null);
+                XServerDialogState.INSTANCE.showInfoToast("控制器正在重新连接…", "just now", null);
             }
 
             @Override public void onReconnected(boolean ok, String identityLabel) {
@@ -17288,7 +17288,7 @@ return true;
     // Whether the guest-side refresh setting was explicitly chosen by the user (extra present) vs. left
     // at the untouched default (extra absent). A per-game override that inherits (no shortcut extra)
     // defers to the container's explicitness. Keyed on the unlockGameRefreshRate extra, which the merged
-    // "渲染缩放（超采样）" dropdown always writes alongside the cap when a concrete option is picked.
+    // "游戏内刷新率" dropdown always writes alongside the cap when a concrete option is picked.
     private boolean isRefreshUnlockExplicit() {
         if (container == null) return false;
         if (shortcut != null && shortcut.hasExtra("unlockGameRefreshRate")) return true;

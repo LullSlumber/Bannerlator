@@ -117,7 +117,7 @@ internal fun LabGameMenu(
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         SimpleCover(shortcut, Modifier.width(54.dp).height(72.dp), title = false)
                         Column(Modifier.weight(1f)) {
-                            LabTileLabel(L("Game menu"))
+                            LabTileLabel(L("游戏菜单"))
                             Text(shortcut.name, color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                             Text(subtitle, color = SimpleMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }

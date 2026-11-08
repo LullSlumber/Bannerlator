@@ -136,7 +136,7 @@ internal fun DeckGamePage(
     DisposableEffect(deckActions) {
         val open: () -> Unit = { menuOpen = true }
         deckActions.options.value = open
-        deckActions.optionsLabel.value = "Game menu"
+        deckActions.optionsLabel.value = "游戏菜单"
         onDispose { if (deckActions.options.value === open) deckActions.options.value = null }
     }
 
@@ -271,11 +271,11 @@ internal fun DeckGamePage(
                     if (onSd) DeckPill("SD card")
                 }
                 // Stats: playtime, last played, achievements (Steam, when cached), storage.
-                val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "Before tracking" else "Never"
+                val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "追踪之前" else "从未"
                 if (!banner) FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val tile = Modifier.widthIn(min = 150.dp, max = 240.dp)
                     DeckStat(playtimeShort(stats.ms), "游玩时间", tile)
-                    DeckStat(lastPlayed, "Last played", tile)
+                    DeckStat(lastPlayed, "上次游玩", tile)
                     achievements?.let { (got, total) ->
                         DeckStat("$got / $total", "成就", tile, progress = got.toFloat() / total.coerceAtLeast(1))
                     }
@@ -284,7 +284,7 @@ internal fun DeckGamePage(
                 } else DeckStatStrip(
                     buildList {
                         add(playtimeShort(stats.ms) to "游玩时间")
-                        add(lastPlayed to "Last played")
+                        add(lastPlayed to "上次游玩")
                         achievements?.let { (got, total) -> add("$got/$total" to "成就") }
                         add((if (stats.count > 0) "${stats.count}" else "—") to (if (stats.count == 1) "Launch" else "Launches"))
                         if (!isAndroid) add((if (onSd) "SD card" else "Internal") to "Storage")
@@ -337,7 +337,7 @@ internal fun DeckGamePage(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = when {
-                                    isLinux -> "Steam (Linux) settings"
+                                    isLinux -> "Steam (Linux) 设置"
                                     overrides == 0 -> "Uses its container’s setup"
                                     else -> "$overrides setting${if (overrides == 1) "" else "s"} set just for this game"
                                 },
@@ -352,7 +352,7 @@ internal fun DeckGamePage(
                 }
                 if (details.hasDisplayableDetails()) {
                     Column {
-                        DeckSectionLabel("About this game")
+                        DeckSectionLabel("关于此游戏")
                         DeckCard {
                             val facts = listOfNotNull(
                                 details.releaseYear,
@@ -393,7 +393,7 @@ internal fun DeckGamePage(
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp),
                 ) {
-                    DeckSectionLabel("Game menu", Modifier.padding(start = 6.dp))
+                    DeckSectionLabel("游戏菜单", Modifier.padding(start = 6.dp))
                     DeckGameMenuList(s, onPlay = { launcher.requestLaunch(s) }, onAction = { actions.perform(it, s) }, onContainer = { onOpenContainer(s.container.id) })
                 }
             }
@@ -430,7 +430,7 @@ internal fun DeckGamePage(
                 }
                 main(Modifier.fillMaxWidth().padding(horizontal = gutter))
                 Column(Modifier.padding(horizontal = gutter)) {
-                    DeckSectionLabel("Game menu")
+                    DeckSectionLabel("游戏菜单")
                     DeckGameMenuList(s, onPlay = { launcher.requestLaunch(s) }, onAction = { actions.perform(it, s) }, onContainer = { onOpenContainer(s.container.id) })
                 }
             }
@@ -469,44 +469,44 @@ internal fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>
         if (gameMenuOffers(a, s)) null as String? to GameMenuEntry(menuTitle(a), hint, a, danger) else null
     return listOf(
         listOf(ENTRY_PLAY to GameMenuEntry("Play", when {
-            isAndroid -> "Opens the app, as Android's own launcher would."
-            LinuxShortcuts.isLinuxEntry(s) -> "Starts the Steam client on the Linux runtime."
-            else -> "Same launch path from every view: launch options, Steam pre-flight, Goldberg, cloud-save sync."
+            isAndroid -> "打开应用，如同 Android 自身的启动器一样。"
+            LinuxShortcuts.isLinuxEntry(s) -> "在 Linux 运行时上启动 Steam 客户端。"
+            else -> "从每个视图都走相同的启动路径：启动选项、Steam 预检、Goldberg、云存档同步。"
         }, null)),
         listOfNotNull(
-            e(GameMenuAction.SETTINGS, "Display, graphics, controls and more, for this game only."),
+            e(GameMenuAction.SETTINGS, "显示、图形、控制等，仅用于此游戏。"),
             // Android games and the Linux Steam entry have no Wine container to open.
-            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("容器设置", "Opens the container this game runs in.", null),
+            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("容器设置", "打开此游戏运行的容器。", null),
         ),
         listOfNotNull(
-            e(GameMenuAction.GAME_DETAILS, "Name, Steam link, genres, year, description."),
-            e(GameMenuAction.SCRAPE_COVER, "Find cover art on SteamGridDB and pick one."),
-            e(GameMenuAction.COMMUNITY_CONFIGS, "Settings other players tuned for this game on their devices."),
+            e(GameMenuAction.GAME_DETAILS, "名称、Steam 链接、类型、年份、描述。"),
+            e(GameMenuAction.SCRAPE_COVER, "在 SteamGridDB 上查找封面图并选择一张。"),
+            e(GameMenuAction.COMMUNITY_CONFIGS, "其他玩家在其设备上为此游戏调整的设置。"),
         ),
         listOfNotNull(
-            e(GameMenuAction.CLOUD_SAVES, "Steam Cloud sync for this game."),
-            e(GameMenuAction.BACKUP_SAVES, "Zip this game's saves into its backup folder."),
-            e(GameMenuAction.RESTORE_SAVES, "Pick a save backup and restore it into a container."),
-            e(GameMenuAction.VIEW_LOGS, "This game's captured logs."),
+            e(GameMenuAction.CLOUD_SAVES, "此游戏的 Steam 云同步。"),
+            e(GameMenuAction.BACKUP_SAVES, "将此游戏的存档压缩到其备份文件夹中。"),
+            e(GameMenuAction.RESTORE_SAVES, "选择存档备份并将其恢复到容器中。"),
+            e(GameMenuAction.VIEW_LOGS, "此游戏捕获的日志。"),
             e(GameMenuAction.SHARE_LOGS, "Zip this game's log folder and share it."),
-            e(GameMenuAction.PROPERTIES, "Times played and total playtime."),
+            e(GameMenuAction.PROPERTIES, "游玩次数和总游玩时间。"),
         ),
         listOfNotNull(
-            e(GameMenuAction.CLONE, "Copy this shortcut into another container."),
-            e(GameMenuAction.COPY_TO_DRIVE_C, "Copy the game folder onto the container's C: drive and repoint it."),
-            e(GameMenuAction.CHANGE_EXE, "Point the shortcut at a different .exe in the game's folder."),
-            e(GameMenuAction.ADD_TO_HOME, "Pin a launcher icon to Android's home screen."),
-            e(GameMenuAction.EXPORT, "Save this shortcut to your export folder."),
+            e(GameMenuAction.CLONE, "将此快捷方式复制到另一个容器。"),
+            e(GameMenuAction.COPY_TO_DRIVE_C, "将游戏文件夹复制到容器的 C 盘并重新指向它。"),
+            e(GameMenuAction.CHANGE_EXE, "将快捷方式指向游戏文件夹中的另一个 .exe。"),
+            e(GameMenuAction.ADD_TO_HOME, "将启动器图标固定到 Android 主屏幕。"),
+            e(GameMenuAction.EXPORT, "将此快捷方式保存到您的导出文件夹。"),
         ),
-        listOfNotNull(e(GameMenuAction.REMOVE, "Asks first. Only the shortcut goes; the game files stay.", danger = true)),
+        listOfNotNull(e(GameMenuAction.REMOVE, "会先询问。仅移除快捷方式；游戏文件保留。", danger = true)),
     ).filter { it.isNotEmpty() }
 }
 
 private fun menuTitle(a: GameMenuAction): String = when (a) {
     GameMenuAction.SETTINGS -> "Game settings"
-    GameMenuAction.GAME_DETAILS -> "Game details"
-    GameMenuAction.SCRAPE_COVER -> "Cover art"
-    GameMenuAction.COMMUNITY_CONFIGS -> "Community configs for this game"
+    GameMenuAction.GAME_DETAILS -> "游戏详情"
+    GameMenuAction.SCRAPE_COVER -> "封面图"
+    GameMenuAction.COMMUNITY_CONFIGS -> "此游戏的社区配置"
     GameMenuAction.CLOUD_SAVES -> "云存档"
     GameMenuAction.VIEW_LOGS -> "View logs"
     else -> a.label
@@ -595,7 +595,7 @@ internal fun DeckGameMenuSheet(
                         .padding(horizontal = 20.dp, vertical = 18.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Game menu", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
+                        Text("游戏菜单", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier

@@ -65,11 +65,11 @@ internal object LabRoutes {
 internal class LabSection(val label: String, val short: String, val icon: ImageVector, val route: String)
 
 internal val LAB_SECTIONS = listOf(
-    LabSection(T("Home"), T("Home"), Icons.Filled.Home, DeckRoutes.HOME),
+    LabSection(T("主页"), T("主页"), Icons.Filled.Home, DeckRoutes.HOME),
     LabSection(T("Library"), T("Library"), Icons.Filled.GridView, LabRoutes.LIBRARY),
-    LabSection(T("Stores"), T("Stores"), Icons.Filled.Storefront, LabRoutes.STORES),
+    LabSection(T("商店"), T("商店"), Icons.Filled.Storefront, LabRoutes.STORES),
     LabSection(T("容器管理"), T("容器管理"), Icons.Filled.Inventory2, SimpleRoutes.CONTAINERS),
-    LabSection(T("存档与云"), T("存档与云"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
+    LabSection(T("内容管理"), T("内容管理"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
     LabSection(T("Controls"), T("Controls"), Icons.Filled.SportsEsports, SimpleRoutes.CONTROLS),
     LabSection(T("Files & tools"), T("工具"), Icons.Filled.FolderOpen, SimpleRoutes.TOOLS),
     LabSection(T("存档管理器"), T("Saves"), Icons.Filled.Save, SimpleRoutes.SAVES),

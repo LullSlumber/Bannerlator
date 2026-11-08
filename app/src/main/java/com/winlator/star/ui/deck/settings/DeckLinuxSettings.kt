@@ -75,14 +75,14 @@ internal object LinuxRuntimeRows {
     fun defs(): List<SettingDef> = listOf(
         cores(
             "linux.clientCores", "linuxClientCpuList", L("Steam 客户端核心"),
-            L("The client and the compositor drawing its interface. Never the games it launches."),
+            L("客户端及其绘制界面的合成器。绝不是它启动的游戏。"),
             L("Which CPU cores the Steam client and the compositor drawing its interface may run on. It reaches the client and its menus only, ") +
                 L("never the games it launches: those have the list below. Steam holds its own interface renderer to a subset of the cores by default, ") +
                 L("which is why Big Picture can feel sluggish; what you tick here replaces that choice."),
         ),
         cores(
             "linux.gameCores", "linuxGameCpuList", L("Game cores"),
-            L("Games launched from the client. All cores lets Android place the work itself."),
+            L("从客户端启动的游戏。所有核心让 Android 自行安排工作。"),
             L("Which CPU cores a game launched from the Steam client may run on. It reaches games only: the client and its menus keep the list above. ") +
                 L("Leaving every core ticked lets Android place the work itself, which is usually the best choice."),
         ),
@@ -92,7 +92,7 @@ internal object LinuxRuntimeRows {
 
     /** A core list of the entry. Unset means every core, as the launch reads it (cpuListOrEmpty). */
     private fun cores(id: String, extra: String, label: String, hint: String, help: String) = SettingDef(
-        id = id, category = "linux", group = L("Windows 后台服务"), label = label, hint = hint, help = help, tech = extra,
+        id = id, category = "linux", group = L("CPU 核心"), label = label, hint = hint, help = help, tech = extra,
         level = SettingLevel.ADVANCED,
         control = { _, _ -> Control.Cores },
         game = GameBinding(
@@ -315,8 +315,8 @@ internal class DeckLinuxSection(
         }
         add(PageExtra("linux-folders-add") {
             GroupCard(first = list.isEmpty(), last = true, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.CreateNewFolder, L("Add a games folder"),
-                    L("Each folder inside it is one game; the app picks the program to start in it. They show in Steam like your Games-tab games.")) { pickFolder = true })
+                DeckActionRow(DeckAction("add", Icons.Filled.CreateNewFolder, L("添加游戏文件夹"),
+                    L("其中的每个文件夹即为一款游戏；应用会选择要启动的程序。它们会像您游戏选项卡中的游戏一样显示在 Steam 中。")) { pickFolder = true })
             }
         })
     }
@@ -476,7 +476,7 @@ internal class DeckLinuxSection(
         }
         add(PageExtra("linux-stored-import") {
             GroupCard(first = false, last = true, highlight = false) {
-                DeckActionRow(DeckAction("import", Icons.Filled.FileOpen, L("Import a .wcp"), L("A component package from the Nightlies \"-Linux\" releases."), enabled = busy == null) { pickWcp = true })
+                DeckActionRow(DeckAction("import", Icons.Filled.FileOpen, L("导入 .wcp"), L("A component package from the Nightlies \"-Linux\" releases."), enabled = busy == null) { pickWcp = true })
             }
         })
     }

@@ -13,7 +13,7 @@ import com.winlator.star.widget.fusionhud.FusionSize
 import com.winlator.star.widget.perfhud.parseHudOutline
 import kotlinx.coroutines.CoroutineScope
 
-// The Performance overlay page's style rows: every choice of the classic "FPS Counter Settings"
+// The Performance overlay page's style rows: every choice of the classic "FPS计数器设置"
 // dialog (FpsCounterConfigDialog), as ordinary rows. The dialog stores one packed string on the
 // container, "fpsCounterConfig" ("k=v,k=v"). A row changes only its own key (and the twin key the
 // dialog writes beside it, e.g. showCPUUsage / showCPULoad) and keeps every other entry byte for byte,
@@ -143,51 +143,51 @@ internal object OverlayRows {
 
     fun defs(): List<SettingDef> = listOf(
         // Overlay
-        hudToggle("hud.enabled", L("Overlay"), L("Show the HUD"), SIMPLE, "hudEnabled", on(true),
-            hint = L("The side menu's Show HUD switch. Off keeps the overlay hidden even while it is on above.")),
+        hudToggle("hud.enabled", L("覆盖层"), L("显示 HUD"), SIMPLE, "hudEnabled", on(true),
+            hint = L("侧边菜单的显示 HUD 开关。关闭时，即使上面已开启，覆盖层也保持隐藏。")),
         hudRow(
-            ID_STYLE, L("Overlay"), L("Style"), SIMPLE,
+            ID_STYLE, L("覆盖层"), L("Style"), SIMPLE,
             { _, _ -> seg("classic" to "Classic", "gamehub" to "GameHub", "gamenative" to "GameNative", "fusion" to "Fusion") },
             decode = { cfg -> raw(cfg, "hudStyle") ?: "fusion" },
             encode = { v -> mapOf("hudStyle" to v) },
             tech = "hudStyle",
-            hint = L("Fusion: one colour-coded look in five sizes. Tap the HUD in-game to switch vertical and horizontal."),
+            hint = L("Fusion：五种尺寸的单一颜色编码外观。在游戏中点击 HUD 可切换垂直和水平。"),
         ),
         hudRow(
-            ID_SIZE, L("Overlay"), L("Size"), SIMPLE,
+            ID_SIZE, L("覆盖层"), L("Size"), SIMPLE,
             { _, _ -> Control.Segmented(FusionSize.values().map { Opt(it.token, it.label) }) },
             decode = { cfg -> raw(cfg, "hudSize") ?: "pill" },
             encode = { v -> mapOf("hudSize" to v) },
-            tech = "hudSize", hint = L("Also changes in-game by tapping the Fusion HUD."),
+            tech = "hudSize", hint = L("也可在游戏中通过点击 Fusion HUD 来更改。"),
             visible = { fusion(it) },
         ),
-        hudToggle("hud.locked", L("Overlay"), L("锁定位置"), ADVANCED, "hudLocked", on(false),
-            hint = L("The HUD can't be dragged in-game.")),
+        hudToggle("hud.locked", L("覆盖层"), L("锁定位置"), ADVANCED, "hudLocked", on(false),
+            hint = L("HUD 在游戏中无法拖动。")),
 
         // Look
-        intRow("hud.scale", L("Look"), L("Size on screen"), ADVANCED, "hudScale", 50, 150, Container.DEFAULT_HUD_SCALE, "%",
+        intRow("hud.scale", L("外观"), L("屏幕上的大小"), ADVANCED, "hudScale", 50, 150, Container.DEFAULT_HUD_SCALE, "%",
             parse = { (it?.toIntOrNull() ?: Container.DEFAULT_HUD_SCALE).coerceAtLeast(50) }),
-        intRow("hud.opacity", L("Look"), L("Opacity"), ADVANCED, "hudOpacity", 0, 100, 80, "%", visible = { rich(it) }),
-        intRow("hud.transparency", L("Look"), L("Transparency"), ADVANCED, "hudTransparency", 0, 50, 0, "", visible = { !rich(it) }),
+        intRow("hud.opacity", L("外观"), L("不透明度"), ADVANCED, "hudOpacity", 0, 100, 80, "%", visible = { rich(it) }),
+        intRow("hud.transparency", L("外观"), L("透明度"), ADVANCED, "hudTransparency", 0, 50, 0, "", visible = { !rich(it) }),
         hudRow(
-            "hud.skin", L("Look"), L("Skin"), ADVANCED,
-            { _, _ -> seg("classic" to "Classic", "neon" to L("霓虹"), "mono" to L("霓虹")) },
+            "hud.skin", L("外观"), L("皮肤"), ADVANCED,
+            { _, _ -> seg("classic" to "Classic", "neon" to L("霓虹"), "mono" to L("黑白")) },
             decode = { cfg -> raw(cfg, "hudSkin") ?: "classic" },
             encode = { v -> mapOf("hudSkin" to v) },
             tech = "hudSkin", visible = { gameHub(it) },
         ),
         hudRow(
-            "hud.color", L("Look"), L("Colour"), ADVANCED,
-            { _, _ -> seg("soft" to L("柔和"), "mid" to L("柔和"), "vivid" to L("鲜艳")) },
+            "hud.color", L("外观"), L("颜色"), ADVANCED,
+            { _, _ -> seg("soft" to L("柔和"), "mid" to L("适中"), "vivid" to L("鲜艳")) },
             decode = { cfg -> raw(cfg, "hudColor") ?: "mid" },
             encode = { v -> mapOf("hudColor" to v) },
             tech = "hudColor", visible = { rich(it) },
         ),
-        intRow("hud.outline", L("Look"), L("Outline"), EXPERT, "hudOutline", 0, 100, 40, "",
+        intRow("hud.outline", L("外观"), L("轮廓"), EXPERT, "hudOutline", 0, 100, 40, "",
             parse = { parseHudOutline(it) }, visible = { rich(it) }),
         hudRow(
-            "hud.outlineAccent", L("Look"), L("Outline colour"), EXPERT,
-            { _, _ -> seg("0" to L("灰色"), "1" to L("灰色")) },
+            "hud.outlineAccent", L("外观"), L("轮廓颜色"), EXPERT,
+            { _, _ -> seg("0" to L("灰色"), "1" to L("强调色")) },
             decode = { cfg -> if ((raw(cfg, "hudOutlineAccent") ?: "1") == "1") "1" else "0" },
             encode = { v -> mapOf("hudOutlineAccent" to v) },
             tech = "hudOutlineAccent", visible = { rich(it) },
@@ -204,18 +204,18 @@ internal object OverlayRows {
         metric("ram", "RAM", "showRAM", on(true), chip("RAM", always)),
         metric("power", L("Power"), "showPower", on(true), chip(L("Power"), always)),
         metric("temp", L("Temperature"), "showTemp", on(true), chip(L("温度"), always), fallback = "showBatteryTemp", twins = listOf("showBatteryTemp")),
-        metric("gpuTemp", L("GPU temperature"), "showGpuTemp", on(false), chip(L("GPU 温度")) { gameNative(it) }),
+        metric("gpuTemp", L("GPU 温度"), "showGpuTemp", on(false), chip(L("GPU 温度")) { gameNative(it) }),
         metric("battery", L("Battery"), "showBattery", on(false), chip(L("Battery")) { gameNative(it) }),
         metric("runtime", L("Runtime"), "showRuntime", on(false), { !fusion(it) && gameNative(it) }),
         metric("low001", L("0.01% low"), "showLow001", on(true), chip(L("0.01% low"), never)),
-        metric("fpsDecimal", L("FPS with a decimal"), "fpsDecimal", on(true), chip(L("FPS .1"), never)),
+        metric("fpsDecimal", L("带小数的 FPS"), "fpsDecimal", on(true), chip(L("FPS .1"), never)),
         metric("perCore", L("Per-core CPU"), "showPerCore", on(true), chip(L("Per-core"), never)),
         metric("swap", L("Swap"), "showSwap", on(true), chip(L("Swap"), never)),
         metric("net", L("Network"), "showNet", on(true), chip(L("Network"), never)),
         metric("resolution", L("Resolution"), "showResolution", on(true), chip(L("Resolution"), never)),
         metric("proton", "Proton", "showProton", on(true), chip("Proton", never)),
         metric("wrapper", L("Wrapper"), "showWrapper", on(true), chip(L("Wrapper"), never)),
-        metric("dxVer", L("DirectX version"), "showDxVer", on(true), chip(L("DX 版本"), never)),
+        metric("dxVer", L("DirectX 版本"), "showDxVer", on(true), chip(L("DX 版本"), never)),
         metric("session", L("会话"), "showSession", on(true), chip(L("会话"), never)),
         metric("clock", L("时钟"), "showClock", fusionDefault, chip(L("时钟")) { gameNative(it) }),
         metric("engine", L("引擎"), "showEngine", on(true), chip(L("引擎"), always), fallback = "showRenderer", twins = listOf("showRenderer")),
@@ -224,7 +224,7 @@ internal object OverlayRows {
 
         // Temperatures (the same keys as the in-game side menu)
         hudRow(
-            "hud.temp.unit", L("Temperatures"), L("Unit"), ADVANCED,
+            "hud.temp.unit", L("温度"), L("单位"), ADVANCED,
             { _, _ -> seg("c" to L("°C"), "f" to L("°F")) },
             decode = { cfg -> if ((raw(cfg, "tempUnit") ?: "c").equals("f", true)) "f" else "c" },
             encode = { v -> mapOf("tempUnit" to v) },
@@ -232,7 +232,7 @@ internal object OverlayRows {
         ),
         // One three-way over two keys, as the dialog has it: bands off with auto on isn't worth its own state.
         hudRow(
-            ID_BANDS, L("Temperatures"), L("Danger colours"), ADVANCED,
+            ID_BANDS, L("温度"), L("危险颜色"), ADVANCED,
             { _, _ -> seg("0" to L("Off"), "1" to L("Auto"), "2" to L("手动")) },
             decode = { cfg ->
                 when {
@@ -243,14 +243,14 @@ internal object OverlayRows {
             },
             encode = { v -> mapOf("tempBands" to if (v != "0") "1" else "0", "tempAuto" to if (v != "2") "1" else "0") },
             tech = L("tempBands / tempAuto"),
-            hint = L("Auto reads your device's own thermal trip points. Manual sets the red point per sensor; amber sits just below it."),
+            hint = L("自动读取您设备自身的温度触发点。手动为每个传感器设置红色点；琥珀色点略低于它。"),
             visible = { tempShown(it) },
         ),
-        intRow("hud.temp.redCpu", L("Temperatures"), L("CPU red at"), EXPERT, "温度", 50, 110, 90, L("°C"),
+        intRow("hud.temp.redCpu", L("温度"), L("CPU 红色阈值"), EXPERT, "tempRedCpu", 50, 110, 90, L("°C"),
             visible = { tempShown(it) && it(ID_BANDS) == "2" }),
-        intRow("hud.temp.redGpu", L("Temperatures"), L("GPU red at"), EXPERT, "tempRedGpu", 50, 110, 90, L("°C"),
+        intRow("hud.temp.redGpu", L("温度"), L("GPU red at"), EXPERT, "tempRedGpu", 50, 110, 90, L("°C"),
             visible = { tempShown(it) && it(ID_BANDS) == "2" && (gameNative(it) || fusion(it)) && it(ID_GPU_TEMP) == "1" }),
-        intRow("hud.temp.redBat", L("Temperatures"), L("Battery red at"), EXPERT, "tempRedBat", 35, 60, 48, L("°C"),
+        intRow("hud.temp.redBat", L("温度"), L("电池红色阈值"), EXPERT, "tempRedBat", 35, 60, 48, L("°C"),
             visible = { tempShown(it) && it(ID_BANDS) == "2" }),
     )
 }
@@ -269,10 +269,10 @@ internal class DeckOverlaySection(
         if (env.scope == EditorScope.GAME || env.scope == EditorScope.APP || env.world != World.WINE) emptyMap()
         else mapOf("hud" to CategoryExtra(bottom = {
             actionItems(
-                "hud-tools", L("Diagnostics"),
+                "hud-tools", L("诊断"),
                 listOf(
-                    DeckAction("export", Icons.Filled.Share, L("Export HUD diagnostics"),
-                        L("Saves a sensor report (CPU, GPU, temperatures, VRAM…) to your Downloads folder.")) {
+                    DeckAction("export", Icons.Filled.Share, L("导出 HUD 诊断信息"),
+                        L("将传感器报告（CPU、GPU、温度、VRAM…）保存到您的下载文件夹。")) {
                         runCatching { exportHudDiagnostics(env.context) }
                     },
                 ),

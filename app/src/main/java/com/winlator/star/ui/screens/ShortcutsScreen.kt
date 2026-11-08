@@ -5481,9 +5481,9 @@ internal fun ShortcutSettingsDialogScreen(
     // "移动到C盘" button calls this; it stays hidden for a game already on C:.
     onMoveToDriveC: (() -> Unit)? = null,
     // Non-null when the host can run the "Change executable" flow (the Games list). The Executable
-    // row's "Change…" button calls this.
+    // row's "更改…" button calls this.
     onChangeExe: (() -> Unit)? = null,
-    // Non-null when the host can run the move-to-container flow. The Container row's "Change…" button
+    // Non-null when the host can run the move-to-container flow. The Container row's "更改…" button
     // stores pending edits, then calls this.
     onChangeContainer: (() -> Unit)? = null,
 ) {
@@ -6781,7 +6781,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.size(18.dp),
                                     )
                                     Spacer(Modifier.width(6.dp))
-                                    Text("Change…")
+                                    Text("更改…")
                                 }
                             }
                         }
@@ -6871,7 +6871,7 @@ internal fun ShortcutSettingsDialogScreen(
                             Box(modifier = Modifier.weight(1f)) {
                                 DpButton(dp, "selectIcon", onActivate = { showIconPickMenu = true }, modifier = Modifier.fillMaxWidth()) {
                                     OutlinedButton(onClick = { showIconPickMenu = true }, modifier = Modifier.fillMaxWidth()) {
-                                        Text("Select Icon")
+                                        Text("选择图标")
                                     }
                                 }
                                 DropdownMenu(expanded = showIconPickMenu, onDismissRequest = { showIconPickMenu = false }) {
@@ -6891,7 +6891,7 @@ internal fun ShortcutSettingsDialogScreen(
                         // "这些是什么?" — the same newcomer glossary the container editor shows,
                         // reused verbatim so the per-game editor's terms match the container's.
                         TextButton(onClick = { glossaryQuery = "" }) {
-                            Text("移除")
+                            Text("❔  这些是什么?")
                         }
 
                         // Sync (esync / ntsync / fsync / wineserver) — follows the container unless this game
@@ -7198,7 +7198,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_NO_GL_ERROR)) { linuxNoGlError = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_STEAMDECK,
-                                    "性能（实验性）", linuxDeckMode,
+                                    "Steam Deck 模式 (-steamdeck)", linuxDeckMode,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_STEAMDECK)) { on ->
                                     if (on) confirmDeckMode = true else linuxDeckMode = false
@@ -7270,7 +7270,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 )
                                 Text(
                                     "Scaling mode and filter only matter when a game renders below the session's resolution. "
-                                        + "FSR, NIS and SGSR upscale and sharpen; SGSR is Qualcomm's, made for Adreno.",
+                                        + "FSR、NIS 和 SGSR 可放大并锐化；SGSR 是高通的，专为 Adreno 打造。",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -7315,7 +7315,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(Modifier.height(8.dp))
-                                Text("Steam 客户端", style = MaterialTheme.typography.titleSmall)
+                                Text("故障排除", style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_NO_XALIA,
                                     "离线模式（不登录 Valve）", linuxNoXalia,
@@ -7351,7 +7351,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_APP_GAMES)) { linuxAppGames = it }
                                 if (linuxAppGames) {
                                     PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_SHARE_SAVES,
-                                        "在 Steam 中显示我游戏选项卡中的游戏", linuxShareSaves,
+                                        "与应用共享存档", linuxShareSaves,
                                         com.winlator.star.linux.LinuxTuning.defaultOn(
                                             com.winlator.star.linux.LinuxTuning.EXTRA_SHARE_SAVES)) { linuxShareSaves = it }
                                 }
@@ -7375,7 +7375,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     }
                                 }
                                 DpButton(dp, "linuxGamesFolderAdd", onActivate = { gamesFolderPicker.launch(null) }) {
-                                    TextButton(onClick = { gamesFolderPicker.launch(null) }) { Text("Add a games folder\u2026") }
+                                    TextButton(onClick = { gamesFolderPicker.launch(null) }) { Text("添加游戏文件夹…") }
                                 }
                                 Text(
                                     "游戏文件夹内的每个文件夹即为一款游戏；应用会选择其中要启动的程序。它们以相同方式显示在 Steam 中。",
@@ -7609,7 +7609,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     else showWineD3DConfig = true
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("DX Wrapper Config") }
+                            ) { Text("DX Wrapper 配置") }
                         }
 
                         // Renderer (host) — per-game override of the container's OpenGL/Vulkan choice.
@@ -9334,7 +9334,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
                     }
                 }
                 val pickFile = { importLauncher.launch(InAppFilePicker.buildIntent(context, arrayOf("wcp"), "选择组件包 (-linux .wcp)")) }
-                DpButton(dp, "cmpImport", onActivate = pickFile) { TextButton(onClick = pickFile) { Text("Import a .wcp…") } }
+                DpButton(dp, "cmpImport", onActivate = pickFile) { TextButton(onClick = pickFile) { Text("导入 .wcp…") } }
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -9972,9 +9972,9 @@ internal fun launchShortcutNow(activity: Activity, shortcut: Shortcut, preflight
 internal const val EXTRA_LAST_PLAYED = "lastPlayed"
 
 /**
- * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "Last played" line
+ * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "上次游玩" line
  * read it. saveData() rewrites the .desktop file, so its modified time is put back afterwards, since the
- * Deck's "Recently added" shelf sorts on it. Best-effort: a failed write never blocks the launch.
+ * Deck's "最近添加" shelf sorts on it. Best-effort: a failed write never blocks the launch.
  */
 internal fun recordLastPlayed(shortcut: Shortcut) {
     runCatching {
@@ -10708,7 +10708,7 @@ private fun CopyToDriveCCoordinator(
                     }) {
                         Icon(Icons.Filled.Folder, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("保留原始文件")
+                        Text("更改文件夹…")
                     }
                 }
             },
@@ -10809,13 +10809,13 @@ private fun CopyToDriveCCoordinator(
                         Toast.makeText(context, "已移动到C盘 — 原始文件已删除。", Toast.LENGTH_SHORT).show()
                         onFinished()
                     }
-                }) { Text("更改", color = DangerRed) }
+                }) { Text("删除原始文件", color = DangerRed) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     Toast.makeText(context, "已复制到C盘 — 原始文件已保留。", Toast.LENGTH_SHORT).show()
                     onFinished()
-                }) { Text("移动到C盘") }
+                }) { Text("保留原始文件") }
             },
         )
     }
@@ -11290,7 +11290,7 @@ private fun ContainerRow(dp: SettingsDpad, containerName: String, onChange: () -
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("Change…")
+                Text("更改…")
             }
         }
     }

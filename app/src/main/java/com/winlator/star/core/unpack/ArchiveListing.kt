@@ -156,7 +156,7 @@ object SltParser {
 
         val attrs = b["Attributes"]?.trim()?.ifEmpty { null }
         val mode = b["Mode"]?.trim()?.ifEmpty { null }
-        val isDir = when (b["Folder"]?.trim()) {
+        val isDir = when (b["文件夹"]?.trim()) {
             "+" -> true
             "-" -> false
             else -> attrsSayDir(attrs) || mode?.startsWith('d') == true || raw?.endsWith('/') == true
@@ -168,7 +168,7 @@ object SltParser {
             isDir = isDir,
             size = if (isDir) 0L else b["Size"]?.trim()?.toLongOrNull() ?: 0L,
             packedSize = b["Packed Size"]?.trim()?.toLongOrNull() ?: -1L,
-            modified = parseTime(b["Modified"], zone),
+            modified = parseTime(b["修改时间"], zone),
             encrypted = b["Encrypted"]?.trim() == "+",
             explicit = true,
             method = interned(b["Method"]),

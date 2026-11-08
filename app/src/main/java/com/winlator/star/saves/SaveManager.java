@@ -133,7 +133,7 @@ public class SaveManager {
             }
 
             // Log the paths for debugging
-            Log.d("SaveManager", "Cloning files from " + srcPath.getAbsolutePath() + " 到 " + destPath.getAbsolutePath());
+            Log.d("SaveManager", "正在从 " + srcPath.getAbsolutePath() + " 到 " + destPath.getAbsolutePath());
 
             // Copy the files from the source path to the destination path
             if (FileUtils.copy(srcPath, destPath)) {

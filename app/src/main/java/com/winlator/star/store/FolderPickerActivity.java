@@ -31,7 +31,7 @@ import java.util.List;
  *   - Internal Storage (Environment.getExternalStorageDirectory())
  *   - SD Card        (getExternalFilesDirs(null)[1] if present)
  *
- * "New Folder" button creates a subdirectory inside the current directory.
+ * "新建文件夹" button creates a subdirectory inside the current directory.
  * "选择这个文件夹" returns the current path via setResult().
  *
  * Result extras:
@@ -228,14 +228,14 @@ public class FolderPickerActivity extends Activity {
 
     private void showNewFolderDialog() {
         EditText input = new EditText(this);
-        input.setHint("Folder name");
+        input.setHint("文件夹名称");
         input.setSingleLine(true);
         LinearLayout.LayoutParams inputLp = new LinearLayout.LayoutParams(-1, -2);
         inputLp.setMargins(dp(20), dp(8), dp(20), dp(8));
         input.setLayoutParams(inputLp);
 
         new AlertDialog.Builder(this)
-            .setTitle("New Folder")
+            .setTitle("新建文件夹")
             .setView(input)
             .setPositiveButton("Create", (d, w) -> {
                 String name = input.getText().toString().trim();

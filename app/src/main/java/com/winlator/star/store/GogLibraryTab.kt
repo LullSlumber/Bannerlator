@@ -148,7 +148,7 @@ fun GogLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "Search your GOG library…",
+                placeholder = "搜索您的GOG库…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -175,20 +175,20 @@ fun GogLibraryTab(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your GOG games…" })
+                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "Fetching your GOG games…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "Your GOG library is empty here",
-                    body = "Sync to pull your games from GOG, or open the full library screen.",
-                    actionLabel = "Sync now",
+                    title = "您的GOG库在此为空",
+                    body = "同步以从GOG拉取您的游戏，或打开完整库界面。",
+                    actionLabel = "立即同步",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
+                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
             }
 
             else -> LazyVerticalGrid(
@@ -210,9 +210,9 @@ fun GogLibraryTab(
                 item(key = "full_library_footer", span = { GridItemSpan(maxLineSpan) }) {
                     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
                         StoreNotice(
-                            title = "Full library",
-                            body = "Need the list view, batch installs or DLC sync? Open the full library screen.",
-                            actionLabel = "Open full library",
+                            title = "完整库",
+                            body = "需要列表视图、批量安装或DLC同步？打开完整库界面。",
+                            actionLabel = "打开完整库",
                             onAction = onOpenFullLibrary,
                         )
                     }

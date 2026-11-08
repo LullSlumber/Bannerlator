@@ -529,7 +529,7 @@ internal fun EnvVarsEditor(
                 Column(Modifier.weight(1f)) {
                     Text("Prefer game-folder DLLs")
                     Text(
-                        "Loads the game's own copies of " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
+                        "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
                             " instead of Wine's. Needed by many wrappers and mod loaders. Graphics DLLs are " +
                             "never included — DXVK/VKD3D own those. A Microsoft xinput DLL in a game folder " +
                             "does not work under Wine (it needs a Windows-only driver); leave it off.",
@@ -569,7 +569,7 @@ internal fun EnvVarsEditor(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Detected in the game folder — toggle each individually:",
+                        "在游戏文件夹中检测到 — 逐一切换：",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f)
@@ -596,7 +596,7 @@ internal fun EnvVarsEditor(
         }
 
         // ── Variables ────────────────────────────────────────────────────────
-        SectionBox(title = "Environment Variables") {
+        SectionBox(title = "环境变量") {
             if (rawMode) {
                 // Escape hatch: edit the whole string by hand. Same format that gets stored,
                 // so anything the typed controls can't express can still be entered here.
@@ -624,7 +624,7 @@ internal fun EnvVarsEditor(
                         {
                             Text(
                                 "已忽略 — 需要 NAME=VALUE： " + malformed.joinToString(", ") +
-                                    ". Values can't contain spaces.",
+                                    "。值不能包含空格。",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -656,7 +656,7 @@ internal fun EnvVarsEditor(
             Button(onClick = { showAddPicker = true }, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(4.dp))
-                Text("Add Variable")
+                Text("添加变量")
             }
             TextButton(onClick = { rawMode = !rawMode }) {
                 Text(if (rawMode) "Done" else "Edit as text")
@@ -1015,13 +1015,13 @@ private fun AddEnvVarPicker(
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add environment variable") },
+        title = { Text("添加环境变量") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = nameQuery,
                     onValueChange = { nameQuery = it },
-                    label = { Text("Name (search or type)") },
+                    label = { Text("名称（搜索或输入）") },
                     placeholder = { Text("e.g. DXVK_FRAME_RATE") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     singleLine = true,
@@ -1030,8 +1030,8 @@ private fun AddEnvVarPicker(
                 OutlinedTextField(
                     value = valueQuery,
                     onValueChange = { valueQuery = it },
-                    label = { Text("Value (optional)") },
-                    placeholder = { Text("e.g. 60") },
+                    label = { Text("值（可选）") },
+                    placeholder = { Text("例如 60") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1091,7 +1091,7 @@ private fun AddEnvVarPicker(
                     }
                     if (candidates.isEmpty() && !showAddTyped) {
                         Text(
-                            "No matches",
+                            "无匹配项",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(12.dp)

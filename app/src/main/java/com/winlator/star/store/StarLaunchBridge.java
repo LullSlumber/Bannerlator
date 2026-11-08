@@ -473,7 +473,7 @@ public final class StarLaunchBridge {
                 if (artUrl != null && !artUrl.isEmpty()) {
                     saveCoverArt(activity, container, shortcutFile, safeName, artUrl);
                 } else {
-                    Log.d(TAG, "No cover art found for: " + gameName);
+                    Log.d(TAG, "未找到封面图: " + gameName);
                 }
 
                 h.post(() -> cb.onResult(true,

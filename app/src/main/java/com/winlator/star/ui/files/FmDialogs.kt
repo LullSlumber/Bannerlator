@@ -104,8 +104,8 @@ internal fun ConflictDialog(name: String, isDir: Boolean, batch: Boolean, onAnsw
                     }
                 }
                 listOf(
-                    (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to (if (isDir) "Merge" else "覆盖"),
-                    ConflictChoice.KEEP_BOTH to "Keep both",
+                    (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to (if (isDir) "合并" else "覆盖"),
+                    ConflictChoice.KEEP_BOTH to "保留两者",
                     ConflictChoice.SKIP to "跳过",
                 ).forEach { (choice, label) ->
                     TextButton(modifier = Modifier.fillMaxWidth(), onClick = { onAnswer(choice, all) }) {
@@ -276,14 +276,14 @@ internal fun DiskPropertiesDialog(file: File, location: FavLocation?, onDismiss:
                 if (location != null && location.storage == FavStorage.CONTAINER) {
                     PropLine("In Windows", (location.containerName?.let { "$it · " } ?: "") + location.displayPath)
                 }
-                PropLine("Type", if (file.isDirectory) "Folder" else file.extension.uppercase().ifBlank { "File" }.let { if (it == "File") it else "$it file" })
+                PropLine("Type", if (file.isDirectory) "文件夹" else file.extension.uppercase().ifBlank { "File" }.let { if (it == "File") it else "$it file" })
                 if (file.isDirectory) {
                     val t = tree
                     PropLine("Size", if (t == null) "Counting…" else "${StringUtils.formatBytes(t.first)} · ${t.second} files")
                 } else {
                     PropLine("Size", "${StringUtils.formatBytes(file.length())} (${"%,d".format(file.length())} bytes)")
                 }
-                PropLine("Modified", fmDateTime(file.lastModified()))
+                PropLine("修改时间", fmDateTime(file.lastModified()))
                 if (created > 0 && created != file.lastModified()) PropLine("Created", fmDateTime(created))
                 PropLine("Access", buildString {
                     append(if (file.canRead()) "Read" else "No read")
@@ -295,7 +295,7 @@ internal fun DiskPropertiesDialog(file: File, location: FavLocation?, onDismiss:
                 Spacer(Modifier.height(4.dp))
                 val st = attrs
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("Read-only", fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                    Text("只读", fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                     Switch(
                         checked = st?.readOnly == true,
                         enabled = st != null && !busy,
@@ -346,10 +346,10 @@ internal fun EntryPropertiesDialog(item: FmItem.Entry, onDismiss: () -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 PropLine("Archive", item.archive.name)
                 PropLine("Path", e.path)
-                PropLine("Type", if (e.isDir) "Folder" else e.name.substringAfterLast('.', "").uppercase().ifBlank { "File" })
+                PropLine("Type", if (e.isDir) "文件夹" else e.name.substringAfterLast('.', "").uppercase().ifBlank { "File" })
                 PropLine("Size", StringUtils.formatBytes(item.size))
                 if (e.packedSize >= 0 && !e.isDir) PropLine("Packed", StringUtils.formatBytes(e.packedSize))
-                PropLine("Modified", fmDateTime(e.modified))
+                PropLine("修改时间", fmDateTime(e.modified))
                 e.method?.let { PropLine("Method", it) }
                 e.crc?.let { PropLine("CRC", it) }
                 if (e.encrypted) PropLine("Encrypted", "Yes")
@@ -380,7 +380,7 @@ internal fun SortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort) -
                     Text("Reverse")
                 }
                 Spacer(Modifier.height(8.dp))
-                Text("Files", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("文件", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 FmSortKey.entries.forEach { k ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { s = s.copy(files = k) }) {
                         RadioButton(selected = s.files == k, onClick = { s = s.copy(files = k) })

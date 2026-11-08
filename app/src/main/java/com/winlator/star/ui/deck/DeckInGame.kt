@@ -320,7 +320,7 @@ private fun SimpleQuickMenu(modifier: Modifier, onExit: () -> Unit) {
                 .border(1.dp, com.winlator.star.ui.simple.SimpleLine)
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         ) {
-            IgButton(L("Game menu"), Icons.Outlined.Menu, { DeckInGameState.openMenu() }, modifier = Modifier.weight(1f), primary = true, glyph = "X")
+            IgButton(L("游戏菜单"), Icons.Outlined.Menu, { DeckInGameState.openMenu() }, modifier = Modifier.weight(1f), primary = true, glyph = "X")
             IgButton(null, if (isPaused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause, ::pauseAndClose)
             IgButton(null, Icons.AutoMirrored.Outlined.Logout, onExit, danger = true)
         }
@@ -432,7 +432,7 @@ private fun DeckQuickMenu(modifier: Modifier, onExit: () -> Unit) {
                 .background(cs.surface.copy(alpha = 0.6f))
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-            IgButton(L("Game menu"), Icons.Outlined.Menu, { DeckInGameState.openMenu() }, modifier = Modifier.weight(1f), primary = true, glyph = "X")
+            IgButton(L("游戏菜单"), Icons.Outlined.Menu, { DeckInGameState.openMenu() }, modifier = Modifier.weight(1f), primary = true, glyph = "X")
             IgButton(null, if (isPaused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause, ::pauseAndClose)
             IgButton(null, Icons.AutoMirrored.Outlined.Logout, onExit, danger = true)
         }
@@ -552,9 +552,9 @@ private fun FrameLimitRow(state: XServerDrawerState, compactHint: Boolean = fals
     val lsfgVkMultiplying = fgEngine == "lsfg" && fgEnabled && fgMult >= 2
     val hint = when {
         nativeFgLocks -> L("Caps the game's real frames. Locked on while %1\$s is generating; you'll see up to %2\$s × %3\$s = %4\$s.", nativeFgName, limit, fgMult, limit * fgMult)
-        lsfgVkMultiplying -> L("Not applied while lsfg-vk is multiplying: it paces frames itself.")
-        compactHint -> L("Steadier frame pacing and a cooler device.")
-        else -> L("Caps how many frames per second the game draws. Saves battery and evens out stutter.")
+        lsfgVkMultiplying -> L("当lsfg-vk正在倍增时不应用：它自己调节帧节奏。")
+        compactHint -> L("更稳定的帧节奏和更凉的设备。")
+        else -> L("限制游戏每秒绘制的帧数。节省电池并平滑卡顿。")
     }
     IgRow(L("Frame rate limit"), hint = hint, scopes = listOf(igGameScope()), wideControl = true) {
         Column(horizontalAlignment = Alignment.End) {
@@ -595,11 +595,11 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     val waylandFgOk by state.waylandFrameGenAvailable.collectAsState()
     val waylandBlocked = wayland && !waylandFgOk
     val scopes = listOf(SaveScope.SESSION)
-    val note = L("Starts off each launch; the level you pick is kept for this container.")
+    val note = L("每次启动时默认关闭；您选择的级别会为此容器保留。")
     if (!fgEnabled || waylandBlocked) {
         IgRow(
             L("Frame generation"),
-            hint = if (waylandBlocked) L("Not on Wayland in this build yet.") else L("Off for this container. Turn it on in the container's settings to use it here."),
+            hint = if (waylandBlocked) L("此版本尚未在 Wayland 上支持。") else L("此容器已关闭。在此容器的设置中将其开启以在此使用。"),
             enabled = false,
         )
         return
@@ -607,7 +607,7 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     val options = if (engine == "bionic") listOf(0 to L("Off"), 2 to L("On")) else listOf(0 to L("Off"), 2 to "2×", 3 to "3×", 4 to "4×")
     IgRow(
         L("Frame generation"),
-        hint = if (unavailable.isNotEmpty()) unavailable else L("Inserts extra frames for smoother motion. The game pauses for a moment while it restarts."),
+        hint = if (unavailable.isNotEmpty()) unavailable else L("插入额外帧以实现更流畅的运动。游戏在重启时会暂停片刻。"),
         note = note,
         scopes = scopes,
         wideControl = true,
@@ -655,7 +655,7 @@ private fun HudQuickRows(state: XServerDrawerState) {
     val style = cfg["hudStyle"] ?: "fusion"
     val scope = hudScope()
     IgRow(
-        L("Show performance overlay"),
+        L("显示性能覆盖层"),
         hint = L("FPS, CPU/GPU load and temperatures on top of the game. Tap it in-game to flip or resize it."),
         scopes = listOf(scope),
     ) {
@@ -676,7 +676,7 @@ private fun FitToScreenRow(state: XServerDrawerState) {
     val mode by state.fullscreenMode.collectAsState()
     IgRow(L("Fit to screen"), hint = L("How the game picture fills your display."), scopes = listOf(igGameScope()), wideControl = true) {
         IgSegmented(
-            listOf(0 to L("Original"), 1 to L("Fit"), 2 to L("适应（黑边）"), 3 to L("拉伸"), 4 to L("填充（裁剪）")),
+            listOf(0 to L("Original"), 1 to L("Fit"), 2 to L("拉伸"), 3 to L("填充（裁剪）"), 4 to L("像素完美")),
             mode,
         ) { state.onSetFullscreenMode?.accept(it) }
     }
@@ -735,13 +735,13 @@ private fun MouseQuickRows(state: XServerDrawerState) {
     val cursorToTouch by state.moveCursorToTouchpoint.collectAsState()
     val wayland by state.isWaylandMode.collectAsState()
     // The same Wayland note the Classic Mouse chips carry.
-    val relativeHint = if (wayland) L("Wayland: mouse deltas go to the compositor; a game that locks the pointer receives them as relative motion.")
-        else L("For games that lock the pointer (camera look).")
-    IgRow(L("Relative mouse"), hint = relativeHint, scopes = listOf(igGameScope())) {
+    val relativeHint = if (wayland) L("Wayland：鼠标增量发送到合成器；锁定指针的游戏会将其作为相对运动接收。")
+        else L("适用于锁定指针的游戏（相机视角）。")
+    IgRow(L("相对鼠标"), hint = relativeHint, scopes = listOf(igGameScope())) {
         IgSwitch(relative) { state.onRelativeMouseMovement?.run() }
     }
     IgDivider()
-    IgRow(L("Cursor to touch"), hint = L("The pointer jumps to where you touch."), scopes = listOf(SaveScope.ALL)) {
+    IgRow(L("光标跟随触摸"), hint = L("指针会跳转到您触摸的位置。"), scopes = listOf(SaveScope.ALL)) {
         IgSwitch(cursorToTouch) { state.onMoveCursorToTouchpoint?.run() }
     }
 }
@@ -775,7 +775,7 @@ private fun QuickTools(kind: InGameSessionKind) {
     IgSectionLabel(L("工具"))
     val tools = buildList<Triple<String, ImageVector, () -> Unit>> {
         if (kind.isWine) add(Triple(L("Controller test & remap"), Icons.Outlined.SportsEsports) { XServerDialogState.show(XServerDialogState.ActiveDialog.CONTROLLER_TEST) })
-        add(Triple(L("Performance dashboard"), Icons.Outlined.Speed) { perfDialog = true })
+        add(Triple(L("性能仪表板"), Icons.Outlined.Speed) { perfDialog = true })
         if (kind.isWine) {
             add(Triple(L("Live log"), Icons.Outlined.Description) { closeThen(state.onLogs) })
             add(Triple(L("Switch window"), Icons.Outlined.ViewCarousel) { closeThen(state.onActiveWindows) })
@@ -785,7 +785,7 @@ private fun QuickTools(kind: InGameSessionKind) {
             })
             add(Triple(L("Task manager"), Icons.Outlined.ListAlt) { DeckInGameState.openMenuAt(MenuTab.TOOLS) })
         }
-        if (FeatureFlags.TV_OUTPUT_ENABLED && castSupported) add(Triple(L("Cast to a TV"), Icons.Outlined.Cast) { state.onOpenCastPicker?.run() })
+        if (FeatureFlags.TV_OUTPUT_ENABLED && castSupported) add(Triple(L("投屏到电视TV "), Icons.Outlined.Cast) { state.onOpenCastPicker?.run() })
     }
     ToolTiles(tools, if (compact) 2 else 3)
     IgSectionLabel(L("查看"))
@@ -843,22 +843,22 @@ private fun OpenersPage() {
     }
     IgSectionLabel(L("Ways in"))
     IgCard {
-        IgRow(L("Back button"), hint = L("Opens the full game menu. Press Back again, or B on a controller, to close."))
+        IgRow(L("返回按钮"), hint = L("打开完整游戏菜单。再次按返回，或按控制器上的 B，即可关闭。"))
         IgDivider()
-        IgRow(L("菜单按钮"), hint = L("The button picked in Input Controls › Device › Menu button opens the quick menu, and closes it."))
+        IgRow(L("菜单按钮"), hint = L("在输入控制 › 设备 › 菜单按钮中选择的按钮会打开快速菜单，并关闭它。"))
         IgDivider()
-        IgRow(L("Tap with four fingers"), hint = L("Opens the full game menu from the touch screen."))
+        IgRow(L("四指轻触"), hint = L("从触摸屏打开完整游戏菜单。"))
         IgDivider()
-        IgRow(L("Inside the menus"), hint = L("L1 / R1 change page, X swaps quick menu and game menu, B closes."))
+        IgRow(L("在菜单内"), hint = L("L1 / R1 切换页面，X 交换快速菜单和游戏菜单，B 关闭。"))
     }
 }
 
 // ───────────────────────────── Full game menu ─────────────────────────────
 
 private fun menuTabTitle(t: MenuTab) = when (t) {
-    MenuTab.SCREEN -> L("Screen")
+    MenuTab.SCREEN -> L("屏幕")
     MenuTab.PERFORMANCE -> L("Performance")
-    MenuTab.EFFECTS -> L("Visual effects")
+    MenuTab.EFFECTS -> L("视觉效果")
     MenuTab.OVERLAY -> L("性能覆盖层")
     MenuTab.CONTROLS -> L("Controls")
     MenuTab.AUDIO -> L("Audio")
@@ -1231,7 +1231,7 @@ private fun ScreenPage(state: XServerDrawerState) {
         IgDivider()
         val alignment by state.screenAlignment.collectAsState()
         IgRow(L("Position on screen"), hint = L("Top or Bottom keeps the other half free for on-screen controls."), scopes = listOf(igGameScope()), wideControl = true) {
-            IgSegmented(listOf(0 to L("Center"), 1 to L("居中"), 2 to L("顶部")), alignment) { state.onSetScreenAlignment?.accept(it) }
+            IgSegmented(listOf(0 to L("Center"), 1 to L("顶部"), 2 to L("底部")), alignment) { state.onSetScreenAlignment?.accept(it) }
         }
     }
 
@@ -1241,7 +1241,7 @@ private fun ScreenPage(state: XServerDrawerState) {
         IgCard { PresentModeRow(state) }
     }
 
-    IgSectionLabel(L("屏幕"))
+    IgSectionLabel(L("刷新率"))
     IgCard { RefreshRateRows(state) }
 }
 
@@ -1278,10 +1278,10 @@ private fun RefreshRateRows(state: XServerDrawerState) {
     val fgAutoTurnedOn by state.fgAutoTurnedOn.collectAsState()
     val fgAutoPerGame by state.fgAutoPerGame.collectAsState()
     val explain = when {
-        !vrr -> L("Unavailable — this display has a single refresh rate, so there's nothing to match.")
+        !vrr -> L("不可用 — 此显示器仅支持单一刷新率，因此无法匹配。")
         match && nativeFgLocks && fgAutoTurnedOn ->
             L("Turned on for frame generation — the display follows the frame limit × multiplier. ") +
-                (if (fgAutoPerGame) L("Turn it off if you prefer; this game will remember.") else L("Turn it off if you prefer (for this session)."))
+                (if (fgAutoPerGame) L("如果您愿意，可以关闭它；此游戏会记住。") else L("如果您愿意，可以关闭它（仅限本次会话）。"))
         match && nativeFgLocks -> L("On — with frame generation running, the display follows the frame limit × multiplier.")
         nativeFgLocks ->
             (if (fgAutoPerGame) L("Off for this game while frame generation runs. ") else L("Off while frame generation runs. ")) +
@@ -1335,9 +1335,9 @@ private fun PerformancePage(state: XServerDrawerState) {
     val fromShortcut by DeckInGameState.launchedFromShortcut.collectAsState()
     IgCard {
         IgRow(
-            L("Performance dashboard"),
-            hint = L("CPU / GPU clocks, thermal, memory and power profile — live gauges, root-aware."),
-            note = if (fromShortcut) L("Changes are kept for this game only where they differ from the global default.") else null,
+            L("性能仪表板"),
+            hint = L("CPU / GPU 频率、温度、内存和电源配置 — 实时仪表，感知 root。"),
+            note = if (fromShortcut) L("仅当此游戏的设置与全局默认不同时，才会为此游戏保留更改。") else null,
             scopes = if (fromShortcut) listOf(SaveScope.GAME, SaveScope.ALL) else listOf(SaveScope.ALL),
         ) { IgButton(L("Open"), Icons.Outlined.Speed, { perfDialog = true }) }
     }
@@ -1357,7 +1357,7 @@ private fun EffectsPage(state: XServerDrawerState, kind: InGameSessionKind) {
             L("Upscaling filter, sharpening and debanding") to listOf(game),
             "HDR" to listOf(if (gl) SaveScope.SESSION else game),
             L("Look, brightness, contrast, gamma, saturation, FXAA / CRT / Toon / NTSC") to listOf(SaveScope.SESSION),
-            L("Native rendering") to listOf(SaveScope.SESSION),
+            L("原生渲染") to listOf(SaveScope.SESSION),
         )
         if (wayland) {
             SaveNotes(
@@ -1382,7 +1382,7 @@ private fun EffectsPage(state: XServerDrawerState, kind: InGameSessionKind) {
 // ── Performance overlay ──
 @Composable
 private fun OverlayPage(state: XServerDrawerState) {
-    IgSectionLabel(L("Overlay"))
+    IgSectionLabel(L("覆盖层"))
     IgHostedCard {
         HudContent(state, embedded = true)
         SaveNotes(
@@ -1409,26 +1409,26 @@ private fun ControlsPage(state: XServerDrawerState, kind: InGameSessionKind) {
         ControlsContent(state, playerSlots = kind.isWine, pointerAndTouch = kind != InGameSessionKind.LINUX_STEAM)
         when (sub) {
             0 -> SaveNotes(
-                L("Show on-screen controls and the layout you pick") to listOf(SaveScope.SESSION),
-                L("Choosing no layout, timeout, haptics and opacity") to listOf(SaveScope.ALL),
-                L("Controls accent") to listOf(SaveScope.other(L("Saved in the controls profile"))),
+                L("显示屏幕控制以及您选择的布局") to listOf(SaveScope.SESSION),
+                L("选择无布局、超时、触觉反馈和不透明度") to listOf(SaveScope.ALL),
+                L("控制强调色") to listOf(SaveScope.other(L("保存在控制配置中"))),
             )
             1 -> SaveNotes(
-                L("Relative mouse") to listOf(game),
-                L("Cursor to touch and its touch gestures") to listOf(SaveScope.ALL),
-                L("Disable mouse") to listOf(SaveScope.SESSION),
+                L("相对鼠标") to listOf(game),
+                L("光标跟随触摸及其触摸手势") to listOf(SaveScope.ALL),
+                L("禁用鼠标") to listOf(SaveScope.SESSION),
             )
             2 -> SaveNotes(
-                L("Rumble on / off and per-slot switches") to listOf(SaveScope.ALL),
-                L("Rumble target, intensity and motors (Save for, below)") to listOf(padScope),
+                L("震动开/关以及每个槽位的开关") to listOf(SaveScope.ALL),
+                L("震动目标、强度和马达（保存用于，见下方）") to listOf(padScope),
             )
             3 -> SaveNotes(
-                L("Motion aim settings") to listOf(game),
-                L("Deadzone and smoothing") to listOf(SaveScope.CONTAINER),
+                L("体感瞄准设置") to listOf(game),
+                L("死区和平滑") to listOf(SaveScope.CONTAINER),
             )
-            4 -> SaveNotes(L("Player slot for each controller") to listOf(game))
-            6 -> SaveNotes(L("Controller type, XInput source, DirectInput, stick updates (Save for, below)") to listOf(padScope))
-            5 -> SaveNotes(L("Swipe between buttons") to listOf(SaveScope.ALL))
+            4 -> SaveNotes(L("每个控制器的玩家槽位") to listOf(game))
+            6 -> SaveNotes(L("控制器类型、XInput 源、DirectInput、摇杆更新（保存用于，见下方）") to listOf(padScope))
+            5 -> SaveNotes(L("在按钮之间滑动") to listOf(SaveScope.ALL))
         }
     }
 }
@@ -1539,7 +1539,7 @@ private fun ToolsPage(state: XServerDrawerState, kind: InGameSessionKind) {
             }
             IgDivider()
         }
-        IgRow(L("Performance dashboard"), hint = L("Clocks, thermals, memory and power profile.")) { IgButton(L("Open"), Icons.Outlined.Speed, { perfDialog = true }) }
+        IgRow(L("性能仪表板"), hint = L("Clocks, thermals, memory and power profile.")) { IgButton(L("Open"), Icons.Outlined.Speed, { perfDialog = true }) }
     }
     if (perfDialog) PerformanceDashboardDialog(state) { perfDialog = false }
 

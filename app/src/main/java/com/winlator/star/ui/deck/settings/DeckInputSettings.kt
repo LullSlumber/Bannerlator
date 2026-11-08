@@ -62,8 +62,8 @@ internal object InputRows {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.xr.primary", category = "input", group = L("XR controller"), level = SettingLevel.EXPERT,
-            label = L("Primary XR controller"), hint = L("The hand whose controller drives the mouse in XR."), tech = L("Primary controller"),
+            id = "input.xr.primary", category = "input", group = L("XR 控制器"), level = SettingLevel.EXPERT,
+            label = L("主 XR 控制器"), hint = L("在 XR 中，其控制器驱动鼠标的那只手。"), tech = L("主控制器"),
             control = { env, _ ->
                 Control.Segmented((env.vm?.primaryControllerEntries ?: emptyList()).mapIndexed { i, name -> Opt("$i", name) })
             },
@@ -77,7 +77,7 @@ internal object InputRows {
 
     /** One XR button's key: the index into the keycode list the classic dropdown shows (XKeycode order). */
     private fun xrRow(i: Int, label: String) = SettingDef(
-        id = "input.xr.map$i", category = "input", group = L("XR controller"), level = SettingLevel.EXPERT,
+        id = "input.xr.map$i", category = "input", group = L("XR 控制器"), level = SettingLevel.EXPERT,
         label = label, tech = "Controller Mapping › ${Container.XrControllerMapping.values()[i].name}",
         control = { env, _ -> Control.Select((env.vm?.xrKeycodeNames ?: emptyList()).mapIndexed { k, name -> Opt("$k", name) }) },
         vm = VmBinding(
@@ -125,7 +125,7 @@ internal class DeckInputSection(val env: SettingsEnv, val source: SettingsSource
         val items = mutableListOf(PageExtra("slots-label") { GroupLabel(L("玩家槽位固定")) })
         items += PageExtra("slots-info") {
             GroupCard(first = true, last = false, highlight = false) {
-                DeckLine(label = L("两个在一个玩家上共享它。 "), hint = "Two on one player share it. $info") {
+                DeckLine(label = L("将控制器固定到玩家"), hint = "Two on one player share it. $info") {
                     if (own && editable) {
                         DeckSmallButton(if (game) L("使用容器的") else L("使用所有容器的"), Icons.Filled.Restore) { source.reset(def) }
                     }

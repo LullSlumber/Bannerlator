@@ -243,7 +243,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.weight(1f).height(tileH).labPanel().labTile(onClick = { onNavigate(LabRoutes.details(shortcut.file.path)) }).padding(12.dp),
                     ) {
-                        LabTileLabel(L("Game details"))
+                        LabTileLabel(L("游戏详情"))
                         Text(L("Details, artwork, background ›"), color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
                     Column(

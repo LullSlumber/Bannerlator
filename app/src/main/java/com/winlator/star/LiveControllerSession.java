@@ -363,7 +363,7 @@ final class LiveControllerSession {
                 new ArrayList<>(nextLaunchOnly)));
     }
 
-    // ── Saving: this game or the container, as the footer's "Save for" says (ControllerSaveTarget) ──
+    // ── Saving: this game or the container, as the footer's "保存用于" says (ControllerSaveTarget) ──
 
     private void saveIdentity(String value) {
         saveTarget.save(ControllerIdentity.EXTRA, value, () -> container.setControllerIdentity(value));

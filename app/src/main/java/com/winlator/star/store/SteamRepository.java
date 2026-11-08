@@ -1069,7 +1069,7 @@ public final class SteamRepository {
         steamFriends = steamClient.getHandler(SteamFriends.class);
 
         registerCallbacks();
-        Log.i(TAG, "SteamRepository initialised");
+        Log.i(TAG, "SteamRepository 已初始化");
     }
 
     private void registerCallbacks() {
@@ -1866,7 +1866,7 @@ public final class SteamRepository {
     /** Map Steam PICS flat genre IDs (numeric strings) to human-readable names. */
     private static String resolveGenreId(String id) {
         switch (id) {
-            case "1":  return "动作";
+            case "1":  return "Action";
             case "2":  return "策略";
             case "3":  return "角色扮演";
             case "4":  return "休闲";
@@ -2571,7 +2571,7 @@ public final class SteamRepository {
         if (rustEngine) {
             // Tear the engine session down and build a fresh one from the saved token, then wait.
             Log.i(RUST_TAG, "reconnectAndRelogin: forcing a fresh engine session (timeout " + timeoutMs + "ms)");
-            setStatus(SteamStatus.CONNECTING, "forced reconnect+relogin for retry");
+            setStatus(SteamStatus.CONNECTING, "强制重新连接并重新登录以重试");
             loggingOut = false;
             rustReconnectAttempts = 0;
             BlSteamEngine.INSTANCE.stop();
@@ -2582,7 +2582,7 @@ public final class SteamRepository {
         }
         if (steamClient == null) return false;
         Log.i(TAG, "reconnectAndRelogin: forcing a fresh session (timeout " + timeoutMs + "ms)");
-        setStatus(SteamStatus.CONNECTING, "forced reconnect+relogin for retry");
+        setStatus(SteamStatus.CONNECTING, "强制重新连接并重新登录以重试");
         // Arm the involuntary-logoff recovery path so the client-initiated disconnect below re-logs-in
         // instead of being treated as a user sign-out (see onDisconnected/onLoggedOff).
         loggingOut = false;

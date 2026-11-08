@@ -139,7 +139,7 @@ fun UpdatePill(
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.5.sp, maxLines = 1,
                     )
                 }
-                PillButton("✕ 取消", MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface, onDismiss)
+                PillButton("关闭", MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface, onDismiss)
                 PillButton("查看", UpdateGreen, Color.White, onView)
             }
         }

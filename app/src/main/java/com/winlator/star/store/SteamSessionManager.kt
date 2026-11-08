@@ -136,9 +136,9 @@ object SteamSessionManager {
                 Log.i(TAG, "refresh token valid for ${(exp - now) / 86_400_000L} more days — no renewal")
                 return false
             }
-            Log.i(TAG, "refresh token " + (if (exp > 0L) "expires in ${(exp - now) / 3_600_000L}h" else "has no readable expiry") + " — renewing")
+            Log.i(TAG, "refresh token " + (if (exp > 0L) "expires in ${(exp - now) / 3_600_000L}h" else "没有可读的到期时间") + " — 正在续期")
             val fresh = BlSteamEngine.renewRefreshToken(RENEW_WAIT_MS)
-            Log.i(TAG, "refresh token renewal " + (if (fresh.isNullOrEmpty()) "did not land" else "OK (len=${fresh.length})"))
+            Log.i(TAG, "refresh token renewal " + (if (fresh.isNullOrEmpty()) "未生效" else "OK (len=${fresh.length})"))
             !fresh.isNullOrEmpty()
         } catch (t: Throwable) {
             Log.w(TAG, "renewRefreshToken errored", t)

@@ -31,13 +31,13 @@ internal class DeckTranslatorDownloads(
     private fun items(): List<PageExtra> {
         val arm64ec = env.arm64ec
         val box64 = if (arm64ec) ContentProfile.ContentType.CONTENT_TYPE_WOWBOX64 else ContentProfile.ContentType.CONTENT_TYPE_BOX64
-        return actionItems("perf-downloads", L("Translator downloads"), listOfNotNull(
-            DeckAction("box64", Icons.Filled.CloudDownload, if (arm64ec) L("Download WOWBox64 versions") else L("Download Box64 versions"),
-                L("Installed ones appear under Box64 version.")) { sheet = box64 },
+        return actionItems("perf-downloads", L("翻译器下载"), listOfNotNull(
+            DeckAction("box64", Icons.Filled.CloudDownload, if (arm64ec) L("下载 WOWBox64 版本") else L("下载 Box64 版本"),
+                L("已安装的会出现在 Box64 版本下。")) { sheet = box64 },
             if (arm64ec) DeckAction("fex", Icons.Filled.CloudDownload, L("下载FEXCore版本"),
-                L("Installed ones appear under FEX version.")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_FEXCORE } else null,
-            if (arm64ec) DeckAction("box64ec", Icons.Filled.CloudDownload, L("Download Box64EC versions"),
-                L("Runs 64-bit games when the 64-bit translator is Box64EC.")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_BOX64EC } else null,
+                L("已安装的会出现在 FEX 版本下。")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_FEXCORE } else null,
+            if (arm64ec) DeckAction("box64ec", Icons.Filled.CloudDownload, L("下载 Box64EC 版本"),
+                L("当 64 位翻译器为 Box64EC 时运行 64 位游戏。")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_BOX64EC } else null,
         ))
     }
 

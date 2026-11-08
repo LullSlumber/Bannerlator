@@ -135,7 +135,7 @@ fun VisualControllerBinder(
                         MenuItemDivider()
                     }
                     if (profile != null) {
-                        DropdownMenuItem(text = { Text("Rename…") }, onClick = { profMenu = false; onRenameProfile() })
+                        DropdownMenuItem(text = { Text("重命名…") }, onClick = { profMenu = false; onRenameProfile() })
                         if (onDeleteProfile != null) {
                             MenuItemDivider()
                             DropdownMenuItem(
@@ -150,7 +150,7 @@ fun VisualControllerBinder(
             TextButton(onClick = { showNew = !showNew }) { Text("+ New", fontSize = 12.sp) }
             Spacer(Modifier.weight(1f))
             if (onOpenAllBindings != null) {
-                TextButton(onClick = onOpenAllBindings) { Text("All bindings", fontSize = 12.sp) }
+                TextButton(onClick = onOpenAllBindings) { Text("所有绑定", fontSize = 12.sp) }
             }
         }
         if (showNew) {
@@ -159,7 +159,7 @@ fun VisualControllerBinder(
                     value = newName,
                     onValueChange = { newName = it },
                     singleLine = true,
-                    placeholder = { Text("New profile name", fontSize = 12.sp) },
+                    placeholder = { Text("新配置名称", fontSize = 12.sp) },
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(8.dp))
@@ -172,7 +172,7 @@ fun VisualControllerBinder(
 
         if (profile == null || controller == null) {
             Text(
-                "Select or create a profile to bind this controller.",
+                "选择或创建一个配置以绑定此控制器。",
                 style = MaterialTheme.typography.bodySmall,
                 color = cs.onSurfaceVariant
             )

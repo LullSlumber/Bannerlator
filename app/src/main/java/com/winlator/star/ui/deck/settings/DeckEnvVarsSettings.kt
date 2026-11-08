@@ -319,11 +319,11 @@ internal class DeckEnvVarsSection(
             GroupCard(first = true, last = found.isEmpty(), highlight = false) {
                 DeckLine(
                     L("Prefer game-folder DLLs"),
-                    hint = (if (linux) L("For the games the client launches, not the client itself, and for every one of them: the session has one environment. ")
+                    hint = (if (linux) L("用于客户端启动的游戏，而非客户端本身，并且对每个游戏都适用：会话只有一个环境。 ")
                         else "") +
-                        L("Loads the game's own ") + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
-                        L(" instead of Wine's. Needed by many wrappers and mod loaders. Graphics DLLs are never included: DXVK and VKD3D own those.") +
-                        (if (anyOn && !allOn) L(" Some are on: see below.") else ""),
+                        L("加载游戏自带的 ") + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
+                        L(" 而非 Wine 的。许多包装器和模组加载器需要它。图形 DLL 绝不包含在内：DXVK 和 VKD3D 拥有那些。") +
+                        (if (anyOn && !allOn) L(" 部分已开启：见下方。") else ""),
                     icon = Icons.Filled.Extension,
                     onClick = { preferDlls(!allOn, master) },
                 ) { Switch(checked = allOn, onCheckedChange = null) }
@@ -349,10 +349,10 @@ internal class DeckEnvVarsSection(
                     DeckLine(
                         L("未设置环境变量"),
                         when {
-                            linux -> L("The session starts with the app's own variables only.")
-                            game -> L("The game starts with its container's variables") + (if (containerVars.isEmpty()) "." else L(", listed below."))
+                            linux -> L("会话仅以应用自身的变量启动。")
+                            game -> L("游戏以其容器的变量启动") + (if (containerVars.isEmpty()) "." else L("，列于下方。"))
                             env.scope == EditorScope.DEFAULTS -> L("New containers start with none.")
-                            else -> L("Every game in this container starts with none of its own.")
+                            else -> L("此容器中的每个游戏启动时都没有自己的变量。")
                         },
                     )
                 }
@@ -384,12 +384,12 @@ internal class DeckEnvVarsSection(
         }
         add(PageExtra("env-add") {
             GroupCard(first = false, last = false, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("添加变量"), L("Pick a known variable or type your own: NAME, or NAME=VALUE.")) { adding = true })
+                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("添加变量"), L("选择已知变量或输入您自己的：NAME 或 NAME=VALUE。")) { adding = true })
             }
         })
         add(PageExtra("env-raw") {
             GroupCard(first = false, last = true, highlight = false) {
-                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, L("Edit as text"), L("The whole list as NAME=VALUE, separated by spaces.")) { rawText = true })
+                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, L("Edit as text"), L("整个列表为 NAME=VALUE，以空格分隔。")) { rawText = true })
             }
         })
 
@@ -566,8 +566,8 @@ private fun EnvRawDialog(s: DeckEnvVarsSection) {
                 isError = malformed.isNotEmpty(),
                 supportingText = {
                     Text(
-                        if (malformed.isEmpty()) L("Values can't contain spaces.")
-                        else L("Ignored, needs NAME=VALUE: ") + malformed.joinToString(", ") + L(". Values can't contain spaces."),
+                        if (malformed.isEmpty()) L("值不能包含空格。")
+                        else L("Ignored, needs NAME=VALUE: ") + malformed.joinToString(", ") + L("。值不能包含空格。"),
                     )
                 },
                 shape = deckShape(14.dp),

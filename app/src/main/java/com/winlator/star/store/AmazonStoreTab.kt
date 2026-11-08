@@ -84,7 +84,7 @@ fun AmazonStoreTab(
             header.Header {
                 CatalogSearchField(
                     query = query,
-                    placeholder = "Search your Amazon games…",
+                    placeholder = "搜索您的Amazon游戏…",
                     onQueryChange = { query = it },
                     onClear = { query = ""; focusManager.clearFocus() },
                     onSearch = { focusManager.clearFocus() },
@@ -97,7 +97,7 @@ fun AmazonStoreTab(
                     query = query.trim(),
                     wide = wide,
                     storeLabel = "Amazon",
-                    emptyBody = "Nothing in your Amazon library matched that. New Prime Gaming claims appear after a sync.",
+                    emptyBody = "您的Amazon库中没有匹配的内容。新的Prime Gaming领取内容会在同步后出现。",
                     actionFor = ::actionFor,
                     onOpen = ::open,
                     onAction = ::open,
@@ -131,7 +131,7 @@ fun AmazonStoreTab(
                         item(key = "prime") { prime() }
                         item(key = "hero") { heroCard() }
                         if (notInstalled.isNotEmpty()) {
-                            item(key = "ni_hdr") { StoreSectionHeader("Ready to install", "${notInstalled.size}") }
+                            item(key = "ni_hdr") { StoreSectionHeader("可安装", "${notInstalled.size}") }
                             items(notInstalled, key = { "ni_${it.id}" }) { g ->
                                 CatalogResultRow(g, actionFor(g), "Amazon", { open(g) }, { open(g) },
                                     Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
@@ -143,8 +143,8 @@ fun AmazonStoreTab(
                         modifier = Modifier.weight(0.58f).fillMaxHeight().focusGroup(),
                         contentPadding = PaddingValues(bottom = 24.dp),
                     ) {
-                        catalogRail("Updates available", "Newer build on Amazon", updatable, "Amazon", ::actionFor, ::open, ::open)
-                        catalogRail("Installed", "Play now", installed, "Amazon", ::actionFor, ::open, ::open)
+                        catalogRail("有更新可用", "Amazon上有更新的版本", updatable, "Amazon", ::actionFor, ::open, ::open)
+                        catalogRail("Installed", "立即游玩", installed, "Amazon", ::actionFor, ::open, ::open)
                         if (state.games.isEmpty()) item(key = "empty") { EmptyLibraryNotice(state) }
                     }
                 }
@@ -156,9 +156,9 @@ fun AmazonStoreTab(
                 ) {
                     item(key = "prime") { prime() }
                     item(key = "hero") { heroCard() }
-                    catalogRail("Ready to install", "Owned, not installed", notInstalled, "Amazon", ::actionFor, ::open, ::open)
-                    catalogRail("Updates available", "Newer build on Amazon", updatable, "Amazon", ::actionFor, ::open, ::open)
-                    catalogRail("Installed", "Play now", installed, "Amazon", ::actionFor, ::open, ::open)
+                    catalogRail("可安装", "已拥有，未安装", notInstalled, "Amazon", ::actionFor, ::open, ::open)
+                    catalogRail("有更新可用", "Amazon上有更新的版本", updatable, "Amazon", ::actionFor, ::open, ::open)
+                    catalogRail("Installed", "立即游玩", installed, "Amazon", ::actionFor, ::open, ::open)
                     if (state.games.isEmpty()) item(key = "empty") { EmptyLibraryNotice(state) }
                 }
             }
@@ -169,12 +169,12 @@ fun AmazonStoreTab(
 @Composable
 private fun EmptyLibraryNotice(state: AmazonLibraryState) {
     if (state.isSyncing) {
-        StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your Amazon games…" })
+        StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "正在获取您的Amazon游戏…" })
     } else {
         StoreNotice(
-            title = "No Amazon games yet",
-            body = "Claim games on Prime Gaming and sync — they show up here as Ready to install.",
-            actionLabel = "Sync now",
+            title = "尚无Amazon游戏",
+            body = "在Prime Gaming上领取游戏并同步 — 它们会在此显示为可安装。",
+            actionLabel = "立即同步",
             onAction = { state.refresh(true) },
         )
     }
@@ -193,14 +193,14 @@ private fun PrimeGamingCard(onOpenWeb: (url: String, title: String) -> Unit, mod
             .padding(16.dp),
     ) {
         Text(
-            text = "PRIME GAMING",
+            text = "PRIME会员游戏",
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "Free games every month",
+            text = "每月免费游戏",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.onSurface,

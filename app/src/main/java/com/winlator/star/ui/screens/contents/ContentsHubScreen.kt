@@ -369,7 +369,7 @@ private fun SourceListPane(
     }
     val listHeader: @Composable () -> Unit = {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Select Online Repository", style = MaterialTheme.typography.titleMedium,
+            Text("选择在线仓库", style = MaterialTheme.typography.titleMedium,
                 color = cs.onSurface, modifier = Modifier.weight(1f))
             IconButton(onClick = { vm.reloadSources(); vm.refreshSelected() }) {
                 Icon(Icons.Filled.Refresh, "刷新", tint = cs.primary)
@@ -1077,7 +1077,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             Spacer(Modifier.height(10.dp))
             PrimaryButton("导入Wayland游戏驱动（.zip）…", Icons.Filled.FolderOpen, enabled = true,
                 container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
-                waylandDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "选择Wayland游戏驱动zip"))
+                waylandDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "Select Wayland game driver zip"))
             }
             Spacer(Modifier.height(12.dp))
             if (waylandDrivers.isEmpty()) {

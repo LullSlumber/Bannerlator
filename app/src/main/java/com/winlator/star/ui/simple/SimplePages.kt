@@ -194,10 +194,10 @@ internal fun SimpleToolsPage(onNavigate: (String) -> Unit, onBack: () -> Unit, o
                 title = L("Help"),
                 icon = Icons.Filled.Info,
                 entries = listOf(
-                    MenuEntry("account", L("我的账户"), L("Sign in to manage your shared configs"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
-                    MenuEntry("about", L("关于"), L("Version, updates and credits"), icon = Icons.Filled.Info, onA = onAbout),
-                    MenuEntry("help", L("Help and Support"), L("GitHub, issue tracker and Discord"), icon = Icons.Filled.HelpOutline, onA = { showHelp = true }),
-                    MenuEntry("setup", L("Run setup again"), L("Permissions, theme and stores"), icon = Icons.Filled.RestartAlt, onA = { DeckSetup.requestRerun() }),
+                    MenuEntry("account", L("我的账户"), L("登录以管理您的共享配置"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
+                    MenuEntry("about", L("关于"), L("版本、更新和鸣谢"), icon = Icons.Filled.Info, onA = onAbout),
+                    MenuEntry("help", L("帮助与支持"), L("GitHub、问题追踪器和 Discord"), icon = Icons.Filled.HelpOutline, onA = { showHelp = true }),
+                    MenuEntry("setup", L("再次运行设置"), L("Permissions, theme and stores"), icon = Icons.Filled.RestartAlt, onA = { DeckSetup.requestRerun() }),
                 ),
             ),
         ),
@@ -239,7 +239,7 @@ internal fun NavGraphBuilder.simpleRoutes(
     composable(SimpleRoutes.COMPONENT_SOURCE, arguments = listOf(navArgument("i") { type = NavType.IntType; defaultValue = 0 })) { e ->
         SimpleComponentSourcePage(index = e.arguments?.getInt("i") ?: 0, onBack = back)
     }
-    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "存档与云".
+    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "内容管理".
     composable(SimpleRoutes.DRIVERS) { SimpleContentsPage(onNavigate = open, onBack = back) }
     composable(SimpleRoutes.DRIVER_SOURCE, arguments = listOf(navArgument("i") { type = NavType.IntType; defaultValue = 0 })) { e ->
         SimpleDriverSourcePage(index = e.arguments?.getInt("i") ?: 0, onBack = back)
@@ -278,7 +278,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
         MenuAction(mark("XMB", style == "XMB"), { AppThemeState.setDeckXmbHome(true); AppThemeState.setUiStyle(AppThemeState.UI_STYLE_DECK) }),
         MenuAction(mark("Classic", style == "Classic"), { AppThemeState.setUiStyle(AppThemeState.UI_STYLE_CLASSIC) }),
     )
-    val layouts = listOf(AppThemeState.SIMPLE_LAYOUT_SHELF to "Shelf", AppThemeState.SIMPLE_LAYOUT_RAIL to "Rail", AppThemeState.SIMPLE_LAYOUT_FOCUS to "Focus")
+    val layouts = listOf(AppThemeState.SIMPLE_LAYOUT_SHELF to "板面", AppThemeState.SIMPLE_LAYOUT_RAIL to "Rail", AppThemeState.SIMPLE_LAYOUT_FOCUS to "Focus")
     val orientations = listOf(AppOrientation.AUTO to L("Auto"), AppOrientation.PORTRAIT to L("竖屏"), AppOrientation.LANDSCAPE to L("横屏"))
     val scales = listOf(0.7f, 0.8f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f)
     fun pct(f: Float) = "${(f * 100).roundToInt()}%"
@@ -296,9 +296,9 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
                 )
             },
         ),
-        MenuEntry("style", L("Interface style"), L("Lab, Deck, XMB or Classic"), trailing = style, icon = Icons.Filled.Dashboard, actions = styles),
+        MenuEntry("style", L("界面风格"), L("Lab, Deck, XMB or Classic"), trailing = style, icon = Icons.Filled.Dashboard, actions = styles),
         MenuEntry(
-            "look", L("Look"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
+            "look", L("外观"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
             actions = listOf(
                 MenuAction(mark(L("Dark"), !AppThemeState.labLight), { AppThemeState.setLabLight(false) }),
                 MenuAction(mark(L("Light"), AppThemeState.labLight), { AppThemeState.setLabLight(true) }),
@@ -336,7 +336,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
                 })
             },
         ),
-        MenuEntry("ui", L("Interface size"), trailing = pct(uiScale), icon = Icons.Filled.ZoomIn,
+        MenuEntry("ui", L("界面大小"), trailing = pct(uiScale), icon = Icons.Filled.ZoomIn,
             actions = scales.map { f -> MenuAction(mark(pct(f), (f * 100).roundToInt() == (uiScale * 100).roundToInt()), { AppThemeState.setUiScale(f) }) }),
         MenuEntry("font", L("Text size"), trailing = pct(fontScale), icon = Icons.Filled.TextFields,
             actions = scales.map { f -> MenuAction(mark(pct(f), (f * 100).roundToInt() == (fontScale * 100).roundToInt()), { AppThemeState.setFontScale(f) }) }),
@@ -355,10 +355,10 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Appearance"),
+        title = L("外观"),
         sections = listOf(
-            MenuSection("look", L("Look"), Icons.Filled.Dashboard, look),
-            MenuSection("theme", L("Theme"), Icons.Filled.Palette, themes),
+            MenuSection("look", L("外观"), Icons.Filled.Dashboard, look),
+            MenuSection("theme", L("主题"), Icons.Filled.Palette, themes),
         ),
         onBack = onBack,
     )
@@ -600,7 +600,7 @@ internal fun SimpleComponentSourcePage(index: Int, onBack: () -> Unit, vm: Conte
         )
     }
     SimpleMenuPage(
-        overline = L("存档与云"),
+        overline = L("内容管理"),
         title = source?.name ?: L("Source"),
         sections = sections.ifEmpty { listOf(MenuSection("none", L("Components"), Icons.Filled.Extension, emptyList(), empty = if (loading) L("Loading the list…") else L("Nothing to download here."))) },
         onBack = onBack,
@@ -823,7 +823,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             actions = profiles.map { p -> MenuAction(p.name, { selId = p.id }) }))
         add(MenuEntry("test", L("Test and bind controllers"), L("Remap buttons and check every input"), icon = Icons.Filled.SportsEsports, onA = { testOpen = true }))
         add(MenuEntry("default", L("Default / Any controller"), L("%1\$s bindings · new controllers inherit these", defaultBinds), icon = Icons.Filled.SportsEsports,
-            group = L("备份与恢复"), onA = { bindings(sel) }))
+            group = L("控制器"), onA = { bindings(sel) }))
         controllers.forEach { c ->
             val dev = if (c.isConnected) android.view.InputDevice.getDevice(c.deviceId) else null
             val battery = runCatching {
@@ -832,7 +832,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             val vib = runCatching { dev?.vibrator?.takeIf { it.hasVibrator() } }.getOrNull()
             add(
                 MenuEntry(
-                    key = "c${c.id}", title = c.name ?: c.id, group = L("备份与恢复"),
+                    key = "c${c.id}", title = c.name ?: c.id, group = L("控制器"),
                     subtitle = listOfNotNull(L("%1\$s bindings", c.controllerBindingCount), if (c.isConnected) L("Connected") else L("Not connected"), battery?.let { L("Battery %1\$s%%", it) }).joinToString(" · "),
                     current = c.isConnected,
                     icon = Icons.Filled.SportsEsports,

@@ -62,7 +62,7 @@ internal data class HubTile(
 
 /**
  * Tools → More: everything the drawer kept below its lists (wrappers, GPU drivers, account, About,
- * Help and Support, storage cards) plus "Run setup again" for the Deck first-run. About and Help are
+ * Help and Support, storage cards) plus "再次运行设置" for the Deck first-run. About and Help are
  * the drawer's own dialogs.
  */
 @Composable
@@ -74,18 +74,18 @@ internal fun DeckMoreTools(
     val context = LocalContext.current
     var showHelp by remember { mutableStateOf(false) }
     val tools = listOf(
-        HubTile("Wrappers", "编辑 VEGAS 配置文件", Icons.Filled.Layers) { onNavigate(Screen.Wrappers.route) },
-        HubTile("Adrenotools", "GPU drivers for Adreno devices", Icons.Filled.Memory) { onNavigate(Screen.AdrenoTools.route) },
-        HubTile("Run setup again", "Walk through the Deck first-run: permissions, theme, stores", Icons.Filled.RestartAlt) { DeckSetup.requestRerun() },
+        HubTile("Wrappers", "管理图形包装器", Icons.Filled.Layers) { onNavigate(Screen.Wrappers.route) },
+        HubTile("Adrenotools", "适用于 Adreno 设备的 GPU 驱动程序", Icons.Filled.Memory) { onNavigate(Screen.AdrenoTools.route) },
+        HubTile("再次运行设置", "走一遍 Deck 首次运行流程：权限、主题、商店", Icons.Filled.RestartAlt) { DeckSetup.requestRerun() },
     )
     val more = listOf(
-        HubTile("我的账户", "Sign in to manage your shared configs", Icons.Filled.AccountCircle, onMyAccount),
-        HubTile("关于", "Version, updates and credits", Icons.Filled.Info, onAbout),
-        HubTile("Help and Support", "GitHub, issue tracker and Discord", Icons.Filled.HelpOutline) { showHelp = true },
+        HubTile("我的账户", "登录以管理您的共享配置", Icons.Filled.AccountCircle, onMyAccount),
+        HubTile("关于", "版本、更新和鸣谢", Icons.Filled.Info, onAbout),
+        HubTile("帮助与支持", "GitHub、问题追踪器和 Discord", Icons.Filled.HelpOutline) { showHelp = true },
     )
     DeckTileGrid {
         hubTiles(tools, focusFirst = true)
-        hubHeader("About and help")
+        hubHeader("关于与帮助")
         hubTiles(more, focusFirst = false)
         hubHeader("Storage")
         item(span = { GridItemSpan(maxLineSpan) }) {

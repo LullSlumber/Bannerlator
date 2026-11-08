@@ -98,7 +98,7 @@ fun OpenGLCard(
                     .size(40.dp)
                     .then(if (helpFocused) Modifier.border(2.dp, cs.primary, CircleShape) else Modifier),
             ) {
-                Icon(Icons.Default.Help, contentDescription = "What are these OpenGL settings?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这些 OpenGL 设置是什么？", modifier = Modifier.size(18.dp))
             }
             if (summary != null) {
                 Text(

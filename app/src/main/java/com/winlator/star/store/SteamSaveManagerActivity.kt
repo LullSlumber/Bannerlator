@@ -314,7 +314,7 @@ private fun SaveManagerScreenBody(
     // (same pattern as the store screens). Hoisted here so the bar floats over whichever tab is shown.
     var resultBarMsg by remember { mutableStateOf<String?>(null) }
     // The same one-time third-party cloud disclaimer the game detail page asks for (steam_prefs
-    // "cloud_saves_disclaimer_accepted"). The row buttons and "Sync Now" used to skip it, so a user who
+    // "cloud_saves_disclaimer_accepted"). The row buttons and "立即同步" used to skip it, so a user who
     // only synced from here never set the flag — and the auto-upload on exit, which requires it, never
     // ran. pendingCloudAction = what to run once the user accepts.
     var pendingCloudAction by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -373,7 +373,7 @@ private fun SaveManagerScreenBody(
     // progress line, and a per-row status refresh when it settles — so a bulk sync lights up the
     // individual rows exactly like tapping each one would. Returns true on success, false on error;
     // guards a double-run on the same appId. Must be called from the composition (main) scope. Reused
-    // by the per-row buttons ([runQuickMove]) and the banner's "Sync Now" ([runSyncAll]).
+    // by the per-row buttons ([runQuickMove]) and the banner's "立即同步" ([runSyncAll]).
     suspend fun syncOne(appId: Int, syncFrom: Boolean): Boolean {
         if (appId in busyAppIds) return false
         busyAppIds = busyAppIds + appId
@@ -423,7 +423,7 @@ private fun SaveManagerScreenBody(
     // warning strip below. (Custom rows load inside their own tab, so this is Steam scope only.)
     val needSync = statuses.count { it.state.needsAttention() }
 
-    // ── Banner "Sync Now" — one-touch sync of every Steam game that needs attention ──────────────
+    // ── Banner "立即同步" — one-touch sync of every Steam game that needs attention ──────────────
     // Runs the needs-attention games SEQUENTIALLY (one at a time, so it doesn't hammer the network and
     // each row's progress stays legible), each in its CORRECT direction, reusing the same per-game path
     // as the row buttons ([syncOne]). Best-effort: one game's failure never aborts the rest.
@@ -634,7 +634,7 @@ private fun SaveManagerScreenBody(
                                 Spacer(Modifier.width(8.dp))
                             }
                             Text(
-                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "Sync Now",
+                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "立即同步",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = if (canSyncAll) MaterialTheme.colorScheme.onErrorContainer
@@ -1340,14 +1340,14 @@ private fun CustomSaveRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = status.containerLabel?.let { "Container: $it" } ?: "No container",
+                text = status.containerLabel?.let { "Container: $it" } ?: "没有容器",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = if (status.hasBackup) "Backed up ${relTime(status.lastBackupMillis)}" else "No backup yet",
+                text = if (status.hasBackup) "Backed up ${relTime(status.lastBackupMillis)}" else "尚无备份",
                 style = MaterialTheme.typography.bodySmall,
                 color = if (status.hasBackup) MaterialTheme.colorScheme.onSurfaceVariant
                         else MaterialTheme.colorScheme.primary,
@@ -1364,7 +1364,7 @@ private fun CustomSaveRow(
             )
         } else {
             Column(horizontalAlignment = Alignment.End) {
-                SaveTextAction(T("Back up"), onBackup)
+                SaveTextAction(T("备份"), onBackup)
                 // Restore is always available: latest vault snapshot if present, else browse for a
                 // GameHub/Bannerlator save file (the chooser decides).
                 SaveTextAction(T("恢复"), onRestore)

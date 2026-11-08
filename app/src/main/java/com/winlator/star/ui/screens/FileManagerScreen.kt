@@ -5,7 +5,7 @@ import com.winlator.star.ui.files.FileManagerRoot
 import java.io.File
 
 /**
- * The File Manager tab, the Deck Tools "Files" page, the Log Manager's folder view and the in-app picker
+ * The File Manager tab, the Deck Tools "文件" page, the Log Manager's folder view and the in-app picker
  * ([com.winlator.star.FilePickerActivity]). The screen itself lives in [com.winlator.star.ui.files].
  *
  * @param pickMode browse to pick a file (only files with [pickExtensions] are shown; empty = all).

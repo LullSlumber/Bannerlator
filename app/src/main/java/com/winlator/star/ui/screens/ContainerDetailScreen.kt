@@ -1091,7 +1091,7 @@ private fun TopLevelFields(
                     TextButton(onClick = { showDriverDownload = true }) {
                         Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("管理图形包装器")
+                        Text("下载 Turnip 驱动程序")
                     }
                 }
                 viewModel.compositorDriverAutoPicked == compositorVersion -> Text(
@@ -2107,7 +2107,7 @@ private fun WineConfigTab(
 
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown(
-                    label = "背景颜色",
+                    label = "将壁纸应用至",
                     options = scopeOptions,
                     selectedOption = scopeOptions.getOrElse(viewModel.desktopWallpaperScopeIndex) { scopeOptions[0] },
                     onSelect = { opt -> viewModel.desktopWallpaperScopeIndex = scopeOptions.indexOf(opt).coerceAtLeast(0) }
@@ -4474,7 +4474,7 @@ internal fun GraphicsDriverConfigDialog(
                         }
                     }
                     Text(
-                        "deck_emu requires a Banners-Turnip driver (ignored on stock Turnip).",
+                        "deck_emu需要Banners-Turnip驱动程序（在原生Turnip上被忽略）。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -4591,7 +4591,7 @@ internal fun GraphicsDriverConfigDialog(
                 if (isImported) {
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        "Detected settings (advanced) — from scanning this wrapper",
+                        "检测到的设置（高级）— 来自此wrapper的扫描结果",
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(Modifier.height(2.dp))
@@ -4828,7 +4828,7 @@ internal fun DxvkConfigDialog(
     // Capture-once backups: the auto slot is the FILE <name>.bak beside the live file.
     // It is created on the FIRST edit after a fresh selection/restore and then left
     // alone — across edits AND sessions (no in-memory set to reset). Restore consumes
-    // it, so the next edit recaptures. Manual "恢复…" copies use .bak-manual-N
+    // it, so the next edit recaptures. Manual "立即备份" copies use .bak-manual-N
     // and are never touched automatically.
     // §6c value editor: the row whose value picker is open + the freeform draft.
     var valuePickerRow by remember { mutableStateOf<VegasKeyKnowledge.EditRow?>(null) }
@@ -5315,7 +5315,7 @@ internal fun DxvkConfigDialog(
                 // Capture-once backup: create the auto slot ONLY when it does not exist
                 // yet (first edit after a fresh selection/restore). Never .bak-2, -3…
                 // from repeat edits or new sessions — the slot persists until consumed
-                // by a restore. Manual "恢复…" copies use .bak-manual-N instead.
+                // by a restore. Manual "立即备份" copies use .bak-manual-N instead.
                 val autoBak = java.io.File(target.absolutePath + ".bak")
                 if (!autoBak.isFile) {
                     runCatching { java.nio.file.Files.copy(target.toPath(), autoBak.toPath()) }
@@ -5540,7 +5540,7 @@ internal fun DxvkConfigDialog(
                             }
                             val live = notesCache?.first == verKey
                             Text(
-                                if (live) "● live" else "◐ bundled",
+                                if (live) "● 实时" else "◐ 捆绑",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (live) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -5586,7 +5586,7 @@ internal fun DxvkConfigDialog(
                 }
                 LabeledDropdown(stringResource(R.string.frame_rate), framerateEntries, selectedFramerate, { selectedFramerate = it })
                 Spacer(Modifier.height(8.dp))
-                SectionLabel("TEXTURE FILTERING")
+                SectionLabel("纹理过滤")
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown("Anisotropic filtering", anisotropyLabels, selectedAnisotropy, { selectedAnisotropy = it },
                         modifier = Modifier.weight(1f))
@@ -5609,7 +5609,7 @@ internal fun DxvkConfigDialog(
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(Modifier.height(8.dp))
-                SectionLabel("API FEATURE LEVEL")
+                SectionLabel("API功能级别")
                 LabeledDropdown("", featureLevelEntries, selectedFeatureLevel, { selectedFeatureLevel = it })
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown("DDraw Wrapper图形加速层", ddraEntries, selectedDdra, { selectedDdra = it })
@@ -5632,7 +5632,7 @@ internal fun DxvkConfigDialog(
                 // file-based source only (defaults has no file, so Apply is gated).
                 if (isVegas) {
                     Spacer(Modifier.height(8.dp))
-                    SectionLabel("PERFORMANCE TIER")
+                    SectionLabel("性能等级")
                     Surface(
                         shape = MaterialTheme.shapes.small,
                         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
@@ -5686,7 +5686,7 @@ internal fun DxvkConfigDialog(
                                     TextButton(
                                         enabled = !useDefaults,
                                         onClick = { applyValue("vegas.forceTier", tierForPreview.toString()); tierChoice = null }
-                                    ) { Text("Apply tier", style = MaterialTheme.typography.bodySmall) }
+                                    ) { Text("应用等级", style = MaterialTheme.typography.bodySmall) }
                                     if (useDefaults) {
                                         Spacer(Modifier.width(8.dp))
                                         Text(
@@ -5750,7 +5750,7 @@ internal fun DxvkConfigDialog(
                 }
                 if (isVegas) {
                     Spacer(Modifier.height(8.dp))
-                    SectionLabel("CONFIG")
+                    SectionLabel("配置")
                     // Guidance for the three config audiences (new / customizer / file-savvy).
                     Text(
                         "New to configs? Grab a Stock config via ⬇, then pick it below. " +
@@ -5774,7 +5774,7 @@ internal fun DxvkConfigDialog(
                         Spacer(Modifier.height(4.dp))
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             LabeledDropdown(
-                                "Stock config (per version)",
+                                "默认配置（按版本）",
                                 stockSources.value.map { it.displayLabel() },
                                 selectedStock ?: "",
                                 { s -> selectedStock = s; selectedCustom = null; useDefaults = false },
@@ -5794,7 +5794,7 @@ internal fun DxvkConfigDialog(
                         }
                         if (stockSources.value.isEmpty()) {
                             Text(
-                                "no installed VEGAS package ships a config — install one via the sheet",
+                                "已安装的VEGAS包未附带配置 — 通过此面板安装一个",
                                 color = MaterialTheme.colorScheme.outline,
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -5816,7 +5816,7 @@ internal fun DxvkConfigDialog(
                         }
                         Spacer(Modifier.height(4.dp))
                         LabeledDropdown(
-                            "Custom config file",
+                            "自定义配置文件",
                             customEntries.value + BROWSE_CONFIG_MARKER,
                             selectedCustom ?: "",
                             { c ->
@@ -5847,7 +5847,7 @@ internal fun DxvkConfigDialog(
                                     customEntries.value = customEntries.value.filter { it != selectedCustom }
                                     selectedCustom = null
                                     if (selectedStock == null) useDefaults = true
-                                }) { Text("立即备份", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+                                }) { Text("从列表中移除", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
                             }
                         }
                         // Option B backups: .bak-* beside the CURRENT live file. Always visible
@@ -5868,11 +5868,11 @@ internal fun DxvkConfigDialog(
                                 // snapshot taken by the user, never overwritten automatically.
                                 if (liveFile != null && liveFile.isFile) {
                                     TextButton(onClick = { manualBackup() }) {
-                                        Text("恢复…", style = MaterialTheme.typography.bodySmall)
+                                        Text("立即备份", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                                 if (backupsList.isNotEmpty()) {
-                                    TextButton(onClick = { showBackups = true }) { Text("添加键", style = MaterialTheme.typography.bodySmall) }
+                                    TextButton(onClick = { showBackups = true }) { Text("恢复…", style = MaterialTheme.typography.bodySmall) }
                                 }
                             }
                         }
@@ -6101,12 +6101,12 @@ internal fun DxvkConfigDialog(
                         IconButton(onClick = { showKeyDocSheet = true }) {
                             Icon(Icons.Filled.Book, contentDescription = "Config key reference", tint = MaterialTheme.colorScheme.primary)
                         }
-                        TextButton(onClick = { showCatalogDialog = true }) { Text("Check catalog", style = MaterialTheme.typography.bodySmall) }
+                        TextButton(onClick = { showCatalogDialog = true }) { Text("检查目录", style = MaterialTheme.typography.bodySmall) }
                     }
                     if (showCatalogDialog) {
                         AlertDialog(
                             onDismissRequest = { showCatalogDialog = false },
-                            title = { Text("VEGAS key catalog") },
+                            title = { Text("VEGAS key 键目录") },
                             text = {
                                 Column {
                                     Text("generated ${vegasCatalog?.generatedAt() ?: "n/a"} · upstream ${vegasCatalog?.upstreamSource() ?: "n/a"} (${vegasCatalog?.upstreamFetchedAt() ?: "n/a"})")
@@ -6138,7 +6138,7 @@ internal fun DxvkConfigDialog(
                     liveReport?.let { r ->
                         AlertDialog(
                             onDismissRequest = { liveReport = null },
-                            title = { Text("VEGAS new-build check") },
+                            title = { Text("VEGAS 新版本检查") },
                             text = {
                                 Column {
                                     if (!r.feedOk) {
@@ -6213,7 +6213,7 @@ internal fun DxvkConfigDialog(
                     if (showBackups) {
                         AlertDialog(
                             onDismissRequest = { showBackups = false },
-                            title = { Text("Restore a backup") },
+                            title = { Text("恢复备份") },
                             text = {
                                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                                     if (backupsList.isEmpty()) {
@@ -6408,13 +6408,13 @@ internal fun DxvkConfigDialog(
                         val keyValid = VegasKeyKnowledge.isValidConfigKey(addKeyDraft.trim())
                         AlertDialog(
                             onDismissRequest = { showAddKey = false },
-                            title = { Text("key键（例如 dxvk.maxFrameLatency）") },
+                            title = { Text("添加配置条目") },
                             text = {
                                 Column {
                                     OutlinedTextField(
                                         value = addKeyDraft,
                                         onValueChange = { addKeyDraft = it },
-                                        label = { Text("Key (e.g. dxvk.maxFrameLatency)") },
+                                        label = { Text("key键（例如 dxvk.maxFrameLatency）") },
                                         singleLine = true,
                                         isError = addKeyDraft.isNotBlank() && !keyValid,
                                         supportingText = {
@@ -6526,7 +6526,7 @@ internal fun WineD3DConfigDialog(
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown(stringResource(R.string.graphics_driver_max_device_memory), videoMemEntries, videoMem, { videoMem = it })
                 Spacer(Modifier.height(8.dp))
-                LabeledDropdown("离屏渲染模式（Backbuffer可缓解黑屏）", ssmOptions, ssm, { ssm = it })
+                LabeledDropdown("严格着色器运算", ssmOptions, ssm, { ssm = it })
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown("离屏渲染模式（Backbuffer可缓解黑屏）", ormOptions, orm, { orm = it })
                 Spacer(Modifier.height(8.dp))
@@ -6702,7 +6702,7 @@ internal fun FpsCounterConfigDialog(
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("FPS Counter Settings") },
+        title = { Text("FPS计数器设置") },
         text = {
             Column(
                 modifier = Modifier
@@ -6728,8 +6728,8 @@ internal fun FpsCounterConfigDialog(
                     when (hudStyle) {
                         "gamehub" -> "丰富覆盖层：皮肤、彩色字段、实时FPS图表。"
                         "gamenative" -> "GameNative风格覆盖层：紧凑药丸形或堆叠列表，带实时图表。"
-                        "fusion" -> "Fusion overlay: one color-coded look in 5 sizes (Full/Tiles/Pill/Minimal/Mega) with percentile lows, VRAM + a Mega everything-view."
-                        else -> "Classic Bannerlator overlay."
+                        "fusion" -> "Fusion 覆盖层：5 种尺寸的配色方案（完整/平铺/药丸形/简洁/超大），包含百分位低值、显存以及 超大 综合视图。"
+                        else -> "经典Bannerlator覆盖层。"
                     },
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -6860,9 +6860,9 @@ internal fun FpsCounterConfigDialog(
                     )
                     Spacer(Modifier.height(8.dp))
                     if (gameHub) {
-                        HudThreeStop("HUD皮肤", listOf("Classic", "霓虹", "霓虹"), skins.indexOf(skin)) { skin = skins[it] }
+                        HudThreeStop("HUD皮肤", listOf("Classic", "霓虹", "黑白"), skins.indexOf(skin)) { skin = skins[it] }
                     }
-                    HudThreeStop("HUD颜色", listOf("柔和", "柔和", "鲜艳"), colors.indexOf(color)) { color = colors[it] }
+                    HudThreeStop("HUD颜色", listOf("柔和", "适中", "鲜艳"), colors.indexOf(color)) { color = colors[it] }
                     Spacer(Modifier.height(8.dp))
                     Text("HUD outline: $outlineValue", style = MaterialTheme.typography.bodySmall)
                     Slider(
@@ -6870,7 +6870,7 @@ internal fun FpsCounterConfigDialog(
                         onValueChange = { outlineValue = it.toInt() },
                         valueRange = 0f..100f, steps = 99
                     )
-                    HudThreeStop("轮廓颜色", listOf("灰色", "灰色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
+                    HudThreeStop("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
                 } else {
                     Spacer(Modifier.height(4.dp))
                     Text("HUD Transparency: $hudTransparency", style = MaterialTheme.typography.bodySmall)
@@ -6890,7 +6890,7 @@ internal fun FpsCounterConfigDialog(
                 ) {
                     Icon(Icons.Filled.Share, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text("Export HUD diagnostics")
+                    Text("导出 HUD 诊断信息")
                 }
                 Text(
                     "将传感器报告（CPU/GPU/温度/显存…）直接保存到您的下载文件夹。",

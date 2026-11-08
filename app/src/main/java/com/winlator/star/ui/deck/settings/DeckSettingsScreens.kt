@@ -384,10 +384,10 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
         EditorHeader(overline = L("New container"), title = L("新建容器"), icon = Icons.Filled.Inventory2)
     } else if (defaultsMode) {
         EditorHeader(
-            overline = L("Defaults for every container"),
+            overline = L("每个容器的默认值"),
             title = L("所有容器"),
             icon = Icons.Filled.Layers,
-            subtitle = L("New containers start from these values. Existing containers keep their own."),
+            subtitle = L("新容器从这些值开始。现有容器保留自己的值。"),
         )
     } else {
         EditorHeader(
@@ -496,7 +496,7 @@ private fun DeckAppSettings(navController: NavHostController, onAbout: () -> Uni
             overline = "Bannerlator",
             title = L("Settings"),
             icon = Icons.Filled.Settings,
-            subtitle = L("Every app setting applies straight away."),
+            subtitle = L("每个应用设置都会立即生效。"),
         ),
         source = source,
         categories = AppSettingsRegistry.categories,

@@ -23,7 +23,7 @@ public final class FeatureFlags {
      * Epic Friends Overlay (EOS Phase 3) — provision Epic's real overlay component into the wine
      * prefix + write the single {@code HKCU\Software\Epic Games\EOS} {@code OverlayPath} pointer so
      * the game's bundled EOS SDK renders friends/notifications on Shift+F3, plus the in-game
-     * edge-snap {@code EpicOverlayPill} and its per-shortcut "Epic Friends Overlay" toggle.
+     * edge-snap {@code EpicOverlayPill} and its per-shortcut "Epic 好友覆盖层" toggle.
      *
      * OFF = the feature behaves as if it does not exist: the per-shortcut toggle is hidden (no
      * shortcut can be set to {@code epicOverlay=1} through the UI), the pill is never attached, and
@@ -40,7 +40,7 @@ public final class FeatureFlags {
     /**
      * LSFG Native low-end experiments: the per-container "采集分辨率" (the frame-gen
      * chain runs below panel resolution and is blitted up; also live in the in-game drawer) and
-     * "LSFG on Vulkan 1.1 drivers (compat)" (the capability probe accepts a Vulkan 1.1/1.2
+     * "在 Vulkan 1.1 驱动程序上使用 LSFG（兼容）" (the capability probe accepts a Vulkan 1.1/1.2
      * compositor driver that offers VK_KHR_spirv_1_4 + VK_KHR_vulkan_memory_model, and the cached
      * SPIR-V 1.6 modules are lowered at load). Capture defaults to Panel and compat to off, so a
      * container that never touches them behaves exactly as before. See

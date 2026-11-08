@@ -748,7 +748,7 @@ fun CatalogResults(
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) }
 
-            rows.isEmpty() -> StoreNotice(title = "No matches", body = emptyBody)
+            rows.isEmpty() -> StoreNotice(title = "无匹配项", body = emptyBody)
 
             // XMB home: the results as a grid of portrait covers.
             LocalStoreXmb.current -> LazyVerticalGrid(

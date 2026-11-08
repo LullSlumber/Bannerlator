@@ -120,7 +120,7 @@ internal object CustomCover {
         val iconFile = File(iconsDir, "$name.png")
         val coverFile = File(container.rootDir, "$COVER_DIR/$name.png")
         val first = !isCustom(shortcut)
-        // Editing the file bumps its modified time, which the "Recently added" shelf sorts on.
+        // Editing the file bumps its modified time, which the "最近添加" shelf sorts on.
         val modified = shortcut.file.lastModified()
         // Set once the originals are safe: only then is there something for remove() to put back.
         var undoable = false

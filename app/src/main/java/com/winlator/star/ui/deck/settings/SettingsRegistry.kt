@@ -66,19 +66,19 @@ import java.util.Locale
 internal object SettingsRegistry {
 
     val categories: List<SettingsCategory> = listOf(
-        SettingsCategory("game", T("Game"), T("Name and launch options for this one game."), Icons.Filled.SportsEsports),
-        SettingsCategory("launch", T("Launch"), T("How this game starts: Steam or not, controller hand-off, anti-cheat, Epic sign-in."), Icons.Filled.RocketLaunch),
-        SettingsCategory("display", T("启动"), T("此游戏如何启动：是否使用 Steam、控制器交接、反作弊、Epic 登录。"), Icons.Filled.Monitor),
-        SettingsCategory("graphics", T("Graphics"), T("分辨率、画面如何填满屏幕、刷新率和 HDR。"), Icons.Filled.Layers),
-        SettingsCategory("performance", T("Performance"), T("Frame rate limit, frame generation, sync, x86 translators, CPU cores, background services."), Icons.Filled.Speed),
-        SettingsCategory("visuals", T("Visual effects"), T("Sharpening and other post effects."), Icons.Filled.AutoAwesome),
-        SettingsCategory("audio", T("Audio"), T("锐化和其他后期效果。"), Icons.AutoMirrored.Filled.VolumeUp),
-        SettingsCategory("input", T("Controls"), T("声音驱动程序和 MIDI 音乐。"), Icons.Filled.Gamepad),
-        SettingsCategory("hud", T("性能覆盖层"), T("控制器、屏幕控制、鼠标和触摸、震动和体感瞄准。"), Icons.Filled.MonitorHeart),
-        SettingsCategory("windows", "Windows", T("Container name, language, desktop and session behaviour."), Icons.Filled.WebAsset),
-        SettingsCategory(CAT_COMPONENTS, T("Windows components"), T("Install runtimes and libraries into the container, and pick Wine's or Microsoft's DLLs."), Icons.Filled.Widgets),
-        SettingsCategory("linux", T("Linux runtime"), T("Only for the Linux Steam client entry: its drivers, Steam client options and speed tweaks."), Icons.Filled.Terminal),
-        SettingsCategory("expert", T("专家"), T("Raw environment variables and translator variables."), Icons.Filled.Build),
+        SettingsCategory("game", T("Game"), T("仅此一个游戏的名称和启动选项。"), Icons.Filled.SportsEsports),
+        SettingsCategory("launch", T("Launch"), T("此游戏如何启动：是否使用 Steam、控制器交接、反作弊、Epic 登录。"), Icons.Filled.RocketLaunch),
+        SettingsCategory("display", T("显示"), T("分辨率、画面如何填满屏幕、刷新率和 HDR。"), Icons.Filled.Monitor),
+        SettingsCategory("graphics", T("Graphics"), T("DirectX 转换、GPU 驱动程序、OpenGL 以及画面如何呈现到屏幕上。"), Icons.Filled.Layers),
+        SettingsCategory("performance", T("Performance"), T("帧率限制、帧生成、同步、x86 翻译器、CPU 核心、后台服务。"), Icons.Filled.Speed),
+        SettingsCategory("visuals", T("视觉效果"), T("锐化和其他后期效果。"), Icons.Filled.AutoAwesome),
+        SettingsCategory("audio", T("Audio"), T("声音驱动程序和 MIDI 音乐。"), Icons.AutoMirrored.Filled.VolumeUp),
+        SettingsCategory("input", T("Controls"), T("控制器、屏幕控制、鼠标和触摸、震动和体感瞄准。"), Icons.Filled.Gamepad),
+        SettingsCategory("hud", T("性能覆盖层"), T("屏幕上的 FPS 和温度读数。"), Icons.Filled.MonitorHeart),
+        SettingsCategory("windows", "Windows", T("容器名称、语言、桌面和会话行为。"), Icons.Filled.WebAsset),
+        SettingsCategory(CAT_COMPONENTS, T("Windows 组件"), T("将运行时和库安装到容器中，并选择 Wine 或 Microsoft 的 DLL。"), Icons.Filled.Widgets),
+        SettingsCategory("linux", T("Linux runtime"), T("仅用于 Linux Steam 客户端条目：其驱动程序、Steam 客户端选项和速度调整。"), Icons.Filled.Terminal),
+        SettingsCategory("expert", T("专家"), T("原始环境变量和翻译器变量。"), Icons.Filled.Build),
     )
 
     val defs: List<SettingDef> by lazy { buildDefs() }
@@ -114,10 +114,10 @@ internal object SettingsRegistry {
         if (game) {
             val containerName = env.shortcut?.container?.name.orEmpty()
             m["game"] = listOf(
-                Handoff(T("Name, cover art and details"), T("Cover art from your files, Steam or SteamGridDB, the Steam link, genres, year and description (Game Details)."), TARGET_DETAILS, ALL_WORLDS),
+                Handoff(T("名称、封面图和详情"), T("来自您的文件、Steam 或 SteamGridDB 的封面图，Steam 链接、类型、年份和描述（游戏详情）。"), TARGET_DETAILS, ALL_WORLDS),
                 // The icon is picked on this page now (DeckIconSection); the file operations stay with the Games screen.
-                Handoff(T("名称、封面图和详情"), T("来自您的文件、Steam 或 SteamGridDB 的封面图，Steam 链接、类型、年份和描述（游戏详情）。"), TARGET_CHANGE_EXE, WINE_ONLY),
-                Handoff(T("更改要运行的程序"), T("为此条目选择游戏文件夹中的另一个 .exe。"), TARGET_DRIVE_C, WINE_ONLY),
+                Handoff(T("更改要运行的程序"), T("为此条目选择游戏文件夹中的另一个 .exe。"), TARGET_CHANGE_EXE, WINE_ONLY),
+                Handoff(T("将游戏复制到 C 盘"), T("将游戏文件夹复制到容器的 C 盘并从那里运行。"), TARGET_DRIVE_C, WINE_ONLY),
                 Handoff(T("Move to another container"), "Now in \"$containerName\". Move this game to another container, or copy it there.", TARGET_MOVE_CONTAINER, WINE_ONLY),
             )
             m["launch"] = listOf(Handoff(T("离线 Steam 模式、文件检查和更新"), T("Goldberg 模式、验证文件和检查更新位于启动菜单中。关闭 “跳过启动菜单” 以在下次启动时看到它。"), TARGET_NONE))
@@ -129,9 +129,9 @@ internal object SettingsRegistry {
         m["windows"] = listOfNotNull(
             // Its own page now: the install lists and the builtin / native DLL rows (CAT_COMPONENTS).
             Handoff(
-                T("Windows components"),
+                T("Windows 组件"),
                 if (scope == EditorScope.DEFAULTS) T("Builtin or native DLLs for DirectX, audio and runtimes, and the media codecs.")
-                else T("Install runtimes and libraries into the container, and pick builtin or native DLLs for DirectX, audio and runtimes."),
+                else T("将运行时和库安装到容器中，并为 DirectX、音频和运行时选择内置或原生 DLL。"),
                 categoryTarget(CAT_COMPONENTS),
             ),
             // The Wine layer, wallpaper and colours, the drives and Reset to app defaults are this page's own (DeckWindowsSettings).
@@ -348,7 +348,7 @@ internal object SettingsRegistry {
         // Game (per game only)
         SettingDef(
             id = "game.name", category = "game", group = T("Name"), level = SIMPLE,
-            label = T("Name"), hint = T("Shown in your library. Renaming keeps the cover and icon."), tech = T("Name / Game Name"),
+            label = T("Name"), hint = T("显示在您的库中。重命名会保留封面和图标。"), tech = T("Name / Game Name"),
             control = { _, _ -> Control.TextField(T("游戏名称")) { t ->
                 when {
                     t.isBlank() -> T("The name can't be empty.")
@@ -362,7 +362,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "game.arguments", category = "game", group = T("Name"), level = ADVANCED,
-            label = T("Launch options"), hint = T("Extra words added after the program name, e.g. -windowed -dx11."), tech = T("Exec Arguments"),
+            label = T("启动选项"), hint = T("在程序名称后添加的额外参数，例如 -windowed -dx11。"), tech = T("执行参数"),
             control = { _, _ -> Control.TextField("-windowed") },
             game = GameBinding(listOf("execArgs"), read = { e -> e.get("execArgs") ?: "" }, write = { e, v -> e.put("execArgs", v.ifBlank { null }) }, inherit = Inherit.NONE),
             visible = { env, _ -> gameScope(env) },
@@ -370,9 +370,9 @@ internal object SettingsRegistry {
 
         // Launch (per game only)
         SettingDef(
-            id = "launch.method", category = "launch", group = T("How it starts"), level = SIMPLE,
-            label = T("启动选项"), tech = T("在程序名称后添加的额外参数，例如 -windowed -dx11。"),
-            help = T("执行参数"),
+            id = "launch.method", category = "launch", group = T("启动方式"), level = SIMPLE,
+            label = T("启动游戏使用"), tech = T("启动方式：SteamLite / 无头 Steam / Goldberg / Raw .exe"),
+            help = T("SteamLite 运行真正的 Steam 客户端，因此成就、云存档和在线游玩均可工作。无头 Steam 在应用自身的 Steam 会话上运行游戏，因此好友和聊天保持在线（实验性）。Goldberg 在不登录的情况下假装是 Steam。Raw .exe 启动游戏自身的程序。"),
             control = { _, _ -> seg("RealSteam" to "SteamLite", "AppSteam" to T("Headless Steam"), "Goldberg" to T("Goldberg (offline)"), "Raw" to T("Raw .exe")) },
             game = GameBinding(
                 listOf("launchMode"),
@@ -383,15 +383,15 @@ internal object SettingsRegistry {
             visible = { env, _ -> gameScope(env) && env.isSteam },
         ),
         SettingDef(
-            id = "launch.rememberChoice", category = "launch", group = T("How it starts"), level = SIMPLE,
-            label = T("Skip the launch menu"), hint = T("Start straight away with the saved choices. Turn off to see the launch menu again."), tech = T("Remember my choice"),
+            id = "launch.rememberChoice", category = "launch", group = T("启动方式"), level = SIMPLE,
+            label = T("跳过启动菜单"), hint = T("直接使用已保存的选择启动。关闭以再次显示启动菜单。"), tech = T("记住我的选择"),
             control = { _, _ -> Control.Toggle },
             game = builtIn10("launchModeRemembered", false),
             visible = { env, _ -> gameScope(env) },
         ),
         SettingDef(
-            id = "launch.controllerPassthrough", category = "launch", group = T("启动方式"), level = ADVANCED,
-            label = T("跳过启动菜单"), hint = T("直接使用已保存的选择启动。关闭以再次显示启动菜单。"), tech = T("Controller passthrough"),
+            id = "launch.controllerPassthrough", category = "launch", group = T("Steam 选项"), level = ADVANCED,
+            label = T("让游戏处理控制器"), hint = T("将手柄直接交给游戏，而不是 Steam 输入。适用于经典游戏（半条命 2、CS:S）。会关闭 Steam 输入。"), tech = T("Controller passthrough"),
             control = { _, _ -> Control.Toggle },
             // The opposite of Steam Input, so turning one on turns the other off, as the launch menu does.
             game = GameBinding(
@@ -406,9 +406,9 @@ internal object SettingsRegistry {
             visible = { env, values -> gameScope(env) && env.isSteam && values("launch.method") == "RealSteam" },
         ),
         SettingDef(
-            id = "launch.steamInput", category = "launch", group = T("启动方式"), level = ADVANCED,
-            label = T("Steam 输入"), hint = T("For games that only see a pad through Steam (No Man's Sky). Keep off for games that read the pad themselves. Turns passthrough off."), tech = "steamInput",
-            help = T("Some games never read the controller themselves: they ask Steam for it. In SteamLite nobody answers, so those games see no pad. On: the SteamLite agent switches Steam's controller layer on for this game with a fitting layout. Keep it off for games that already read a pad, or they get every press twice. The opposite of controller passthrough, so only one can be on. SteamLite only."),
+            id = "launch.steamInput", category = "launch", group = T("Steam 选项"), level = ADVANCED,
+            label = T("Steam 输入"), hint = T("适用于仅通过 Steam 看到手柄的游戏（无人深空）。对于自己读取手柄的游戏，请保持关闭。会关闭直通。"), tech = "steamInput",
+            help = T("有些游戏从不自己读取控制器：它们向 Steam 请求。在 SteamLite 中没有人应答，因此那些游戏看不到手柄。开启：SteamLite 代理会为此游戏打开 Steam 的控制器层并使用合适的布局。对于已经自己读取手柄的游戏，请保持关闭，否则它们会收到每次按键两次。与控制器直通相反，因此只能开启一个。仅限 SteamLite。"),
             control = { _, _ -> Control.Toggle },
             game = GameBinding(
                 listOf("steamInput"),
@@ -422,9 +422,9 @@ internal object SettingsRegistry {
             visible = { env, values -> gameScope(env) && env.isSteam && values("launch.method") == "RealSteam" },
         ),
         SettingDef(
-            id = "launch.vacSecure", category = "launch", group = T("启动方式"), level = ADVANCED,
-            label = T("Anti-cheat (VAC) secure launch"), hint = T("Needed to join VAC-protected servers. Detect follows Steam's app info."), tech = T("Requires secure (VAC) launch"),
-            control = { _, _ -> seg("auto" to T("Detect"), "1" to T("Always"), "0" to T("Never")) },
+            id = "launch.vacSecure", category = "launch", group = T("Steam 选项"), level = ADVANCED,
+            label = T("反作弊（VAC）安全启动"), hint = T("加入受 VAC 保护的服务器所需。检测会遵循 Steam 的应用信息。"), tech = T("Requires secure (VAC) launch"),
+            control = { _, _ -> seg("auto" to T("Detect"), "1" to T("Always"), "0" to T("从未")) },
             game = GameBinding(
                 listOf("steamVacLaunch"),
                 read = { e -> e.get("steamVacLaunch")?.trim()?.takeIf { it == "1" || it == "0" } },
@@ -435,7 +435,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.epicEos", category = "launch", group = T("Epic Games"), level = SIMPLE,
-            label = T("Epic Online Services (EOS) sign-in"), hint = T("Signs EOS games in with your Epic account."), tech = "epicEos",
+            label = T("Epic 在线服务（EOS）登录"), hint = T("使用您的 Epic 账户登录 EOS 游戏。"), tech = "epicEos",
             control = { _, _ -> Control.Toggle },
             game = GameBinding(
                 listOf("epicEos"),
@@ -447,7 +447,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.epicOvtForce", category = "launch", group = T("Epic Games"), level = ADVANCED,
-            label = T("强制Denuvo所有权令牌"), hint = T("For Denuvo games the app doesn't detect on its own."), tech = "epicOvtForce",
+            label = T("强制Denuvo所有权令牌"), hint = T("适用于应用无法自行检测的 Denuvo 游戏。"), tech = "epicOvtForce",
             control = { _, _ -> Control.Toggle },
             game = builtIn10("epicOvtForce", false),
             visible = { env, _ -> gameScope(env) && env.isEpic },
@@ -455,7 +455,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.epicOffline", category = "launch", group = T("Epic Games"), level = ADVANCED,
-            label = T("离线启动"), hint = T("Skips Epic sign-in for this game (no online features)."), tech = "epicOffline",
+            label = T("离线启动"), hint = T("跳过此游戏的 Epic 登录（无在线功能）。"), tech = "epicOffline",
             control = { _, _ -> Control.Toggle },
             game = builtIn10("epicOffline", false),
             visible = { env, _ -> gameScope(env) && env.isEpic },
@@ -463,7 +463,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.epicOverlay", category = "launch", group = T("Epic Games"), level = EXPERT,
-            label = T("Epic Friends Overlay"), hint = T("Experimental: Epic's overlay in-game on Shift+F3. Needs the container to allow full services."), tech = "epicOverlay",
+            label = T("Epic Friends Overlay"), hint = T("实验性：在游戏中按 Shift+F3 显示 Epic 的覆盖层。需要容器允许完整服务。"), tech = "epicOverlay",
             control = { _, _ -> Control.Toggle },
             game = builtIn10("epicOverlay", false),
             visible = { env, _ -> gameScope(env) && env.isEpic && FeatureFlags.EPIC_OVERLAY_ENABLED },
@@ -479,9 +479,9 @@ internal object SettingsRegistry {
 
         // Display
         SettingDef(
-            id = "display.resolution", category = "display", group = T("Screen"), level = SIMPLE,
-            label = T("Game resolution"), hint = T("The screen size the game sees. Lower = faster."), tech = T("Screen Size"),
-            help = T("Games render at this size, then the picture is scaled to your screen. A lower resolution is faster and cooler; a higher one is sharper."),
+            id = "display.resolution", category = "display", group = T("屏幕"), level = SIMPLE,
+            label = T("游戏分辨率"), hint = T("游戏所看到的屏幕尺寸。更低 = 更快。"), tech = T("屏幕尺寸"),
+            help = T("游戏以此尺寸渲染，然后画面缩放到您的屏幕。较低分辨率更快、更凉；较高分辨率更清晰。"),
             control = { env, _ ->
                 Control.Select(
                     options = (env.vm?.screenSizeEntries ?: emptyList())
@@ -512,15 +512,15 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "display.fullscreenMode", category = "display", group = T("Screen"), level = SIMPLE,
-            label = T("Fill the screen"), tech = T("Fullscreen Mode"),
+            id = "display.fullscreenMode", category = "display", group = T("屏幕"), level = SIMPLE,
+            label = T("Fill the screen"), tech = T("全屏模式"),
             control = { _, _ ->
                 Control.Chips(listOf(
-                    Opt("${Container.FULLSCREEN_OFF}", T("Windowed")),
-                    Opt("${Container.FULLSCREEN_FIT}", T("窗口化")),
-                    Opt("${Container.FULLSCREEN_STRETCH}", T("适应（黑边）")),
-                    Opt("${Container.FULLSCREEN_FILL}", T("拉伸")),
-                    Opt("${Container.FULLSCREEN_INTEGER}", T("填充（裁剪）")),
+                    Opt("${Container.FULLSCREEN_OFF}", T("窗口化")),
+                    Opt("${Container.FULLSCREEN_FIT}", T("适应（黑边）")),
+                    Opt("${Container.FULLSCREEN_STRETCH}", T("拉伸")),
+                    Opt("${Container.FULLSCREEN_FILL}", T("填充（裁剪）")),
+                    Opt("${Container.FULLSCREEN_INTEGER}", T("像素完美")),
                 ))
             },
             vm = vmInt({ it.fullscreenMode }, { vm, v -> vm.fullscreenMode = v }),
@@ -538,17 +538,17 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "display.alignment", category = "display", group = T("Screen"), level = ADVANCED,
-            label = T("屏幕"), hint = T("填满屏幕"), tech = T("全屏模式"),
-            control = { _, _ -> seg("${Container.ALIGN_CENTER}" to T("Centre"), "${Container.ALIGN_TOP}" to T("居中"), "${Container.ALIGN_BOTTOM}" to T("顶部")) },
+            id = "display.alignment", category = "display", group = T("屏幕"), level = ADVANCED,
+            label = T("画面位置"), hint = T("在折叠屏上有用：将游戏保持在一半屏幕上。"), tech = T("屏幕对齐"),
+            control = { _, _ -> seg("${Container.ALIGN_CENTER}" to T("居中"), "${Container.ALIGN_TOP}" to T("顶部"), "${Container.ALIGN_BOTTOM}" to T("底部")) },
             vm = vmInt({ it.screenAlignment }, { vm, v -> vm.screenAlignment = v }),
             game = intKey("screenAlignment"),
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = SettingsEnv.ID_BACKEND, category = "display", group = T("Screen"), level = ADVANCED,
-            label = T("屏幕"), hint = T("画面位置"), tech = T("显示后端"),
-            help = T("屏幕对齐"),
+            id = SettingsEnv.ID_BACKEND, category = "display", group = T("屏幕"), level = ADVANCED,
+            label = T("显示系统"), hint = T("Wayland 需要为其构建的 Proton 层。"), tech = T("显示后端"),
+            help = T("X11 是经典路径，在任何地方都能工作。Wayland 在为其构建的层上更直接地将游戏帧交给屏幕。"),
             control = { env, _ ->
                 Control.Segmented(listOf(
                     Opt(Container.DISPLAY_BACKEND_X11, "X11"),
@@ -560,18 +560,18 @@ internal object SettingsRegistry {
             game = key("displayBackend") { if (it == Container.DISPLAY_BACKEND_WAYLAND) it else Container.DISPLAY_BACKEND_X11 },
         ),
         SettingDef(
-            id = "display.renderScale", category = "display", group = T("Screen"), level = ADVANCED,
-            label = T("超采样"), hint = T("Renders bigger, then shrinks for a cleaner image. Costs performance."), tech = T("渲染缩放（超采样）"),
+            id = "display.renderScale", category = "display", group = T("屏幕"), level = ADVANCED,
+            label = T("超采样"), hint = T("以更大尺寸渲染，然后缩小以获得更清晰的图像。会消耗性能。"), tech = T("渲染缩放（超采样）"),
             control = { _, _ -> seg("1.0" to T("Off"), "1.25" to "1.25×", "1.5" to "1.5×", "2.0" to "2×") },
             vm = vmString({ it.renderScale }, { vm, v -> vm.renderScale = v }),
             game = key("renderScale") { v -> v.toFloatOrNull()?.let { f -> listOf("1.0", "1.25", "1.5", "2.0").firstOrNull { it.toFloat() == f } } },
             visible = { env, values -> x11(env, values) },
         ),
         SettingDef(
-            id = "display.refreshInGame", category = "display", group = T("屏幕"), level = ADVANCED,
-            label = T("超采样"), hint = T("以更大尺寸渲染，然后缩小以获得更清晰的图像。会消耗性能。"), tech = T("In-game refresh rate"),
+            id = "display.refreshInGame", category = "display", group = T("刷新率"), level = ADVANCED,
+            label = T("游戏可选择的刷新率"), hint = T("告诉游戏屏幕能做什么。需要带 xrandr 的 Wine 构建。"), tech = T("In-game refresh rate"),
             control = { env, _ ->
-                Control.Select(listOf(Opt("-1", T("Locked to 60 Hz")), Opt("0", T("锁定为 60 Hz"))) +
+                Control.Select(listOf(Opt("-1", T("锁定为 60 Hz")), Opt("0", T("任意（无限制）"))) +
                     env.panelRates.filter { it > 60 }.map { Opt("$it", "$it Hz") })
             },
             vm = VmBinding(
@@ -600,16 +600,16 @@ internal object SettingsRegistry {
             visible = { env, _ -> env.panelRates.isNotEmpty() },
         ),
         SettingDef(
-            id = "display.refreshAuto", category = "display", group = T("屏幕"), level = ADVANCED,
-            label = T("Match screen refresh to the game's FPS"), hint = T("Smoother motion and less battery on screens with variable refresh."), tech = T("Auto (match FPS)"),
+            id = "display.refreshAuto", category = "display", group = T("刷新率"), level = ADVANCED,
+            label = T("将屏幕刷新率与游戏的 FPS 匹配"), hint = T("在支持可变刷新的屏幕上实现更流畅的运动和更少的电池消耗。"), tech = T("Auto (match FPS)"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.matchRefreshRate }, { vm, v -> vm.matchRefreshRate = v }),
             game = key10("matchRefreshRate"),
             disabled = { env, _ -> if (env.vrrCapable) null else T("此屏幕无法更改其刷新率。") },
         ),
         SettingDef(
-            id = "display.refreshManual", category = "display", group = T("屏幕"), level = ADVANCED,
-            label = T("Fixed screen refresh"), hint = T("Used while matching is off."), tech = T("Manual refresh rate"),
+            id = "display.refreshManual", category = "display", group = T("刷新率"), level = ADVANCED,
+            label = T("固定屏幕刷新率"), hint = T("在匹配关闭时使用。"), tech = T("手动刷新率"),
             control = { env, _ -> Control.Chips(listOf(Opt("0", T("Off"))) + env.panelRates.map { Opt("$it", "$it Hz") }) },
             vm = vmInt({ it.manualRefreshRate }, { vm, v -> vm.manualRefreshRate = v }),
             game = intKey("manualRefreshRate"),
@@ -617,7 +617,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "display.hdrOutput", category = "display", group = "HDR", level = ADVANCED,
-            label = T("HDR output"), hint = T("Sends real HDR10 to the screen."), tech = T("HDR output (HDR10)"),
+            label = T("HDR output"), hint = T("向屏幕发送真正的 HDR10。"), tech = T("HDR output (HDR10)"),
             help = WaylandHdr.HELP_TEXT,
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.waylandHdr }, { vm, v -> vm.waylandHdr = v }),
@@ -631,9 +631,9 @@ internal object SettingsRegistry {
 
         // Graphics
         SettingDef(
-            id = "graphics.dxWrapper", category = "graphics", group = T("DirectX translation"), level = SIMPLE,
-            label = T("DirectX translation"), hint = T("How Windows DirectX calls are turned into Vulkan for your GPU."), tech = T("DX Wrapper"),
-            help = T("DXVK + VKD3D suits most DirectX 9–12 games. VEGAS is a tuned DXVK fork. WineD3D is the slow but broad fallback for very old games."),
+            id = "graphics.dxWrapper", category = "graphics", group = T("DirectX 转换"), level = SIMPLE,
+            label = T("DirectX 转换"), hint = T("Windows DirectX 调用如何为您的 GPU 转换为 Vulkan。"), tech = T("DX Wrapper"),
+            help = T("DXVK + VKD3D 适合大多数 DirectX 9–12 游戏。VEGAS 是经过调校的 DXVK 分支。WineD3D 是适用于非常老游戏的缓慢但广泛的回退方案。"),
             control = { env, _ ->
                 val labels = mapOf("dxvk+vkd3d" to T("DXVK + VKD3D"), "vegas+vkd3d" to T("VEGAS + VKD3D"), "wined3d" to T("WineD3D"))
                 val ids = (env.vm?.dxWrapperEntries ?: emptyList()).map { idOf(it) }
@@ -666,8 +666,8 @@ internal object SettingsRegistry {
         // Every choice of the DX Wrapper Config dialogs (DXVK, VEGAS, WineD3D), for the wrapper picked above.
         *GraphicsRows.dxDefs().toTypedArray(),
         SettingDef(
-            id = "graphics.unrealHdr", category = "graphics", group = T("Unreal Engine"), level = ADVANCED,
-            label = T("Unreal Engine HDR fix"), hint = T("The DirectX 11 fix pretends to be an NVIDIA GPU."), tech = T("Unreal Engine HDR"),
+            id = "graphics.unrealHdr", category = "graphics", group = T("虚幻引擎"), level = ADVANCED,
+            label = T("虚幻引擎 HDR 修复"), hint = T("DirectX 11 修复会假装是 NVIDIA GPU。"), tech = T("Unreal Engine HDR"),
             help = UnrealHdr.HELP_SHORT,
             control = { _, _ -> seg(UnrealHdr.OFF to T("Off"), UnrealHdr.DX12 to T("DirectX 12 fix"), UnrealHdr.DX11 to T("DirectX 11 (NVAPI)")) },
             vm = vmString({ it.unrealHdr }, { vm, v -> vm.unrealHdr = v }),
@@ -675,7 +675,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.driver", category = "graphics", group = T("虚幻引擎 HDR 修复"), level = SIMPLE,
-            label = T("DirectX 11 修复会假装是 NVIDIA GPU。"), hint = T("DX12 修复：-dx12 游戏 HDR 选项灰色不可用（安全）。DX11：dxvk-nvapi，实验性。"), tech = T("虚幻引擎 HDR"),
+            label = T("显卡驱动"), hint = T("游戏在 X11 上使用的 Vulkan 包装器。导入的包装器也会出现在此处。"), tech = T("图形驱动程序"),
             control = { env, _ -> Control.Select((env.vm?.graphicsDriverEntries ?: emptyList()).map { Opt(idOf(it), it) }) },
             vm = VmBinding(get = { _, vm -> idOf(vm.selectedGraphicsDriver) }, set = { _, vm, v -> vm.selectedGraphicsDriver = displayFor(v, vm.graphicsDriverEntries) }),
             game = key("graphicsDriver"),
@@ -683,8 +683,8 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = ID_DRIVER_VERSION, category = "graphics", group = T("虚幻引擎 HDR 修复"), level = SIMPLE,
-            label = T("DirectX 11 修复会假装是 NVIDIA GPU。"), hint = T("The installed Turnip the Wayland compositor puts the game's frames on screen with."), tech = T("Compositor driver (graphicsDriverConfig version)"),
-            help = T("On Wayland the game renders through the embedded compositor, which needs an installed Turnip to import its frames. \"System\" is offered only on Mali GPUs; elsewhere it shows a black screen. What the game itself renders on is the Wayland game driver below."),
+            label = T("显卡驱动"), hint = T("Wayland 合成器用于将游戏帧放到屏幕上的已安装 Turnip。"), tech = T("合成器驱动程序（graphicsDriverConfig 版本）"),
+            help = T("在 Wayland 上，游戏通过嵌入式合成器渲染，该合成器需要已安装的 Turnip 来导入其帧。\"System\" 仅在 Mali GPU 上提供；在其他地方会显示黑屏。游戏自身渲染所使用的驱动程序是下面的 Wayland 游戏驱动程序。"),
             control = { env, values -> compositorControl(env, values(ID_DRIVER_VERSION)) },
             vm = compositorVm,
             game = compositorGame,
@@ -701,7 +701,7 @@ internal object SettingsRegistry {
         SettingDef(
             id = "graphics.fastOpenGL", category = "graphics", group = "OpenGL", level = ADVANCED,
             label = T("Fast OpenGL"), hint = FastOpenGL.HINT, tech = FastOpenGL.EXTRA,
-            help = T("OpenGL games (and DirectDraw / older Direct3D through WineD3D) run on the bundled Mesa and Zink and are presented by Vulkan, instead of a slow copy per frame. Needs a Turnip graphics driver on X11. Always on with Wayland."),
+            help = T("OpenGL 游戏（以及通过 WineD3D 的 DirectDraw / 较旧 Direct3D）在捆绑的 Mesa 和 Zink 上运行，并由 Vulkan 呈现，而不是每帧缓慢复制。在 X11 上需要 Turnip 图形驱动程序。在 Wayland 下始终开启。"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.fastOpenGL }, { vm, v -> vm.fastOpenGL = v }),
             game = key10(FastOpenGL.EXTRA),
@@ -725,47 +725,47 @@ internal object SettingsRegistry {
             game = key10(FastOpenGL.VSYNC_OFF.extra),
         ),
         SettingDef(
-            id = "graphics.renderer", category = "graphics", group = T("How the picture reaches the screen"), level = ADVANCED,
-            label = T("Screen renderer"), hint = T("Draws the Windows desktop onto Android. Wayland always uses Vulkan."), tech = T("Renderer"),
+            id = "graphics.renderer", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
+            label = T("屏幕渲染器"), hint = T("将 Windows 桌面绘制到 Android 上。Wayland 始终使用 Vulkan。"), tech = T("Renderer"),
             control = { _, _ -> seg("opengl" to "OpenGL", "vulkan" to "Vulkan", "surfaceflinger" to T("SurfaceFlinger")) },
             vm = VmBinding(get = { _, vm -> idOf(vm.selectedRenderer) }, set = { _, vm, v -> vm.selectedRenderer = displayFor(v, RENDERERS) }),
             game = key("renderer"),
             visible = { env, values -> x11(env, values) },
             confirm = { v ->
                 if (v == "surfaceflinger") Confirm(
+                    T("SurfaceFlinger渲染器 — 实验性"),
                     T("SurfaceFlinger 将游戏帧直接交给 Android 的合成器。它可能更快，但在某些设备上会显示黑屏或颜色错误。如果发生这种情况，请切换回 Vulkan 或 OpenGL。"),
                     T("仍要使用"),
-                    T("SurfaceFlinger渲染器 — 实验性"),
                 ) else null
             },
         ),
         SettingDef(
-            id = "graphics.sfColours", category = "graphics", group = T("How the picture reaches the screen"), level = ADVANCED,
-            label = T("Fix swapped colours"), hint = T("Swaps red and blue back (BGRA to RGBA)."), tech = T("校正 SurfaceFlinger 颜色"),
+            id = "graphics.sfColours", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
+            label = T("修复颜色通道互换"), hint = T("将红蓝交换回来（BGRA 到 RGBA）。"), tech = T("校正 SurfaceFlinger 颜色"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.rendererSfCompatMode }, { vm, v -> vm.rendererSfCompatMode = v }),
             game = key10("sfCompatMode"),
             visible = { env, values -> x11(env, values) && values("graphics.renderer") == "surfaceflinger" },
         ),
         SettingDef(
-            id = "graphics.nativeRenderer", category = "graphics", group = T("How the picture reaches the screen"), level = ADVANCED,
-            label = T("Direct to screen (native renderer)"), hint = T("Skips the compositor for lower lag. Turns off screen effects."), tech = T("Native Renderer"),
+            id = "graphics.nativeRenderer", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
+            label = T("直接到屏幕（原生渲染器）"), hint = T("跳过合成器以降低延迟。会关闭屏幕效果。"), tech = T("原生渲染器"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.rendererNative }, { vm, v -> vm.rendererNative = v }),
             game = keyTF("native"),
             visible = { env, values -> vulkanRenderer(env, values) },
         ),
         SettingDef(
-            id = "graphics.nativeBackend", category = "graphics", group = T("How the picture reaches the screen"), level = EXPERT,
-            label = T("Direct-to-screen method"), tech = T("Native backend"),
+            id = "graphics.nativeBackend", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
+            label = T("直接到屏幕方法"), tech = T("Native backend"),
             control = { _, _ -> seg("auto" to T("Auto"), "asr" to T("SurfaceFlinger"), "flip" to T("Vulkan scan-out")) },
             vm = vmString({ it.rendererNativeBackend }, { vm, v -> vm.rendererNativeBackend = v }),
             game = key("nativeBackend"),
             visible = { env, values -> vulkanRenderer(env, values) && values("graphics.nativeRenderer") == "1" },
         ),
         SettingDef(
-            id = "graphics.presentMode", category = "graphics", group = T("How the picture reaches the screen"), level = ADVANCED,
-            label = T("画面如何到达屏幕"), hint = T("直接到屏幕方法"), tech = T("原生后端"),
+            id = "graphics.presentMode", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
+            label = T("帧呈现"), hint = T("在帧生成运行时锁定为快速垂直同步。"), tech = T("呈现模式"),
             control = { _, _ -> seg("fifo" to T("V-Sync"), "mailbox" to T("Fast V-Sync"), "immediate" to T("Off")) },
             vm = vmString({ it.rendererPresentMode }, { vm, v -> vm.rendererPresentMode = v }),
             game = key("presentMode"),
@@ -773,16 +773,16 @@ internal object SettingsRegistry {
             disabled = { _, values -> if (values("graphics.nativeRenderer") == "1") T("Ignored while the native renderer is on.") else null },
         ),
         SettingDef(
-            id = "graphics.swapColours", category = "graphics", group = T("How the picture reaches the screen"), level = EXPERT,
-            label = T("Colour byte order"), tech = T("颜色"),
+            id = "graphics.swapColours", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
+            label = T("颜色字节顺序"), tech = T("颜色"),
             control = { _, _ -> seg("0" to T("BGRA (normal)"), "1" to T("RGBA (swap red/blue)")) },
             vm = vmBool({ it.rendererSwapRB }, { vm, v -> vm.rendererSwapRB = v }),
             game = keyTF("swapRB"),
             visible = { env, values -> vulkanRenderer(env, values) },
         ),
         SettingDef(
-            id = "graphics.rendererDriver", category = "graphics", group = T("How the picture reaches the screen"), level = EXPERT,
-            label = T("画面如何到达屏幕"), hint = T("颜色字节顺序"), tech = T("颜色"),
+            id = "graphics.rendererDriver", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
+            label = T("屏幕渲染器的驱动程序"), hint = T("不是游戏的驱动程序，只是绘制桌面的那个。"), tech = T("渲染器驱动程序"),
             control = { env, _ -> Control.Select(listOf(Opt("system", T("System driver"))) + env.rendererDrivers.map { Opt(it, it) }) },
             vm = vmString({ it.rendererDriverId }, { vm, v -> vm.rendererDriverId = v }),
             game = key("rendererDriverId"),
@@ -792,7 +792,7 @@ internal object SettingsRegistry {
         // Performance
         SettingDef(
             id = "performance.fpsLimiter", category = "performance", group = T("帧率"), level = SIMPLE,
-            label = T("屏幕渲染器的驱动程序"), hint = T("不是游戏的驱动程序，只是绘制桌面的那个。"), tech = T("渲染器驱动程序"),
+            label = T("帧率限制器"), hint = T("更稳定的帧节奏和更凉的设备。在游戏中从侧边菜单设置限制。"), tech = T("FPS限制器"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.fpsLimiterEnabled }, { vm, v -> vm.fpsLimiterEnabled = v }),
             game = key10("fpsLimiterEnabled"),
@@ -800,14 +800,14 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.frameGen", category = "performance", group = T("Frame generation"), level = SIMPLE,
-            label = T("Frame generation"), hint = T("帧率限制器"), tech = T("更稳定的帧节奏和更凉的设备。在游戏中从侧边菜单设置限制。"),
-            help = T("FPS限制器"),
+            label = T("Frame generation"), hint = T("插入额外帧以实现更流畅的运动。"), tech = T("插帧生成"),
+            help = T("内置 (Win-FG) 在应用内部进行插值。Lossless Scaling 使用您自己的 Lossless.dll。两者都需要 Vulkan 屏幕渲染器、Wayland 或 Linux 条目。倍数在游戏中设置。"),
             control = { env, _ ->
                 Control.Segmented(listOf(
                     Opt("off", T("Off")),
                     Opt("bionic", T("Built-in (Win-FG)")),
                     Opt("lsfg-native", T("Lossless Scaling"),
-                        disabledReason = if (env.lsfgDllAvailable) null else T("Import Lossless.dll in Settings › Performance first.")),
+                        disabledReason = if (env.lsfgDllAvailable) null else T("请先在 设置 › 性能 中导入 Lossless.dll。")),
                 ))
             },
             vm = vmString({ if (it.frameGenEngine == "lsfg") "lsfg-native" else it.frameGenEngine }, { vm, v -> vm.frameGenEngine = v }),
@@ -820,22 +820,22 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.frameGenModel", category = "performance", group = T("Frame generation"), level = ADVANCED,
-            label = T("Motion model"), tech = T("Interpolation model"),
-            control = { _, _ -> seg("3" to T("Optical flow"), "4" to T("光流")) },
+            label = T("运动模型"), tech = T("插值模型"),
+            control = { _, _ -> seg("3" to T("光流"), "4" to T("双向")) },
             vm = vmInt({ if (it.frameGenModel == 4) 4 else 3 }, { vm, v -> vm.frameGenModel = v }),
             game = key("frameGenModel") { if (it.trim() == "4") "4" else "3" },
             visible = { _, values -> values("performance.frameGen") == "bionic" },
         ),
         SettingDef(
             id = "performance.fgCapture", category = "performance", group = T("Frame generation"), level = EXPERT,
-            label = T("Capture resolution"), hint = T("Height the frame-generation chain runs at; the width follows your screen. Lower is much cheaper, softer."), tech = "fgCaptureResolution",
+            label = T("Capture resolution"), hint = T("帧生成链运行的高度；宽度跟随您的屏幕。更低则开销小得多，画面更柔和。"), tech = "fgCaptureResolution",
             control = { env, _ ->
                 val heights = (env.vm?.screenSizeEntries ?: emptyList())
                     .filterNot { it.equals("custom", ignoreCase = true) }
                     .mapNotNull { entry -> Container.fgCaptureHeightFor(idOf(entry)).takeIf { it > 0 }?.let { Opt("$it", prettyResolution(entry)) } }
                     .distinctBy { it.value }
                 Control.Select(
-                    options = listOf(Opt(Container.FG_CAPTURE_PANEL, T("Panel (default)")), Opt(Container.FG_CAPTURE_GAME, T("Game resolution"))) + heights,
+                    options = listOf(Opt(Container.FG_CAPTURE_PANEL, T("Panel (default)")), Opt(Container.FG_CAPTURE_GAME, T("游戏分辨率"))) + heights,
                     customLabel = T("Custom height…"),
                     customHint = T("A height in pixels, e.g. 540"),
                     validateCustom = { t -> if ((t.trim().toIntOrNull() ?: 0) > 0) null else T("Type a height in pixels.") },
@@ -865,7 +865,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.lsfgVk11", category = "performance", group = T("Frame generation"), level = EXPERT,
-            label = T("LSFG on Vulkan 1.1 drivers (compat)"), hint = T("Lets LSFG Native run on drivers that only report Vulkan 1.1 but have the needed extensions. Applies to per-game overrides too."), tech = "lsfgVk11Compat",
+            label = T("LSFG on Vulkan 1.1 drivers (compat)"), hint = T("允许 LSFG 原生在仅报告 Vulkan 1.1 但具有所需扩展的驱动程序上运行。也适用于每个游戏的覆盖设置。"), tech = "lsfgVk11Compat",
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.lsfgVk11Compat }, { vm, v -> vm.lsfgVk11Compat = v }),
             showInGame = false,
@@ -874,8 +874,8 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.syncMode", category = "performance", group = T("Wine sync"), level = ADVANCED,
-            label = T("Sync"), hint = T("How Wine waits between threads. esync is fast and well tested; ntsync is closest to Windows; wineserver is slowest and most compatible."), tech = "syncMode",
-            help = T("esync is the layer default. ntsync is new: try it per game. wineserver sends every wait through the wineserver, for games that misbehave. fsync can't run on Android. A choice the layer can't run falls back to its default."),
+            label = T("Sync"), hint = T("Wine 如何在线程之间等待。esync 快速且经过充分测试；ntsync 最接近 Windows；wineserver 最慢且兼容性最好。"), tech = "syncMode",
+            help = T("esync 是层默认。ntsync 是新功能：可按游戏尝试。wineserver 将每次等待都通过 wineserver 发送，适用于出现异常的游戏。fsync 无法在 Android 上运行。层无法运行的选择会回退到其默认值。"),
             control = { env, _ -> Control.Segmented(SyncMode.ALL.map { m -> Opt(m, m, disabledReason = syncReason(env, m)) }) },
             vm = vmString({ it.syncMode }, { vm, v -> vm.onSyncModePicked(v) }),
             // A game stores a mode only when it differs from the container's; picking the container's follows it again.
@@ -902,7 +902,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.translator", category = "performance", group = T("x86 翻译器"), level = ADVANCED,
-            label = T("x86 translator for 32-bit code"), hint = T("Runs the game's 32-bit x86 code on your ARM CPU."), tech = T("转译器 (32位)"),
+            label = T("用于 32 位代码的 x86 翻译器"), hint = T("在您的 ARM CPU 上运行游戏的 32 位 x86 代码。"), tech = T("转译器 (32位)"),
             control = { env, _ ->
                 val labels = mapOf("fexcore" to "FEXCore", "box64" to "WOWBox64")
                 Control.Segmented((env.vm?.emulatorEntries ?: emptyList()).map { Opt(idOf(it), labels[idOf(it)] ?: it) })
@@ -913,7 +913,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.translator64", category = "performance", group = T("x86 翻译器"), level = ADVANCED,
-            label = T("用于 32 位代码的 x86 翻译器"), hint = T("在您的 ARM CPU 上运行游戏的 32 位 x86 代码。"), tech = T("转译器 (64位)"),
+            label = T("用于 64 位代码的 x86 翻译器"), hint = T("运行游戏的 64 位 x86 代码。Box64EC 需要安装 Box64EC 组件。"), tech = T("转译器 (64位)"),
             control = { env, _ ->
                 Control.Segmented(listOf(
                     Opt("fexcore", "FEXCore"),
@@ -927,7 +927,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.fexVersion", category = "performance", group = "FEXCore", level = ADVANCED,
-            label = T("FEX version"), tech = T("FEXCore Version"),
+            label = T("FEX 版本"), tech = T("FEXCore 版本"),
             control = { env, _ -> Control.Select((env.vm?.fexCoreVersionEntries ?: emptyList()).map { Opt(it, it) }) },
             vm = vmString({ it.selectedFEXCoreVersion }, { vm, v -> vm.selectedFEXCoreVersion = v }),
             game = key("fexcoreVersion"),
@@ -936,7 +936,7 @@ internal object SettingsRegistry {
         // The Linux runtime brings its own FEX, but hands this preset to the games the Steam client launches.
         SettingDef(
             id = "performance.fexPreset", category = "performance", group = "FEXCore", level = ADVANCED,
-            label = T("FEX preset"), hint = T("Trade speed for compatibility. Edit its values under Translator preset values below."), tech = T("FEXCore 预设"),
+            label = T("FEX 预设"), hint = T("以速度换取兼容性。在下面的翻译器预设值下编辑其值。"), tech = T("FEXCore 预设"),
             control = { env, _ -> Control.Select(env.fexPresets.map { Opt(it.id, it.name) }) },
             vm = VmBinding(get = { _, vm -> vm.selectedFEXCorePresetId }, set = { _, vm, v -> vm.selectFEXCorePresetById(v) }),
             game = key("fexcorePreset"),
@@ -945,7 +945,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.forceSsbs", category = "performance", group = "FEXCore", level = ADVANCED,
-            label = T("Force SSBS (CPU speed fix)"), hint = T("Keeps the CPU's speculative-store fast path on for game threads (arm64ec Proton only). On by default."), tech = "forceSsbs",
+            label = T("强制 SSBS（CPU 速度修复）"), hint = T("为游戏线程保持 CPU 的推测存储快速路径开启（仅限 arm64ec Proton）。默认开启。"), tech = "forceSsbs",
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.forceSsbs }, { vm, v -> vm.forceSsbs = v }),
             game = key10("forceSsbs"),
@@ -953,21 +953,21 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.box64Version", category = "performance", group = T("Box64 / WOWBox64"), level = ADVANCED,
-            label = T("Box64 版本"), hint = T("Called WOWBox64 on ARM64EC containers, where it runs 32-bit code when chosen above."), tech = T("Box64 Version / WOWBox64 Version"),
+            label = T("Box64 版本"), hint = T("在 ARM64EC 容器中称为 WOWBox64，当上面选择它时，它会运行 32 位代码。"), tech = T("Box64 版本 / WOWBox64 版本"),
             control = { env, _ -> Control.Select((env.vm?.box64VersionEntries ?: emptyList()).map { Opt(it, it) }) },
             vm = vmString({ it.selectedBox64Version }, { vm, v -> vm.selectedBox64Version = v }),
             game = key("box64Version"),
         ),
         SettingDef(
             id = "performance.box64Preset", category = "performance", group = T("Box64 / WOWBox64"), level = ADVANCED,
-            label = T("Box64 版本"), hint = T("在 ARM64EC 容器中称为 WOWBox64，当上面选择它时，它会运行 32 位代码。"), tech = T("Box64 版本 / WOWBox64 版本"),
+            label = T("Box64 预设"), hint = T("其 BOX64_* 变量也适用于 Box64EC。"), tech = T("Box64 预设 / WOWBox64 预设"),
             control = { env, _ -> Control.Select(env.box64Presets.map { Opt(it.id, it.name) }) },
             vm = VmBinding(get = { _, vm -> vm.selectedBox64PresetId }, set = { _, vm, v -> vm.selectBox64PresetById(v) }),
             game = key("box64Preset"),
         ),
         SettingDef(
             id = "performance.box64ecVersion", category = "performance", group = "Box64EC", level = ADVANCED,
-            label = T("Box64EC version"), hint = T("Runs 64-bit games when the 64-bit translator is Box64EC."), tech = T("Box64EC 版本"),
+            label = T("Box64EC 版本"), hint = T("当 64 位翻译器为 Box64EC 时运行 64 位游戏。"), tech = T("Box64EC 版本"),
             control = { env, _ -> Control.Select((env.vm?.box64ECVersionEntries ?: emptyList()).map { Opt(it, it) }) },
             vm = vmString({ it.selectedBox64ECVersion }, { vm, v -> vm.selectedBox64ECVersion = v }),
             game = key("box64ecVersion"),
@@ -975,51 +975,51 @@ internal object SettingsRegistry {
             disabled = { env, _ -> if (env.box64ECInstalled) null else T("未安装 Box64EC。请在下方下载一个（翻译器下载）。") },
         ),
         SettingDef(
-            id = "performance.startupServices", category = "performance", group = T("Windows background services"), level = ADVANCED,
-            label = T("Services started with Windows"), hint = T("Fewer services = faster start and more free RAM."), tech = T("Startup Selection"),
-            control = { _, _ -> seg("0" to T("All"), "1" to T("Essential only"), "2" to T("仅必要"), "3" to T("Custom")) },
+            id = "performance.startupServices", category = "performance", group = T("Windows 后台服务"), level = ADVANCED,
+            label = T("随 Windows 启动的服务"), hint = T("更少的服务 = 更快的启动和更多的可用 RAM。"), tech = T("启动选择"),
+            control = { _, _ -> seg("0" to T("All"), "1" to T("仅必要"), "2" to T("启动时停止"), "3" to T("Custom")) },
             vm = vmInt({ it.selectedStartupSelection }, { vm, v -> vm.selectedStartupSelection = v }),
             game = intKey("startupSelection"),
         ),
         SettingDef(
-            id = "performance.cpuAffinity", category = "performance", group = T("Windows 后台服务"), level = ADVANCED,
-            label = T("随 Windows 启动的服务"), hint = T("更少的服务 = 更快的启动和更多的可用 RAM。"), tech = T("启动选择"),
+            id = "performance.cpuAffinity", category = "performance", group = T("CPU 核心"), level = ADVANCED,
+            label = T("游戏可使用的核心"), hint = T("至少保持一个核心开启。"), tech = T("处理器关联 (cpuList)"),
             control = { _, _ -> Control.Cores },
             vm = vmString({ it.cpuList }, { vm, v -> vm.cpuList = v }),
             game = key("cpuList"),
         ),
         SettingDef(
-            id = "performance.cpuAffinity32", category = "performance", group = T("Windows 后台服务"), level = EXPERT,
-            label = T("游戏可使用的核心"), hint = T("至少保持一个核心开启。"), tech = T("处理器关联 (cpuList)"),
+            id = "performance.cpuAffinity32", category = "performance", group = T("CPU 核心"), level = EXPERT,
+            label = T("32 位程序可使用的核心"), hint = T("对 32 位 (WOW64) 程序使用相同的选择。"), tech = T("处理器关联（32 位应用）(cpuListWoW64)"),
             control = { _, _ -> Control.Cores },
             vm = vmString({ it.cpuListWoW64 }, { vm, v -> vm.cpuListWoW64 = v }),
             showInGame = false,
             visible = { env, _ -> env.arm64ec },
         ),
-        perfToggle("performance.power.sustained", "sustainedPerfMode", T("Sustained performance mode"), T("Keeps clocks steady for long sessions instead of short bursts.")),
-        perfToggle("performance.power.priorityBoost", "perfPriorityBoost", T("Boost game thread priority"), null),
-        perfToggle("performance.power.bigCores", "preferBigCores", T("提升游戏线程优先级"), null),
+        perfToggle("performance.power.sustained", "sustainedPerfMode", T("持续性能模式"), T("为长时间会话保持时钟稳定，而不是短时爆发。")),
+        perfToggle("performance.power.priorityBoost", "perfPriorityBoost", T("提升游戏线程优先级"), null),
+        perfToggle("performance.power.bigCores", "preferBigCores", T("优先使用大核"), null),
         // Custom services, the GPU clock lock and root switches, and the preset values' hidden rows.
         *PerformanceRows.defs().toTypedArray(),
 
         // Visual effects (per game only: the container has no vkBasalt setting)
         SettingDef(
-            id = "visuals.vkbasalt", category = "visuals", group = T("Sharpening"), level = ADVANCED,
-            label = T("Vulkan post-effect (vkBasalt)"), hint = T("Sharpens the image after it is drawn."), tech = T("Sharpness (VKBasalt) › Effect"),
+            id = "visuals.vkbasalt", category = "visuals", group = T("锐化"), level = ADVANCED,
+            label = T("Vulkan 后期效果 (vkBasalt)"), hint = T("在图像绘制后对其进行锐化。"), tech = T("锐度 (VKBasalt) › 效果"),
             control = { _, _ -> seg("None" to T("None"), "CAS" to T("CAS sharpen"), "DLS" to T("DLS sharpen + denoise")) },
             game = GameBinding(listOf("sharpnessEffect"), read = { e -> e.get("sharpnessEffect")?.takeIf { it.isNotEmpty() } },
                 write = { e, v -> e.put("sharpnessEffect", v) }, inherit = Inherit.BUILT_IN, inherited = { "None" }),
             visible = { env, _ -> gameScope(env) },
         ),
-        percentSlider("visuals.vkbasaltLevel", "sharpnessLevel", T("vkBasalt strength"), T("Level")) { values -> values("visuals.vkbasalt") != "None" },
-        percentSlider("visuals.vkbasaltDenoise", "sharpnessDenoise", T("vkBasalt 强度"), T("级别")) { values -> values("visuals.vkbasalt") == "DLS" },
+        percentSlider("visuals.vkbasaltLevel", "sharpnessLevel", T("vkBasalt 强度"), T("Level")) { values -> values("visuals.vkbasalt") != "None" },
+        percentSlider("visuals.vkbasaltDenoise", "sharpnessDenoise", T("vkBasalt 降噪"), T("降噪")) { values -> values("visuals.vkbasalt") == "DLS" },
         // ReShade: Solo / Stack and the loadout the section edits.
         *ReshadeRows.defs().toTypedArray(),
 
         // Audio
         SettingDef(
             id = "audio.driver", category = "audio", group = T("声音"), level = SIMPLE,
-            label = T("Sound system"), hint = T("PulseAudio suits most games. DirectAudio has the lowest delay on the builds that ship it."), tech = T("Audio Driver"),
+            label = T("声音系统"), hint = T("PulseAudio 适合大多数游戏。DirectAudio 在附带它的构建上具有最低延迟。"), tech = T("Audio Driver"),
             control = { env, _ ->
                 val labels = mapOf("alsa" to "ALSA", "pulseaudio" to T("PulseAudio"), "directaudio" to T("DirectAudio"))
                 // A Linux entry's DirectAudio is the runtime's own relay driver, so the container's layer says nothing about it.
@@ -1035,16 +1035,16 @@ internal object SettingsRegistry {
             game = key("audioDriver"),
             confirm = { v ->
                 if (v == "directaudio") Confirm(
+                    T("DirectAudio 是实验性的"),
                     T("它将游戏的声音直接发送到 Android 的音频系统，中间没有 PulseAudio 或 ALSA 服务器：最低延迟路径。由于它是新功能，某些游戏可能偶尔跳音，或者预设可能不生效；自动预设是最流畅的。如果遇到音频问题，请切换回 PulseAudio 或 ALSA。"),
                     T("使用 DirectAudio"),
-                    T("DirectAudio 是实验性的"),
                 ) else null
             },
             worlds = WINE_LINUX,
         ),
         SettingDef(
             id = "audio.midiSoundfont", category = "audio", group = T("声音"), level = ADVANCED,
-            label = T("声音系统"), hint = T("PulseAudio 适合大多数游戏。DirectAudio 在附带它的构建上具有最低延迟。"), tech = T("MIDI SoundFont"),
+            label = T("MIDI 音乐音色库"), hint = T("播放 MIDI 音乐的旧游戏需要音色库。"), tech = T("MIDI SoundFont"),
             control = { env, _ ->
                 Control.Select((env.vm?.midiEntries ?: emptyList()).mapIndexed { i, name ->
                     Opt("$i", when {
@@ -1063,8 +1063,8 @@ internal object SettingsRegistry {
 
         // Controls
         SettingDef(
-            id = "input.controlsProfile", category = "input", group = T("备份与恢复"), level = SIMPLE,
-            label = T("MIDI 音乐音色库"), hint = T("播放 MIDI 音乐的旧游戏需要音色库。"), tech = T("控制器配置"),
+            id = "input.controlsProfile", category = "input", group = T("控制器"), level = SIMPLE,
+            label = T("屏幕控制"), hint = T("游戏上方显示哪种触摸布局。"), tech = T("控制器配置"),
             control = { env, _ -> Control.Select(listOf(Opt("0", T("None"))) + env.controlsProfiles.map { Opt("${it.id}", it.name) }) },
             game = GameBinding(
                 listOf("controlsProfile"),
@@ -1076,10 +1076,10 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.dinputVisible", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("DirectInput games can see the controller"), hint = T("屏幕控制"),
-            help = T("游戏上方显示哪种触摸布局。"),
-            tech = T("控制器配置"),
+            id = "input.dinputVisible", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("DirectInput games can see the controller"), hint = T("默认关闭，因此同时读取 XInput 和 DirectInput 的游戏只会看到一个手柄。"),
+            help = T("允许 DirectInput 游戏（许多较旧游戏、赛车游戏、方向盘）看到控制器。关闭会将其从 DirectInput 中隐藏，以便同时支持 XInput 和 DirectInput 的游戏不会看到两个。经典 DirectInput 手柄身份始终会开启此选项。"),
+            tech = T("Exclusive Input独占输入 / 启用 DInput"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.dinputVisible }, { vm, v -> vm.dinputVisible = v }),
             // Stored in the game's inputType / exclusiveXInput extras, which older builds read too
@@ -1099,9 +1099,9 @@ internal object SettingsRegistry {
             ),
         ),
         SettingDef(
-            id = "input.dinputVibration", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("DirectInput vibration"), hint = T("DirectInput games (racing, flight, many older titles) can make the controller vibrate. On by default."),
-            help = T("Lets DirectInput games make the controller vibrate: plain rumble, and the force effects racing and flight games send to a wheel or a joystick, felt through the controller's two motors. It follows the Vibration settings (rumble target and intensity). A steady force (a racing game holding the wheel straight, for example) fades after a couple of seconds, so the controller doesn't keep buzzing. DirectInput games only feel it while they can see the controller. A change applies when the controller reconnects (in-game, Controls › Pad does that) or on the next launch. BANNERIN_DINPUT_FF in the env vars wins over this setting."),
+            id = "input.dinputVibration", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("DirectInput vibration"), hint = T("DirectInput 游戏（赛车、飞行、许多较旧游戏）可以使控制器震动。默认开启。"),
+            help = T("允许 DirectInput 游戏使控制器震动：普通震动，以及赛车和飞行游戏发送到方向盘或操纵杆的力反馈，通过控制器的两个马达感受到。它遵循震动设置（震动目标和强度）。稳定的力（例如赛车游戏保持方向盘直行）会在几秒后消退，因此控制器不会持续嗡嗡作响。DirectInput 游戏仅在可以看到控制器时才能感受到。更改在控制器重新连接时（在游戏中，控制 › 手柄可执行此操作）或下次启动时应用。环境变量中的 BANNERIN_DINPUT_FF 优先于此设置。"),
             tech = DInputVibration.EXTRA,
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.dinputVibration }, { vm, v -> vm.dinputVibration = v }),
@@ -1109,35 +1109,35 @@ internal object SettingsRegistry {
             disabled = { env, _ -> DInputVibration.lockedReason(env.vm?.container, env.shortcut) },
         ),
         SettingDef(
-            id = "input.bannerinXInput", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("Direct XInput (BANNERIN)"), hint = T("XInput games read the controller directly, with no input queue (no stale stick after release). On for new containers."), tech = "bannerinXInput",
-            help = T("XInput games read the controller straight from Bannerlator instead of through Wine's controller queue: always the live stick position, no added delay, rumble included. Off: XInput goes through Wine as before. If a game misbehaves, turn it off for that game."),
+            id = "input.bannerinXInput", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("Direct XInput (BANNERIN)"), hint = T("XInput 游戏直接读取控制器，没有输入队列（释放后没有过时的摇杆值）。新容器默认开启。"), tech = "bannerinXInput",
+            help = T("XInput 游戏直接从 Bannerlator 读取控制器，而不是通过 Wine 的控制器队列：始终是实时的摇杆位置，无额外延迟，包含震动。关闭：XInput 像以前一样通过 Wine。如果游戏出现异常，请为该游戏关闭它。"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.bannerinXInput }, { vm, v -> vm.bannerinXInput = v }),
             game = key10("bannerinXInput"),
         ),
         SettingDef(
-            id = "input.bannerinXInputSwitching", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("Allow in-game switching"), hint = T("Switch Direct XInput on or off from the in-game menu without restarting."),
-            help = T("Installs Bannerlator's XInput DLLs whether Direct XInput is on or off, with Wine's own XInput beside them, so Controls › Pad in the in-game menu can switch between them while the game runs (the controller reconnects). On by default. Off: Direct XInput stays as the game started, and changing it needs a restart."),
+            id = "input.bannerinXInputSwitching", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("Allow in-game switching"), hint = T("在游戏内菜单中切换 Direct XInput 的开启或关闭，无需重启。"),
+            help = T("无论 Direct XInput 是开启还是关闭，都会安装 Bannerlator 的 XInput DLL，并将 Wine 自己的 XInput 放在旁边，以便游戏内菜单中的控制 › 手柄可以在游戏运行时在它们之间切换（控制器会重新连接）。默认开启。关闭：Direct XInput 保持游戏启动时的状态，更改它需要重启。"),
             tech = BannerinXInput.EXTRA_SWITCHING,
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.bannerinXInputSwitching }, { vm, v -> vm.bannerinXInputSwitching = v }),
             game = key10(BannerinXInput.EXTRA_SWITCHING),
         ),
         SettingDef(
-            id = "input.stickPacing", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("Stick updates"), hint = T("How often stick movement reaches the game. Also changeable in-game."),
-            help = T("Auto (default): one stick update per frame the game draws, up to the limit set (60 per second by default), so a game that draws faster than it reads input never falls behind. Fixed: that many updates per second. Unpaced: every change goes out at once. Applies at once, also in-game (Controls › Pad). BANNERIN_AXIS_HZ / BANNERIN_AXIS_AUTO_MAX in the env vars win over this setting."),
+            id = "input.stickPacing", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("Stick updates"), hint = T("摇杆移动到达游戏的频率。也可在游戏中更改。"),
+            help = T("自动（默认）：游戏绘制的每一帧更新一次摇杆，直到设定的限制（默认每秒 60 次），因此绘制速度快于读取输入速度的游戏永远不会落后。固定：每秒那么多次更新。无节奏限制：每次变化立即发送。立即应用，也可在游戏中应用（控制 › 手柄）。环境变量中的 BANNERIN_AXIS_HZ / BANNERIN_AXIS_AUTO_MAX 优先于此设置。"),
             tech = StickPacing.EXTRA,
             control = { _, _ ->
                 Control.Select(
                     listOf(
-                        Opt("auto:60", T("Auto (up to 60/s)")), Opt("auto:120", T("自动（最高 60/秒）")), Opt("auto:30", T("自动（最高 120/秒）")),
-                        Opt("fixed:60", T("自动（最高 30/秒）")), Opt("fixed:125", T("固定 60/秒")), Opt("fixed:250", T("固定 125/秒")),
+                        Opt("auto:60", T("自动（最高 60/秒）")), Opt("auto:120", T("自动（最高 120/秒）")), Opt("auto:30", T("自动（最高 30/秒）")),
+                        Opt("fixed:60", T("固定 60/秒")), Opt("fixed:125", T("固定 125/秒")), Opt("fixed:250", T("固定 250/秒")),
                         Opt("off", T("Unpaced")),
                     ),
-                    customLabel = T("自定义…"), customHint = T("auto:N (20–240), fixed:N (30–1000) or off"),
+                    customLabel = T("自定义…"), customHint = T("auto:N (20–240)、fixed:N (30–1000) 或关闭"),
                     validateCustom = { v -> if (StickPacing.parse(v) == null) T("Use auto:N, fixed:N or off") else null },
                     normalizeCustom = { v -> StickPacing.parse(v)?.format() ?: v.trim() },
                 )
@@ -1149,9 +1149,9 @@ internal object SettingsRegistry {
             },
         ),
         SettingDef(
-            id = "input.controllerIdentity", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("Controller identity"), hint = T("Which controller the game sees. Also changeable in-game (the controller reconnects)."),
-            help = T("Generic (default): works with everything, same as before. Xbox 360 / One / Series: games treat the pad as an Xbox controller; best paired with Direct XInput for live input and rumble. Classic DirectInput pad: for old games that don't accept Xbox pads; it always lets DirectInput games see the controller. PlayStation / Nintendo / Joy-Con / Steam Deck (experimental): games may show those button icons; no gyro, touchpad, light bar or trackpads, and a few games may not detect the pad. Switch back to Generic or Xbox if so.\n\nIf the controller disappears in a game, switch back to Generic."),
+            id = "input.controllerIdentity", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("Controller identity"), hint = T("游戏看到哪个控制器。也可在游戏中更改（控制器会重新连接）。"),
+            help = T("通用（默认）：与所有内容兼容，与以前相同。Xbox 360 / One / Series：游戏将手柄视为 Xbox 控制器；最好与 Direct XInput 配合使用以实现实时输入和震动。经典 DirectInput 手柄：适用于不接受 Xbox 手柄的旧游戏；它始终允许 DirectInput 游戏看到控制器。PlayStation / Nintendo / Joy-Con / Steam Deck（实验性）：游戏可能会显示那些按钮图标；无陀螺仪、触控板、灯条或触控板，少数游戏可能无法检测到手柄。如果是这样，请切换回通用或 Xbox。\n\n如果控制器在游戏中消失，请切换回通用。"),
             tech = ControllerIdentity.ENV,
             control = { _, _ -> Control.Select(ControllerIdentity.wineChoices().map { Opt(it.value, it.label) }) },
             vm = vmString({ ControllerIdentity.forWine(it.controllerIdentity) }, { vm, v -> vm.controllerIdentity = ControllerIdentity.forWine(v) }),
@@ -1159,8 +1159,8 @@ internal object SettingsRegistry {
             game = key(ControllerIdentity.EXTRA) { v -> ControllerIdentity.normalize(v)?.takeIf { it == ControllerIdentity.forWine(it) } },
         ),
         SettingDef(
-            id = "input.disableXInput", category = "input", group = T("备份与恢复"), level = EXPERT,
-            label = T("禁用XInput"), hint = T("Hides Xbox controllers from this game."), tech = "disableXinput",
+            id = "input.disableXInput", category = "input", group = T("控制器"), level = EXPERT,
+            label = T("禁用XInput"), hint = T("对此游戏隐藏 Xbox 控制器。"), tech = "disableXinput",
             control = { _, _ -> Control.Toggle },
             game = GameBinding(
                 listOf("disableXinput"),
@@ -1171,8 +1171,8 @@ internal object SettingsRegistry {
             visible = { env, _ -> gameScope(env) },
         ),
         SettingDef(
-            id = "input.numControllers", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("控制器数量"), hint = T("How many pads the game is offered."), tech = T("控制器数量"),
+            id = "input.numControllers", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("控制器数量"), hint = T("向游戏提供多少个手柄。"), tech = T("控制器数量"),
             control = { _, _ -> seg("1" to "1", "2" to "2", "3" to "3", "4" to "4") },
             game = GameBinding(
                 listOf("numControllers"),
@@ -1183,9 +1183,9 @@ internal object SettingsRegistry {
             visible = { env, _ -> gameScope(env) },
         ),
         SettingDef(
-            id = "input.touchMode", category = "input", group = T("备份与恢复"), level = ADVANCED,
-            label = T("Touch acts as"), hint = T("Touchscreen sends real touches to the game."), tech = T("触摸屏模式"),
-            control = { _, _ -> seg("0" to T("Mouse / touchpad"), "1" to T("触摸屏")) },
+            id = "input.touchMode", category = "input", group = T("控制器"), level = ADVANCED,
+            label = T("触摸表现为"), hint = T("触摸屏向游戏发送真实触摸。"), tech = T("触摸屏模式"),
+            control = { _, _ -> seg("0" to T("鼠标 / 触控板"), "1" to T("触摸屏")) },
             game = builtIn10("simTouchScreen", false),
             visible = { env, _ -> gameScope(env) },
             worlds = WINE_LINUX,
@@ -1200,18 +1200,18 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.onScreenPriority", category = "input", group = T("玩家槽位"), level = ADVANCED,
-            label = T("On-screen controls vs. a real pad"), tech = T("屏幕优先级"),
+            label = T("屏幕控制与真实手柄"), tech = T("屏幕优先级"),
             control = { _, _ ->
-                seg("${Container.ON_SCREEN_MODE_KEEP}" to T("On-screen stays Player 1"),
-                    "${Container.ON_SCREEN_MODE_YIELD}" to T("屏幕控制保持为玩家 1"),
-                    "${Container.ON_SCREEN_MODE_SHARE}" to T("手柄成为玩家 1"))
+                seg("${Container.ON_SCREEN_MODE_KEEP}" to T("屏幕控制保持为玩家 1"),
+                    "${Container.ON_SCREEN_MODE_YIELD}" to T("手柄成为玩家 1"),
+                    "${Container.ON_SCREEN_MODE_SHARE}" to T("两者都控制玩家 1"))
             },
             vm = vmInt({ it.onScreenControllerMode }, { vm, v -> vm.onScreenControllerMode = v }),
             game = intKey("onScreenControllerMode"),
         ),
         SettingDef(
-            id = "input.relativeMouse", category = "input", group = T("玩家槽位"), level = ADVANCED,
-            label = T("屏幕控制与真实手柄"), hint = T("屏幕优先级"),
+            id = "input.relativeMouse", category = "input", group = T("鼠标与触摸"), level = ADVANCED,
+            label = T("相对鼠标（用于 3D 相机游戏）"), hint = T("也可在游戏中从侧边菜单切换。"),
             control = { _, _ -> Control.Toggle },
             game = key10("relativeMouse").let {
                 GameBinding(it.keys, it.read, it.write, Inherit.CONTAINER,
@@ -1220,39 +1220,39 @@ internal object SettingsRegistry {
             visible = { env, _ -> gameScope(env) },
         ),
         SettingDef(
-            id = "input.mouseWarp", category = "input", group = T("玩家槽位"), level = EXPERT,
-            label = T("Mouse capture (DirectInput)"), hint = T("Fixes spinning or stuck cameras in some older games."), tech = T("Mouse Warp Override"),
-            control = { _, _ -> seg("0" to T("Off"), "1" to T("On"), "2" to T("开启")) },
+            id = "input.mouseWarp", category = "input", group = T("鼠标与触摸"), level = EXPERT,
+            label = T("鼠标捕获 (DirectInput)"), hint = T("修复某些较旧游戏中的相机旋转或卡住问题。"), tech = T("鼠标偏移覆盖"),
+            control = { _, _ -> seg("0" to T("Off"), "1" to T("On"), "2" to T("强制")) },
             vm = vmInt({ it.selectedMouseWarpIndex }, { vm, v -> vm.selectedMouseWarpIndex = v }),
             onDefaults = false, showInGame = false,
             visible = { env, _ -> env.scope == EditorScope.CONTAINER },
         ),
         SettingDef(
-            id = "input.vibrationTarget", category = "input", group = T("鼠标与触摸"), level = SIMPLE,
-            label = T("鼠标捕获 (DirectInput)"), tech = T("修复某些较旧游戏中的相机旋转或卡住问题。"),
-            help = T("鼠标偏移覆盖"),
+            id = "input.vibrationTarget", category = "input", group = T("震动"), level = SIMPLE,
+            label = T("震动开启"), tech = T("振动模式"),
+            help = T("控制器：使游戏手柄震动。设备：使掌机/手机震动（在某些设备上，例如 AYANEO，系统无论如何都会将其路由到游戏手柄）。两者 / 关闭：如名称所示。"),
             control = { _, _ ->
                 seg("${Container.VIBRATION_MODE_OFF}" to T("Off"), "${Container.VIBRATION_MODE_CONTROLLER}" to T("Controller"),
-                    "${Container.VIBRATION_MODE_DEVICE}" to T("This device"), "${Container.VIBRATION_MODE_BOTH}" to T("Both"))
+                    "${Container.VIBRATION_MODE_DEVICE}" to T("此设备"), "${Container.VIBRATION_MODE_BOTH}" to T("Both"))
             },
             vm = vmInt({ it.vibrationMode }, { vm, v -> vm.vibrationMode = v }),
             game = intKey("vibrationMode"),
         ),
         SettingDef(
-            id = "input.vibrationIntensity", category = "input", group = T("鼠标与触摸"), level = ADVANCED,
-            label = T("Rumble strength"), tech = T("Vibration intensity"),
-            help = T("Scales vibration strength. Note: on some handhelds a lower strength does not reduce stick slowdown. Use Rumble motors: Single for that."),
+            id = "input.vibrationIntensity", category = "input", group = T("震动"), level = ADVANCED,
+            label = T("震动强度"), tech = T("振动强度"),
+            help = T("缩放震动强度。注意：在某些掌机上，较低的强度不会减少摇杆变慢。为此请使用震动马达：单马达。"),
             control = { _, _ -> Control.Slider(0f, 100f, 5f, { "${it.toInt()}%" }, { "${it.toInt()}" }) },
             vm = vmInt({ it.vibrationIntensity }, { vm, v -> vm.vibrationIntensity = v }),
             game = intKey("vibrationIntensity"),
             visible = { _, values -> values("input.vibrationTarget") != "${Container.VIBRATION_MODE_OFF}" },
         ),
         SettingDef(
-            id = "input.rumbleMotors", category = "input", group = T("鼠标与触摸"), level = ADVANCED,
-            label = T("Rumble motors"), hint = T("Single keeps sticks smooth on handhelds that slow down while both motors run."),
-            help = T("Both (PC-accurate): drives the big and small motors separately, like a PC controller. Single (smoother sticks): uses one motor. Some handheld controllers (e.g. AYANEO Pocket FIT) slow their stick updates while both motors run; Single halves that slowdown so aiming stays smooth. Default: Single on the Pocket FIT, Both elsewhere."),
+            id = "input.rumbleMotors", category = "input", group = T("震动"), level = ADVANCED,
+            label = T("Rumble motors"), hint = T("对于两个马达同时运行时摇杆会变慢的掌机，单马达可保持摇杆流畅。"),
+            help = T("两者（PC 精确）：像 PC 控制器一样分别驱动大马达和小马达。单马达（更流畅的摇杆）：使用一个马达。某些掌机控制器（例如 AYANEO Pocket FIT）在两个马达运行时会使摇杆更新变慢；单马达将这种变慢减半，使瞄准保持流畅。默认：Pocket FIT 上为单马达，其他地方为两者。"),
             tech = RumbleMotors.EXTRA,
-            control = { _, _ -> seg("${RumbleMotors.BOTH}" to T("Both (PC-accurate)"), "${RumbleMotors.SINGLE}" to T("两者（PC 精确）")) },
+            control = { _, _ -> seg("${RumbleMotors.BOTH}" to T("两者（PC 精确）"), "${RumbleMotors.SINGLE}" to T("单马达（更流畅的摇杆）")) },
             vm = vmInt({ it.rumbleMotors }, { vm, v -> vm.rumbleMotors = RumbleMotors.sanitize(v) }),
             game = key(RumbleMotors.EXTRA) { v -> RumbleMotors.parse(v)?.toString() },
             // Only a controller has two motors (the phone's vibrator is one).
@@ -1262,16 +1262,16 @@ internal object SettingsRegistry {
             },
         ),
         SettingDef(
-            id = "input.gyro.enabled", category = "input", group = T("Motion aim (gyro)"), level = SIMPLE,
-            label = T("体感瞄准"), hint = T("Tilt the device to aim."), tech = T("Enable Motion Aim"),
+            id = "input.gyro.enabled", category = "input", group = T("体感瞄准（陀螺仪）"), level = SIMPLE,
+            label = T("体感瞄准"), hint = T("倾斜设备以瞄准。"), tech = T("启用体感瞄准"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.gyroEnabled }, { vm, v -> vm.gyroEnabled = v }),
             game = key10("gyroEnabled"),
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.mode", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Motion style"), tech = T("Motion Mode"),
+            id = "input.gyro.mode", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("体感风格"), tech = T("体感模式"),
             control = { _, _ -> seg("${Container.GYRO_MODE_RATE}" to T("Turn speed"), "${Container.GYRO_MODE_ORIENTATION}" to T("Tilt to aim")) },
             // Tilt to aim can't drive the mouse, so it moves a mouse target to the right stick, as the classic editors do.
             vm = VmBinding(
@@ -1293,12 +1293,12 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.target", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Motion moves"), tech = T("Motion Target"),
+            id = "input.gyro.target", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("体感移动"), tech = T("体感目标"),
             control = { _, values ->
                 Control.Segmented(listOf(
-                    Opt("${Container.GYRO_TARGET_RIGHT_STICK}", T("Right stick")),
-                    Opt("${Container.GYRO_TARGET_LEFT_STICK}", T("右摇杆")),
+                    Opt("${Container.GYRO_TARGET_RIGHT_STICK}", T("右摇杆")),
+                    Opt("${Container.GYRO_TARGET_LEFT_STICK}", T("左摇杆")),
                     Opt("${Container.GYRO_TARGET_MOUSE}", T("Mouse"),
                         disabledReason = if (values("input.gyro.mode") == "${Container.GYRO_MODE_ORIENTATION}") T("Not with Tilt to aim.") else null),
                 ))
@@ -1309,8 +1309,8 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.activator", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Hold this to aim"), tech = T("Activator Button"),
+            id = "input.gyro.activator", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("按住此键以瞄准"), tech = T("激活按钮"),
             control = { _, _ ->
                 seg("${Container.GYRO_ACTIVATOR_L1}" to "L1", "${Container.GYRO_ACTIVATOR_L2}" to "L2", "${Container.GYRO_ACTIVATOR_R1}" to "R1",
                     "${Container.GYRO_ACTIVATOR_R3}" to "R3", "${Container.GYRO_ACTIVATOR_ALWAYS}" to T("Always on"))
@@ -1321,8 +1321,8 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.activation", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Button behaviour"), tech = T("激活"),
+            id = "input.gyro.activation", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("按钮行为"), tech = T("激活"),
             control = { _, _ -> seg("${Container.GYRO_ACTIVATION_HOLD}" to T("Hold"), "${Container.GYRO_ACTIVATION_TOGGLE}" to T("Toggle")) },
             vm = vmInt({ it.gyroActivationMode }, { vm, v -> vm.gyroActivationMode = v }),
             game = intKey("gyroActivationMode"),
@@ -1330,7 +1330,7 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.sensitivity", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
+            id = "input.gyro.sensitivity", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
             label = T("灵敏度"), tech = T("灵敏度"),
             control = { _, _ -> Control.Slider(0.1f, 10f, 0.1f, { fmt1(it) }, { fmt1(it) }) },
             vm = VmBinding(get = { _, vm -> fmt1(vm.gyroSensitivity) }, set = { _, vm, v -> v.toFloatOrNull()?.let { vm.gyroSensitivity = it } }),
@@ -1339,22 +1339,22 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.deadzone", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("体感瞄准（陀螺仪）"), hint = T("灵敏度"), tech = T("灵敏度"),
+            id = "input.gyro.deadzone", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("忽略小幅移动"), hint = T("按容器设置：它描述您的手，而非游戏。"), tech = T("死区"),
             control = { _, _ -> Control.Slider(0f, 0.5f, 0.01f, { fmt2(it) }, { fmt2(it) }) },
             vm = VmBinding(get = { _, vm -> fmt2(vm.gyroDeadzone) }, set = { _, vm, v -> v.toFloatOrNull()?.let { vm.gyroDeadzone = it } }),
             visible = { _, values -> values("input.gyro.enabled") == "1" },
         ),
         SettingDef(
-            id = "input.gyro.smoothing", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Smoothing"), hint = T("Less jitter, a little more delay. Set per container."), tech = T("Smoothing"),
+            id = "input.gyro.smoothing", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("平滑"), hint = T("更少抖动，略微更多延迟。按容器设置。"), tech = T("平滑"),
             control = { _, _ -> Control.Slider(0f, 0.95f, 0.05f, { fmt2(it) }, { fmt2(it) }) },
             vm = VmBinding(get = { _, vm -> fmt2(vm.gyroSmoothing) }, set = { _, vm, v -> v.toFloatOrNull()?.let { vm.gyroSmoothing = it } }),
             visible = { _, values -> values("input.gyro.enabled") == "1" },
         ),
         SettingDef(
-            id = "input.gyro.invertX", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Invert left/right"), tech = T("Invert X"),
+            id = "input.gyro.invertX", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("反转左/右"), tech = T("反转 X"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.gyroInvertX }, { vm, v -> vm.gyroInvertX = v }),
             game = key10("gyroInvertX"),
@@ -1362,8 +1362,8 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.gyro.invertY", category = "input", group = T("Motion aim (gyro)"), level = ADVANCED,
-            label = T("Invert up/down"), tech = T("Invert Y"),
+            id = "input.gyro.invertY", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
+            label = T("反转上/下"), tech = T("反转 Y"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.gyroInvertY }, { vm, v -> vm.gyroInvertY = v }),
             game = key10("gyroInvertY"),
@@ -1375,8 +1375,8 @@ internal object SettingsRegistry {
 
         // Performance overlay: the launch path reads the on/off switch from the container only.
         SettingDef(
-            id = "hud.show", category = "hud", group = T("Overlay"), level = SIMPLE,
-            label = T("Show performance overlay"), hint = T("FPS, CPU/GPU load and temperatures on top of the game. Its style is below, and in-game from the side menu."), tech = T("Show FPS"),
+            id = "hud.show", category = "hud", group = T("覆盖层"), level = SIMPLE,
+            label = T("显示性能覆盖层"), hint = T("在游戏上方显示 FPS、CPU/GPU 负载和温度。其样式在下面，也可在游戏中从侧边菜单设置。"), tech = T("Show FPS"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.showFPS }, { vm, v -> vm.showFPS = v }),
         ),
@@ -1386,15 +1386,15 @@ internal object SettingsRegistry {
         // Windows
         SettingDef(
             id = "windows.containerName", category = "windows", group = T("Container"), level = SIMPLE,
-            label = T("容器名称"), hint = T("Shown on the Containers screen and in each game's \"From container\" labels."), tech = T("Name"),
+            label = T("容器名称"), hint = T("显示在容器屏幕上以及每个游戏的 \"来自容器\" 标签中。"), tech = T("Name"),
             control = { _, _ -> Control.TextField(T("容器名称")) { if (it.isBlank()) T("The name can't be empty.") else null } },
             vm = vmString({ it.containerName }, { vm, v -> vm.containerName = v }),
             onDefaults = false, showInGame = false,
             visible = { env, _ -> env.scope == EditorScope.CONTAINER },
         ),
         SettingDef(
-            id = "windows.locale", category = "windows", group = T("Language & region"), level = ADVANCED,
-            label = T("Language & region"), hint = T("Fixes garbled text in Japanese, Chinese, Korean and Russian games."), tech = "LC_ALL",
+            id = "windows.locale", category = "windows", group = T("语言与区域"), level = ADVANCED,
+            label = T("语言与区域"), hint = T("修复日语、中文、韩语和俄语游戏中的乱码。"), tech = "LC_ALL",
             control = { env, _ ->
                 Control.Select(
                     options = (env.vm?.lcAllEntries ?: emptyList()).map { lc ->
@@ -1412,21 +1412,21 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "windows.closeOnExit", category = "windows", group = T("System"), level = ADVANCED,
-            label = T("Close the session when the game exits"), tech = T("游戏退出时关闭"),
+            label = T("游戏退出时关闭会话"), tech = T("游戏退出时关闭"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.autoCloseOnExit }, { vm, v -> vm.autoCloseOnExit = v }),
             game = key10("autoCloseOnExit"),
         ),
         SettingDef(
             id = "windows.runAsAdmin", category = "windows", group = T("System"), level = ADVANCED,
-            label = T("Run programs as administrator"), hint = T("Avoids permission prompts inside Windows (turns UAC off)."), tech = T("Run as administrator (EnableLUA)"),
+            label = T("以管理员身份运行程序"), hint = T("避免 Windows 内的权限提示（关闭 UAC）。"), tech = T("以管理员身份运行 (EnableLUA)"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.runAsAdmin }, { vm, v -> vm.runAsAdmin = v }),
             showInGame = false,
         ),
         SettingDef(
-            id = "windows.theme", category = "windows", group = T("Wine / Proton 版本"), level = ADVANCED,
-            label = T("Desktop theme"), tech = T("Theme"),
+            id = "windows.theme", category = "windows", group = T("Windows 桌面"), level = ADVANCED,
+            label = T("桌面主题"), tech = T("主题"),
             control = { _, _ -> seg("0" to T("Light"), "1" to T("Dark")) },
             vm = vmInt({ it.desktopThemeIndex }, { vm, v -> vm.desktopThemeIndex = v }),
             showInGame = false,
@@ -1443,15 +1443,15 @@ internal object SettingsRegistry {
         dllRow("components.directplay", "directplay", T("DirectPlay"), T("DirectX")),
         dllRow("components.xaudio", "xaudio", T("XAudio"), T("Audio and runtimes")),
         dllRow("components.vcrun2010", "vcrun2010", T("Visual C++ 2010"), T("Audio and runtimes")),
-        codecRow("windows.codecBackend", MediaDecoder.KEY_BACKEND, T("Video decoder"),
-            T("Which backend Media Foundation plays cutscenes with. FFmpeg needs an arm64ec layer built with it (Proton 11.0-2 vc12+); elsewhere it falls back to GStreamer.")),
+        codecRow("windows.codecBackend", MediaDecoder.KEY_BACKEND, T("视频解码器"),
+            T("媒体基础使用哪个后端播放过场动画。FFmpeg 需要随其构建的 arm64ec 层（Proton 11.0-2 vc12+）；在其他地方会回退到 GStreamer。")),
         codecRow("windows.softwareDecoding", MediaDecoder.KEY_SOFTWARE_DECODING, T("软件视频解码"),
             T("使视频帧不经过 GPU。对于有声音但黑屏的视频，可以尝试此选项。")),
 
         // Linux runtime: the Linux Steam client entry only (the classic game editor's isLinuxEntry rows).
         SettingDef(
             id = "linux.displayDriver", category = "linux", group = T("Drivers"), level = SIMPLE,
-            label = T("显示驱动程序（Android 端）"), hint = T("The driver the app's compositor puts the session on screen with. Not what the client draws with."), tech = T("Compositor driver (graphicsDriverConfig version)"),
+            label = T("显示驱动程序（Android 端）"), hint = T("应用的合成器用于将会话放到屏幕上的驱动程序。不是客户端绘制所使用的。"), tech = T("合成器驱动程序（graphicsDriverConfig 版本）"),
             control = { env, values -> compositorControl(env, values(ID_DRIVER_VERSION)) },
             vm = compositorVm,
             game = compositorGame,
@@ -1481,11 +1481,11 @@ internal object SettingsRegistry {
             worlds = LINUX_ONLY,
         ),
         linuxToggle("linux.glThread", LinuxTuning.EXTRA_GLTHREAD, T("性能（实验性）"), T("线程化 GL (mesa_glthread)"), ADVANCED,
-            hint = T("Makes the chain that draws the client's interface cheaper. Not proven on every device: change one at a time.")),
+            hint = T("降低绘制客户端界面的链路开销。尚未在每台设备上验证：请一次更改一项。")),
         linuxToggle("linux.lazyDescriptors", LinuxTuning.EXTRA_LAZY_DESCRIPTORS, T("性能（实验性）"), T("Lazy descriptors (ZINK_DESCRIPTORS)"), ADVANCED),
         linuxToggle("linux.noGlError", LinuxTuning.EXTRA_NO_GL_ERROR, T("性能（实验性）"), T("Skip GL error checks (MESA_NO_ERROR)"), ADVANCED),
-        linuxToggle("linux.steamDeckMode", LinuxTuning.EXTRA_STEAMDECK, T("性能（实验性）"), T("性能（实验性）"), EXPERT,
-            hint = T("Makes the client behave as on a Steam Deck, with the Quick Access Menu. Games stop receiving the controller."),
+        linuxToggle("linux.steamDeckMode", LinuxTuning.EXTRA_STEAMDECK, T("性能（实验性）"), T("Steam Deck 模式 (-steamdeck)"), EXPERT,
+            hint = T("使客户端行为如同在 Steam Deck 上，带有快速访问菜单。游戏停止接收控制器。"),
             confirm = { v ->
                 if (v == "1") Confirm(
                     T("Turn on Steam Deck mode?"),
@@ -1520,7 +1520,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "linux.scaler", category = "linux", group = T("性能（实验性）"), level = ADVANCED,
-            label = T("Scaling mode"), hint = T("Only matters when a game renders below the session's resolution."), tech = LinuxTuning.EXTRA_SCALER,
+            label = T("Scaling mode"), hint = T("仅在游戏渲染分辨率低于会话分辨率时才有意义。"), tech = LinuxTuning.EXTRA_SCALER,
             control = { _, _ -> Control.Select(LinuxTuning.SCALERS.map { Opt(it, if (it.isEmpty()) T("Default") else it.replaceFirstChar(Char::uppercase)) }) },
             game = linuxChoice(LinuxTuning.EXTRA_SCALER, LinuxTuning.SCALERS.toList()),
             visible = { env, _ -> gameScope(env) },
@@ -1528,7 +1528,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "linux.filter", category = "linux", group = T("性能（实验性）"), level = ADVANCED,
-            label = T("Scaling filter"), hint = T("FSR, NIS and SGSR upscale and sharpen; SGSR is Qualcomm's, made for Adreno."), tech = LinuxTuning.EXTRA_FILTER,
+            label = T("Scaling filter"), hint = T("FSR、NIS 和 SGSR 可放大并锐化；SGSR 是高通的，专为 Adreno 打造。"), tech = LinuxTuning.EXTRA_FILTER,
             control = { _, _ ->
                 Control.Select(LinuxTuning.FILTERS.map {
                     Opt(it, when (it) {
@@ -1544,7 +1544,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "linux.touch", category = "linux", group = T("Steam 客户端"), level = SIMPLE,
-            label = T("触摸"), hint = T("Touchscreen sends fingers to Steam as real touches; Touchpad moves the pointer with a drag and clicks with a tap."), tech = LinuxTuning.EXTRA_TOUCH,
+            label = T("触摸"), hint = T("触摸屏将手指作为真实触摸发送给 Steam；触控板通过拖动移动指针，点击即为单击。"), tech = LinuxTuning.EXTRA_TOUCH,
             control = { _, _ ->
                 Control.Segmented(LinuxTuning.TOUCH_CHOICES.map {
                     Opt(it, when (it) { "" -> T("应用设置"); "1" -> T("触摸屏"); else -> T("触控板") })
@@ -1555,22 +1555,22 @@ internal object SettingsRegistry {
             worlds = LINUX_ONLY,
         ),
         linuxToggle("linux.steamButtons", LinuxTuning.EXTRA_STEAM_BUTTONS, T("Steam 客户端"), T("屏幕上的 Steam 和快速访问按钮"), SIMPLE,
-            hint = T("Steam's menu in the top-left corner, its Quick Access Menu in the top-right.")),
+            hint = T("Steam 的菜单在左上角，其快速访问菜单在右上角。")),
         linuxToggle("linux.doubleBackQam", LinuxTuning.EXTRA_DOUBLE_BACK_QAM, T("Steam 客户端"), T("双击返回打开快速访问"), ADVANCED,
-            hint = T("One Back press still opens the in-game drawer.")),
+            hint = T("按一次返回仍会打开游戏内抽屉。")),
         linuxToggle("linux.fillScreen", LinuxTuning.EXTRA_FILL_SCREEN, T("Steam 客户端"), T("拉伸游戏以填满屏幕"), ADVANCED,
-            hint = T("Keeps a game that shrinks its window filling the screen.")),
+            hint = T("保持缩小窗口的游戏填满屏幕。")),
         linuxToggle("linux.idTech3", LinuxTuning.EXTRA_IDTECH3, T("Steam 客户端"), T("Quake 引擎游戏窗口化"), ADVANCED,
-            hint = T("Quake III, Team Arena, Return to Castle Wolfenstein and Jedi Academy run windowed at the session's size.")),
+            hint = T("Quake III、Team Arena、Return to Castle Wolfenstein 和 Jedi Academy 以会话大小的窗口化模式运行。")),
         linuxToggle("linux.offline", LinuxTuning.EXTRA_OFFLINE, T("Steam 客户端"), T("离线模式（不登录 Valve）"), ADVANCED,
-            hint = T("Installed games still launch. Needs one online sign-in on this device first. Applies at the next session.")),
-        linuxToggle("linux.noXalia", LinuxTuning.EXTRA_NO_XALIA, T("Steam 客户端"), T("离线模式（不登录 Valve）"), EXPERT,
             hint = T("已安装的游戏仍可启动。需要先在此设备上进行一次在线登录。在下次会话时应用。")),
-        linuxToggle("linux.prootNoSeccomp", LinuxTuning.EXTRA_PROOT_NO_SECCOMP, T("Steam 客户端"), T("proot without seccomp (PROOT_NO_SECCOMP)"), EXPERT,
-            hint = T("Slower. Only for a device whose seccomp gets in the way.")),
+        linuxToggle("linux.noXalia", LinuxTuning.EXTRA_NO_XALIA, T("故障排除"), T("离线模式（不登录 Valve）"), EXPERT,
+            hint = T("默认开启：在 FEX 下，xalia 会消耗每个游戏的 CPU 时间。仅对需要其手柄导航的游戏关闭。")),
+        linuxToggle("linux.prootNoSeccomp", LinuxTuning.EXTRA_PROOT_NO_SECCOMP, T("故障排除"), T("proot without seccomp (PROOT_NO_SECCOMP)"), EXPERT,
+            hint = T("较慢。仅适用于 seccomp 造成妨碍的设备。")),
         SettingDef(
-            id = "linux.turnipSysmem", category = "linux", group = T("Steam 客户端"), level = EXPERT,
-            label = T("Turnip sysmem rendering (TU_DEBUG=sysmem)"), hint = T("What the A710/A720/A722 driver builds need; Automatic turns it on for those imports. A TU_DEBUG in the environment variables wins."), tech = LinuxTuning.EXTRA_TU_SYSMEM,
+            id = "linux.turnipSysmem", category = "linux", group = T("故障排除"), level = EXPERT,
+            label = T("Turnip sysmem rendering (TU_DEBUG=sysmem)"), hint = T("A710/A720/A722 驱动程序构建所需的；自动会为这些导入开启它。环境变量中的 TU_DEBUG 优先。"), tech = LinuxTuning.EXTRA_TU_SYSMEM,
             control = { _, _ ->
                 Control.Segmented(LinuxTuning.TU_SYSMEM_CHOICES.map {
                     Opt(it, when (it) { "" -> T("Automatic"); "1" -> T("On"); else -> T("Off") })
@@ -1583,9 +1583,9 @@ internal object SettingsRegistry {
         // The Steam client and game core lists, and the Games folders' hidden row (DeckLinuxSettings).
         *LinuxRuntimeRows.defs().toTypedArray(),
         linuxToggle("linux.appGames", LinuxTuning.EXTRA_APP_GAMES, T("您在 Steam 中的游戏"), T("在 Steam 中显示我游戏选项卡中的游戏"), ADVANCED,
-            hint = T("Games you added in the Games tab show in Steam's library under Non-Steam and run with Steam's Proton.")),
-        linuxToggle("linux.shareSaves", LinuxTuning.EXTRA_SHARE_SAVES, T("您在 Steam 中的游戏"), T("在 Steam 中显示我游戏选项卡中的游戏"), ADVANCED,
-            hint = T("您在游戏选项卡中添加的游戏会显示在 Steam 库的非 Steam 游戏下，并使用 Steam 的 Proton 运行。"),
+            hint = T("您在游戏选项卡中添加的游戏会显示在 Steam 库的非 Steam 游戏下，并使用 Steam 的 Proton 运行。")),
+        linuxToggle("linux.shareSaves", LinuxTuning.EXTRA_SHARE_SAVES, T("您在 Steam 中的游戏"), T("与应用共享存档"), ADVANCED,
+            hint = T("游戏的 Documents、AppData 和 Saved Games 文件夹与其容器使用的是同一批。请勿同时在两者中运行同一款游戏。"),
             visible = { env, values -> gameScope(env) && values("linux.appGames") == "1" }),
     )
 
@@ -1610,7 +1610,7 @@ internal object SettingsRegistry {
 
     /** A 0–100 % vkBasalt slider stored on the game. The launch path parses it as a number; 100 when unset. */
     private fun percentSlider(id: String, key: String, label: String, tech: String, show: ((String) -> String) -> Boolean) = SettingDef(
-        id = id, category = "visuals", group = T("Sharpening"), level = ADVANCED,
+        id = id, category = "visuals", group = T("锐化"), level = ADVANCED,
         label = label, tech = tech,
         control = { _, _ -> Control.Slider(0f, 100f, 5f, { "${it.toInt()}%" }, { "${it.toInt()}" }) },
         game = GameBinding(

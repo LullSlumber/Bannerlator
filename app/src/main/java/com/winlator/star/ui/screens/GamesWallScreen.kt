@@ -126,7 +126,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Games wall — a landscape-locked, 10-foot "容器管理" library. This is the presentation the app now
+// Games wall — a landscape-locked, 10-foot "大屏幕模式" library. This is the presentation the app now
 // uses for the main library route (Screen.Games); it swaps the phone-grid ShortcutsScreen for a couch
 // launcher that mirrors the approved mockup: a rail header (brand + search + status), a left nav rail,
 // a centre-highlighted 2:3 cover wall (LazyRow), and a footer launch bar. Data + launch reuse the
@@ -937,7 +937,7 @@ private fun WallToolsSheet(onDismiss: () -> Unit, onNavigate: (String) -> Unit, 
         rows = listOf(
             WallSheetRow(Icons.Filled.FolderOpen, "文件管理器") { onNavigate(Screen.FileManager.route) },
             WallSheetRow(Icons.Filled.Layers, "容器管理") { onNavigate(Screen.Containers.route) },
-            WallSheetRow(Icons.Filled.Inventory2, "存档与云") { onNavigate(Screen.Contents.route) },
+            WallSheetRow(Icons.Filled.Inventory2, "内容管理") { onNavigate(Screen.Contents.route) },
             WallSheetRow(Icons.Filled.Save, "Saves") { onNavigate(Screen.Saves.route) },
             WallSheetRow(Icons.Filled.SportsEsports, "虚拟按键") { onNavigate(Screen.InputControls.route) },
             WallSheetRow(Icons.Filled.Layers, "管理 Wrappers") { onNavigate(Screen.Wrappers.route) },

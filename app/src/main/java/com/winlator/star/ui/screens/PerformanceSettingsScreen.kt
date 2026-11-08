@@ -222,7 +222,7 @@ fun PerformanceSettingsScreen(onClose: () -> Unit) {
 
     if (showRootDisclaimer) {
         PerfDisclaimerDialog(
-            title = "启用",
+            title = "高级性能设置 — 请先阅读",
             body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = "Grant Root",
             onDismiss = { showRootDisclaimer = false },

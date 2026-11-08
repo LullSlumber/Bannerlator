@@ -83,7 +83,7 @@ fun AppearanceScreen() {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // ── Interface style ──────────────────────────────────────────────
-        SectionLabel("Interface Style")
+        SectionLabel("界面风格")
         Text(
             text = "Classic keeps the side menu. Deck is a console-style layout with tabs across the top, " +
                 "made for controllers. XMB is Deck with a full-screen XMB home: the tabs float over every page " +
@@ -141,7 +141,7 @@ fun AppearanceScreen() {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         // ── Preset themes ────────────────────────────────────────────────
-        SectionLabel("Theme Presets")
+        SectionLabel("主题预设")
         if (xmbHome) {
             Text(
                 text = "XMB washes the theme color softly and evenly behind every screen; the swatches show that look.",
@@ -175,9 +175,9 @@ fun AppearanceScreen() {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         // ── Custom accent picker ─────────────────────────────────────────
-        SectionLabel("Custom Accent Color")
+        SectionLabel("自定义强调色")
         Text(
-            text = "Selecting a color below switches to Custom preset",
+            text = "选择下方颜色将会切换至自定义预设",
             color = OnSurfaceVariant,
             fontSize = 12.sp
         )
@@ -191,26 +191,26 @@ fun AppearanceScreen() {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         // ── Side menu ────────────────────────────────────────────────────
-        SectionLabel("Side Menu")
+        SectionLabel("侧边菜单")
         val showStores by AppThemeState.showStores.collectAsState()
         val showInternal by AppThemeState.showInternalStorage.collectAsState()
         val showSd by AppThemeState.showSdStorage.collectAsState()
 
         DrawerToggleRow(
-            title = "Show game stores",
-            subtitle = "The GOG, Epic, Amazon and Steam shortcuts in the drawer",
+            title = "显示游戏商店",
+            subtitle = "在侧边栏中显示 GOG、Epic、Amazon 和 Steam 快捷方式",
             checked = showStores,
             onCheckedChange = { AppThemeState.setShowStores(it) },
         )
         DrawerToggleRow(
-            title = "Show internal storage",
-            subtitle = "The storage bar at the bottom of the drawer",
+            title = "显示内部存储",
+            subtitle = "侧边栏底部的存储空间条",
             checked = showInternal,
             onCheckedChange = { AppThemeState.setShowInternalStorage(it) },
         )
         DrawerToggleRow(
-            title = "Show SD card storage",
-            subtitle = "Only appears when a card is in the device",
+            title = "显示 SD card 存储",
+            subtitle = "仅当设备中插有 SD card 时才会显示",
             checked = showSd,
             onCheckedChange = { AppThemeState.setShowSdStorage(it) },
         )
@@ -219,9 +219,9 @@ fun AppearanceScreen() {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         // ── App orientation ──────────────────────────────────────────────
-        SectionLabel("App Orientation")
+        SectionLabel("应用屏幕方向")
         Text(
-            text = "Applies to the app's own screens only — games keep their own orientation.",
+            text = "仅应用于应用自身界面 — 游戏保持其自身的显示方向。",
             color = OnSurfaceVariant,
             fontSize = 12.sp,
         )

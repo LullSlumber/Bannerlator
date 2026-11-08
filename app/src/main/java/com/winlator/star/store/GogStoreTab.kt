@@ -111,7 +111,7 @@ fun GogStoreTab(
             header.Header {
                 CatalogSearchField(
                     query = query,
-                    placeholder = "Search the GOG catalog…",
+                    placeholder = "搜索GOG目录…",
                     onQueryChange = { query = it },
                     onClear = { query = ""; focusManager.clearFocus() },
                     onSearch = { focusManager.clearFocus() },
@@ -142,7 +142,7 @@ fun GogStoreTab(
                     contentAlignment = Alignment.Center,
                 ) {
                     StoreNotice(
-                        title = "Store browsing is unavailable",
+                        title = "商店浏览不可用",
                         body = "GOG's catalog didn't answer. Search still works, and everything you " +
                             "already own is in the Library tab.",
                         actionLabel = "Retry",

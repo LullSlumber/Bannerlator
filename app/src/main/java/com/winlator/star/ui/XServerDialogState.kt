@@ -338,7 +338,7 @@ object XServerDialogState {
     // Per-container rumble MODE (0=Off 1=Controller 2=Device 3=Both) + INTENSITY (0..100). Seeded
     // from Container in setupUI (after the container is assigned — seeding earlier would read a
     // still-null container) and pushed live to WinHandler + persisted to Container on every change,
-    // same round-trip as the lsfg "Performance mode" toggle.
+    // same round-trip as the lsfg "性能模式" toggle.
     private val _vibrationMode = MutableStateFlow(1) // Container.VIBRATION_MODE_DEFAULT (Controller)
     val vibrationMode: StateFlow<Int> = _vibrationMode
     fun setVibrationMode(v: Int) { _vibrationMode.value = v }
@@ -597,7 +597,7 @@ object XServerDialogState {
                 else -> ToastBadgeType.DETECTED
             }
             val kind = when {
-                r.isOnScreen -> "Virtual gamepad"
+                r.isOnScreen -> "虚拟手柄"
                 badge == ToastBadgeType.IGNORED -> "Controller · filtered"
                 icon == ToastIconType.MOUSE -> "Pointer"
                 icon == ToastIconType.KEYBOARD -> "Keys"
@@ -615,18 +615,18 @@ object XServerDialogState {
         val sharedSlot = rows.firstOrNull { it.badge == ToastBadgeType.SHARE }?.slot ?: 0
 
         val (title, sub) = when (reason) {
-            "connected"    -> "CONTROLLER CONNECTED" to "just now"
-            "disconnected" -> "CONTROLLER DISCONNECTED" to "just now"
-            "reset"        -> "INPUT RESET" to "just now"
-            "reconnected"  -> "CONTROLLER RECONNECTED" to (subOverride ?: "just now")
+            "connected"    -> "控制器已连接" to "just now"
+            "disconnected" -> "控制器已断开" to "just now"
+            "reset"        -> "输入重置" to "just now"
+            "reconnected"  -> "控制器已重新连接" to (subOverride ?: "just now")
             "reassign"     ->
                 if (hasShare) "PLAYER ${sharedSlot + 1} · SHARED" to "已更新"
-                else "INPUT UPDATED" to "已更新"
+                else "输入已更新" to "已更新"
             else /* launch */ -> when {
-                hasMouseKb     -> "INPUT DETECTED"
+                hasMouseKb     -> "检测到输入"
                 rows.size == 1 -> "CONTROLLER DETECTED"
-                else           -> "CONTROLLERS DETECTED"
-            } to "on launch"
+                else           -> "检测到多个控制器"
+            } to "启动时"
         }
 
         _toastToken += 1

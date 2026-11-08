@@ -253,7 +253,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     }
 
     // Display
-    rows += XmbRow.Header("hDisplay", "启动")
+    rows += XmbRow.Header("hDisplay", "显示")
     // Display backend: "" inherits the container's, else force X11 / Wayland (same extra as the
     // pop-up editor). Wayland replaces the Renderer group with the embedded compositor.
     // Wayland needs the container's Proton layer to ship winewayland.so + its bundled Wayland Turnip
@@ -665,7 +665,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     rows += XmbRow.Choice("audio", p.str(R.string.audio_driver), Icons.Filled.VolumeUp, audioEntries, p.labelFor(audioEntries, audioId),
         subtitle = if (!daSupported && daEntry != null) DirectAudioSupport.UNSUPPORTED_NOTE else null,
         disabledOptions = if (!daSupported && daEntry != null) setOf(daEntry) else emptySet(),
-        confirm = { v -> if (StringUtils.parseIdentifier(v) == "directaudio") XmbConfirm("DirectAudio", "DirectAudio is experimental. Use it for this game?", "DirectAudio 是实验性的") else null }) { v ->
+        confirm = { v -> if (StringUtils.parseIdentifier(v) == "directaudio") XmbConfirm("DirectAudio", "DirectAudio is experimental. Use it for this game?", "使用 DirectAudio") else null }) { v ->
         xmb.set(p, "audioDriver", StringUtils.parseIdentifier(v))
     }
     if (audioId == "pulseaudio" || audioId == "alsa" || audioId == "directaudio") {
@@ -924,7 +924,7 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
         subtitle = "当控制器连接时") { v -> xmb.set(p, "autoHideControlsOnPad", ahValues[ahLabels.indexOf(v)].ifEmpty { null }) }
     rows += XmbRow.Link("playerSlots", "玩家槽位", Icons.Filled.Gamepad,
         value = if ((s.getExtra("controllerSlotOverrides") ?: "").isEmpty()) "容器默认" else "Custom",
-        subtitle = "两个在一个玩家上共享它。 ") { xmbPlayerSlotsMenu(xmb, s) }
+        subtitle = "将控制器固定到玩家") { xmbPlayerSlotsMenu(xmb, s) }
 
     // Motion aim (all eight extras are independent overrides; no inherit state, as in the editor)
     rows += XmbRow.Header("hGyro", "体感瞄准")

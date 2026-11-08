@@ -140,7 +140,7 @@ fun AmazonLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "Search your Amazon library…",
+                placeholder = "搜索您的Amazon库…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -164,20 +164,20 @@ fun AmazonLibraryTab(
 
         when {
             state.games.isEmpty() && state.isSyncing -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your Amazon games…" })
+                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "正在获取您的Amazon游戏…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "Your Amazon library is empty here",
-                    body = "Sync to pull your games from Amazon, or open the full library screen.",
-                    actionLabel = "Sync now",
+                    title = "您的Amazon库在此为空",
+                    body = "同步以从Amazon拉取您的游戏，或打开完整库界面。",
+                    actionLabel = "立即同步",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
+                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
             }
 
             else -> LazyVerticalGrid(
@@ -200,9 +200,9 @@ fun AmazonLibraryTab(
                 item(key = "full_library_footer", span = { GridItemSpan(maxLineSpan) }) {
                     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
                         StoreNotice(
-                            title = "Full library",
-                            body = "Need the list or poster view, or in-list installs? Open the full library screen.",
-                            actionLabel = "Open full library",
+                            title = "完整库",
+                            body = "需要列表或海报视图，还是列表内安装？打开完整库界面。",
+                            actionLabel = "打开完整库",
                             onAction = onOpenFullLibrary,
                         )
                     }

@@ -322,7 +322,7 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         rows += XmbRow.Choice("resourceType", ctx.getString(R.string.graphics_driver_resource_type), Icons.Filled.Memory,
             uniq(resourceTypes, cfg.resourceType), cfg.resourceType) { v -> write { it.resourceType = v } }
 
-        rows += XmbRow.Header("hBcn", "驱动程序调优")
+        rows += XmbRow.Header("hBcn", "BCn纹理")
         rows += XmbRow.Info("gpuNote", (if (gpuModel.isNotEmpty()) "GPU: $gpuModel — " else "") +
             "BCn/兼容层适用于 Mali 及其他非高通 GPU", Icons.Filled.Info)
         rows += XmbRow.Choice("bcnEmulation", ctx.getString(R.string.graphics_driver_bcn_emulation), Icons.Filled.Layers,

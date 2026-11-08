@@ -50,20 +50,20 @@ import java.util.Locale
 internal object AppSettingsRegistry {
 
     val categories: List<SettingsCategory> = listOf(
-        SettingsCategory("app.general", T("General"), T("Start-up screen and updates."), Icons.Filled.Tune),
-        SettingsCategory("app.appearance", T("Appearance"), T("Theme, accent colour, size and orientation."), Icons.Filled.Palette),
-        SettingsCategory("app.library", T("外观"), T("主题、强调色、大小和方向。"), Icons.AutoMirrored.Filled.LibraryBooks),
-        SettingsCategory("app.performance", T("Performance"), T("Power defaults for every game and translator presets."), Icons.Filled.Speed),
-        SettingsCategory("app.network", T("Downloads & network"), T("Store download engines, speed and Steam connection."), Icons.Filled.CloudDownload),
-        SettingsCategory("app.steam", T("Steam好友"), T("商店下载引擎、速度和 Steam 连接。"), Icons.Filled.Groups),
-        SettingsCategory("app.saves", T("Steam好友"), T("好友和聊天、通知和游戏内在线状态。"), Icons.Filled.Save),
-        SettingsCategory("app.contents", T("存档与云"), T("Steam、GOG 和您自己游戏的自动存档备份和云同步。"), Icons.Filled.Inventory2),
-        SettingsCategory("app.storage", T("Storage"), T("Space used, app folders and the base system."), Icons.Filled.Storage),
-        SettingsCategory("app.logs", T("Logs & diagnostics"), T("What gets recorded, where it goes, how long it's kept."), Icons.Filled.Description),
-        SettingsCategory("app.backup", T("日志与诊断"), T("记录什么、保存在哪里、保留多久。"), Icons.Filled.Archive),
-        SettingsCategory("app.controllers", T("备份与恢复"), T("所有应用数据、游戏存档和容器。"), Icons.Filled.Gamepad),
-        SettingsCategory("app.about", T("控制器"), T("Steam 控制器、屏幕控制默认值，以及 Wine 游戏的鼠标和键盘。"), Icons.Filled.Info),
-        SettingsCategory("app.advanced", T("Advanced"), T("Experimental switches and display server internals."), Icons.Filled.Science),
+        SettingsCategory("app.general", T("General"), T("启动屏幕和更新。"), Icons.Filled.Tune),
+        SettingsCategory("app.appearance", T("外观"), T("主题、强调色、大小和方向。"), Icons.Filled.Palette),
+        SettingsCategory("app.library", T("游戏与库"), T("封面图和默认 MIDI 音色库。"), Icons.AutoMirrored.Filled.LibraryBooks),
+        SettingsCategory("app.performance", T("Performance"), T("每个游戏的电源默认值和翻译器预设。"), Icons.Filled.Speed),
+        SettingsCategory("app.network", T("下载与网络"), T("商店下载引擎、速度和 Steam 连接。"), Icons.Filled.CloudDownload),
+        SettingsCategory("app.steam", T("Steam好友"), T("好友和聊天、通知和游戏内在线状态。"), Icons.Filled.Groups),
+        SettingsCategory("app.saves", T("存档与云"), T("Steam、GOG 和您自己游戏的自动存档备份和云同步。"), Icons.Filled.Save),
+        SettingsCategory("app.contents", T("内容管理"), T("已下载的组件：压缩包和目录列表。"), Icons.Filled.Inventory2),
+        SettingsCategory("app.storage", T("Storage"), T("已用空间、应用文件夹和基础系统。"), Icons.Filled.Storage),
+        SettingsCategory("app.logs", T("日志与诊断"), T("记录什么、保存在哪里、保留多久。"), Icons.Filled.Description),
+        SettingsCategory("app.backup", T("备份与恢复"), T("所有应用数据、游戏存档和容器。"), Icons.Filled.Archive),
+        SettingsCategory("app.controllers", T("控制器"), T("Steam 控制器、屏幕控制默认值，以及 Wine 游戏的鼠标和键盘。"), Icons.Filled.Gamepad),
+        SettingsCategory("app.about", T("关于与帮助"), T("版本、鸣谢、帮助和社区链接。"), Icons.Filled.Info),
+        SettingsCategory("app.advanced", T("Advanced"), T("实验性开关和显示服务器内部设置。"), Icons.Filled.Science),
     )
 
     const val TARGET_CLASSIC = "classicSettings"
@@ -75,7 +75,7 @@ internal object AppSettingsRegistry {
     const val TARGET_CONTENTS = "contents"
 
     val handoffs: Map<String, List<Handoff>> = mapOf(
-        "app.general" to listOf(Handoff(T("检查更新"), T("Version, release notes and Download & install (classic Settings)."), TARGET_CLASSIC)),
+        "app.general" to listOf(Handoff(T("检查更新"), T("版本、发行说明和下载与安装（经典设置）。"), TARGET_CLASSIC)),
         "app.appearance" to listOf(Handoff(T("主题和颜色"), T("主题预设、自定义强调色、侧边菜单、方向、界面和文字大小。"), TARGET_APPEARANCE)),
         "app.library" to listOf(Handoff(T("已安装的音色库和导出文件夹"), T("添加 .sf2 文件并选择快捷方式导出的位置（经典设置）。"), TARGET_CLASSIC)),
         "app.performance" to listOf(
@@ -120,10 +120,10 @@ internal object AppSettingsRegistry {
 
     private fun buildDefs(): List<SettingDef> = listOf(
         app(
-            "app.general.landing", "app.general", T("Start-up"), T("Open the app on"), SIMPLE,
-            hint = T("In the Deck interface, Games and Big Picture both open on Home."),
+            "app.general.landing", "app.general", T("启动"), T("打开应用时"), SIMPLE,
+            hint = T("在 Deck 界面中，游戏和大屏幕模式都会在主页打开。"),
             tech = T("default_landing_screen · enable_big_picture_mode"),
-            control = { Control.Segmented(listOf(Opt("games", T("游戏")), Opt("containers", T("容器管理")), Opt("bigpicture", T("容器管理")))) },
+            control = { Control.Segmented(listOf(Opt("games", T("游戏")), Opt("containers", T("容器管理")), Opt("bigpicture", T("大屏幕模式")))) },
             binding = AppBinding(
                 get = { c ->
                     val p = prefs(c)
@@ -139,14 +139,14 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.general.updateNotify", "app.general", T("更新"), T("打开应用时"), SIMPLE,
-            hint = T("在 Deck 界面中，游戏和大屏幕模式都会在主页打开。"), tech = T("有更新时通知我"),
+            "app.general.updateNotify", "app.general", T("更新"), T("告知我新版本"), SIMPLE,
+            hint = T("新版本发布时显示更新通知。"), tech = T("有更新时通知我"),
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(UpdateManager.isNotifyEnabled(c)) }, { c, v -> UpdateManager.setNotifyEnabled(c, v == "1") }),
         ),
         app(
-            "app.general.updatePrerelease", "app.general", T("更新"), T("包含 Beta 测试版"), ADVANCED,
-            hint = T("Pre-releases may be less stable."), tech = T("Include pre-releases"),
+            "app.general.updatePrerelease", "app.general", T("更新"), T("包含测试版构建"), ADVANCED,
+            hint = T("预发布版本可能不太稳定。"), tech = T("包含预发布版本"),
             control = { Control.Toggle },
             // A channel switch re-checks at once, as classic Settings does: an unforced check would answer from the 6 h cache.
             binding = AppBinding(
@@ -159,8 +159,8 @@ internal object AppSettingsRegistry {
         ),
 
         app(
-            "app.library.steamGridKey", "app.library", T("Cover art"), T("SteamGridDB API key"), ADVANCED,
-            hint = T("Optional. Fetches cover art for games that aren't from a store. Leave empty to turn it off."),
+            "app.library.steamGridKey", "app.library", T("封面图"), T("SteamGridDB API 密钥"), ADVANCED,
+            hint = T("可选。为非商店来源的游戏获取封面图。留空则关闭。"),
             control = { Control.TextField(T("API key")) },
             binding = AppBinding(
                 get = { c ->
@@ -177,8 +177,8 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.library.midiDefault", "app.library", T("封面图"), T("SteamGridDB API 密钥"), ADVANCED,
-            hint = T("可选。为非商店来源的游戏获取封面图。留空则关闭。"), tech = MidiManager.PREF_DEFAULT_SOUND_FONT,
+            "app.library.midiDefault", "app.library", T("封面图"), T("默认 MIDI 音色库"), ADVANCED,
+            hint = T("供新容器使用。每个容器可以在音频下选择自己的。"), tech = MidiManager.PREF_DEFAULT_SOUND_FONT,
             control = { env ->
                 val files = MidiManager.getSoundFontDir(env.context).listFiles()
                     ?.map { it.name }?.filter { it.endsWith(".sf2") && it != MidiManager.DEFAULT_SF2_FILE }?.sorted() ?: emptyList()
@@ -194,15 +194,15 @@ internal object AppSettingsRegistry {
             ),
         ),
 
-        perf("app.performance.sustained", T("Sustained performance mode"), T("Keeps clocks steady for long sessions instead of short bursts."),
+        perf("app.performance.sustained", T("持续性能模式"), T("为长时间会话保持时钟稳定，而不是短时爆发。"),
             { PerformanceSettings.sustainedPerfMode.value }, { PerformanceSettings.setSustainedPerfMode(it) }),
-        perf("app.performance.threadBoost", T("Boost game thread priority"), null,
+        perf("app.performance.threadBoost", T("提升游戏线程优先级"), null,
             { PerformanceSettings.perfPriorityBoost.value }, { PerformanceSettings.setPerfPriorityBoost(it) }),
-        perf("app.performance.bigCores", T("提升游戏线程优先级"), null,
+        perf("app.performance.bigCores", T("优先使用大核"), null,
             { PerformanceSettings.preferBigCores.value }, { PerformanceSettings.setPreferBigCores(it) }),
         app(
-            "app.performance.box64Preset", "app.performance", T("Translator presets"), T("Default Box64 preset"), ADVANCED,
-            hint = T("Used by new containers."), tech = "box64_preset",
+            "app.performance.box64Preset", "app.performance", T("Translator presets"), T("默认 Box64 预设"), ADVANCED,
+            hint = T("供新容器使用。"), tech = "box64_preset",
             control = { env -> Control.Select(env.box64Presets.map { Opt(it.id, it.name) }) },
             binding = AppBinding(
                 get = { c -> prefs(c).getString("box64_preset", Box64Preset.COMPATIBILITY) ?: Box64Preset.COMPATIBILITY },
@@ -210,8 +210,8 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.performance.fexPreset", "app.performance", T("Translator presets"), T("Default FEX preset"), ADVANCED,
-            hint = T("Used by new containers."), tech = "fexcore_preset",
+            "app.performance.fexPreset", "app.performance", T("Translator presets"), T("默认 FEX 预设"), ADVANCED,
+            hint = T("供新容器使用。"), tech = "fexcore_preset",
             control = { env -> Control.Select(env.fexPresets.map { Opt(it.id, it.name) }) },
             binding = AppBinding(
                 get = { c -> prefs(c).getString("fexcore_preset", FEXCorePreset.COMPATIBILITY) ?: FEXCorePreset.COMPATIBILITY },
@@ -220,41 +220,41 @@ internal object AppSettingsRegistry {
         ),
 
         app(
-            "app.controllers.cursorSpeed", "app.controllers", T("Mouse & keyboard (Wine games)"), T("Cursor speed"), ADVANCED, tech = "cursor_speed",
+            "app.controllers.cursorSpeed", "app.controllers", T("鼠标与键盘（Wine 游戏）"), T("光标速度"), ADVANCED, tech = "cursor_speed",
             control = { Control.Slider(0.1f, 2.0f, 0.05f, { "${(it * 100).toInt()}%" }, { String.format(Locale.ENGLISH, "%.2f", it) }) },
             binding = AppBinding(
                 get = { c -> String.format(Locale.ENGLISH, "%.2f", prefs(c).getFloat("cursor_speed", 1.0f)) },
                 set = { c, v -> v.toFloatOrNull()?.let { prefs(c).edit().putFloat("cursor_speed", it).apply() } },
             ),
         ),
-        toggle("app.controllers.trueMouse", "app.controllers", T("Mouse & keyboard (Wine games)"), T("True mouse control"), ADVANCED, "cursor_lock", false,
-            hint = T("Locks the pointer to the game. Press Volume Down to release.")),
-        toggle("app.controllers.disableXinput", "app.controllers", T("Mouse & keyboard (Wine games)"), T("Exclusive mouse & keyboard"), ADVANCED, "xinput_toggle", false,
-            hint = T("Turns off XInput so games see only the real mouse and keyboard.")),
+        toggle("app.controllers.trueMouse", "app.controllers", T("鼠标与键盘（Wine 游戏）"), T("真实鼠标控制"), ADVANCED, "cursor_lock", false,
+            hint = T("将指针锁定到游戏。按下音量减键释放。")),
+        toggle("app.controllers.disableXinput", "app.controllers", T("鼠标与键盘（Wine 游戏）"), T("独占鼠标与键盘"), ADVANCED, "xinput_toggle", false,
+            hint = T("关闭 XInput，使游戏只看到真实的鼠标和键盘。")),
 
-        toggle("app.advanced.fileProvider", "app.advanced", T("实验性模式"), T("Share files with other apps (File Provider)"), ADVANCED, "enable_file_provider", true,
-            hint = T("Takes effect after the app restarts.")),
-        toggle("app.advanced.androidBrowser", "app.advanced", T("实验性模式"), T("Open links in the Android browser"), ADVANCED, "open_with_android_browser", false),
-        toggle("app.advanced.clipboard", "app.advanced", T("实验性模式"), T("Share the Android clipboard with games"), ADVANCED, "share_android_clipboard", false),
+        toggle("app.advanced.fileProvider", "app.advanced", T("实验性模式"), T("与其他应用共享文件 (File Provider)"), ADVANCED, "enable_file_provider", true,
+            hint = T("应用重启后生效。")),
+        toggle("app.advanced.androidBrowser", "app.advanced", T("实验性模式"), T("在 Android 浏览器中打开链接"), ADVANCED, "open_with_android_browser", false),
+        toggle("app.advanced.clipboard", "app.advanced", T("实验性模式"), T("与游戏共享 Android 剪贴板"), ADVANCED, "share_android_clipboard", false),
         app(
-            "app.advanced.contentsUrl", "app.advanced", T("实验性模式"), T("Components catalog URL"), EXPERT,
-            hint = T("Where the Components screen looks for downloads."), tech = "downloadable_contents_url",
+            "app.advanced.contentsUrl", "app.advanced", T("实验性模式"), T("组件目录 URL"), EXPERT,
+            hint = T("组件屏幕查找下载的位置。"), tech = "downloadable_contents_url",
             control = { Control.TextField(ContentsManager.REMOTE_PROFILES) { if (it.isBlank() || it.trim().startsWith("http")) null else T("Use an http(s) address.") } },
             binding = AppBinding(
                 get = { c -> prefs(c).getString("downloadable_contents_url", ContentsManager.REMOTE_PROFILES) ?: ContentsManager.REMOTE_PROFILES },
                 set = { c, v -> prefs(c).edit().putString("downloadable_contents_url", v.trim().ifEmpty { ContentsManager.REMOTE_PROFILES }).apply() },
             ),
         ),
-        toggle("app.advanced.dri3", "app.advanced", T("Display server (X11)"), T("Use DRI3"), ADVANCED, "use_dri3", true),
-        toggle("app.advanced.xr", "app.advanced", T("Display server (X11)"), T("Allow XR / VR headsets"), ADVANCED, "use_xr", true),
+        toggle("app.advanced.dri3", "app.advanced", T("显示服务器 (X11)"), T("使用 DRI3"), ADVANCED, "use_dri3", true),
+        toggle("app.advanced.xr", "app.advanced", T("显示服务器 (X11)"), T("允许 XR / VR 头显"), ADVANCED, "use_xr", true),
 
         // The FPS saver (XServerDisplayActivity.saveSessionFps): counts frames with the overlay off and keeps each session's FPS.
         toggle("app.performance.saveSessionFps", "app.performance", T("FPS history"), T("Save FPS of each session"), SIMPLE, "save_session_fps", true),
         // The GPU pin is a non-root default on Adreno (KGSL turbo); elsewhere it needs root, as in classic Settings › Performance.
         SettingDef(
-            id = "app.performance.gpuClockLock", category = "app.performance", group = T("Power (defaults for every game)"),
+            id = "app.performance.gpuClockLock", category = "app.performance", group = T("电源（每个游戏的默认值）"),
             label = T("锁定 GPU 最高频率"), level = ADVANCED, tech = "global_${PerfRootApplier.KEY_GPU_CLOCK_LOCK}",
-            hint = T("Holds the GPU at its top clock while a game runs. Hotter and hungrier; games can override it."),
+            hint = T("在游戏运行时将 GPU 保持在最高频率。更热、更耗电；游戏可以覆盖它。"),
             control = { _, _ -> Control.Toggle },
             app = AppBinding(
                 get = { _ -> onOff(PerformanceSettings.rootDefaultValue(PerfRootApplier.KEY_GPU_CLOCK_LOCK)) },
@@ -275,20 +275,20 @@ internal object AppSettingsRegistry {
 
         // Steam friends (the same switches as the Friends screen's settings and classic Settings › Steam).
         app(
-            "app.steam.social", "app.steam", T("Friends & chat"), T("Steam好友与聊天"), SIMPLE,
-            hint = T("Your friends list, presence and chat. Off: no online status is shared."), tech = "steam_social_enabled",
+            "app.steam.social", "app.steam", T("好友与聊天"), T("Steam好友与聊天"), SIMPLE,
+            hint = T("您的好友列表、在线状态和聊天。关闭：不共享在线状态。"), tech = "steam_social_enabled",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(SteamPrefs.isSocialEnabled(c)) }, { c, v -> SteamFriendsStore.setSocialEnabled(c, v == "1") }),
         ),
         app(
-            "app.steam.chatNotifications", "app.steam", T("Friends & chat"), T("聊天通知"), SIMPLE,
-            hint = T("A notification when a friend messages you and their chat isn't open."), tech = "steam_chat_notifications",
+            "app.steam.chatNotifications", "app.steam", T("好友与聊天"), T("聊天通知"), SIMPLE,
+            hint = T("当好友给您发消息且其聊天未打开时显示通知。"), tech = "steam_chat_notifications",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(SteamPrefs.isChatNotificationsEnabled(c)) }, { c, v -> SteamPrefs.setChatNotificationsEnabled(c, v == "1") }),
         ),
         SettingDef(
-            id = "app.steam.chatSound", category = "app.steam", group = T("Friends & chat"), label = T("通知声音"), level = ADVANCED,
-            hint = T("A sound and a heads-up for new messages."), tech = "steam_chat_sound",
+            id = "app.steam.chatSound", category = "app.steam", group = T("好友与聊天"), label = T("通知声音"), level = ADVANCED,
+            hint = T("新消息的声音和提示。"), tech = "steam_chat_sound",
             control = { _, _ -> Control.Toggle },
             app = AppBinding({ c -> onOff(SteamPrefs.isChatSoundEnabled(c)) }, { c, v -> SteamPrefs.setChatSoundEnabled(c, v == "1") }),
             disabled = { _, values ->
@@ -296,48 +296,48 @@ internal object AppSettingsRegistry {
             },
         ),
         app(
-            "app.steam.offlinePresence", "app.steam", T("Presence"), T("Show me as in-game for offline launches"), ADVANCED,
-            hint = T("When a Steam game starts with Goldberg or Raw .exe (Wine games), tell Steam you're playing it so friends see it and playtime counts. SteamLite launches always show."),
+            "app.steam.offlinePresence", "app.steam", T("在线状态"), T("Show me as in-game for offline launches"), ADVANCED,
+            hint = T("当 Steam 游戏使用 Goldberg 或 Raw .exe（Wine 游戏）启动时，告诉 Steam 您正在玩它，以便好友看到且游戏时间会计入。SteamLite 启动始终显示。"),
             tech = "steam_offline_presence",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(SteamPrefs.isOfflinePresenceEnabled(c)) }, { c, v -> SteamPrefs.setOfflinePresenceEnabled(c, v == "1") }),
         ),
 
         // Save Manager › Settings: turning a backup off asks first, as there.
-        saveToggle("app.saves.steamCollect", T("Steam games"), T("Auto-collect on exit"), T("游戏退出时将 Steam 库存档快照保存到您的本地库。"),
+        saveToggle("app.saves.steamCollect", T("Steam 游戏"), T("退出时自动收集"), T("游戏退出时将 Steam 库存档快照保存到您的本地库。"),
             "auto_collect_steam_on_exit",
             T("对于您的 Steam 库游戏，退出时自动备份存档将处于关闭状态。游戏关闭时不会捕获其存档——您需要通过容器的备份选项或存档管理器自行备份。继续？")),
-        saveToggle("app.saves.steamUpload", T("Steam games"), T("Auto-upload to Steam Cloud on exit"), T("Only after you accept the third-party cloud disclaimer; never deletes anything from the cloud."),
+        saveToggle("app.saves.steamUpload", T("Steam 游戏"), T("退出时自动上传到 Steam 云"), T("仅在您接受第三方云免责声明后；永远不会从云中删除任何内容。"),
             "auto_upload_steam_on_exit",
             T("您的Steam库游戏退出时自动云端上传将关闭。游戏关闭时存档不会推送到Steam云——您需要从游戏详情页的云存档部分自行上传。继续？")),
-        saveToggle("app.saves.steamDownload", T("Steam games"), T("Auto-download from Steam Cloud on launch"), T("Newest wins: never overwrites a newer local save."),
+        saveToggle("app.saves.steamDownload", T("Steam 游戏"), T("启动时自动从 Steam 云下载"), T("最新优先：永远不会覆盖较新的本地存档。"),
             "auto_download_steam_on_launch",
             T("您的Steam库游戏启动时自动云端下载将关闭。游戏启动前不会拉取最新云存档——您需要从游戏详情页的云存档部分自行下载。继续？")),
         // Not a saveToggle: that asks "Turn off auto-backup?", and this switch leaves local backups alone.
         SettingDef(
-            id = "app.saves.goldbergCloud", category = "app.saves", group = T("Steam games"),
-            label = T("启动时自动从 Steam 云下载"), level = ADVANCED, tech = "goldberg_cloud_sync",
-            hint = T("最新优先：永远不会覆盖较新的本地存档。"),
+            id = "app.saves.goldbergCloud", category = "app.saves", group = T("Steam 游戏"),
+            label = T("在 Goldberg 启动期间与 Steam 云同步"), level = ADVANCED, tech = "goldberg_cloud_sync",
+            hint = T("关闭：Goldberg 完全离线，不进行云拉取、推送或成就上传。开启：Goldberg 启动也会执行这些操作。"),
             control = { _, _ -> Control.Toggle },
             app = AppBinding(
                 get = { c -> onOff(saveManagerPrefs(c).getBoolean("goldberg_cloud_sync", true)) },
                 set = { c, v -> saveManagerPrefs(c).edit().putBoolean("goldberg_cloud_sync", v == "1").apply() },
             ),
         ),
-        saveToggle("app.saves.gogUpload",T("GOG games"), T("Auto-upload to GOG cloud on exit"), T("Newest wins: never overwrites a newer cloud save."),
+        saveToggle("app.saves.gogUpload",T("GOG 游戏"), T("退出时自动上传到 GOG 云"), T("最新优先：永远不会覆盖较新的云存档。"),
             "auto_upload_gog_on_exit",
             T("您的GOG库游戏的退出时自动云上传将关闭。游戏关闭时不会将其存档推送到GOG云 — 您需要从GOG存档管理器选项卡或游戏详情页面自行上传。继续？")),
-        saveToggle("app.saves.gogDownload", T("GOG games"), T("Auto-download from GOG cloud on launch"), T("Newest wins: never overwrites a newer local save."),
+        saveToggle("app.saves.gogDownload", T("GOG 游戏"), T("启动时自动从 GOG 云下载"), T("最新优先：永远不会覆盖较新的本地存档。"),
             "auto_download_gog_on_launch",
             T("您的GOG库游戏的启动时自动云下载将关闭。游戏启动前不会拉取最新的云存档 — 您需要从GOG存档管理器选项卡或游戏详情页面自行下载。继续？")),
-        saveToggle("app.saves.customBackup", T("启动时自动从 GOG 云下载"), T("最新优先：永远不会覆盖较新的本地存档。"), T("游戏退出时将自行导入的存档快照保存到本地保险库。"),
+        saveToggle("app.saves.customBackup", T("您自己的游戏"), T("退出时自动备份"), T("游戏退出时将自行导入的存档快照保存到本地保险库。"),
             "auto_backup_custom_on_exit",
             T("对于您自行导入的游戏，退出时自动备份存档将处于关闭状态。游戏关闭时不会捕获其存档——您需要通过容器的备份选项或游戏的 ⋮ 菜单 →“备份存档”自行备份。继续？")),
         // Writes to the real Steam account, so turning it ON is the guarded step.
         SettingDef(
-            id = "app.saves.achievementSync", category = "app.saves", group = T("Steam achievements"),
-            label = T("Sync unlocks to your Steam profile"), level = ADVANCED, tech = "achievement_syncback_enabled",
-            hint = T("Achievements you unlock in-game are written back to your real Steam account. Off: unlocks stay on this device."),
+            id = "app.saves.achievementSync", category = "app.saves", group = T("Steam 成就"),
+            label = T("将解锁同步到您的 Steam 个人资料"), level = ADVANCED, tech = "achievement_syncback_enabled",
+            hint = T("您在游戏中解锁的成就会写回您真正的 Steam 账户。关闭：解锁保留在此设备上。"),
             control = { _, _ -> Control.Toggle },
             app = AppBinding({ c -> onOff(SteamPrefs.isAchievementSyncBackEnabled(c)) }, { c, v -> SteamPrefs.setAchievementSyncBackEnabled(c, v == "1") }),
             confirm = { v ->
@@ -352,13 +352,13 @@ internal object AppSettingsRegistry {
         // Contents › Contents settings
         app(
             "app.contents.keepRaw", "app.contents", T("Downloads"), T("默认保留原始压缩包"), ADVANCED,
-            hint = T("Save every install's download to My Files."), tech = "keep_raw",
+            hint = T("将每次安装的下载保存到我的文件。"), tech = "keep_raw",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(ComponentLibrary(c).keepRaw()) }, { c, v -> ComponentLibrary(c).setKeepRaw(v == "1") }),
         ),
         app(
-            "app.contents.showOfficial", "app.contents", T("Repositories"), T("在仓库中显示官方目录"), ADVANCED,
-            hint = T("Off hides it in Contents; the container and game sheets keep it."), tech = "show_official",
+            "app.contents.showOfficial", "app.contents", T("仓库"), T("在仓库中显示官方目录"), ADVANCED,
+            hint = T("关闭会在内容中隐藏它；容器和游戏面板会保留它。"), tech = "show_official",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(RemoteSourceRepository(c).showOfficial()) }, { c, v -> RemoteSourceRepository(c).setShowOfficial(v == "1") }),
         ),
@@ -366,13 +366,13 @@ internal object AppSettingsRegistry {
         // Input Controls › Device and › Assign
         app(
             "app.controllers.steamController", "app.controllers", T("Steam Controller"), T("Steam控制器支持"), SIMPLE,
-            hint = T("Reads a Steam Controller directly (its trackpads and extra buttons). Off: the normal input path is unchanged."), tech = "steam_controller_sdl_enabled",
+            hint = T("直接读取 Steam 控制器（其触控板和额外按钮）。关闭：正常输入路径不变。"), tech = "steam_controller_sdl_enabled",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(GlobalControllerPrefs.isSteamControllerEnabled(c)) }, { c, v -> GlobalControllerPrefs.setSteamControllerEnabled(c, v == "1") }),
         ),
         SettingDef(
             id = "app.controllers.trackpadMouse", category = "app.controllers", group = T("Steam Controller"), label = T("触控板鼠标"), level = ADVANCED,
-            hint = T("Which trackpad moves the mouse. Clicking it is a left click."), tech = "steam_controller_trackpad_mode",
+            hint = T("哪个触控板移动鼠标。点击它相当于左键单击。"), tech = "steam_controller_trackpad_mode",
             control = { _, _ ->
                 Control.Segmented(listOf(
                     Opt("${SteamControllerBackend.TRACKPAD_MOUSE_RIGHT}", T("Right")),
@@ -388,13 +388,13 @@ internal object AppSettingsRegistry {
             visible = { _, values -> values("app.controllers.steamController") == "1" },
         ),
         app(
-            "app.controllers.onScreenPriority", "app.controllers", T("New containers start with"), T("On-screen controls vs. a real pad"), ADVANCED,
-            hint = T("Copied into each new container; existing containers keep their own."), tech = "global_on_screen_controller_mode",
+            "app.controllers.onScreenPriority", "app.controllers", T("新容器启动时使用"), T("屏幕控制与真实手柄"), ADVANCED,
+            hint = T("复制到每个新容器中；现有容器保留自己的。"), tech = "global_on_screen_controller_mode",
             control = {
                 Control.Segmented(listOf(
-                    Opt("${Container.ON_SCREEN_MODE_KEEP}", T("On-screen stays Player 1")),
-                    Opt("${Container.ON_SCREEN_MODE_YIELD}", T("屏幕控制保持为玩家 1")),
-                    Opt("${Container.ON_SCREEN_MODE_SHARE}", T("手柄成为玩家 1")),
+                    Opt("${Container.ON_SCREEN_MODE_KEEP}", T("屏幕控制保持为玩家 1")),
+                    Opt("${Container.ON_SCREEN_MODE_YIELD}", T("手柄成为玩家 1")),
+                    Opt("${Container.ON_SCREEN_MODE_SHARE}", T("两者都控制玩家 1")),
                 ))
             },
             binding = AppBinding(
@@ -403,8 +403,8 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.controllers.autoHide", "app.controllers", T("New containers start with"), T("当控制器连接时隐藏屏幕控制"), ADVANCED,
-            hint = T("Copied into each new container; existing containers keep their own."), tech = "global_auto_hide_controls_on_pad",
+            "app.controllers.autoHide", "app.controllers", T("新容器启动时使用"), T("当控制器连接时隐藏屏幕控制"), ADVANCED,
+            hint = T("复制到每个新容器中；现有容器保留自己的。"), tech = "global_auto_hide_controls_on_pad",
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(GlobalControllerPrefs.getAutoHideControlsOnPad(c)) }, { c, v -> GlobalControllerPrefs.setAutoHideControlsOnPad(c, v == "1") }),
         ),
@@ -425,7 +425,7 @@ internal object AppSettingsRegistry {
 
     /** An app-wide power default. Games can override it in their own editor (Performance › Power). */
     private fun perf(id: String, label: String, hint: String?, get: () -> Boolean, set: (Boolean) -> Unit) = app(
-        id, "app.performance", T("Power (defaults for every game)"), label, ADVANCED, hint = hint,
+        id, "app.performance", T("电源（每个游戏的默认值）"), label, ADVANCED, hint = hint,
         control = { Control.Toggle },
         binding = AppBinding(get = { _ -> onOff(get()) }, set = { _, v -> set(v == "1") }),
     )

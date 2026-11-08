@@ -38,7 +38,7 @@ final class ControllerSaveTarget {
                 && !SCOPE_CONTAINER.equals(preferences.getString(PREF_KEY, SCOPE_GAME));
     }
 
-    /** Wires the footer's "Save for" choice and shows where changes go. */
+    /** Wires the footer's "保存用于" choice and shows where changes go. */
     void attach() {
         XServerDialogState.INSTANCE.onControllerSaveScope = this::setToGame;
         publish();
@@ -89,8 +89,8 @@ final class ControllerSaveTarget {
     }
 
     private void noteSaved(String what) {
-        lastSaved = toGame ? "Saved for " + shortcut.name + " only."
-                : "Saved for every game in " + container.getName() + ".";
+        lastSaved = toGame ? "Saved for " + shortcut.name + " 仅仅。"
+                : "已保存用于以下位置的每个游戏 " + container.getName() + ".";
         Log.i(TAG, what + ": " + lastSaved);
         publish();
     }

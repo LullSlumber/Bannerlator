@@ -122,7 +122,7 @@ class EpicMainActivity : ComponentActivity() {
         if (loggedIn) {
             val creds = EpicCredentialStore.load(this)
             if (creds != null) {
-                displayName = if (!creds.displayName.isNullOrEmpty()) creds.displayName else "Epic Account"
+                displayName = if (!creds.displayName.isNullOrEmpty()) creds.displayName else "Epic账户"
                 tokenMinutesLeft = (creds.expiresAt - System.currentTimeMillis()) / 60000L
             }
         }

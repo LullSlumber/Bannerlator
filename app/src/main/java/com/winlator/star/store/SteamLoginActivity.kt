@@ -191,8 +191,8 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
     private fun onLoginClicked() {
         val u = username.trim()
         val p = password
-        if (u.isEmpty()) { statusText = "Enter your username."; isStatusError = true; return }
-        if (p.isEmpty())  { statusText = "Enter your password."; isStatusError = true; return }
+        if (u.isEmpty()) { statusText = "输入您的用户名。"; isStatusError = true; return }
+        if (p.isEmpty())  { statusText = "输入您的密码。"; isStatusError = true; return }
         hideKeyboard()
         isStatusError = false
         statusText = "正在连接 Steam…"

@@ -258,7 +258,7 @@ private fun FilterChips(ctl: SimpleController, d: SimpleData) {
 /** A legend for what the focused thing allows. */
 private fun mainLegend(ctl: SimpleController): List<Pair<String, String>> = when {
     ctl.section == SEC_SETTINGS -> listOf("↕" to "Move", "↔" to "Change", "A" to "Select", "B" to "Back")
-    ctl.section == SEC_LIBRARY && ctl.focusedGame() != null -> listOf("A" to "Play", "X" to "Game settings", "Y" to "Game menu", "⧉" to "Help")
+    ctl.section == SEC_LIBRARY && ctl.focusedGame() != null -> listOf("A" to "Play", "X" to "Game settings", "Y" to "游戏菜单", "⧉" to "Help")
     ctl.section == SEC_LIBRARY -> listOf("A" to "Add a game", "⧉" to "Help")
     else -> listOf("A" to "Open", "↔" to "Browse", "B" to "Back")
 }

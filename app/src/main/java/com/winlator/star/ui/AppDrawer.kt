@@ -125,7 +125,7 @@ fun AppDrawerContent(
         // leaves no orphaned divider behind.
         val showStores by AppThemeState.showStores.collectAsState()
         if (showStores) {
-            DrawerSectionHeader("Stores", note = "· unchanged", showDivider = true)
+            DrawerSectionHeader("商店", note = "· 未更改", showDivider = true)
             Screen.storeItems.forEach { screen ->
                 DrawerStoreItem(screen, onLaunchStore)
             }
@@ -142,7 +142,7 @@ fun AppDrawerContent(
             onClick = onAbout,
         )
         DrawerIconItem(
-            label = "Help and Support",
+            label = "帮助与支持",
             icon = Icons.Filled.HelpOutline,
             onClick = { showHelp = true },
         )
@@ -183,13 +183,13 @@ private fun DrawerAccountHeader(account: AccountManager.Account?, onMyAccount: (
                 )
             } else {
                 Text(
-                    text = "Sign in / My account",
+                    text = "登录 / 我的账户",
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                 )
                 Text(
-                    text = "Optional — to manage your shared configs",
+                    text = "可选 — 用于管理您共享的配置",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                     maxLines = 1,
@@ -496,11 +496,11 @@ private fun DrawerIconItem(label: String, icon: ImageVector, onClick: () -> Unit
 internal fun HelpSupportDialog(onDismiss: () -> Unit, onOpenUrl: (String) -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Help & Support") },
+        title = { Text("帮助 与 支持") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    "For bug reports, feature requests, and support, visit the GitHub repository.",
+                    "如需报告BUG、提出功能请求或获取支持，请访问 GitHub 仓库。",
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 SupportLink(

@@ -205,7 +205,7 @@ fun SteamStoreTab(
                     contentAlignment = Alignment.Center,
                 ) {
                     StoreNotice(
-                        title = "Store browsing is unavailable",
+                        title = "商店浏览不可用",
                         body = "Steam's storefront feed didn't answer. Search still works, and " +
                             "everything you already own is in the Library tab.",
                         actionLabel = "Retry",
@@ -455,8 +455,8 @@ private fun StoreResults(
             ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) }
 
             results.isEmpty() -> StoreNotice(
-                title = "No matches",
-                body = "Nothing in Steam's catalog matched that. Try a shorter or different title.",
+                title = "无匹配项",
+                body = "Steam目录中没有匹配的内容。请尝试更短或不同的标题。",
             )
 
             // XMB home: the results as a grid of portrait covers.

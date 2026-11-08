@@ -106,7 +106,7 @@ public final class RealSteamLauncher {
      * @param appId               resolved Steam appId (from {@code resolveSteamAppRef})
      * @param displayName         the game's library display name (basis for the canonical folder name)
      * @param hostInstallDir      the game's real install dir on the host FS (from {@code SteamAppRef.installDir})
-     * @param controllerPassthrough  per-game "记住我的选择" toggle: when {@code true}, make the
+     * @param controllerPassthrough  per-game "控制器直通" toggle: when {@code true}, make the
      *                            genuine client get out of the pad's way for classic DInput games (levers
      *                            1 &amp; 2 below — Steam Input off in localconfig + overlay-renderer DLLs
      *                            removed). Lever 3 (force DInput on the launch) is applied by the caller
@@ -355,7 +355,7 @@ public final class RealSteamLauncher {
             // Steam-owned (VAC-secure) window before any direct start; 0 → the title never needed a
             // secure launch, so an accepted-but-never-spawned LaunchApp falls back after ~15 s
             // instead of a minute of black screen. Per-shortcut override "steamVacLaunch" ("1"/"0",
-            // the launch popup's "Requires secure (VAC) launch" toggle) wins; otherwise the PICS
+            // the launch popup's "需要安全（VAC）启动" toggle) wins; otherwise the PICS
             // marker recorded by the library sync (SteamDatabase.vac_secure: category_8 "Valve
             // Anti-Cheat enabled" or extended/vac*). An older agent ignores the variable.
             String vacOverride = shortcut.getExtra("steamVacLaunch", "").trim();

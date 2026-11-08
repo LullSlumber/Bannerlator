@@ -19,7 +19,7 @@ import com.winlator.star.renderer.material.ShaderMaterial;
 //     component-1 (green) gathers are emulated with four texelFetch() reads in the exact
 //     textureGather footprint/order (.x=(i0,j1) .y=(i1,j1) .z=(i1,j0) .w=(i0,j0)).
 //   - the source is the EffectComposer low-res render target (input res = srcResolution);
-//     EdgeSharpness is driven live by the drawer "Sharpness" slider via the `sharpness`
+//     EdgeSharpness is driven live by the drawer "锐化度" slider via the `sharpness`
 //     uniform (0..1).
 //
 //  Quality variant (scaling mode 8, `new SGSREffect(true)`): Qualcomm's

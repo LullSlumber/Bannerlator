@@ -194,7 +194,7 @@ internal fun xmbAdvancedMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         val denoise = (shortcut.p2Ex("sharpnessDenoise", "100").toIntOrNull() ?: 100).coerceIn(0, 100)
         rows += XmbRow.Slider("sharpLevel", "Level", Icons.Filled.Tune, level.toFloat(), 0f, 100f, 1f,
             format = { "${it.toInt()}%" }) { v -> p2Put(xmb, shortcut, "sharpnessLevel", v.toInt().toString()) }
-        rows += XmbRow.Slider("sharpDenoise", "级别", Icons.Filled.Tune, denoise.toFloat(), 0f, 100f, 1f,
+        rows += XmbRow.Slider("sharpDenoise", "降噪", Icons.Filled.Tune, denoise.toFloat(), 0f, 100f, 1f,
             format = { "${it.toInt()}%" }) { v -> p2Put(xmb, shortcut, "sharpnessDenoise", v.toInt().toString()) }
 
         // ReShade
@@ -524,21 +524,21 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
         return XmbMenu("ReShade 滤镜配置", Icons.Filled.Layers) body@{
             val rows = mutableListOf<XmbRow>()
             if (!loaded) {
-                rows += XmbRow.Info("loading", "Scanning effects…", Icons.Filled.Info)
+                rows += XmbRow.Info("loading", "正在扫描效果…", Icons.Filled.Info)
                 return@body rows
             }
             if (!supported() && st.order.isNotEmpty()) {
                 rows += XmbRow.Info("unsupported", "ReShade仅适用于DXVK/VKD3D（Vulkan）游戏；对此DXwrapper无效。", Icons.Filled.Warning)
             }
-            rows += XmbRow.Link("browse", "Browse / download effects", Icons.Filled.CloudDownload,
-                value = "${st.order.size} in loadout", subtitle = "Pick installed effects or fetch new ones") { catalogMenu() }
+            rows += XmbRow.Link("browse", "浏览/下载效果", Icons.Filled.CloudDownload,
+                value = "${st.order.size} in loadout", subtitle = "选择已安装的效果或获取新的") { catalogMenu() }
             if (st.order.isEmpty()) {
-                rows += XmbRow.Info("empty", "No effects in the loadout", Icons.Filled.Info)
+                rows += XmbRow.Info("empty", "配置中没有效果", Icons.Filled.Info)
                 return@body rows
             }
             val solo = st.mode == ReshadeLoadout.MODE_SOLO
             rows += XmbRow.Choice("mode", "Mode", Icons.Filled.Tune, listOf("Solo", "Stack"), if (solo) "Solo" else "Stack",
-                subtitle = if (solo) "One effect active at a time (A/B compare)" else "Layer any subset of effects") { v ->
+                subtitle = if (solo) "一次激活一个效果（A/B对比）" else "叠加任意效果子集") { v ->
                 st.changeMode(if (v == "Stack") ReshadeLoadout.MODE_STACK else ReshadeLoadout.MODE_SOLO)
                 persist()
             }

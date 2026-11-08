@@ -191,7 +191,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
 
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("存档与云"),
+        title = L("内容管理"),
         sections = listOf(
             MenuSection("download", L("Download components"), Icons.Filled.Download, download, empty = L("No repositories."), primary = MenuAction(L("Add a repository"), { addRepo = true })),
             MenuSection("installed", L("Installed"), Icons.Filled.CheckCircle, installed, empty = L("Only the built-in components so far."), primary = MenuAction(L("Install content from file"), { fromFile() })),
