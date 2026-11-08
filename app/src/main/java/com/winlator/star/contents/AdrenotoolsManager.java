@@ -194,7 +194,7 @@ public class AdrenotoolsManager {
             return true;
 
         dst.mkdirs();
-        Log.d("AdrenotoolsManager", "Extracting " + src + " to " + dst.getAbsolutePath());
+        Log.d("AdrenotoolsManager", "Extracting " + src + " 到 " + dst.getAbsolutePath());
         hasExtracted = TarCompressorUtils.extract(TarCompressorUtils.Type.ZSTD, mContext, src, dst);
 
         if (!hasExtracted)

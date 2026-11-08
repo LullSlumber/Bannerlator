@@ -44,7 +44,7 @@ import com.winlator.star.ui.theme.WinlatorTheme
 class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
 
     private var qrBitmap by mutableStateOf<Bitmap?>(null)
-    private var statusText by mutableStateOf("Connecting\u2026")
+    private var statusText by mutableStateOf("正在连接…")
     private var isLoading by mutableStateOf(true)
     private var isError by mutableStateOf(false)
     private var showRetry by mutableStateOf(false)
@@ -56,10 +56,10 @@ class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
         connectWaitListener?.let { SteamRepository.getInstance().removeListener(it) }
         connectWaitListener = null
         val msg = when (reachState) {
-            REACH_OK       -> "Steam servers are reachable but CM connection timed out.\nPort 27017 may be blocked \u2014 try a VPN or mobile data."
-            REACH_BLOCKED  -> "Steam servers are blocked on your network.\nYou need a VPN to use Steam here."
-            REACH_NO_NET   -> "No internet connection detected.\nCheck your Wi-Fi or mobile data."
-            else           -> "Connection timed out. Check your network."
+            REACH_OK       -> "Steam服务器可达，但CM连接超时。\n端口27017可能被屏蔽 — 请尝试VPN或移动数据。"
+            REACH_BLOCKED  -> "您的网络屏蔽了Steam服务器。\n您需要使用VPN才能在此使用Steam。"
+            REACH_NO_NET   -> "未检测到网络连接。\n请检查您的Wi-Fi或移动数据。"
+            else           -> "连接超时。请检查您的网络。"
         }
         onFailure(msg)
     }
@@ -98,7 +98,7 @@ class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
         connectWaitListener = null
         reachState = REACH_UNKNOWN
 
-        statusText = "Connecting to Steam\u2026"
+        statusText = "正在连接 Steam…"
         isLoading = true
         isError = false
         qrBitmap = null
@@ -125,7 +125,7 @@ class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
                         event == "NoInternet" -> {
                             reachState = REACH_NO_NET
                             runOnUiThread {
-                                statusText = "No internet connection."
+                                statusText = "无网络连接。"
                                 isLoading = false; isError = true; showRetry = true
                             }
                         }
@@ -139,7 +139,7 @@ class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
                             repo.removeListener(this)
                             connectWaitListener = null
                             mainHandler.removeCallbacks(connectTimeoutRunnable)
-                            runOnUiThread { onFailure("Disconnected from Steam.") }
+                            runOnUiThread { onFailure("已断开与Steam的连接。") }
                         }
                     }
                 }
@@ -151,7 +151,7 @@ class QrLoginActivity : ComponentActivity(), SteamQrAuthManager.QrAuthListener {
     }
 
     override fun onQrReady(challengeUrl: String) {
-        statusText = "Scan with the Steam app on your phone"
+        statusText = "在您的手机上使用Steam应用扫描"
         isLoading = false
         isError = false
         showQr(challengeUrl)
@@ -228,13 +228,13 @@ private fun QrLoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Sign in via QR Code",
+            text = "通过QR码登录",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Open the Steam app \u2192 \u2630 \u2192 Sign in via QR code",
+            text = "打开Steam应用 → ☰ → 通过QR码登录",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -321,7 +321,7 @@ private fun QrLoginScreen(
         }
 
         TextButton(onClick = onCancel) {
-            Text("\u2190 Back")
+            Text("← 返回")
         }
     }
 }

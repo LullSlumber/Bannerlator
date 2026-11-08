@@ -101,15 +101,15 @@ internal object WindowsRows {
             disabled = { env, _ -> if (env.vm?.wineVersionEnabled == false) L("Fixed once the container exists: its Windows prefix was built for this layer.") else null },
         ),
         SettingDef(
-            id = ID_BG, category = "windows", group = L("Windows desktop"), level = SettingLevel.ADVANCED,
-            label = L("Desktop background"), tech = L("Background"),
-            control = { _, _ -> Control.Segmented(listOf(Opt("$IMAGE", L("Image")), Opt("$COLOR", L("Solid colour")))) },
+            id = ID_BG, category = "windows", group = L("Wine / Proton 版本"), level = SettingLevel.ADVANCED,
+            label = L("此容器运行的 Wine 层。在下方下载更多。"), tech = L("Background"),
+            control = { _, _ -> Control.Segmented(listOf(Opt("$IMAGE", L("Image")), Opt("$COLOR", L("纯色")))) },
             vm = VmBinding(get = { _, vm -> vm.desktopBgTypeIndex.toString() }, set = { _, vm, v -> v.toIntOrNull()?.let { vm.desktopBgTypeIndex = it } }),
             showInGame = false,
         ),
         SettingDef(
-            id = "windows.desktopColor", category = "windows", group = L("Windows desktop"), level = SettingLevel.ADVANCED,
-            label = L("Background colour"), tech = L("Background Color"),
+            id = "windows.desktopColor", category = "windows", group = L("Wine / Proton 版本"), level = SettingLevel.ADVANCED,
+            label = L("Background colour"), tech = L("背景颜色"),
             control = { _, _ ->
                 Control.Select(
                     options = PALETTE.map { (c, name) -> Opt(hex(c), "$name (${hex(c)})") },
@@ -127,12 +127,12 @@ internal object WindowsRows {
             visible = { _, values -> values(ID_BG) == "$COLOR" },
         ),
         SettingDef(
-            id = "windows.wallpaperScope", category = "windows", group = L("Windows desktop"), level = SettingLevel.ADVANCED,
-            label = L("Wallpaper image for"), hint = L("One image every container shares, or one for this container only."), tech = L("Apply wallpaper to"),
+            id = "windows.wallpaperScope", category = "windows", group = L("Wine / Proton 版本"), level = SettingLevel.ADVANCED,
+            label = L("Windows 桌面"), hint = L("One image every container shares, or one for this container only."), tech = L("背景颜色"),
             control = { _, _ ->
                 Control.Segmented(listOf(
-                    Opt("${WineThemeManager.BackgroundScope.GLOBAL.ordinal}", L("All containers")),
-                    Opt("${WineThemeManager.BackgroundScope.CONTAINER.ordinal}", L("This container")),
+                    Opt("${WineThemeManager.BackgroundScope.GLOBAL.ordinal}", L("所有容器")),
+                    Opt("${WineThemeManager.BackgroundScope.CONTAINER.ordinal}", L("此容器")),
                 ))
             },
             vm = VmBinding(
@@ -210,7 +210,7 @@ internal class DeckWindowsSection(
         if (drives.isEmpty()) {
             add(PageExtra("windows-drives-none") {
                 GroupCard(first = true, last = false, highlight = false) {
-                    DeckLine(L("No drives"), L("Only C: (the Windows prefix) and Z: are there. Add a drive for a folder of games."))
+                    DeckLine(L("无驱动器"), L("只有 C:（Windows 前缀）和 Z: 存在。为游戏文件夹添加一个驱动器。"))
                 }
             })
         }
@@ -301,7 +301,7 @@ internal class DeckWindowsSection(
         if (confirmReset) {
             OutlinedAlertDialog(
                 onDismissRequest = { confirmReset = false },
-                confirmButton = { TextButton(onClick = { resetDefaults() }) { Text(L("Reset")) } },
+                confirmButton = { TextButton(onClick = { resetDefaults() }) { Text(L("重置")) } },
                 dismissButton = { TextButton(onClick = { confirmReset = false }) { Text(L("Cancel")) } },
                 title = { Text(L("Reset to app defaults?")) },
                 text = {
@@ -353,7 +353,7 @@ private fun DriveLine(section: DeckWindowsSection, vm: ContainerDetailViewModel,
             onValueChange = { t -> text = t; vm.updateDrivePath(drive.uid, t) },
             singleLine = true,
             isError = duplicate,
-            placeholder = { Text(L("Folder, e.g. /storage/emulated/0/Games")) },
+            placeholder = { Text(L("文件夹，例如 /storage/emulated/0/Games")) },
             shape = deckShape(14.dp),
             modifier = Modifier.weight(1f).deckFocusRing(deckShape(14.dp), scaleTo = 1f),
         )
@@ -375,14 +375,14 @@ private fun WallpaperLine(section: DeckWindowsSection, vm: ContainerDetailViewMo
     }
     DeckLine(
         label = if (preview != null) L("Wallpaper image") else L("No wallpaper image yet"),
-        hint = (if (scope == WineThemeManager.BackgroundScope.GLOBAL) L("Shared by every container") else L("This container's own")) +
-            L(". A new image is used from the next start once you save."),
+        hint = (if (scope == WineThemeManager.BackgroundScope.GLOBAL) L("Shared by every container") else L("此容器自己的")) +
+            L("。保存后，新图像将从下次启动开始使用。"),
         icon = Icons.Filled.Image,
     ) {
         preview?.let { img ->
             Image(img, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(48.dp).clip(deckShape(8.dp)))
         }
         DeckSmallButton(if (preview != null) L("Change") else L("Browse"), Icons.Filled.FolderOpen) { section.pickImage = true }
-        DeckSmallButton(L("System picker"), Icons.Filled.PhotoLibrary) { section.pickImageSystem = true }
+        DeckSmallButton(L("系统选择器"), Icons.Filled.PhotoLibrary) { section.pickImageSystem = true }
     }
 }

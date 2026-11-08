@@ -519,12 +519,12 @@ public final class VegasKeyKnowledge {
     public String badgeFor(String key, String version) {
         if (key == null) return "?";
         String norm = normalizeKey(key);
-        if (vanilla.containsKey(norm)) return "vanilla DXVK · every version";
+        if (vanilla.containsKey(norm)) return "原版DXVK · 每个版本";
         State st = stateFor(norm, version);
         switch (st) {
             case OK:
                 if (!norm.startsWith("vegas.") && !norm.startsWith("dxvk.")) return "[other] · always applies";
-                return "fork · applies to v" + version;
+                return "分支 · 适用于 v" + version;
             case LATE:
                 return "needs " + nameAt(introduced.get(norm)) + "+";
             case REMOVED:
@@ -535,10 +535,10 @@ public final class VegasKeyKnowledge {
                 // but misleading (the claim that matters is it's not upstream). Reserve
                 // the generic wording for genuinely upstream-ish keys.
                 if (norm.startsWith("vegas.") || norm.startsWith("dxvk.vegas."))
-                    return "vegas-only · not in v" + version + " notes";
-                return "not in v" + version + " notes — DXVK still reads it";
+                    return "仅vegas · 不在 v" + version + " 备注";
+                return "不在 v" + version + " 备注 — DXVK仍然读取它";
             case UNKNOWN:
-                return "? unknown for v" + version;
+                return "? 未知 v" + version;
             default:
                 return st.name();
         }

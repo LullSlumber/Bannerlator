@@ -73,7 +73,7 @@ object LinuxRuntimeUpdate {
     fun begin() {
         startedAtMs = SystemClock.elapsedRealtime()
         lastPercent = 0
-        _state.value = _state.value.copy(busy = true, stage = "Starting…", percent = -1, etaSeconds = -1)
+        _state.value = _state.value.copy(busy = true, stage = "正在启动…", percent = -1, etaSeconds = -1)
     }
 
     fun progress(stage: String, percent: Int) {

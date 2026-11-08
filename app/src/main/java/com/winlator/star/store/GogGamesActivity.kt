@@ -314,7 +314,7 @@ class GogGamesActivity : ComponentActivity() {
             val expiresIn = prefs.getInt("bh_gog_expires_in", 3600)
             val nowSec = System.currentTimeMillis() / 1000L
             if (loginTime == 0 || nowSec >= loginTime + expiresIn) {
-                if (showProgress) withContext(Dispatchers.Main) { setSync("Refreshing token\u2026") }
+                if (showProgress) withContext(Dispatchers.Main) { setSync("正在刷新令牌…") }
                 val newToken = GogTokenRefresh.refresh(this@GogGamesActivity)
                 if (newToken == null) {
                     withContext(Dispatchers.Main) { setSync("Session expired \u2014 please sign in again") }
@@ -323,7 +323,7 @@ class GogGamesActivity : ComponentActivity() {
                 token = newToken
             }
 
-            if (showProgress) withContext(Dispatchers.Main) { setSync("Fetching game list\u2026") }
+            if (showProgress) withContext(Dispatchers.Main) { setSync("正在获取游戏列表…") }
 
             val gamesJson = httpGet("https://embed.gog.com/user/data/games", token)
             if (gamesJson == null) { withContext(Dispatchers.Main) { setSync("Failed to fetch library") }; return }
@@ -342,7 +342,7 @@ class GogGamesActivity : ComponentActivity() {
                 withContext(Dispatchers.Main) { setSync("Error parsing library") }; return
             }
 
-            if (ids.isEmpty()) { withContext(Dispatchers.Main) { setSync("No games found in library") }; return }
+            if (ids.isEmpty()) { withContext(Dispatchers.Main) { setSync("在库中未找到游戏") }; return }
 
             // \u2500\u2500 gap #8: incremental diff + 15-min throttle + prune \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             // `ids` above is the COMPLETE owned-id set \u2014 the diff source.
@@ -738,7 +738,7 @@ class GogGamesActivity : ComponentActivity() {
                         progress = 100,
                         status = "Installed",
                         isInstalled = true,
-                        buttonText = "Add Game",
+                        buttonText = "添加游戏",
                         buttonColor = 0xFF0055FF.toInt(),
                         progressVisible = true,
                     )
@@ -762,7 +762,7 @@ class GogGamesActivity : ComponentActivity() {
             }
             override fun onSelectExe(candidates: MutableList<String>?, onSelected: Consumer<String>?) {
                 // No completion dialog (would wedge the DL card at 100% off-screen): auto-pick the
-                // best (first) candidate. Exe choice stays available via the detail "Set .exe…".
+                // best (first) candidate. Exe choice stays available via the detail "设置 .exe…".
                 if (onSelected != null) onSelected.accept(candidates?.firstOrNull() ?: "")
             }
         })
@@ -861,12 +861,12 @@ class GogGamesActivity : ComponentActivity() {
                 }
             },
             onCopyToDownloads = {
-                resultBarMsg = "Copying to Downloads\u2026"
+                resultBarMsg = "正在复制到下载目录…"
                 lifecycleScope.launch(Dispatchers.IO) {
                     val dest = GogDownloadManager.copyToDownloads(this@GogGamesActivity, game.gameId)
                     withContext(Dispatchers.Main) {
                         resultBarMsg = if (dest != null) "Copied to: $dest"
-                        else "Copy failed \u2014 check storage permission"
+                        else "复制失败 — 检查存储权限"
                     }
                 }
             },
@@ -957,7 +957,7 @@ private fun GogGamesScreen(
             ) { Text("\u2190", color = MaterialTheme.colorScheme.onPrimary, fontSize = 16.sp) }
             Spacer(Modifier.width(8.dp))
             Text(
-                "GOG Library",
+                "GOG库",
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -997,7 +997,7 @@ private fun GogGamesScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchChange,
-                placeholder = { Text("Search games\u2026", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                placeholder = { Text("搜索游戏…", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { onSearchChange(searchQuery); stopEditing() }),
@@ -1038,14 +1038,14 @@ private fun GogGamesScreen(
                     ) {
                         items(games, key = { it.gameId }) { game ->
                             // No live download this session → fall back to disk-truth so an
-                            // already-installed game shows Installed + "Add to Launcher" instead of
+                            // already-installed game shows Installed + "添加到启动器" instead of
                             // "Install" (mirrors EpicGamesActivity's `?: GameDownloadState(...)`).
                             // buttonText MUST be set here: line ~1099 reads downloadState.buttonText
                             // directly, so a bare default would render "Install" despite isInstalled.
                             val context = LocalContext.current
                             val dlState = downloadStates[game.gameId]
                                 ?: if (GogInstallState.isInstalled(context, game.gameId))
-                                    GameDownloadState(isInstalled = true, buttonText = "Add to Launcher")
+                                    GameDownloadState(isInstalled = true, buttonText = "添加到启动器")
                                 else null
                             val isExpanded = expandedGameId == game.gameId
                             GameListCard(
@@ -1071,11 +1071,11 @@ private fun GogGamesScreen(
                     ) {
                         items(games, key = { it.gameId }) { game ->
                             // Disk-truth fallback (see the list branch above) so a prior-session
-                            // install renders Installed + "Add to Launcher", not "Install".
+                            // install renders Installed + "添加到启动器", not "Install".
                             val context = LocalContext.current
                             val dlState = downloadStates[game.gameId]
                                 ?: if (GogInstallState.isInstalled(context, game.gameId))
-                                    GameDownloadState(isInstalled = true, buttonText = "Add to Launcher")
+                                    GameDownloadState(isInstalled = true, buttonText = "添加到启动器")
                                 else null
                             val isExpanded = expandedGameId == game.gameId
                             GameGridTile(
@@ -1229,7 +1229,7 @@ private fun ExpandedSection(
 
         if (isInstalled) {
             Text(
-                "\u2713 Installed",
+                "✓ 已安装",
                 fontSize = 10.sp,
                 color = Color(0xFF4CAF50), // semantic installed-green
                 modifier = Modifier.padding(top = 4.dp),
@@ -1260,7 +1260,7 @@ private fun ExpandedSection(
         Spacer(Modifier.height(8.dp))
 
         val btnText = downloadState?.buttonText
-            ?: if (isInstalled) "Add to Launcher" else "Install"
+            ?: if (isInstalled) "添加到启动器" else "Install"
         // Container/content derived from theme at call site (btnText carries the intent);
         // "Cancel" is the only destructive action \u2192 error, everything else \u2192 primary.
         val isCancelBtn = btnText == "Cancel"
@@ -1269,7 +1269,7 @@ private fun ExpandedSection(
             onClick = {
                 when (btnText) {
                     "Cancel" -> onCancelClick()
-                    "Add Game", "Add to Launcher" -> onAddToLauncher()
+                    "添加游戏", "添加到启动器" -> onAddToLauncher()
                     else -> onInstallClick()
                 }
             },
@@ -1380,7 +1380,7 @@ private fun GameGridTile(
         if (isExpanded) {
             val isInstalled = downloadState?.isInstalled == true
             val btnText = downloadState?.buttonText
-                ?: if (isInstalled) "Add to Launcher" else "Install"
+                ?: if (isInstalled) "添加到启动器" else "Install"
             // "Cancel" is the only destructive action \u2192 error; everything else \u2192 primary.
             val isCancelBtn = btnText == "Cancel"
 
@@ -1402,7 +1402,7 @@ private fun GameGridTile(
                     onClick = {
                         when (btnText) {
                             "Cancel" -> onCancelClick()
-                            "Add Game", "Add to Launcher" -> onAddToLauncher()
+                            "添加游戏", "添加到启动器" -> onAddToLauncher()
                             else -> onInstallClick()
                         }
                     },
@@ -1450,7 +1450,7 @@ private fun ExePickerDialogGog(
 ) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select game executable") },
+        title = { Text("选择游戏可执行文件") },
         text = {
             Column(
                 modifier = Modifier
@@ -1486,7 +1486,7 @@ private fun InstallConfirmDialog(
         text = {
             Column {
                 val sizeText = if (gameSize > 0) "Game size:  ${GogDownloadManager.formatBytes(gameSize)}"
-                else "Game size:  Fetching\u2026"
+                else "游戏大小： 获取中…"
                 val notEnoughSpace = gameSize > 0 && freeBytes > 0 && gameSize > freeBytes
                 val sizeColor = if (notEnoughSpace) MaterialTheme.colorScheme.error
                 else MaterialTheme.colorScheme.onSurfaceVariant
@@ -1505,7 +1505,7 @@ private fun InstallConfirmDialog(
                 if (notEnoughSpace) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "\u26A0 Not enough space",
+                        text = "⚠ 空间不足",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.error,
                     )

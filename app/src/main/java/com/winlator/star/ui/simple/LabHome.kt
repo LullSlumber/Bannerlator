@@ -370,7 +370,7 @@ internal fun LabHome(
                 return
             }
             LabDashTile(m, onClick = { onNavigate(LabRoutes.LIBRARY) }) {
-                LabTileLabel(L("Playtime"))
+                LabTileLabel(L("游玩时间"))
                 Text(playtimeLabel(total), color = SimpleStrong, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp, maxLines = 1)
                 Text(L("across %1\$s games", stats.values.count { it.ms > 0 }), color = SimpleMuted, fontSize = 12.sp)
             }
@@ -390,7 +390,7 @@ internal fun LabHome(
                     }
                     if (dev.battery >= 0) line(L("Battery"), dev.battery / 100f, "${dev.battery}%")
                     line("RAM", if (dev.ramTotalGb > 0) dev.ramUsedGb / dev.ramTotalGb else 0f, "${fmtGb(dev.ramUsedGb)} GB")
-                    dev.tempC?.let { line(L("Temp"), it / 90f, L("%1\$s°C", it)) }
+                    dev.tempC?.let { line(L("温度"), it / 90f, L("%1\$s°C", it)) }
                 }
             }
         }
@@ -398,7 +398,7 @@ internal fun LabHome(
         @Composable
         fun ContainersTile(m: Modifier) {
             LabDashTile(m, onClick = { onNavigate(SimpleRoutes.CONTAINERS) }) {
-                LabTileLabel(L("Containers"))
+                LabTileLabel(L("容器管理"))
                 Text("${containers?.size ?: "…"}", color = SimpleStrong, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp)
                 Text(containers?.joinToString(" · ").orEmpty(), color = SimpleMuted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }

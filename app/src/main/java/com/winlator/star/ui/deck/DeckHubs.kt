@@ -74,13 +74,13 @@ internal fun DeckMoreTools(
     val context = LocalContext.current
     var showHelp by remember { mutableStateOf(false) }
     val tools = listOf(
-        HubTile("Wrappers", "Manage graphics wrappers", Icons.Filled.Layers) { onNavigate(Screen.Wrappers.route) },
+        HubTile("Wrappers", "编辑 VEGAS 配置文件", Icons.Filled.Layers) { onNavigate(Screen.Wrappers.route) },
         HubTile("Adrenotools", "GPU drivers for Adreno devices", Icons.Filled.Memory) { onNavigate(Screen.AdrenoTools.route) },
         HubTile("Run setup again", "Walk through the Deck first-run: permissions, theme, stores", Icons.Filled.RestartAlt) { DeckSetup.requestRerun() },
     )
     val more = listOf(
-        HubTile("My account", "Sign in to manage your shared configs", Icons.Filled.AccountCircle, onMyAccount),
-        HubTile("About", "Version, updates and credits", Icons.Filled.Info, onAbout),
+        HubTile("我的账户", "Sign in to manage your shared configs", Icons.Filled.AccountCircle, onMyAccount),
+        HubTile("关于", "Version, updates and credits", Icons.Filled.Info, onAbout),
         HubTile("Help and Support", "GitHub, issue tracker and Discord", Icons.Filled.HelpOutline) { showHelp = true },
     )
     DeckTileGrid {

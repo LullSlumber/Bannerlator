@@ -190,7 +190,7 @@ object BlSteamEngine {
             listener?.onEngineFailure("CA bundle unavailable")
             return
         }
-        // Region-aware pick (Settings → Steam → "Steam connection region"; Auto = remembered
+        // Region-aware pick (Settings → Steam → "Steam连接区域"; Auto = remembered
         // fastest datacenter), falling back to the engine's own directory pick inside.
         val cmUrl = com.winlator.star.store.SteamRegion.pickEngineCmUrl(app, caPath)
         if (cmUrl.isEmpty()) {

@@ -188,7 +188,7 @@ public class AmazonAuthClient {
             conn.disconnect();
 
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "HTTP " + code + " from " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
+                Log.e(TAG, "HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
                 return null;
             }
             return resp;
@@ -222,7 +222,7 @@ public class AmazonAuthClient {
             conn.disconnect();
 
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "HTTP GET " + code + " from " + StoreLog.redactUrl(urlStr));
+                Log.e(TAG, "HTTP GET " + code + " 来自 " + StoreLog.redactUrl(urlStr));
                 return null;
             }
             return resp;

@@ -155,7 +155,7 @@ public final class BannerinXInput {
 
     // ── Live mode (the BANNERIN control block) ────────────────────────────────────────────────────
 
-    /** "Allow in-game switching": per-game extra ("1"/"0", empty = the container's), container setting. */
+    /** "允许游戏内切换": per-game extra ("1"/"0", empty = the container's), container setting. */
     public static final String EXTRA_SWITCHING = "bannerinXInputSwitching";
     /** Wine's own xinput, renamed, beside our DLLs: the target of forward mode. */
     public static final String FORWARD_DLL = "bannerin_wine_xinput.dll";
@@ -178,7 +178,7 @@ public final class BannerinXInput {
         }
     }
 
-    /** "Allow in-game switching" for this launch: game extra > container. Default on. */
+    /** "允许游戏内切换" for this launch: game extra > container. Default on. */
     public static boolean switchingEffective(Container container, Shortcut shortcut) {
         if (shortcut != null) {
             String extra = shortcut.getExtra(EXTRA_SWITCHING);
@@ -235,7 +235,7 @@ public final class BannerinXInput {
         public final String detail;
         /** Direct XInput (the setting) for this launch. */
         public final boolean directOn;
-        /** "Allow in-game switching" for this launch. */
+        /** "允许游戏内切换" for this launch. */
         public final boolean switching;
         /** Wine's own xinput is in place as {@value #FORWARD_DLL}: forward mode is possible. */
         public final boolean forwardAvailable;
@@ -267,7 +267,7 @@ public final class BannerinXInput {
     }
 
     /**
-     * The launch entry point: Direct XInput and "Allow in-game switching" resolved for this game.
+     * The launch entry point: Direct XInput and "允许游戏内切换" resolved for this game.
      * With switching on, our DLLs go in whether Direct XInput is on or off, and Wine's own xinput1_4
      * from the container's Wine layer ({@code wineRoot}: the layer folder holding lib/wine) is put beside
      * them as {@value #FORWARD_DLL} (system32: x86_64-windows, or aarch64-windows when it is an ARM64X

@@ -48,7 +48,7 @@ import org.json.JSONObject
 /**
  * Detail page for a catalog title the user does NOT own — the Steam detail layout
  * ([StoreDetailScaffold]) with the store's description and media, a price row, and one
- * primary action that opens the store page in the in-app WebView ("Get for free" / "View on …").
+ * primary action that opens the store page in the in-app WebView ("免费获取" / "View on …").
  *
  * Serves both GOG and Epic: the [CatalogItem] rides in the intent, the description + media
  * are fetched on open from the matching public endpoint ([GogStoreCatalog.product] /
@@ -183,9 +183,9 @@ private fun CatalogDetailScreen(
             onClick = { onOpenWeb(item.storeUrl, item.title) },
         ),
         gear = listOf(
-            StoreGearItem("🌐", "Open in browser", enabled = item.storeUrl.isNotBlank()) { onOpenBrowser(item.storeUrl) },
+            StoreGearItem("🌐", "在浏览器中打开", enabled = item.storeUrl.isNotBlank()) { onOpenBrowser(item.storeUrl) },
         ),
-        infoLine = if (item.isFree) "Free claims go through the store's own checkout — you'll be signed in there."
+        infoLine = if (item.isFree) "免费领取需通过商店自己的结账流程 — 您将在此处登录。"
         else "Purchases go through $storeLabel. Owned titles appear in your Library after a sync.",
         tabs = tabs,
         selectedTab = tab,
@@ -231,7 +231,7 @@ private fun CatalogDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                StoreSection(title = "About this page") {
+                StoreSection(title = "关于此页面") {
                     StoreStatusText(
                         "This title isn't in your $storeLabel library yet. Get it on the store page and it " +
                             "will show up under Library with install, DLC and cloud-save controls.",

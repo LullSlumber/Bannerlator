@@ -97,7 +97,7 @@ fun ColorPicker(initialColor: Color, onColorChanged: (Color) -> Unit) {
 
         // Saturation slider
         SliderRow(
-            label = "Saturation",
+            label = "饱和度",
             value = saturation,
             valueRange = 0f..1f,
             trackBrush = Brush.horizontalGradient(
@@ -111,7 +111,7 @@ fun ColorPicker(initialColor: Color, onColorChanged: (Color) -> Unit) {
 
         // Brightness slider
         SliderRow(
-            label = "Brightness",
+            label = "亮度",
             value = value,
             valueRange = 0f..1f,
             trackBrush = Brush.horizontalGradient(

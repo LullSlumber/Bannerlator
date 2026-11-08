@@ -65,10 +65,10 @@ internal class DeckIconSection(
 
     /** The icon file to write, or null with the reason it can't be changed here. */
     private fun target(): Pair<File?, String?> {
-        val s = env.shortcut ?: return null to L("No entry.")
-        val f = s.iconFile ?: return null to L("This entry has no icon file to write to.")
+        val s = env.shortcut ?: return null to L("无条目。")
+        val f = s.iconFile ?: return null to L("此条目没有可写入的图标文件。")
         // A rename saved in this editor moves the .desktop and its icon; this one was read before it.
-        if (!s.file.isFile) return null to L("Close and reopen this game's settings to change the icon after renaming it.")
+        if (!s.file.isFile) return null to L("重命名后，请关闭并重新打开此游戏的设置以更改图标。")
         return f to null
     }
 
@@ -83,8 +83,8 @@ internal class DeckIconSection(
             PageExtra("icon-preview") {
                 GroupCard(first = true, last = false, highlight = false) {
                     DeckLine(
-                        label = L("This entry's icon"),
-                        hint = reason ?: L("Shown in your library and on home-screen shortcuts. A new one is saved as soon as you pick it."),
+                        label = L("显示在您的库和主屏幕快捷方式中。选择后即会保存新的图标。"),
+                        hint = reason ?: L("此条目的图标"),
                     ) { IconPreview(icon) }
                 }
             },
@@ -133,7 +133,7 @@ internal class DeckIconSection(
         }
         LaunchedEffect(launch) {
             when (launch) {
-                Picker.FILES -> runCatching { files.launch(InAppFilePicker.buildIntent(ctx, InAppFilePicker.IMAGES, L("Select icon image"))) }
+                Picker.FILES -> runCatching { files.launch(InAppFilePicker.buildIntent(ctx, InAppFilePicker.IMAGES, L("选择图标图像"))) }
                 Picker.SYSTEM -> runCatching { system.launch("image/*") }
                 null -> Unit
             }

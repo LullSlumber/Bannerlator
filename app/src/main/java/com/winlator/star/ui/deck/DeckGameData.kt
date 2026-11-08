@@ -72,7 +72,7 @@ internal fun recentKeyOf(s: Shortcut): Long = ShortcutOrder.recentKey(lastPlayed
 internal fun playtimeLabel(ms: Long): String {
     val minutes = ms / 60_000L
     return when {
-        ms <= 0L -> L("Not played yet")
+        ms <= 0L -> L("尚未游玩")
         minutes < 60L -> L("%1\$s min played", minutes.coerceAtLeast(1L))
         else -> L("%1\$s h played", "%.1f".format(ms / 3_600_000.0))
     }

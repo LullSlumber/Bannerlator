@@ -106,7 +106,7 @@ private enum class StoreTab(val label: String, val icon: ImageVector) {
     LIBRARY("Library", Icons.Filled.VideoLibrary),
     STORE("Store", Icons.Filled.ShoppingBag),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("Profile", Icons.Filled.AccountCircle),
+    PROFILE("配置", Icons.Filled.AccountCircle),
     DOWNLOADS("Downloads", Icons.Filled.Download),
 }
 
@@ -153,7 +153,7 @@ private fun playtimeText(context: Context, s: Shortcut): String {
     val ms = context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE).getLong("${s.name}_playtime", 0L)
     val minutes = ms / 60_000L
     return when {
-        ms <= 0L -> "Not played yet"
+        ms <= 0L -> "尚未游玩"
         minutes < 60L -> "${minutes.coerceAtLeast(1L)} min played"
         else -> "%.1f h played".format(ms / 3_600_000.0)
     }

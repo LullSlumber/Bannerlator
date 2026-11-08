@@ -360,7 +360,7 @@ public class SettingsFragment extends Fragment {
                 requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
 
-			AppUtils.showToast(context, "Settings saved!");
+			AppUtils.showToast(context, "设置已保存!");
         });
 
 
@@ -530,7 +530,7 @@ public class SettingsFragment extends Fragment {
         Callback<String> onExportPreset = (String prefix) -> {
             final String presetId = Box64PresetManager.getSpinnerSelectedId(spinners.get(prefix));
             if (!presetId.startsWith(Box64Preset.CUSTOM)) {
-                AppUtils.showToast(context, "Cannot export this preset");
+                AppUtils.showToast(context, "无法导出此预设");
                 return;
             }
             getActivity().runOnUiThread(() ->  {
@@ -592,7 +592,7 @@ public class SettingsFragment extends Fragment {
         Callback<String> onExportPreset = (String prefix) -> {
             final String presetId = FEXCorePresetManager.getSpinnerSelectedId(sFEXCorePreset);
             if (!presetId.startsWith(FEXCorePreset.CUSTOM)) {
-                AppUtils.showToast(context, "Cannot export this preset");
+                AppUtils.showToast(context, "无法导出此预设");
                 return;
             }
             getActivity().runOnUiThread(() ->  {
@@ -686,8 +686,8 @@ public class SettingsFragment extends Fragment {
 
 	private void showBackupConfirmationDialog() {
         new AlertDialog.Builder(getContext())
-                .setTitle("Backup Data")
-                .setMessage("Do you want to create a backup of the app's data directory?")
+                .setTitle("备份数据")
+                .setMessage("是否要创建应用数据目录的备份？")
                 .setPositiveButton("Yes", (dialog, which) -> backupAppData())
                 .setNegativeButton("No", null)
                 .show();

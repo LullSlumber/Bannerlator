@@ -124,13 +124,13 @@ internal fun SetAsDefaultSheet(item: SetAsDefault.Item, onDismiss: () -> Unit, o
         DeckDialogScaled {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 18.dp, end = 18.dp, bottom = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Set as default", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text("设为默认", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text(buildAnnotatedString {
                     append("${item.title} — sets the ")
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = cs.onSurface)) { append(item.kind.setting) }
                 }, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
 
-                SheetLabel("Architecture")
+                SheetLabel("架构")
                 val archs = listOf(SetAsDefault.ARM64EC, SetAsDefault.X86_64)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     archs.forEachIndexed { index, a ->
@@ -147,14 +147,14 @@ internal fun SetAsDefaultSheet(item: SetAsDefault.Item, onDismiss: () -> Unit, o
                         style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                 }
 
-                SheetLabel("Apply to")
-                ApplyCheck(toDefaults, enabled = !busy, title = "New container defaults",
+                SheetLabel("应用到")
+                ApplyCheck(toDefaults, enabled = !busy, title = "新容器默认值",
                     sub = "Every new $archText container starts with it.") { toDefaults = it }
-                ApplyCheck(toContainers, enabled = !busy, title = "All existing containers",
+                ApplyCheck(toContainers, enabled = !busy, title = "所有现有容器",
                     sub = "${n(nC)} $archText containers switch to it now." +
-                        if (isLayer) " Uses the in-place layer update with a revert snapshot; saves are kept." else "") { toContainers = it }
-                ApplyCheck(toGames && !isLayer, enabled = !isLayer && !busy, title = "All game shortcuts",
-                    sub = if (isLayer) "Games always use their container’s layer, so there is nothing to set per game."
+                        if (isLayer) " 使用带还原快照的就地层更新；存档会保留。" else "") { toContainers = it }
+                ApplyCheck(toGames && !isLayer, enabled = !isLayer && !busy, title = "所有游戏快捷方式",
+                    sub = if (isLayer) "游戏始终使用其容器的层，因此无需按游戏设置。"
                           else "${n(nG)} games in those containers get it written into their own settings.") { toGames = it }
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {

@@ -117,35 +117,35 @@ internal fun xmbPerformanceMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 subtitle = if (v != global) "Overridden for this game · global is ${if (global) "on" else "off"}" else sub) { on ->
                 profile = null
                 if (on && danger) {
-                    xmb.confirm(XmbConfirm(label, "Use at your own risk — writes system clock/thermal/fan files; can overheat or damage the device.", "Enable", danger = true)) {
+                    xmb.confirm(XmbConfirm(label, "使用风险自负 — 写入系统时钟/温度/风扇文件；可能导致设备过热或损坏。", "启用", danger = true)) {
                         setOne(key, true)
                     }
                 } else setOne(key, on)
             }
         }
 
-        rows += XmbRow.Header("hNow", "This device now")
+        rows += XmbRow.Header("hNow", "此设备当前")
         rows += XmbRow.Info("gpuClock", "GPU clock", Icons.Filled.Memory, readouts["gpuMhz"] ?: "…")
         rows += XmbRow.Info("socTemp", "SoC temp", Icons.Filled.Speed, readouts["socTemp"] ?: "…")
         rows += XmbRow.Info("governor", "Governor", Icons.Filled.Tune, readouts["governor"] ?: "…")
 
-        rows += XmbRow.Header("hProfile", "Power profile")
+        rows += XmbRow.Header("hProfile", "电源配置")
         val profOpts = if (profile == null) listOf("Custom") + P2_PROFILES else P2_PROFILES
-        rows += XmbRow.Choice("profile", "Power profile", Icons.Filled.Speed, profOpts, profile ?: "Custom",
-            subtitle = "Sets the toggles below in one go", disabledOptions = setOf("Custom")) { v -> applyProfile(v) }
+        rows += XmbRow.Choice("profile", "电源配置", Icons.Filled.Speed, profOpts, profile ?: "Custom",
+            subtitle = "一次性设置以下开关", disabledOptions = setOf("Custom")) { v -> applyProfile(v) }
 
-        rows += XmbRow.Header("hQuick", "Quick controls · no root")
-        toggle("sustainedPerfMode", "Sustained Performance Mode", "Holds a stable clock to avoid thermal throttling")
-        toggle("perfPriorityBoost", "Thread Priority Boost", "Raises emulator thread priority so the scheduler favours the game")
-        toggle("preferBigCores", "Prefer Big Cores", "Routes emulator threads onto the big / prime cluster")
-        toggle(PerfRootApplier.KEY_GPU_CLOCK_LOCK, "Lock GPU to max clock", "Adreno: no-root KGSL turbo; sysfs pin with root")
+        rows += XmbRow.Header("hQuick", "快速控制 · 无需root")
+        toggle("sustainedPerfMode", "持续性能模式", "保持稳定时钟以避免热调节降频")
+        toggle("perfPriorityBoost", "线程优先级提升", "提高模拟器线程优先级，使调度器优先处理游戏")
+        toggle("preferBigCores", "优先使用大核", "将模拟器线程路由到大核/首要集群")
+        toggle(PerfRootApplier.KEY_GPU_CLOCK_LOCK, "锁定 GPU 最高频率", "Adreno：无root的KGSL加速；有root的sysfs固定")
 
-        rows += XmbRow.Header("hRoot", "Root & danger")
-        rows += XmbRow.Info("rootState", if (granted) "Root granted" else "Saved for this game · applied at launch when root is available",
+        rows += XmbRow.Header("hRoot", "Root与危险")
+        rows += XmbRow.Info("rootState", if (granted) "已授予root" else "为此游戏保存 · 在root可用时启动时应用",
             if (granted) Icons.Filled.Info else Icons.Filled.Warning)
         if (!granted) {
-            rows += XmbRow.Action("grantRoot", "Grant root", Icons.Filled.Warning, subtitle = "Power-user controls — read the warning first") {
-                xmb.confirm(XmbConfirm("Power-user performance", "Use at your own risk — these controls write system files and can overheat or damage the device.", "Grant Root", danger = true)) {
+            rows += XmbRow.Action("grantRoot", "Grant root", Icons.Filled.Warning, subtitle = "高级用户控制 — 请先阅读警告") {
+                xmb.confirm(XmbConfirm("高级用户性能", "使用风险自负 — 这些控制会写入系统文件，可能导致设备过热或损坏。", "Grant Root", danger = true)) {
                     xmb.scope.launch {
                         RootManager.requestGrant()
                         rootState = RootManager.state.value
@@ -153,15 +153,15 @@ internal fun xmbPerformanceMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 }
             }
         }
-        toggle(PerfRootApplier.KEY_CPU_GOVERNOR, "CPU governor → performance", "Forces every cluster to the performance governor")
-        toggle(PerfRootApplier.KEY_CPU_FREQ_LOCK, "Lock CPU frequency to max", "scaling_min_freq = scaling_max_freq on every cluster")
-        toggle(PerfRootApplier.KEY_CORES_ONLINE, "Keep all cores online", "Prevents the kernel from hot-plugging cores offline")
-        toggle(PerfRootApplier.KEY_THERMAL_DISABLE, "Disable thermal throttling", "Runtime watchdog still guards", danger = true)
-        toggle(PerfRootApplier.KEY_FAN_MAX, "Fan to maximum", "Forces active cooling to full at launch", danger = true)
+        toggle(PerfRootApplier.KEY_CPU_GOVERNOR, "CPU 调度器 → 性能模式", "强制每个集群使用性能调度器")
+        toggle(PerfRootApplier.KEY_CPU_FREQ_LOCK, "锁定 CPU 最高频率", "每个集群上 scaling_min_freq = scaling_max_freq")
+        toggle(PerfRootApplier.KEY_CORES_ONLINE, "保持所有核心在线", "阻止内核将核心热拔插离线")
+        toggle(PerfRootApplier.KEY_THERMAL_DISABLE, "Disable thermal throttling", "运行时看门狗仍然守护", danger = true)
+        toggle(PerfRootApplier.KEY_FAN_MAX, "风扇最大转速", "Forces active cooling to full at launch", danger = true)
 
         val anyOverride = P2_PERF_KEYS.any { p2PerfValue(shortcut, it) != p2PerfGlobal(it) }
         if (anyOverride) {
-            rows += XmbRow.Action("resetAll", "Reset all to global", Icons.Filled.RestartAlt, subtitle = "This game follows App Settings again") {
+            rows += XmbRow.Action("resetAll", "全部重置为全局", Icons.Filled.RestartAlt, subtitle = "此游戏再次遵循应用设置") {
                 profile = null
                 write(P2_PERF_KEYS.map { it to p2PerfGlobal(it) })
             }
@@ -202,19 +202,19 @@ internal fun xmbPlayerSlotsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         slotRows = build()
     }
 
-    return XmbMenu("Player slots", Icons.Filled.Gamepad) {
+    return XmbMenu("玩家槽位", Icons.Filled.Gamepad) {
         val rows = mutableListOf<XmbRow>()
         val json = saved()
         if (json.isEmpty()) {
-            rows += XmbRow.Info("inherit", "Inheriting the container's Player Slots. Pin a controller below to set a per-game override.", Icons.Filled.Info)
+            rows += XmbRow.Info("inherit", "继承容器的玩家槽位。在下方固定一个控制器以设置每个游戏的覆盖。", Icons.Filled.Info)
         } else {
-            rows += XmbRow.Action("useDefault", "Use container default", Icons.Filled.RestartAlt, subtitle = "Drop this game's pins") {
+            rows += XmbRow.Action("useDefault", "使用容器默认", Icons.Filled.RestartAlt, subtitle = "Drop this game's pins") {
                 p2Put(xmb, shortcut, "controllerSlotOverrides", null)
                 slotRows = build()
             }
         }
-        rows += XmbRow.Info("about", "Pin a controller (or the on-screen pad) to a player slot. Applied on launch.", Icons.Filled.Info)
-        rows += XmbRow.Action("refresh", "Refresh controllers", Icons.Filled.Refresh, subtitle = "Re-scan connected pads") { slotRows = build() }
+        rows += XmbRow.Info("about", "将控制器（或屏幕手柄）固定到玩家槽位。启动时应用。", Icons.Filled.Info)
+        rows += XmbRow.Action("refresh", "刷新控制器", Icons.Filled.Refresh, subtitle = "重新扫描已连接的手柄") { slotRows = build() }
         if (slotRows.isEmpty()) {
             rows += XmbRow.Info("none", "No controllers detected. Connect one to assign it.", Icons.Filled.Info)
         }
@@ -224,10 +224,10 @@ internal fun xmbPlayerSlotsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             val status = when {
                 r.override == WinHandler.SLOT_IGNORE -> "Ignored"
                 r.override >= 0 -> "Pinned to Player ${r.override + 1}"
-                else -> "Auto (assigned by launch order)"
+                else -> "自动（按启动顺序分配）"
             }
             val suffix = when {
-                r.isOnScreen -> " · on-screen controls"
+                r.isOnScreen -> " · 屏幕控制"
                 !r.connected -> " · not connected (saved pin)"
                 else -> ""
             }

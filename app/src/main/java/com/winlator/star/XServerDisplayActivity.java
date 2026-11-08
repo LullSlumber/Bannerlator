@@ -193,7 +193,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private XServerView xServerView;
     // Version-A spike: auto-swaps the game onto a connected external display (TV), handheld = controller.
     private com.winlator.star.display.ExternalDisplayController externalDisplayController;
-    // "Launch this game on the TV" (com.winlator.star.display.ExternalDisplay — the per-game TV tab, NOT
+    // "在电视上启动此游戏" (com.winlator.star.display.ExternalDisplay — the per-game TV tab, NOT
     // the frozen controller above). The launcher started this activity with setLaunchDisplayId(id) and
     // passed the same id as EXTRA_DISPLAY_ID, so the session knows which screen it was ASKED for; -1 for
     // every ordinary handheld launch.
@@ -392,7 +392,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private static final int WAYLAND_HUD_WINDOW_ID = Integer.MAX_VALUE;
     // Master HUD on/off, parsed from the fps config's `hudEnabled` key (default on). When false, every
     // overlay style stays GONE even while a game window is bound to frameRatingWindowId — the drawer's
-    // "Show HUD" master toggle drives this live via onFpsConfigApply.
+    // "显示 HUD" master toggle drives this live via onFpsConfigApply.
     private boolean hudCounterEnabled = true;
     // Windows that have published a _MESA_DRV property (GPU/render windows). The perf HUD binds to one
     // of these (frameRatingWindowId); we keep the whole set so that when the bound window unmaps we can
@@ -406,7 +406,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private String midiSoundFont = "";
     private String lc_all = "";
     private String vkbasaltConfig = "";
-    // Supersampling ("Render scale"): true when the launch resolution was multiplied above the
+    // Supersampling ("渲染比例"): true when the launch resolution was multiplied above the
     // display res, so the Vulkan compositor should run a quality Lanczos downscale. Resolved in
     // onCreate (from the container/shortcut "renderScale" extra) and consumed in setupUI.
     private boolean hqDownscale = false;
@@ -425,9 +425,9 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private static final long LAUNCH_STILL_WORKING_MS = 90_000L;
     private final Handler launchTimerHandler = new Handler(Looper.getMainLooper());
     private final Runnable launchSlowHintRunnable = () -> preloaderDialog.hint(
-            "Taking longer than usual — first launch can compile shaders. Not frozen, please wait.");
+            "比平时耗时更长 — 首次启动可能正在编译着色器。并未卡死，请稍候。");
     private final Runnable launchStillWorkingRunnable = () -> preloaderDialog.hint(
-            "Still working. If this seems stuck, check the log.");
+            "仍在运行。如果看似卡住，请查看日志。");
     private Runnable configChangedCallback = null;
     private boolean isPaused = false;
     // ReShade "freeze-frame preview" (Live preview OFF): the guest is SIGSTOP'd while tuning and each
@@ -1490,7 +1490,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
      * Build the in-game perf HUD for the resolved config's style, seeding orientation, the master toggle,
      * and the renderer label, then kick off live D3D-API detection. Idempotent: a no-op once any HUD view
      * exists. Called both at launch (behind {@code container.isShowFPS()}) and live from the in-game drawer
-     * when the user turns "Show HUD" on with FPS previously off — one place so the two paths can't drift.
+     * when the user turns "显示 HUD" on with FPS previously off — one place so the two paths can't drift.
      */
     private void ensureHudBuilt() {
         if (perfHud != null || gameNativeHud != null || fusionHud != null
@@ -1535,7 +1535,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     }
 
     /**
-     * When the HUD is built LIVE (user flipped "Show HUD" on mid-game after launching with FPS off), the
+     * When the HUD is built LIVE (user flipped "显示 HUD" on mid-game after launching with FPS off), the
      * game's {@code _MESA_DRV} property already fired while no HUD existed, so changeFrameRatingVisibility
      * dropped it (it early-returns when every HUD view is null) and {@code frameRatingWindowId} is still -1
      * — driveHudFrameTick would never count and the HUD would sit at 0 fps. Bind to the currently focused
@@ -1573,7 +1573,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             String lastApi = null;
             while (!Thread.currentThread().isInterrupted()) {
                 // HUD off -> don't do the /proc/maps API scan or push a label; idle-sleep and re-check.
-                // Keeps the thread alive so the label resumes when "Show HUD" is turned back on, and
+                // Keeps the thread alive so the label resumes when "显示 HUD" is turned back on, and
                 // matches driveHudFrameTick's hudCounterEnabled gate so NOTHING HUD-related runs while off.
                 if (!hudCounterEnabled) {
                     try { Thread.sleep(2000); } catch (InterruptedException e) { return; }
@@ -1986,7 +1986,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // Asked BEFORE sessionDisplayId moves on: this is "the window was on the TV until a moment ago".
         boolean wasOnTvLaunchDisplay = onTvLaunchDisplay();
         sessionDisplayId = now;
-        Log.i("XServerDisplayActivity", "TV: session moved from display " + from + " to " + now + " [" + why + "]");
+        Log.i("XServerDisplayActivity", "TV: session moved from display " + from + " 到 " + now + " [" + why + "]");
         // The compositor's HDR gate is decided from the display the window is on, so the new screen's
         // capability has to be re-read (and pushed to the compositor) before anything else looks at it.
         reportHdrCapability("session moved to display " + now);
@@ -2306,7 +2306,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             if (next && countMappedAppWindows() > 1)
                 showToast(this, "Native Rendering is best with a single fullscreen window — extra windows may be hidden");
             // Actually drive the renderer (this was previously only flipping the UI flag, so the
-            // toggle had no effect and no "Native Rendering+ Enabled" toast). Native (direct
+            // toggle had no effect and no "原生渲染+ 已启用" toast). Native (direct
             // scanout) only exists on the Vulkan renderer.
             HostRenderer r = xServerView.getRenderer();
             if (r instanceof com.winlator.star.renderer.vulkan.VulkanRenderer) {
@@ -2647,7 +2647,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             state.setFpsConfig(newConfig);
             runOnUiThread(() -> {
                 com.winlator.star.core.KeyValueSet kv = new com.winlator.star.core.KeyValueSet(newConfig);
-                // Master toggle: re-read live so flipping "Show HUD" hides/shows the overlay without a
+                // Master toggle: re-read live so flipping "显示 HUD" hides/shows the overlay without a
                 // relaunch (this callback is the same path metric toggles ride).
                 hudCounterEnabled = kv.get("hudEnabled", "1").equals("1");
                 String wantStyle = kv.get("hudStyle", "fusion");
@@ -2655,9 +2655,9 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     : gameNativeHud != null ? "gamenative"
                     : fusionHud != null ? "fusion"
                     : (frameRating != null || frameRatingHorizontal != null) ? "classic" : null;
-                // Lazy build (container-wide scope): the user flipped "Show HUD" on but no HUD exists —
+                // Lazy build (container-wide scope): the user flipped "显示 HUD" on but no HUD exists —
                 // FPS was off for this launch so nothing was built at onCreate. Enable the container-wide
-                // FPS gate (so ContainerDetailScreen's "Show FPS" reflects it next open) and build the HUD
+                // FPS gate (so ContainerDetailScreen's "显示 FPS" reflects it next open) and build the HUD
                 // now so it appears this instant, no relaunch, no trip to container settings. Fires only on
                 // the OFF->build transition (haveStyle == null); turning OFF never flips the gate back.
                 if (hudCounterEnabled && haveStyle == null) {
@@ -2690,7 +2690,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     else buildClassicHud(newConfig);
                 } else {
                     // Same style (or no HUD built): just push the new config to whatever exists.
-                    // `shown` folds in the master toggle so flipping "Show HUD" hides/reveals every
+                    // `shown` folds in the master toggle so flipping "显示 HUD" hides/reveals every
                     // style live (the single-view styles re-assert visibility here too, not just at build).
                     boolean shown = frameRatingWindowId != -1 && hudCounterEnabled;
                     if (frameRating != null) frameRating.applyConfig(newConfig);
@@ -2765,7 +2765,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
 
         componentInstallerExe = getIntent().getStringExtra("component_installer_exe");
         waylandMode = getIntent().getBooleanExtra("wayland_mode", false);
-        // "Launch this game on the TV": the launcher aimed this session at an external display and told
+        // "在电视上启动此游戏": the launcher aimed this session at an external display and told
         // us which one. That extra is only what was ASKED for — the system can decline a launch display
         // without anything throwing — so read where the window really ended up and decide from that.
         // It is knowable here: an activity is attached to its display before onCreate runs, so
@@ -3229,7 +3229,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
         } catch (Exception ignored) {}
 
-        // "Match the TV's resolution" (per game, TV tab): render at the display's own resolution instead
+        // "匹配电视的分辨率" (per game, TV tab): render at the display's own resolution instead
         // of this game's screen size. Only when the window really IS on the TV — a declined launch is an
         // ordinary handheld session and must keep the game's own size, or it would render at the TV's
         // resolution on the phone. The display is read by the session's actual id for the same reason.
@@ -3254,7 +3254,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
         }
 
-        // Supersampling ("Render scale"): multiply the game's render resolution so it renders above
+        // Supersampling ("渲染比例"): multiply the game's render resolution so it renders above
         // display res, then let the Vulkan compositor Lanczos-downscale it (see setHqDownscale below).
         // Stored via the "renderScale" extra; the per-game shortcut overrides the container default.
         // Off / 1.0 = no change. This must run before ScreenInfo is built so Wine/the X server use it.
@@ -3421,7 +3421,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
             Executors.newSingleThreadExecutor().execute(() -> {
                 // Track which app-side stage is running so a failure surfaces on the right card.
-                final String[] stage = { "Preparing Wine & graphics driver" };
+                final String[] stage = { "正在准备 Wine 及显卡驱动" };
                 try {
                     // A previous session may have been killed without a clean exit (recents-swipe /
                     // background optimisation / force-stop) — none of those run onDestroy, so exit()
@@ -3442,7 +3442,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     // all of it. Nothing below is read by the Linux session; setupXEnvironment
                     // branches into it before any of this would matter.
                     if (!gamescopeMode) {
-                        preloaderDialog.step(2, "Preparing Wine & graphics driver…");
+                        preloaderDialog.step(2, "正在准备 Wine 及显卡驱动…");
                         setWineDisplayDriver();   // BEFORE setupWineSystemFiles starts the first wineserver
                         // Controller input log (Log Manager, default off): this launch's recorder, before
                         // the controller setup below starts filling it. Wine sessions only.
@@ -3467,7 +3467,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     } else {
                         preloaderDialog.step(2, "Preparing the Linux runtime…");
                     }
-                    stage[0] = "Building environment";
+                    stage[0] = "正在构建环境";
                     setupXEnvironment();
                 } catch (Exception e) {
                     Log.e("XServerDisplayActivity", "Launch setup failed at stage: " + stage[0], e);
@@ -4005,7 +4005,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private void prepareLsfgNative() {
         if (!com.winlator.star.core.LsfgNative.isDllAvailable(this)) {
             Log.w("XServerDisplayActivity",
-                "LSFG Native selected but no Lossless.dll imported (Settings) - leaving frame gen off");
+                "已选择LSFG Native但未导入Lossless.dll（设置）— 保持帧生成关闭");
             lsfgNativeStatus = com.winlator.star.core.LsfgNative.STATUS_NOT_INSTALLED;
             refreshNativeFgAvailability(true, 0);
             return;
@@ -4023,7 +4023,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 lsfgNativeStatus = status;
                 if (status != com.winlator.star.core.LsfgNative.STATUS_OK) {
-                    Log.e("XServerDisplayActivity", "LSFG Native unavailable: "
+                    Log.e("XServerDisplayActivity", "LSFG Native不可用: "
                         + com.winlator.star.core.LsfgNative.explain(status));
                     refreshNativeFgAvailability(true, 0);
                     return;
@@ -4114,7 +4114,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         if (!lsfg && !winfg) return "";
         final String name = lsfg ? "LSFG Native" : "Win-FG Native";
         if (lsfg && lsfgNativeStatus > com.winlator.star.core.LsfgNative.STATUS_OK)
-            return "LSFG Native can't start: "
+            return "LSFG Native 无法启动: "
                 + com.winlator.star.core.LsfgNative.explain(lsfgNativeStatus) + ".";
         if (waylandMode) {
             // The Wayland compositor is always Vulkan (Turnip via adrenotools); the verdict comes
@@ -4123,11 +4123,11 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 case com.winlator.star.renderer.vulkan.VulkanRenderer.FG_PROBLEM_DRIVER: {
                     String caps = com.winlator.star.wayland.WaylandCompositor.nativeFrameGenCapsReason();
                     boolean version = caps != null && caps.contains("Vulkan version below");
-                    return name + " can't run on this Renderer Driver: "
-                        + (version ? "it needs Vulkan 1.3, which this driver doesn't provide."
-                                   : "this driver is missing a feature it needs.")
-                        + " In this container's settings, set Renderer Driver to a Turnip driver,"
-                        + " then relaunch the game.";
+                    return name + " 无法在此渲染器驱动程序上运行: "
+                        + (version ? "它需要Vulkan 1.3，而此驱动程序不提供。"
+                                   : "此驱动程序缺少它所需的功能。")
+                        + " 在此容器的设置中，将渲染器驱动程序设置为Turnip驱动程序,"
+                        + " 然后重新启动游戏。";
                 }
                 case com.winlator.star.renderer.vulkan.VulkanRenderer.FG_PROBLEM_START_FAILED:
                     return name + " couldn't start in the Wayland compositor. In this container's"
@@ -4140,7 +4140,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         }
         if (!"vulkan".equalsIgnoreCase(resolvedRenderer()))
             return getString(R.string.frame_generation_requires_vulkan)
-                + " Change Renderer in this container's settings, then relaunch the game.";
+                + " 在此容器的设置中更改渲染器，然后重新启动游戏。";
         com.winlator.star.renderer.vulkan.VulkanRenderer vkr = vulkanRendererOrNull();
         if (vkr == null) return null;
         switch (vkr.getFrameGenProblem()) {
@@ -4152,14 +4152,14 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 boolean offerCompat = lsfg && version
                     && com.winlator.star.FeatureFlags.LSFG_NATIVE_EXPERIMENTS_ENABLED
                     && container != null && !container.isLsfgVk11Compat();
-                return name + " can't run on this Renderer Driver: "
-                    + (version ? "it needs Vulkan 1.3, which this driver doesn't provide."
-                               : "this driver is missing a feature it needs.")
-                    + " In this container's settings, set Renderer Driver to a Turnip driver,"
+                return name + " 无法在此渲染器驱动程序上运行: "
+                    + (version ? "它需要Vulkan 1.3，而此驱动程序不提供。"
+                               : "此驱动程序缺少它所需的功能。")
+                    + " 在此容器的设置中，将渲染器驱动程序设置为Turnip驱动程序,"
                     + (offerCompat
-                        ? " or turn on \"" + getString(R.string.lsfg_vk11_compat) + "\","
+                        ? " 或打开 \"" + getString(R.string.lsfg_vk11_compat) + "\","
                         : "")
-                    + " then relaunch the game.";
+                    + " 然后重新启动游戏。";
             }
             case com.winlator.star.renderer.vulkan.VulkanRenderer.FG_PROBLEM_START_FAILED:
                 return name + " couldn't start on this Renderer Driver. In this container's"
@@ -5915,7 +5915,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     }
 
     /**
-     * Whether this launch is a RealSteam (SteamLite) launch with the per-game "Controller passthrough"
+     * Whether this launch is a RealSteam (SteamLite) launch with the per-game "记住我的选择"
      * toggle ON — the device-proven fix for classic DInput games (Half-Life 2, CS:S) that read the pad
      * directly and get nothing while the genuine client holds it as Steam Input. Gates ALL passthrough
      * behaviour: the prefix levers (in {@link RealSteamLauncher#prepare}) and the DInput input-type
@@ -6306,37 +6306,37 @@ public class XServerDisplayActivity extends AppCompatActivity {
     private void awaitAppSteamHost() {
         if (appSteamPlan == null) return;
         long deadline = System.currentTimeMillis() + APPSTEAM_HOST_WAIT_MS;
-        preloaderHint("Signing in to Steam (app session host)…");
+        preloaderHint("正在登录 Steam（应用会话主机）…");
         boolean loggedIn = false;
         long loggedInAt = 0L;
         while (System.currentTimeMillis() < deadline && !exiting) {
             com.winlator.star.store.SteamAgentChannel ch = steamAgentChannel;
             if (appSteamHostReady) {
-                preloaderHint("Steam session ready — launching the game…");
+                preloaderHint("Steam 会话就绪 — 正在启动游戏…");
                 return;
             }
             if (ch != null && ch.getLoggedIn() && !loggedIn) { loggedIn = true; loggedInAt = System.currentTimeMillis(); }
             // logged_in without host_ready for 15 s: the app-info/ownership warm-up is still running —
             // good enough, the game will ask again itself.
             if (loggedIn && System.currentTimeMillis() - loggedInAt > 15_000L) {
-                preloaderHint("Signed in to Steam — launching the game…");
+                preloaderHint("已登录Steam — 正在启动游戏…");
                 return;
             }
             if (!com.winlator.star.store.SteamHost.INSTANCE.isAlive()) {
                 String why = ch != null && ch.getLastFailure() != null ? ch.getLastFailure() : "the host process exited";
-                showAgentFailure("Steam session host", "The app's Steam session host stopped",
-                        why + ". Retry, launch with SteamLite (in-container Steam), or offline with Goldberg.", true);
+                showAgentFailure("Steam 会话主机", "应用的 Steam 会话主机已停止",
+                        why + ". 重试、使用 SteamLite（容器内 Steam）启动，或使用 Goldberg 离线启动。", true);
                 return;
             }
             if (ch != null && ch.getLastFailure() != null && !loggedIn) {
-                showAgentFailure("Steam session host", "Steam rejected the app session's sign-in",
-                        ch.getLastFailure() + " — the saved sign-in did not work for the session host. Retry, or use SteamLite / Goldberg.", true);
+                showAgentFailure("Steam 会话主机", "Steam 拒绝了应用会话的登录",
+                        ch.getLastFailure() + " — 已保存的登录对会话主机无效。请重试，或使用 SteamLite / Goldberg。", true);
                 return;
             }
             try { Thread.sleep(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
         }
         if (!exiting && !appSteamHostReady) {
-            showAgentFailure("Steam session host", "Steam sign-in did not complete",
+            showAgentFailure("Steam 会话主机", "Steam登录未完成",
                     "The app's Steam session host reported no sign-in within " + (APPSTEAM_HOST_WAIT_MS / 1000)
                             + "s. Retry, launch with SteamLite, or offline with Goldberg.", true);
         }
@@ -6357,7 +6357,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     // ── Live SteamLite agent channel (Phase 1-C) ─────────────────────────────────────────────────
     // The in-container agent streams its login / launch / game events over loopback (see
     // SteamAgentChannel + agent-src/AGENT_CHANNEL.md). They drive the launch overlay's reassurance
-    // line with the REAL state ("Signing in to Steam…", "Steam accepted the launch…", "Game running
+    // line with the REAL state ("正在登录Steam…", "Steam accepted the launch…", "Game running
     // (secure)") and, on a failed sign-in / insecure fallback / no sign-in within a bound, replace the
     // black screen with a failure card offering Retry / Launch with Goldberg. Everything here is
     // best-effort: an agent without the feature never connects and the launch behaves as before.
@@ -6474,7 +6474,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     exit();
                 }));
             }
-            preloaderDialog.fail("EA Desktop", "EA Desktop couldn't start " + game, detail, logDir, logging, actions);
+            preloaderDialog.fail("EA Desktop", "EA Desktop 无法启动 " + game, detail, logDir, logging, actions);
         });
     }
 
@@ -6493,8 +6493,8 @@ public class XServerDisplayActivity extends AppCompatActivity {
             return;
         }
         Log.w(AGENT_TAG, "watchdog: no sign-in result from the agent within " + (AGENT_LOGIN_TIMEOUT_MS / 1000) + "s");
-        showAgentFailure("Steam sign-in",
-                "Steam sign-in did not complete",
+        showAgentFailure("Steam登录",
+                "Steam登录未完成",
                 (appSteamPlan != null ? "The app's Steam session host" : "The Steam client inside the container")
                         + " reported no sign-in result within " + (AGENT_LOGIN_TIMEOUT_MS / 1000) + "s.");
     };
@@ -6512,17 +6512,17 @@ public class XServerDisplayActivity extends AppCompatActivity {
         @Override public void onAgentEvent(String ev, org.json.JSONObject obj) {
             switch (ev) {
                 case "started":
-                    preloaderHint("Signing in to Steam…");
+                    preloaderHint("正在登录Steam…");
                     break;
                 case "logged_in":
                     agentLoginResolved = true;
-                    preloaderHint("Signed in to Steam — launching the game…");
+                    preloaderHint("已登录Steam — 正在启动游戏…");
                     break;
                 case "login_failed": {
                     agentLoginResolved = true;
                     int er = obj.optInt("eresult", 0);
                     String reason = obj.optString("reason", "");
-                    showAgentFailure("Steam sign-in",
+                    showAgentFailure("Steam登录",
                             "Steam rejected the sign-in" + (reason.isEmpty() ? "" : " (" + reason + ")"),
                             (er != 0 ? "EResult " + er + " — " : "")
                                     + "The saved Steam sign-in did not work inside the container. "
@@ -6597,7 +6597,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 case "host_ready":
                     agentLoginResolved = true;
                     appSteamHostReady = true;
-                    preloaderHint("Steam session ready — launching the game…");
+                    preloaderHint("Steam 会话就绪 — 正在启动游戏…");
                     break;
                 case "ownership":
                     preloaderHint(obj.optBoolean("ok", false) ? "Steam ownership ticket ready" : "Steam ownership ticket not confirmed (continuing)");
@@ -6678,7 +6678,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 }));
                 if (appSteam) {
                     // App Steam failed: the proven in-container path is one tap away.
-                    actions.add(new com.winlator.star.core.FailureAction("Launch with SteamLite", false, () -> {
+                    actions.add(new com.winlator.star.core.FailureAction("使用 SteamLite 启动", false, () -> {
                         com.winlator.star.store.SteamSessionManager.INSTANCE.setPendingRelaunch(
                                 getApplicationContext(), sc.file.getPath(), c.id,
                                 com.winlator.star.store.SteamSessionManager.RelaunchMode.STEAMLITE);
@@ -6723,7 +6723,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
      * (friends see "playing <game>", Steam accrues playtime). Strictly gated: never when a RealSteam
      * plan is armed (the in-guest client reports itself and the app session is paused), never for
      * non-Steam shortcuts, never while the app session is suspended, and off when the user turned the
-     * "Show me as in-game for offline launches" setting off. Runs on the launch worker (Room lookup).
+     * "对离线启动显示我在游戏中" setting off. Runs on the launch worker (Room lookup).
      * Never throws; a failure only means no presence.
      */
     private void announceOfflineSteamPresence() {
@@ -7090,7 +7090,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
 
             SharedPreferences savePrefs = getSharedPreferences("save_manager_prefs", MODE_PRIVATE);
-            if (!savePrefs.getBoolean("auto_download_steam_on_launch", true)) return;
+            if (!savePrefs.getBoolean("Steam 游戏", true)) return;
 
             final Context appCtx = getApplicationContext();
             // We're on the launch worker thread → Room query is safely off-main.
@@ -7431,7 +7431,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             if (!isGogShortcut()) return;
 
             SharedPreferences savePrefs = getSharedPreferences("save_manager_prefs", MODE_PRIVATE);
-            if (!savePrefs.getBoolean("auto_download_gog_on_launch", true)) return;
+            if (!savePrefs.getBoolean("GOG 游戏", true)) return;
 
             final Context appCtx = getApplicationContext();
             final String gameId = GogCloudSavePaths.INSTANCE.gameIdForExecPath(appCtx, sc.path);
@@ -8391,7 +8391,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // the prefix's own xinput dlls back when the setting is off (core.BannerinXInput). Every launch,
         // idempotent, finishes or undoes an interrupted one; setupXEnvironment adds the
         // WINEDLLOVERRIDES entry and writes the session log line.
-        // With "Allow in-game switching", our DLLs go in either way plus Wine's own xinput1_4 beside them
+        // With "允许游戏内切换", our DLLs go in either way plus Wine's own xinput1_4 beside them
         // (the forward target), so the XInput source can change mid-game (Controls › Pad).
         // A game xinput DLL an earlier session moved aside and never put back (it ended uncleanly) goes
         // back first (core.GameXInputDlls); applyBannerinXInputEnv decides this launch's.
@@ -8430,7 +8430,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         stageBundledFileManager();
         stageBundledWinHandler();
 
-        // DirectInput visibility ("DirectInput games can see the controller", core.DInputVisibility,
+        // DirectInput visibility ("DirectInput 游戏可以看到控制器", core.DInputVisibility,
         // which also reads the old Enable DInput / Exclusive Input values). The entries it writes are
         // matched by the pad's name, which follows the Controller identity
         // (core.ControllerIdentity.dinputNames); the Classic DirectInput pad also needs winebus to
@@ -8450,8 +8450,8 @@ public class XServerDisplayActivity extends AppCompatActivity {
         }
         Log.i("XServerDisplayActivity", "DirectInput games can see the controller: "
                 + (dinputVisible ? "on" : "off") + " (" + dinputWhy + ")");
-        com.winlator.star.core.ControllerLog.setup("Controller type", com.winlator.star.core.ControllerIdentity.describe(padIdentity));
-        com.winlator.star.core.ControllerLog.setup("DirectInput games can see the controller", (dinputVisible ? "on" : "off") + " (" + dinputWhy + ")");
+        com.winlator.star.core.ControllerLog.setup("控制器类型", com.winlator.star.core.ControllerIdentity.describe(padIdentity));
+        com.winlator.star.core.ControllerLog.setup("DirectInput 游戏可以看到控制器", (dinputVisible ? "on" : "off") + " (" + dinputWhy + ")");
         com.winlator.star.core.ControllerLog.setup("winebus", (com.winlator.star.core.ControllerIdentity.mapControllers(padIdentity)
                 ? "Map Controllers default (pads mapped as gamepads)" : "Map Controllers 0 (raw joystick, Classic DirectInput pad)")
                 + ", DisableHidraw 1");
@@ -8865,13 +8865,13 @@ public class XServerDisplayActivity extends AppCompatActivity {
             boolean direct = sync != null && sync.installed && sync.directOn;
             boolean dinputVibration = com.winlator.star.core.DInputVibration.effective(container, shortcut);
             com.winlator.star.core.ControllerLog.launchChoices(direct, !direct, launchDInputVisible, dinputVibration);
-            com.winlator.star.core.ControllerLog.setup("XInput source", (direct ? "Direct (BANNERIN)" : "Wine's XInput")
+            com.winlator.star.core.ControllerLog.setup("XInput 源", (direct ? "Direct (BANNERIN)" : "Wine's XInput")
                     + (sync != null && sync.installed && sync.switching && sync.forwardAvailable
                             ? ", in-game switching available" : ", no in-game switching"));
-            com.winlator.star.core.ControllerLog.setup("DirectInput vibration", (dinputVibration ? "on" : "off")
+            com.winlator.star.core.ControllerLog.setup("DirectInput 震动", (dinputVibration ? "on" : "off")
                     + (com.winlator.star.core.DInputVibration.envOverride(container, shortcut) != null
                             ? " (" + com.winlator.star.core.DInputVibration.ENV + " in the env vars decides)" : ""));
-            com.winlator.star.core.ControllerLog.setup("Stick updates",
+            com.winlator.star.core.ControllerLog.setup("摇杆更新",
                     com.winlator.star.core.StickPacing.forGame(container, shortcut).format()
                             + (com.winlator.star.core.StickPacing.envOverrides(container, shortcut)
                                     ? " (BANNERIN_AXIS_* in the env vars decide)" : ""));
@@ -8970,7 +8970,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         } finally {
             String startWith = startWithGamePath();
             if (!startWith.isEmpty()) {
-                cards.add(new com.winlator.star.ui.DrawerMod(START_WITH_GAME_ID, "Start with the game", true, true,
+                cards.add(new com.winlator.star.ui.DrawerMod(START_WITH_GAME_ID, "从系统选取…", true, true,
                         "", startWith.substring(startWith.lastIndexOf('\\') + 1), "", "Start"));
             }
             final java.util.List<com.winlator.star.ui.DrawerMod> list = cards;
@@ -9479,7 +9479,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     // The one platform reading that says an HDR layer is really being SHOWN as HDR: 1.0 while only SDR
     // is on screen, above 1.0 once the display grants the picture HDR headroom. The compositor tags the
     // game's frames and counts them; this feeds it what the display did with them, so the session log
-    // (and its "HDR on screen: ..." line) can tell "tagged" from "shown". Runs only while the HDR switch
+    // (and its "HDR on screen: ..." line) can tell "tagged" 来自 "shown". Runs only while the HDR switch
     // is on, stops by itself when the compositor reports the gate closed, and never throws.
     private final android.os.Handler hdrRatioHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable hdrRatioSampler;
@@ -10788,7 +10788,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     {"Screen size", "screenSize"}, {"Display driver (Android)", "graphicsDriverConfig"},
                     {"Draw driver (Linux)", com.winlator.star.core.LinuxVulkanDriver.EXTRA},
                     {"Client cores", "linuxClientCpuList"}, {"Game cores", "linuxGameCpuList"},
-                    {"Audio driver", "audioDriver"}, {"Frame generation", "frameGenEngine"},
+                    {"Audio driver", "audioDriver"}, {"帧率", "frameGenEngine"},
                     {"Env vars", "envVars"}};
             for (String[] k : keys) {
                 String v = shortcut != null ? shortcut.getExtra(k[1], "") : "";
@@ -11184,7 +11184,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     }
                     // How many updates the app published into slot 0 over the whole session, and what
                     // the session's readers took from it. Zero publishes means no input ever left the
-                    // app, which separates "the pad wrote nothing" from "the client read nothing" - the
+                    // app, which separates "the pad wrote nothing" 来自 "the client read nothing" - the
                     // two look identical from the outside. Read through getSessionStat because the
                     // session end may already have retired the slot file (WinHandler.stop).
                     try {
@@ -11227,7 +11227,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                         String[] modes = {"none", "frame credits", "60 Hz fallback", "fixed", "unpaced"};
                         stats.append("slot0 stick pacing: ")
                              .append(mode >= 0 && mode < modes.length ? modes[(int) mode] : String.valueOf(mode))
-                             .append(" at ")
+                             .append(" 于 ")
                              .append(com.winlator.star.inputcontrols.BannerinWriter.getSessionStat(slot0,
                                      com.winlator.star.inputcontrols.BannerinWriter.STAT_READER_AXIS_HZ))
                              .append(" Hz last, auto->fallback ")
@@ -11309,7 +11309,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             Log.i("XServerDisplayActivity", "Linux session: placing " + name + " before the client's first start");
             // The centered status card, the same one the session's own milestones drive once it
             // is running; linuxProgress writes to nothing else.
-            com.winlator.star.core.PreloaderState.showLinuxSteam("Downloading " + name + "…");
+            com.winlator.star.core.PreloaderState.showLinuxSteam("正在下载 " + name + "…");
             final long startedAt = android.os.SystemClock.elapsedRealtime();
             final String hint = "Once only · the Steam client keeps it up to date from here on";
             com.winlator.star.linux.LinuxSteamSeed.Entry entry = com.winlator.star.linux.LinuxSteamSeed.fetchProton();
@@ -11320,7 +11320,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
             String problem = com.winlator.star.linux.LinuxSteamSeed.install(this, entry, (stage, percent) -> {
                 long seconds = (android.os.SystemClock.elapsedRealtime() - startedAt) / 1000;
-                String elapsed = String.format(java.util.Locale.US, "%d:%02d elapsed · still working",
+                String elapsed = String.format(java.util.Locale.US, "%d:%02d 已过 · 仍在处理",
                         seconds / 60, seconds % 60);
                 com.winlator.star.core.PreloaderState.linuxProgress(stage, percent, elapsed, hint);
             });
@@ -11662,7 +11662,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     // one (lsfgLaunchMult >= 2), so a passthrough launch is level 0.
                     lastCommittedFgLevel = (lsfgLaunchMult >= 2) ? lsfgLaunchMult : 0;
                 } else {
-                    Log.w("XServerDisplayActivity", "lsfg-vk selected but no Lossless.dll imported (Settings) — leaving frame gen off");
+                    Log.w("XServerDisplayActivity", "已选择lsfg-vk但未导入Lossless.dll（设置）— 保持帧生成关闭");
                 }
             } else {
                 // bionic-fg layer: load it only when frame generation is the selected engine. The
@@ -11710,9 +11710,9 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
             } else if (!"off".equals(resolvedFrameGenEngine())) {
                 // Stale config: FG selected on a non-Vulkan renderer — skip the layer (see note above).
-                Log.w("XServerDisplayActivity", "Frame gen (" + resolvedFrameGenEngine()
-                        + ") requested but host renderer is " + resolvedRenderer()
-                        + " — skipping FG layer (Vulkan required).");
+                Log.w("XServerDisplayActivity", "帧生成 (" + resolvedFrameGenEngine()
+                        + ") 请求，但主机渲染器为 " + resolvedRenderer()
+                        + " — 跳过FG层（需要Vulkan）。");
             }
 
             if (shortcut != null) envVars.putAll(shortcut.getExtra("envVars"));
@@ -11767,13 +11767,13 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 }
             }
 
-            // "Fast OpenGL" on X11: the bundled Mesa through Wine's EGL backend or, for layers without
+            // "快速 OpenGL" on X11: the bundled Mesa through Wine's EGL backend or, for layers without
             // it, winex11's GLX on the X server's server-side GLX, so Zink presents through a Vulkan
             // swapchain instead of XMesa's finish + readback + XPutImage per frame (see
             // core.FastOpenGL / X11Egl). After both user env merges so a value the user typed wins, and
             // before the X server's socket opens below (the GLX route turns server GLX on); never on
             // Wayland (winewayland always uses its own EGL) or in the Linux session. The same helper
-            // writes "Show OpenGL FPS" / "OpenGL vsync off", which apply on both backends.
+            // writes "显示 OpenGL FPS" / "OpenGL vsync off", which apply on both backends.
             if (!gamescopeMode) applyFastOpenGLEnv(waylandMode);
 
             // Full-colour game cursors on X11: register the cursor subset of RENDER so libXcursor
@@ -11992,7 +11992,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             // Native AAudio via winedirectaudio.drv: no host audio server and no ALSA/Pulse socket — the
             // guest reaches AAudio directly and the unixlib reads BANNER_AUDIO_DIRECT_* from the env at
             // stream open. Resolve the cog preset to concrete env here (LOW_LATENCY + a real per-preset
-            // buffer) so the menu actually controls the driver. The Wine "Audio" registry driver is set
+            // buffer) so the menu actually controls the driver. The Wine "音频" registry driver is set
             // by changeWineAudioDriver(); route changes are handled inside the driver.
             DirectAudioSupport.installDriver(this, container.getWineVersion());   // newest driver build on the layer before the guest loads it
             applyDirectAudioConfig(envVars);
@@ -12036,8 +12036,8 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     cancelLaunchTimers();
                     preloaderDialog.fail(
-                            "Launching Windows",
-                            "The game exited before rendering",
+                            "正在启动 Windows",
+                            "游戏在渲染前退出",
                             "exit code " + status,
                             logDir,
                             launchLoggingEnabled);
@@ -12128,14 +12128,14 @@ public class XServerDisplayActivity extends AppCompatActivity {
         writeUbisoftDiagnostics();
 
         // Start all environment components (XServer, Audio, Wine, etc.)
-        preloaderDialog.step(4, "Launching Windows…");
+        preloaderDialog.step(4, "正在启动 Windows...");
         environment.startEnvironmentComponents();
         runOnUiThread(this::startLiveControllerSession);
 
         // Guest is now booting — the tail is unmeasurable, so switch to the indeterminate spinner and
         // arm the not-frozen reassurance timers (cancelled on first render or termination).
         String preloaderGameName = (shortcut != null) ? shortcut.name : container.getName();
-        preloaderDialog.enterGuest("Waiting for " + preloaderGameName + " to render…");
+        preloaderDialog.enterGuest("Waiting for " + preloaderGameName + " 渲染…");
         runOnUiThread(this::startLaunchTimers);
 
         // Wayland: the launch overlay must ALWAYS clear so the guest is visible — the compositor
@@ -12211,7 +12211,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // active (>=3 lives in the compositor pass ASR bypasses), Colors=RGBA (swapRB) is off (the
         // FLIP path's swapRB fallback is preserved as-is for now), and ASR is available (API 29+). If
         // ASR is unsupported we fall through to the old Vulkan FLIP native path (nativeOn) below.
-        // The user-facing "Native backend" pref gates the reroute: "auto"/"asr" reroute (as above),
+        // The user-facing "原生后端" pref gates the reroute: "auto"/"asr" reroute (as above),
         // while "flip" opts out and keeps the leaner Vulkan FLIP direct-scanout path.
         if ("vulkan".equalsIgnoreCase(rendererType)
                 && resolvedRendererNative()
@@ -12436,7 +12436,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // Wayland mode: overlay the embedded compositor's SurfaceView on top of the (idle) X view,
         // and start the compositor rendering into it. winewayland.drv connects to its socket.
         if (waylandMode) startWaylandCompositor(rootView);
-        // "Launch this game on the TV": re-read the display the window is on now that it is attached,
+        // "在电视上启动此游戏": re-read the display the window is on now that it is attached,
         // then ask the TV for the output mode the user picked — but only when the window really is on
         // the TV. The re-read goes through checkSessionDisplay so a cable pulled between onCreate and
         // here (the whole container setup) takes the normal unplug path instead of being mistaken for a
@@ -12463,7 +12463,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             try {
                 XServerDialogState.INSTANCE.showInfoToast(
                         "TV LAUNCH REFUSED", "handheld",
-                        "The system wouldn't open this game on the TV. It's running on the handheld screen.");
+                        "系统无法在电视上打开此游戏。它正在手持设备屏幕上运行。");
             } catch (Throwable ignored) {}
         }
         startHdrCapabilityReport();
@@ -12722,7 +12722,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // container (and the live overlay below) are configured for the GameHub HUD.
         if (container != null) XServerDrawerState.INSTANCE.setFpsConfig(resolvedFPSCounterConfig());
 
-        // Container-gated launch build. The live in-game "Show HUD" toggle can also drive this later
+        // Container-gated launch build. The live in-game "显示 HUD" toggle can also drive this later
         // (see onFpsConfigApply -> ensureHudBuilt), so the build body lives in one idempotent method.
         if (container != null && container.isShowFPS()) {
             ensureHudBuilt();
@@ -13296,7 +13296,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("touchscreen_timeout_enabled", timeout);
             editor.putBoolean("touchscreen_haptics_enabled", haptics);
-            // #338: remember an explicit "-- Disabled --" choice (profileIndex 0) so the #333 smart
+            // #338: remember an explicit "-- 已禁用 --" choice (profileIndex 0) so the #333 smart
             // default never re-seeds the phantom pad on later launches; picking a real profile clears it.
             editor.putBoolean("smart_default_touch_optout", profileIndex == 0);
             editor.apply();
@@ -13373,7 +13373,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             Log.i("XServerDisplayActivity", "Rumble motors: "
                     + com.winlator.star.core.RumbleMotors.label(rumbleMotors) + " (" + rumbleMotorsSource() + "; "
                     + com.winlator.star.core.RumbleMotors.deviceNote() + ")");
-            com.winlator.star.core.ControllerLog.setup("Rumble motors", com.winlator.star.core.RumbleMotors.label(rumbleMotors)
+            com.winlator.star.core.ControllerLog.setup("震动马达", com.winlator.star.core.RumbleMotors.label(rumbleMotors)
                     + " (" + rumbleMotorsSource() + ")");
             ds.setRumbleMotors(rumbleMotors);
             ds.onRumbleMotorsChanged = (motors) -> {
@@ -13762,7 +13762,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("touchscreen_timeout_enabled", timeout);
             editor.putBoolean("touchscreen_haptics_enabled", haptics);
-            // #338: remember an explicit "-- Disabled --" choice (profileIndex 0) so the #333 smart
+            // #338: remember an explicit "-- 已禁用 --" choice (profileIndex 0) so the #333 smart
             // default never re-seeds the phantom pad on later launches; picking a real profile clears it.
             editor.putBoolean("smart_default_touch_optout", profileIndex == 0);
             editor.apply();
@@ -13875,7 +13875,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             // profile are unchanged. The overlay then auto-hides once a controller takes over.
             //
             // #338: two suppressions so an explicit "Disabled" is honored and the phantom pad never
-            // fights a real one. (a) If the user has explicitly confirmed "-- Disabled --" in the
+            // fights a real one. (a) If the user has explicitly confirmed "-- 已禁用 --" in the
             // controls dialog we persist an opt-out and never re-seed. (b) If a physical controller is
             // already connected at launch, the out-of-box need ("a working touch controller") is
             // already met — seeding a phantom pad here is unwanted AND grabs a player slot, which then
@@ -14240,7 +14240,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
     }
 
     // Wrapper Version Manager (#132): the leegao BCn layer (libbcn_layer.so + manifest) normally
-    // ships inside extra_libs.tzst. A user-installed "BCn layer" override (leegao_bcn.tzst) overlays
+    // ships inside extra_libs.tzst. A user-installed "BCn 层" override (leegao_bcn.tzst) overlays
     // a newer copy on top — extract it AFTER extra_libs so it wins, and every launch when present
     // (small file) so it applies regardless of the extra_libs version gate above.
     File bcnLayerOverride = new File(getFilesDir(), "graphics_driver/leegao_bcn.tzst");
@@ -14530,9 +14530,9 @@ public class XServerDisplayActivity extends AppCompatActivity {
             else {
                 showToast(this, "Wrapper + compat + bcn: the DX12 compat layer needs a Valhall Mali (r32p1+)"
                         + " GPU — it is disabled on this device (" + GPUInformation.extractModelName(renderer)
-                        + "). BCn texture transcode is still active.");
-                Log.w("GraphicsDriverExtraction", "compat_layer disabled: GPU '" + renderer
-                        + "' is not on the Valhall (r32p1+) allowlist");
+                        + ")。 BCn纹理转码仍然有效。");
+                Log.w("GraphicsDriverExtraction", "compat_layer已禁用：GPU '" + renderer
+                        + "' 不在Valhall (r32p1+)允许列表中");
             }
         }
         } // useGamenativeEngine ? GameNative DX12 path : leegao bcn_layer/compat_layer path
@@ -15367,7 +15367,7 @@ return true;
                         dlls.add(!dlname.endsWith(".exe") ? dlname+".dll" : dlname);
                     }
                 }
-                Log.d("XServerDisplayActivity", "Setting wincomponent " + identifier + " to " + String.valueOf(useNative));
+                Log.d("XServerDisplayActivity", "正在设置 wincomponent " + identifier + " 到 " + String.valueOf(useNative));
                 WineUtils.overrideWinComponentDlls(this, container, identifier, useNative);
                 WineUtils.setWinComponentRegistryKeys(systemRegFile, identifier, useNative, this);
             }
@@ -15425,7 +15425,7 @@ return true;
     }
 
     /**
-     * Resolve "Fast OpenGL" for this X11 launch (core.FastOpenGL.decideX11) and, when on, export
+     * Resolve "快速 OpenGL" for this X11 launch (core.FastOpenGL.decideX11) and, when on, export
      * X11Egl's env for the route: BANNER_X11_EGL=0 (off), BANNER_X11_GLX=1 (GLX route) and
      * BANNER_X11_EGL=1 (EGL route) in the environment win outright; else the shortcut's override,
      * else the container's choice (default on), on only when the driver is a Turnip and the APK
@@ -17288,7 +17288,7 @@ return true;
     // Whether the guest-side refresh setting was explicitly chosen by the user (extra present) vs. left
     // at the untouched default (extra absent). A per-game override that inherits (no shortcut extra)
     // defers to the container's explicitness. Keyed on the unlockGameRefreshRate extra, which the merged
-    // "In-game refresh rate" dropdown always writes alongside the cap when a concrete option is picked.
+    // "渲染缩放（超采样）" dropdown always writes alongside the cap when a concrete option is picked.
     private boolean isRefreshUnlockExplicit() {
         if (container == null) return false;
         if (shortcut != null && shortcut.hasExtra("unlockGameRefreshRate")) return true;
@@ -17446,7 +17446,7 @@ return true;
                 reg.setStringValue("Software\\Wine\\Explorer", "Desktop", "shell");
                 reg.setStringValue("Software\\Wine\\Explorer\\Desktops", "shell", String.valueOf(xServer.screenInfo));
             } else {
-                String cur = reg.getStringValue("Software\\Wine\\Drivers", "Graphics", "");
+                String cur = reg.getStringValue("Software\\Wine\\Drivers", "显示设置", "");
                 if ("wayland".equals(cur))
                     reg.setStringValue("Software\\Wine\\Drivers", "Graphics", "x11");
                 // Self-healing like Graphics: an X11 launch drops the Wayland desktop seeding so the
@@ -17551,7 +17551,7 @@ return true;
         else if (!className.isEmpty()) winHandler.setProcessAffinity(className, processAffinity);
 
         // Arm the drift checker — but only for a genuine restriction (fewer cores than available); no point
-        // maintaining an "all cores" default. The checker resolves the game's real LINUX pid by exe name and
+        // maintaining an "所有核心" default. The checker resolves the game's real LINUX pid by exe name and
         // re-pins HOST-SIDE, so it no longer depends on the winhandler Windows-pid (which isn't a /proc pid).
         if (!className.isEmpty()) {
             boolean restrict = Integer.bitCount(processAffinity & 0xff) < Runtime.getRuntime().availableProcessors();
@@ -18343,7 +18343,7 @@ return true;
 
     private void installerReminderToast() {
         try {
-            runOnUiThread(() -> showToast(this, "Installing " + installerLabel() + "… follow the installer's prompts if it shows any. "
+            runOnUiThread(() -> showToast(this, "正在安装 " + installerLabel() + "… follow the installer's prompts if it shows any. "
                             + "This session closes by itself when it is done."));
         } catch (Throwable ignored) {}
     }
@@ -18351,7 +18351,7 @@ return true;
     private void evaluateInstallerTick() {
         if (componentInstallerExe == null) return;
         // Silent installer (no window ever mapped -> overlay still up): keep its status line current.
-        if (!winStarted) preloaderHint("Installing " + installerLabel()
+        if (!winStarted) preloaderHint("正在安装 " + installerLabel()
                 + "… this can take a few minutes. Leave it running — this screen closes by itself when it is done.");
         // Visible installer: repeat the reminder roughly every 45 s so a long install never looks stuck.
         if (winStarted && (++installerTicksTotal % 45) == 0) installerReminderToast();
@@ -18522,7 +18522,7 @@ return true;
                 winHandler.setProcessAffinity(pid, mask);
                 // Point the drift checker at the game exe + this mask so it survives past the TM close: it
                 // resolves the real Linux pid and re-pins host-side on thread growth. A restriction arms it;
-                // "all cores" clears the target. (Targets the game exe — the common case of pinning the game.)
+                // "所有核心" clears the target. (Targets the game exe — the common case of pinning the game.)
                 String exe = gameExeBasename();
                 if (exe != null && Integer.bitCount(mask & 0xff) < Runtime.getRuntime().availableProcessors()) {
                     if (!exe.equals(affinityTargetExe)) affinityLinuxPid = -1;
@@ -18599,7 +18599,7 @@ return true;
                         ? m.getDriverName(choice)
                                 + (m.getDriverVersion(choice).isEmpty() ? "" : " " + m.getDriverVersion(choice))
                                 + " (imported)"
-                        : "Runtime default (" + choice + " is gone)";
+                        : "Runtime 默认 (" + choice + " is gone)";
             }
         } catch (Exception e) {
             Log.w("XServerDisplayActivity", "linux: draw driver name unavailable", e);
@@ -18712,7 +18712,7 @@ return true;
             am.getMemoryInfo(mi);
             long used = mi.totalMem - mi.availMem;
             int memPct = (int)(((double) used / mi.totalMem) * 100);
-            ds.setTmMemTitle("Memory (" + memPct + "%)");
+            ds.setTmMemTitle("内存 (" + memPct + "%)");
             ds.setTmMemInfo(StringUtils.formatBytes(used, false) + " / " +
                 StringUtils.formatBytes(mi.totalMem));
         } catch (Exception ignored) {}

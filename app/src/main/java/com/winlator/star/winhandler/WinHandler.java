@@ -3107,7 +3107,7 @@ public class WinHandler {
             // transient remove/add while all four slots are full would be dropped.
             String descriptor = descriptorOf(deviceId);
             if (descriptor == null || !descriptorToSlot.containsKey(descriptor)) {
-                Log.d("WinHandler", "Ignoring device " + deviceId + " from " + source + ": slot limit reached.");
+                Log.d("WinHandler", "Ignoring device " + deviceId + " 来自 " + source + ": slot limit reached.");
                 return false;
             }
         }
@@ -3117,7 +3117,7 @@ public class WinHandler {
             if (!ExternalController.isGameController(device))
                 return false;
             if (isShadowedBySdl(device)) {
-                Log.d("WinHandler", "Skipping device " + deviceId + " from " + source
+                Log.d("WinHandler", "Skipping device " + deviceId + " 来自 " + source
                         + ": Valve pad already read through SDL.");
                 return false;
             }
@@ -3129,7 +3129,7 @@ public class WinHandler {
         if (descriptor != null) {
             Integer override = manualSlotOverrides.get(descriptor);
             if (override != null && override == SLOT_IGNORE) {
-                Log.d("WinHandler", "Skipping device " + deviceId + " from " + source
+                Log.d("WinHandler", "Skipping device " + deviceId + " 来自 " + source
                         + ": ignored by manual slot override.");
                 return false;
             }

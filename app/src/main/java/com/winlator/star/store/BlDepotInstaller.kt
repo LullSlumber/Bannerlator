@@ -179,7 +179,7 @@ internal object BlDepotInstaller {
         val session = ensureSession(ctx)
         if (session == null) {
             dlog("Session status at failure: ${repo.lastSessionStatus}")
-            fail(appId, "Steam session not ready — sign in again or retry in a moment"); return
+            fail(appId, "Steam会话未就绪 — 请重新登录或稍后重试"); return
         }
         if (cancelled.get()) { finishCancelled(appId, db); return }
 

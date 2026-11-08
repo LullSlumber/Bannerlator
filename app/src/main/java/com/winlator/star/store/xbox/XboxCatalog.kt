@@ -170,7 +170,7 @@ internal object XboxCatalog {
         val localized = objects(json.optJSONArray("LocalizedProperties")).firstOrNull() ?: return null
         val title = localized.optString("ProductTitle").takeIf { it.isNotBlank() } ?: return null
         val packages = objects(json.optJSONArray("DisplaySkuAvailabilities")).flatMap {
-            objects(it.optJSONObject("Sku")?.optJSONObject("Properties")?.optJSONArray("Packages"))
+            objects(it.optJSONObject("Sku")?.optJSONObject("属性")?.optJSONArray("Packages"))
         }
         val pc = packages.filter { pkg -> objects(pkg.optJSONArray("PlatformDependencies")).any { it.optString("PlatformName") == "Windows.Desktop" } }
         val installable = pc.any { it.optString("PackageFormat").equals("MSIXVC", true) }

@@ -235,7 +235,7 @@ public final class GogDownloadManager {
                     cb.onError("No downloadable builds for this game");
                 } else {
                     writeDebug(ctx, dbg);
-                    cb.onError("Download failed: " + err1);
+                    cb.onError("下载失败: " + err1);
                 }
             } else {
                 writeDebug(ctx, dbg);
@@ -253,7 +253,7 @@ public final class GogDownloadManager {
             if (dir == null) dir = ctx.getFilesDir();
             java.io.File f = new java.io.File(dir, "bh_gog_debug.txt");
             writeFile(f, dbg.toString().getBytes("UTF-8"));
-            Log.i(TAG, "Debug written to: " + f.getAbsolutePath());
+            Log.i(TAG, "调试信息写入: " + f.getAbsolutePath());
         } catch (Exception e) {
             Log.e(TAG, "writeDebug failed", e);
         }

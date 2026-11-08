@@ -189,14 +189,14 @@ fun ComponentsSheet(container: Container, onDismiss: () -> Unit, exeFile: File? 
             Column(Modifier.fillMaxWidth().fillMaxHeight(0.92f).padding(bottom = 12.dp)) {
                 Text("Components", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 4.dp))
-                Text("Install Wine dependencies into this container",
+                Text("将 Wine 依赖项安装到此容器中",
                     style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant,
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp))
                 XmbTapToEdit(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) { fieldModifier, stopEditing ->
                     OutlinedTextField(
                         value = query, onValueChange = { query = it },
                         singleLine = true,
-                        placeholder = { Text("Search components") },
+                        placeholder = { Text("搜索组件") },
                         modifier = fieldModifier,
                         keyboardActions = xmbDoneActions(stopEditing),
                     )
@@ -209,7 +209,7 @@ fun ComponentsSheet(container: Container, onDismiss: () -> Unit, exeFile: File? 
                         CircularProgressIndicator(color = cs.primary)
                     }
                     loadError -> Box(Modifier.fillMaxWidth().padding(28.dp), contentAlignment = Alignment.Center) {
-                        Text("Couldn't load the component catalog.", color = cs.onSurfaceVariant)
+                        Text("无法加载组件目录", color = cs.onSurfaceVariant)
                     }
                     else -> {
                         // Name → component, for routing a base install to its file-drop `_dll` variant below.
@@ -310,7 +310,7 @@ fun ComponentsSheet(container: Container, onDismiss: () -> Unit, exeFile: File? 
                                         Divider(color = DividerColor.copy(alpha = 0.5f))
                                     }
                                 }
-                                section("Recommended for this game", recommended) { reasons[it.name] }
+                                section("推荐用于此游戏", recommended) { reasons[it.name] }
                                 section("Optional", optional) { reasons[it.name] }
                                 if (inFolder.isNotEmpty()) {
                                     item(key = "h-folder") {
@@ -337,8 +337,8 @@ fun ComponentsSheet(container: Container, onDismiss: () -> Unit, exeFile: File? 
                                         }
                                     }
                                 }
-                                section("Installed in this container", have)
-                                section("All components", others)
+                                section("已安装在此容器中", have)
+                                section("所有组件", others)
                                 if (session.isNotEmpty()) {
                                     item(key = "h-session") {
                                         SectionHeader(

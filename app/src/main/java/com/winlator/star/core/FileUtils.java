@@ -201,7 +201,7 @@ public abstract class FileUtils {
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "Failed to copy file: " + srcFile.getAbsolutePath() + " to " + dstFile.getAbsolutePath(), e);
+                Log.e(TAG, "复制文件失败: " + srcFile.getAbsolutePath() + " 到 " + dstFile.getAbsolutePath(), e);
                 // Remove the partial/truncated destination so a caller's move never
                 // deletes the source after an incomplete copy.
                 dstFile.delete();
@@ -381,7 +381,7 @@ public abstract class FileUtils {
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "Failed to copy file: " + srcFile.getAbsolutePath() + " to " + dstFile.getAbsolutePath(), e);
+                Log.e(TAG, "复制文件失败: " + srcFile.getAbsolutePath() + " 到 " + dstFile.getAbsolutePath(), e);
                 dstFile.delete();
                 return false;
             }
@@ -814,7 +814,7 @@ public abstract class FileUtils {
            file.write(data);
            return true;
         } catch (IOException e) {
-            Log.e(TAG, "Failed to write data " + data + " at " + position + " to " + filename);
+            Log.e(TAG, "写入数据失败 " + data + " 于 " + position + " 到 " + filename);
             return false;
         }
     }

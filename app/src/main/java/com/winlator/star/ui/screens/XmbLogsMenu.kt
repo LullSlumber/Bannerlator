@@ -90,7 +90,7 @@ internal fun xmbLogsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             "Nothing has been captured for $name yet. Logs are written while a game runs — play it once, " +
                 "then check back here."
         }
-        return XmbMenu(title = "Logs", icon = Icons.Filled.Description) {
+        return XmbMenu(title = "日志", icon = Icons.Filled.Description) {
             XmbTools.para("title", "No logs for $name", Icons.Filled.Info, ctx) +
                 XmbTools.para("msg", msg, XmbTools.blankIcon, ctx)
         }
@@ -104,12 +104,12 @@ internal fun xmbLogsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
     var files by mutableStateOf<List<File>>(LogInventory.filesIn(runs.getOrNull(runIdx)?.dir ?: entry.dir))
     fun runDir(): File = runs.getOrNull(runIdx)?.dir ?: entry.dir
 
-    return XmbMenu(title = if (entry.isAppBucket) "App & crash logs" else "Logs", icon = Icons.Filled.Description) {
+    return XmbMenu(title = if (entry.isAppBucket) "App & crash logs" else "日志", icon = Icons.Filled.Description) {
         buildList<XmbRow> {
             if (runs.size > 1) {
                 add(
                     XmbRow.Choice(
-                        key = "run", label = "Run", icon = Icons.Filled.History,
+                        key = "run", label = "运行", icon = Icons.Filled.History,
                         options = runLabels, selected = runLabels.getOrElse(runIdx) { runLabels.first() },
                     ) { picked ->
                         runIdx = runLabels.indexOf(picked).coerceAtLeast(0)
@@ -131,7 +131,7 @@ internal fun xmbLogsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 }
             }
             val dir = runDir()
-            add(XmbRow.Link(key = "report", label = "Report a problem", icon = Icons.Filled.BugReport) { xmbLogReportMenu(xmb, entry, dir) })
+            add(XmbRow.Link(key = "report", label = "报告问题", icon = Icons.Filled.BugReport) { xmbLogReportMenu(xmb, entry, dir) })
         }
     }
 }
@@ -207,19 +207,19 @@ private fun xmbLogFileMenu(xmb: XmbScope, file: File): XmbMenu {
         val count = "${shown.size} line${if (shown.size == 1) "" else "s"}"
         listOf(
             XmbRow.Link(
-                key = "view", label = "View", icon = Icons.Filled.Description,
+                key = "view", label = "查看", icon = Icons.Filled.Description,
                 value = LogInventory.humanBytes(file.length()),
                 subtitle = if (v.loaded) count else "Loading…",
-            ) { XmbMenu(title = "View", icon = Icons.Filled.Description, panel = XmbLogPanel(v, xmb)) },
-            XmbRow.Toggle(key = "follow", label = "Follow", icon = Icons.Filled.Sync, value = v.following) { v.following = it },
-            XmbRow.Toggle(key = "wrap", label = "Wrap", icon = Icons.Filled.WrapText, value = v.wrap) { v.wrap = it },
+            ) { XmbMenu(title = "查看", icon = Icons.Filled.Description, panel = XmbLogPanel(v, xmb)) },
+            XmbRow.Toggle(key = "关注", label = "Follow", icon = Icons.Filled.Sync, value = v.following) { v.following = it },
+            XmbRow.Toggle(key = "wrap", label = "换行", icon = Icons.Filled.WrapText, value = v.wrap) { v.wrap = it },
             XmbRow.Text(
-                key = "find", label = "Find", icon = Icons.Filled.Search, value = v.query,
-                placeholder = "Find in this log…",
+                key = "find", label = "查找", icon = Icons.Filled.Search, value = v.query,
+                placeholder = "在此日志中查找…",
                 subtitle = if (v.query.isBlank()) null else count,
             ) { v.query = it },
             XmbRow.Action(
-                key = "copy", label = "Copy", icon = Icons.Filled.ContentCopy,
+                key = "copy", label = "拷贝", icon = Icons.Filled.ContentCopy,
                 disabledReason = if (v.loaded) null else "Loading…",
             ) {
                 val lines = v.shown
@@ -230,7 +230,7 @@ private fun xmbLogFileMenu(xmb: XmbScope, file: File): XmbMenu {
                 }.getOrDefault(false)
                 if (copied) xmb.toast("Copied ${lines.size} lines")
             },
-            XmbRow.External(key = "share", label = "Share", icon = Icons.Filled.Share) { shareLogFile(ctx, file) },
+            XmbRow.External(key = "share", label = "分享", icon = Icons.Filled.Share) { shareLogFile(ctx, file) },
         )
     }
 }
@@ -261,7 +261,7 @@ private class XmbLogPanel(private val v: XmbLogView, private val xmb: XmbScope) 
                 Box(Modifier.size(7.dp).background(if (v.following) XMB_LOG_FOLLOW else Color(0xFF5A5A5A), RoundedCornerShape(4.dp)))
                 Spacer(Modifier.width(5.dp))
                 Text(
-                    if (v.following) "following" else "follow",
+                    if (v.following) "已关注" else "关注",
                     color = if (v.following) XMB_LOG_FOLLOW else Color(0xFF9A9A9A), fontSize = 11.sp,
                 )
                 Spacer(Modifier.width(14.dp))
@@ -331,7 +331,7 @@ private class XmbLogPanel(private val v: XmbLogView, private val xmb: XmbScope) 
 }
 
 /**
- * "Report a problem": the viewer's ReportDialog as a column — title, details, the app-logs toggle —
+ * "报告问题": the viewer's ReportDialog as a column — title, details, the app-logs toggle —
  * then LogReport builds the redacted zip into Downloads and GitHub's new-issue form opens.
  */
 private fun xmbLogReportMenu(xmb: XmbScope, entry: LogInventory.Entry, runDir: File): XmbMenu {
@@ -366,24 +366,24 @@ private fun xmbLogReportMenu(xmb: XmbScope, entry: LogInventory.Entry, runDir: F
         }
     }
 
-    return XmbMenu(title = "Report a problem", icon = Icons.Filled.BugReport, onClose = { me.isOpen = false }) {
-        val locked = if (busy) "Working…" else null
+    return XmbMenu(title = "报告问题", icon = Icons.Filled.BugReport, onClose = { me.isOpen = false }) {
+        val locked = if (busy) "正在处理…" else null
         buildList<XmbRow> {
-            add(XmbRow.Text(key = "title", label = "What went wrong?", icon = Icons.Filled.Edit, value = title, disabledReason = locked) { title = it })
+            add(XmbRow.Text(key = "title", label = "出了什么问题?", icon = Icons.Filled.Edit, value = title, disabledReason = locked) { title = it })
             add(
                 XmbRow.Text(
-                    key = "desc", label = "Any detail that helps (optional)", icon = Icons.Filled.Description,
+                    key = "desc", label = "任何有助于排查的细节（可选）", icon = Icons.Filled.Description,
                     value = description, disabledReason = locked,
                 ) { description = it }
             )
             add(
                 XmbRow.Toggle(
-                    key = "app", label = "Also app logcat and crash reports", icon = Icons.Filled.Tune,
+                    key = "app", label = "以及应用的 logcat 和崩溃报告", icon = Icons.Filled.Tune,
                     value = includeApp, disabledReason = locked,
                 ) { includeApp = it }
             )
-            add(XmbRow.External(key = "go", label = if (busy) "Working…" else "Continue on GitHub", icon = Icons.Filled.OpenInNew) { submit() })
-            add(XmbRow.Header("attach", "Will be attached"))
+            add(XmbRow.External(key = "go", label = if (busy) "正在处理…" else "在 GitHub 上继续", icon = Icons.Filled.OpenInNew) { submit() })
+            add(XmbRow.Header("attach", "将一并附上"))
             willAttach.forEachIndexed { i, f -> add(XmbRow.Info("a$i", "• $f", Icons.Filled.InsertDriveFile)) }
             addAll(
                 XmbTools.para(

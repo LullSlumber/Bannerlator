@@ -50,7 +50,7 @@ object PerfDisclaimerCopy {
 }
 
 /**
- * Informational dialog — a single "Got it" acknowledgement, NOT a hard gate. Used to explain what a
+ * Informational dialog — a single "知道了" acknowledgement, NOT a hard gate. Used to explain what a
  * watchdog preset does and the actual °C it resolves to on this device.
  */
 @Composable
@@ -72,7 +72,7 @@ fun PerfInfoDialog(title: String, body: String, onDismiss: () -> Unit) {
                         modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())
                     )
                     Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                        Button(onClick = onDismiss) { Text("Got it") }
+                        Button(onClick = onDismiss) { Text("知道了") }
                     }
                 }
             }
@@ -82,7 +82,7 @@ fun PerfInfoDialog(title: String, body: String, onDismiss: () -> Unit) {
 
 /**
  * Hard-gate disclaimer: a scrollable risk statement whose confirm button stays disabled until the
- * user has BOTH scrolled to the bottom AND ticked "I understand and accept all risk". Reused for the
+ * user has BOTH scrolled to the bottom AND ticked "我理解并承担所有风险". Reused for the
  * root grant gate and the watchdog-disable gate.
  */
 @Composable
@@ -124,7 +124,7 @@ fun PerfDisclaimerDialog(
                     )
 
                     if (!reachedBottom) {
-                        Text("Scroll to the end to continue.",
+                        Text("滚动到底部以继续。",
                             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                     }
 
@@ -134,7 +134,7 @@ fun PerfDisclaimerDialog(
                     ) {
                         Checkbox(checked = accepted, onCheckedChange = { accepted = it }, enabled = reachedBottom)
                         Spacer(Modifier.width(6.dp))
-                        Text("I understand and accept all risk",
+                        Text("我理解并承担所有风险",
                             color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
                     }
 

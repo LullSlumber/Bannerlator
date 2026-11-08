@@ -169,7 +169,7 @@ internal class DeckWrapperDetectedSection(
             }
         } + PageExtra("wrapper-detected-note") {
             Text(
-                L("Values are passed to the wrapper as they are; unknown ones are safe to leave blank."),
+                L("值按原样传递给包装器；未知的值可以安全地留空。"),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.5.sp,
                 modifier = Modifier.padding(start = 6.dp, top = 8.dp),
@@ -255,7 +255,7 @@ private fun DetectedLine(section: DeckWrapperDetectedSection, key: String) {
         WrapperSettingsDictionary.Type.TEXT -> DeckLine(
             label = def.label, hint = hint, enabled = enabled,
             onClick = { section.textFor = key },
-        ) { ValueText(value.ifEmpty { L("Not set") }) }
+        ) { ValueText(value.ifEmpty { L("未设置") }) }
     }
 }
 

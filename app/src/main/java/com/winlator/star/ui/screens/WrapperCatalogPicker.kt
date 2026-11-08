@@ -377,7 +377,7 @@ private fun WrapperCatalogDetail(
     // gpuTargets chips.
     if (entry.gpuTargets.isNotEmpty()) {
         Spacer(Modifier.height(8.dp))
-        Text("GPU targets", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
+        Text("GPU 目标", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
         Spacer(Modifier.height(4.dp))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),

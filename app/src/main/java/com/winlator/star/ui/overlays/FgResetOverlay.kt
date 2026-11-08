@@ -78,7 +78,7 @@ private fun FgResetCard(onResume: () -> Unit) {
             modifier = Modifier.padding(horizontal = 28.dp, vertical = 22.dp)
         ) {
             Text(
-                "Frame generation updated",
+                "帧生成已更新",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -86,7 +86,7 @@ private fun FgResetCard(onResume: () -> Unit) {
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                "Restarting the display so the change applies cleanly.",
+                "正在重启显示以使更改完全生效。",
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 fontSize = 13.sp,
                 textAlign = TextAlign.Center

@@ -75,7 +75,7 @@ object CpuTopology {
         val (ratings, unit) = readRatings()
         val list = bigCoreCpuList(ratings)
         val peak = ratings.filter { it > 0 }.maxOrNull() ?: 0
-        return (if (list.isEmpty()) "no core ratings readable, affinity left as configured" else "cores $list of ${ratings.size}") +
+        return (if (list.isEmpty()) "没有可读的核心评级，关联保持原样" else "cores $list of ${ratings.size}") +
             " ($unit per core: ${ratings.joinToString(" ")}; tier = $PERFORMANCE_TIER_PERCENT% of the $peak peak or more)"
     }
 }

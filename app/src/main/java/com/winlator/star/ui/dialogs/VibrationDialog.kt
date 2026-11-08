@@ -37,7 +37,7 @@ fun VibrationDialog(state: XServerDialogState) {
 
     OutlinedAlertDialog(
         onDismissRequest = { state.dismiss() },
-        title = { Text("Vibration") },
+        title = { Text("震动") },
         text = {
             Column {
                 // Master kill-switch — off suppresses ALL controller vibration regardless of slot, and
@@ -48,7 +48,7 @@ fun VibrationDialog(state: XServerDialogState) {
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 ) {
-                    Text("Controller vibration", modifier = Modifier.weight(1f))
+                    Text("控制器震动", modifier = Modifier.weight(1f))
                     Switch(
                         checked = masterOn,
                         onCheckedChange = { on ->

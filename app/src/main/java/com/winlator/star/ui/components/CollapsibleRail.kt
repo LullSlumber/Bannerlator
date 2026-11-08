@@ -99,7 +99,7 @@ private fun RailItemIcon(item: RailItem, tint: androidx.compose.ui.graphics.Colo
     }
 }
 
-/** A secondary link shown under the header (e.g. "What is all this?", "Reset to app defaults"). */
+/** A secondary link shown under the header (e.g. "这些是什么?", "Reset to app defaults"). */
 data class RailLink(val label: String, val icon: ImageVector, val onClick: () -> Unit)
 
 /**

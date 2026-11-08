@@ -84,7 +84,7 @@ public final class SessionLogs {
         kv(b, "Package", context.getPackageName());
         kv(b, "targetSdk", context.getApplicationInfo().targetSdkVersion);
         h(b, "Device");
-        kv(b, "Model", android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL);
+        kv(b, "模型", android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL);
         kv(b, "Device / product", android.os.Build.DEVICE + " / " + android.os.Build.PRODUCT);
         kv(b, "Board / hardware", android.os.Build.BOARD + " / " + android.os.Build.HARDWARE);
         if (android.os.Build.VERSION.SDK_INT >= 31) kv(b, "SoC", android.os.Build.SOC_MANUFACTURER + " " + android.os.Build.SOC_MODEL);
@@ -121,7 +121,7 @@ public final class SessionLogs {
         kv(b, "KGSL chip id", readSys("/sys/class/kgsl/kgsl-3d0/gpu_chipid").trim());
         kv(b, "System Vulkan ICD", new File("/vendor/lib64/hw/vulkan.adreno.so").exists()
                 ? "/vendor/lib64/hw/vulkan.adreno.so" : "not at the usual path");
-        h(b, "Runtime");
+        h(b, "运行时间");
         kv(b, "Runtime root", LinuxRuntime.rootDir(context).getPath());
         kv(b, "Runtime ready", LinuxRuntime.isInstalled(context));
         File version = new File(LinuxRuntime.rootDir(context), ".version");

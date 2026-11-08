@@ -272,7 +272,7 @@ internal fun SimpleSettingsEditor(
         add("A" to "Open")
         if (dirty) add("X" to "Save")
         add("L2" to "Category")
-        add("⧉" to "Reset")
+        add("⧉" to "重置")
     }
     DisposableEffect(deckActions, legend) {
         deckActions.ownLegend.value = legend
@@ -492,7 +492,7 @@ internal fun isStepped(c: Control): Boolean =
 
 private fun originLabel(o: Origin, scope: EditorScope): String? = when (o) {
     Origin.SET_HERE -> if (scope == EditorScope.GAME) "Set for this game" else "Changed"
-    Origin.FROM_CONTAINER -> "From the container"
+    Origin.FROM_CONTAINER -> "来自容器"
     Origin.FROM_APP -> "From the app"
     Origin.CONTAINER_ONLY -> "Container setting"
     else -> null

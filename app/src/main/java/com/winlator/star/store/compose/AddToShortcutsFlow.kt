@@ -76,7 +76,7 @@ fun ContainerPickerDialog(
         text = {
             if (containers.isEmpty()) {
                 Text(
-                    text = "No containers yet — create one in the Containers screen first.",
+                    text = "暂无容器 — 请先在“容器”界面创建一个。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -142,10 +142,10 @@ fun AddResultDialog(
     if (result.success) {
         OutlinedAlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Added to Shortcuts") },
+            title = { Text("已添加到快捷方式") },
             text = { Text("\"${result.gameName}\" is ready in Shortcuts." + (result.note?.let { "\n\n$it" } ?: "")) },
             confirmButton = {
-                TextButton(onClick = onOpenShortcuts) { Text("Open Shortcuts") }
+                TextButton(onClick = onOpenShortcuts) { Text("打开快捷方式") }
             },
             dismissButton = {
                 TextButton(onClick = onDismiss) { Text("Close") }
@@ -154,7 +154,7 @@ fun AddResultDialog(
     } else {
         OutlinedAlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Couldn't add shortcut") },
+            title = { Text("无法添加快捷方式") },
             text = { Text(result.message) },
             confirmButton = {
                 TextButton(onClick = onDismiss) { Text("OK") }

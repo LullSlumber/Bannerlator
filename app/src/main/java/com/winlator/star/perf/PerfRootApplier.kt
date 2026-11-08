@@ -34,7 +34,7 @@ object PerfRootApplier {
     const val KEY_FAN_MAX = "rootFanMax"
 
     /**
-     * "Auto deep-clean on launch" toggle (Tier 2). Persisted like the other perf global defaults
+     * "启动时自动深度清理" toggle (Tier 2). Persisted like the other perf global defaults
      * (via [PerformanceSettings] under "global_$KEY"), root-only, default OFF. Deliberately NOT in
      * [ROOT_KEYS]: it's a launch-time ACTION, not a snapshot/reverted sysfs pin, so it stays out of the
      * per-game override machinery, the drawer root-toggle grid and the revert registry. It is fired
@@ -49,7 +49,7 @@ object PerfRootApplier {
     )
 
     /**
-     * Keys that genuinely need root — i.e. what the UI shows under "Root performance controls". The
+     * Keys that genuinely need root — i.e. what the UI shows under "Root 性能控制". The
      * GPU pin is excluded: it now has a non-root path ([PerfGpuTurbo]) and is presented alongside the
      * other no-root-needed toggles.
      */
@@ -212,7 +212,7 @@ object PerfRootApplier {
      * Apply the resolved effective state of every toggle this applier owns, at game launch.
      * The GPU pin runs even without root (non-root turbo path); the rest need the grant.
      *
-     * [autoDeepClean] is the persisted "Auto deep-clean on launch" default (Tier 2): when true and
+     * [autoDeepClean] is the persisted "启动时自动深度清理" default (Tier 2): when true and
      * root is granted, run one [deepCleanMemory] pass here — the same launch point the sysfs toggles
      * apply from. It self-gates on root, so it's harmless to pass true without a grant.
      */

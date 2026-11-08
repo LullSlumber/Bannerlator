@@ -62,7 +62,7 @@ fun DebugDialogContent(state: XServerDialogState) {
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Logs",
+                    text = "日志",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -88,7 +88,7 @@ fun DebugDialogContent(state: XServerDialogState) {
                     if (logLines.isEmpty()) {
                         item {
                             Text(
-                                text = "No log output yet.",
+                                text = "还没有日志输出。",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(8.dp)
@@ -109,10 +109,10 @@ fun DebugDialogContent(state: XServerDialogState) {
                         clipboard.setText(AnnotatedString(logLines.joinToString("\n")))
                         Toast.makeText(context, "Log copied", Toast.LENGTH_SHORT).show()
                     }) {
-                        Text("Copy")
+                        Text("拷贝")
                     }
                     TextButton(onClick = { state.clearLog() }) {
-                        Text("Clear")
+                        Text("清除")
                     }
                     TextButton(onClick = { state.setLogPaused(!logPaused) }) {
                         Text(if (logPaused) "Resume" else "Pause")

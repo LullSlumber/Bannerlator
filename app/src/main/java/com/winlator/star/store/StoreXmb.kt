@@ -584,7 +584,7 @@ internal fun XmbStoreCover(
 
 /**
  * A game as a wide row: its portrait cover beside the eyebrow, name and [footer] (price, rating). [compact] is the
- * smaller row for lists ("Top Free Games"); otherwise it is the featured hero.
+ * smaller row for lists ("热门免费游戏"); otherwise it is the featured hero.
  */
 @Composable
 internal fun XmbFeatureCard(

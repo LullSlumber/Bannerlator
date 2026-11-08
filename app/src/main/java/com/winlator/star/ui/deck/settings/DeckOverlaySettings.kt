@@ -139,7 +139,7 @@ internal object OverlayRows {
     private fun metric(
         id: String, label: String, key: String, default: (String) -> Boolean,
         show: ((String) -> String) -> Boolean, fallback: String = key, twins: List<String> = emptyList(),
-    ) = hudToggle("hud.metric.$id", L("Metrics"), label, ADVANCED, key, default, fallback, twins, visible = show)
+    ) = hudToggle("hud.metric.$id", L("指标"), label, ADVANCED, key, default, fallback, twins, visible = show)
 
     fun defs(): List<SettingDef> = listOf(
         // Overlay
@@ -161,7 +161,7 @@ internal object OverlayRows {
             tech = "hudSize", hint = L("Also changes in-game by tapping the Fusion HUD."),
             visible = { fusion(it) },
         ),
-        hudToggle("hud.locked", L("Overlay"), L("Lock in place"), ADVANCED, "hudLocked", on(false),
+        hudToggle("hud.locked", L("Overlay"), L("锁定位置"), ADVANCED, "hudLocked", on(false),
             hint = L("The HUD can't be dragged in-game.")),
 
         // Look
@@ -171,14 +171,14 @@ internal object OverlayRows {
         intRow("hud.transparency", L("Look"), L("Transparency"), ADVANCED, "hudTransparency", 0, 50, 0, "", visible = { !rich(it) }),
         hudRow(
             "hud.skin", L("Look"), L("Skin"), ADVANCED,
-            { _, _ -> seg("classic" to "Classic", "neon" to L("Neon"), "mono" to L("Mono")) },
+            { _, _ -> seg("classic" to "Classic", "neon" to L("霓虹"), "mono" to L("霓虹")) },
             decode = { cfg -> raw(cfg, "hudSkin") ?: "classic" },
             encode = { v -> mapOf("hudSkin" to v) },
             tech = "hudSkin", visible = { gameHub(it) },
         ),
         hudRow(
             "hud.color", L("Look"), L("Colour"), ADVANCED,
-            { _, _ -> seg("soft" to L("Soft"), "mid" to L("Mid"), "vivid" to L("Vivid")) },
+            { _, _ -> seg("soft" to L("柔和"), "mid" to L("柔和"), "vivid" to L("鲜艳")) },
             decode = { cfg -> raw(cfg, "hudColor") ?: "mid" },
             encode = { v -> mapOf("hudColor" to v) },
             tech = "hudColor", visible = { rich(it) },
@@ -187,7 +187,7 @@ internal object OverlayRows {
             parse = { parseHudOutline(it) }, visible = { rich(it) }),
         hudRow(
             "hud.outlineAccent", L("Look"), L("Outline colour"), EXPERT,
-            { _, _ -> seg("0" to L("Gray"), "1" to L("Accent")) },
+            { _, _ -> seg("0" to L("灰色"), "1" to L("灰色")) },
             decode = { cfg -> if ((raw(cfg, "hudOutlineAccent") ?: "1") == "1") "1" else "0" },
             encode = { v -> mapOf("hudOutlineAccent" to v) },
             tech = "hudOutlineAccent", visible = { rich(it) },
@@ -195,16 +195,16 @@ internal object OverlayRows {
 
         // Metrics: the dialog's chips, each its own switch, shown for the style and size that draw it.
         metric("fps", "FPS", "showFPS", on(true), chip("FPS", always)),
-        metric("fpsGraph", L("FPS graph"), "showFPSGraph", on(false), chip(L("FPS graph")) { rich(it) }),
+        metric("fpsGraph", L("FPS图表"), "showFPSGraph", on(false), chip(L("FPS图表")) { rich(it) }),
         metric("cpu", "CPU", "showCPUUsage", on(true), chip("CPU", always), fallback = "showCPULoad", twins = listOf("showCPULoad")),
-        metric("cpuGraph", L("CPU graph"), "showCPUGraph", on(false), { !fusion(it) && gameNative(it) }),
+        metric("cpuGraph", L("CPU 图表"), "showCPUGraph", on(false), { !fusion(it) && gameNative(it) }),
         metric("gpu", "GPU", "showGPULoad", on(true), chip("GPU", always)),
-        metric("gpuGraph", L("GPU graph"), "showGPUGraph", on(false), { !fusion(it) && gameNative(it) }),
+        metric("gpuGraph", L("GPU 图表"), "showGPUGraph", on(false), { !fusion(it) && gameNative(it) }),
         metric("vram", "VRAM", "showVram", on(true), chip("VRAM", never)),
         metric("ram", "RAM", "showRAM", on(true), chip("RAM", always)),
         metric("power", L("Power"), "showPower", on(true), chip(L("Power"), always)),
-        metric("temp", L("Temperature"), "showTemp", on(true), chip(L("Temp"), always), fallback = "showBatteryTemp", twins = listOf("showBatteryTemp")),
-        metric("gpuTemp", L("GPU temperature"), "showGpuTemp", on(false), chip(L("GPU temp")) { gameNative(it) }),
+        metric("temp", L("Temperature"), "showTemp", on(true), chip(L("温度"), always), fallback = "showBatteryTemp", twins = listOf("showBatteryTemp")),
+        metric("gpuTemp", L("GPU temperature"), "showGpuTemp", on(false), chip(L("GPU 温度")) { gameNative(it) }),
         metric("battery", L("Battery"), "showBattery", on(false), chip(L("Battery")) { gameNative(it) }),
         metric("runtime", L("Runtime"), "showRuntime", on(false), { !fusion(it) && gameNative(it) }),
         metric("low001", L("0.01% low"), "showLow001", on(true), chip(L("0.01% low"), never)),
@@ -215,12 +215,12 @@ internal object OverlayRows {
         metric("resolution", L("Resolution"), "showResolution", on(true), chip(L("Resolution"), never)),
         metric("proton", "Proton", "showProton", on(true), chip("Proton", never)),
         metric("wrapper", L("Wrapper"), "showWrapper", on(true), chip(L("Wrapper"), never)),
-        metric("dxVer", L("DirectX version"), "showDxVer", on(true), chip(L("DX ver"), never)),
-        metric("session", L("Session"), "showSession", on(true), chip(L("Session"), never)),
-        metric("clock", L("Clock"), "showClock", fusionDefault, chip(L("Clock")) { gameNative(it) }),
-        metric("engine", L("Engine"), "showEngine", on(true), chip(L("Engine"), always), fallback = "showRenderer", twins = listOf("showRenderer")),
-        metric("gpuModel", L("GPU model"), "showGpuModel", fusionDefault, chip(L("GPU model")) { rich(it) }),
-        metric("dualBattery", L("Dual battery"), "hudDualBattery", on(false), { !fusion(it) && gameHub(it) }),
+        metric("dxVer", L("DirectX version"), "showDxVer", on(true), chip(L("DX 版本"), never)),
+        metric("session", L("会话"), "showSession", on(true), chip(L("会话"), never)),
+        metric("clock", L("时钟"), "showClock", fusionDefault, chip(L("时钟")) { gameNative(it) }),
+        metric("engine", L("引擎"), "showEngine", on(true), chip(L("引擎"), always), fallback = "showRenderer", twins = listOf("showRenderer")),
+        metric("gpuModel", L("GPU型号"), "showGpuModel", fusionDefault, chip(L("GPU型号")) { rich(it) }),
+        metric("dualBattery", L("双电池电量"), "hudDualBattery", on(false), { !fusion(it) && gameHub(it) }),
 
         // Temperatures (the same keys as the in-game side menu)
         hudRow(
@@ -233,7 +233,7 @@ internal object OverlayRows {
         // One three-way over two keys, as the dialog has it: bands off with auto on isn't worth its own state.
         hudRow(
             ID_BANDS, L("Temperatures"), L("Danger colours"), ADVANCED,
-            { _, _ -> seg("0" to L("Off"), "1" to L("Auto"), "2" to L("Manual")) },
+            { _, _ -> seg("0" to L("Off"), "1" to L("Auto"), "2" to L("手动")) },
             decode = { cfg ->
                 when {
                     (raw(cfg, "tempBands") ?: "1") == "0" -> "0"
@@ -246,7 +246,7 @@ internal object OverlayRows {
             hint = L("Auto reads your device's own thermal trip points. Manual sets the red point per sensor; amber sits just below it."),
             visible = { tempShown(it) },
         ),
-        intRow("hud.temp.redCpu", L("Temperatures"), L("CPU red at"), EXPERT, "tempRedCpu", 50, 110, 90, L("°C"),
+        intRow("hud.temp.redCpu", L("Temperatures"), L("CPU red at"), EXPERT, "温度", 50, 110, 90, L("°C"),
             visible = { tempShown(it) && it(ID_BANDS) == "2" }),
         intRow("hud.temp.redGpu", L("Temperatures"), L("GPU red at"), EXPERT, "tempRedGpu", 50, 110, 90, L("°C"),
             visible = { tempShown(it) && it(ID_BANDS) == "2" && (gameNative(it) || fusion(it)) && it(ID_GPU_TEMP) == "1" }),

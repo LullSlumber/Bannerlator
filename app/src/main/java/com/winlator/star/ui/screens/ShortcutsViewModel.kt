@@ -74,7 +74,7 @@ enum class ShortcutViewMode { LIST, GRID, GRID_COMPACT, XMB }
 
 sealed class ImportResult {
     /** [appId] = the Steam appId identified on disk (if any), so the confirm dialog can seed
-     *  its "Search Steam" box and apply the right cover art. */
+     *  its "搜索 Steam" box and apply the right cover art. */
     data class Success(val shortcutName: String, val appId: Int? = null) : ImportResult()
     data class Error(val message: String) : ImportResult()
 }
@@ -97,12 +97,12 @@ data class CommunityMatchResult(
     val rankedDevices: List<CanonicalDevice>,
     val userHardwareLabel: String?,
     // Raw detected hardware — kept alongside the display label so the sheet's per-config list can drive
-    // the "Matches my device" filter (which matches SoC/GPU against each config's device/soc strings).
+    // the "匹配我的设备" filter (which matches SoC/GPU against each config's device/soc strings).
     val userSoc: String? = null,
     val userGpu: String? = null,
     // Genuine ambiguity: the candidates that tied [match] on score (top-first, [match] included, capped).
     // Empty when the top match is unambiguous OR the game was chosen/remembered — the UI only draws the
-    // "Which game is this?" picker when size > 1. (issue #167)
+    // "这是哪个游戏?" picker when size > 1. (issue #167)
     val alternatives: List<CanonicalGame> = emptyList(),
 )
 
@@ -121,7 +121,7 @@ data class CommunityCatalog(
 )
 
 /**
- * One row in the "My uploads" list: the locally-recorded [record] (reinstall-proof, from the manifest)
+ * One row in the "我的上传" list: the locally-recorded [record] (reinstall-proof, from the manifest)
  * plus the LIVE [votes] / [downloads] re-read from the worker. [stillOnline] is false when the worker no
  * longer lists this sha/filename (deleted server-side, or unreachable) — the delete path then just prunes
  * the local record.
@@ -138,7 +138,7 @@ data class MyUploadRow(
  * our own shortcut terms ([config]), and, when a target shortcut was supplied, the non-mutating
  * pre-apply diff ([preview]). All of it comes from the same fetch+translate the apply path uses; the
  * detail page adds NO new network surface. [preview] is null when no shortcut was given (the browser
- * "View details" with no chosen target) or when the fetch failed.
+ * "查看详情" with no chosen target) or when the fetch failed.
  */
 data class CommunityConfigDetail(
     val game: CanonicalGame,
@@ -247,7 +247,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
                 // games persist their appid in the `steamAppId` extra (via the cover-art flow; it
                 // rides the .desktop through renames), and the canonical index is keyed BY appid
                 // (CanonicalGame.identity), so this is an exact, unambiguous match that beats fuzzy
-                // name matching and needs no "Which game is this?" picker. Non-Steam titles or a
+                // name matching and needs no "这是哪个游戏?" picker. Non-Steam titles or a
                 // not-yet-resolved appid simply fall through to the name match below. A user's
                 // remembered pick still wins over the appid (explicit override).
                 val appId = shortcut.getExtra("steamAppId", "").takeIf { it.isNotBlank() }
@@ -287,7 +287,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
 
     /**
      * Remember, per shortcut, which canonical game a (possibly ambiguous) name maps to — so the
-     * "Which game is this?" picker (and a manual search-pick) only has to be answered once. Persists
+     * "这是哪个游戏?" picker (and a manual search-pick) only has to be answered once. Persists
      * onto the shortcut's own extra data via [Shortcut.saveData]; [matchCommunityConfigs] reads it back
      * on the next open. Off the main thread. (issue #167)
      */
@@ -413,7 +413,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Snapshot of the current shortcut list — the target picker for "Apply to game…". */
+    /** Snapshot of the current shortcut list — the target picker for "应用到游戏…". */
     fun currentShortcuts(): List<Shortcut> = _shortcuts.value
 
     /**
@@ -432,7 +432,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
                 val fetched = CommunityConfigFetcher.fetchForDevice(game, device)
                     ?: return@withContext CommunityConfigApply.ConfigApplyResult(
                         ok = false,
-                        message = "Couldn't fetch a config for ${device.model.ifBlank { "that device" }} " +
+                        message = "Couldn't fetch a config for ${device.model.ifBlank { "该设备" }} " +
                             "(offline, or no matching file in the repo).",
                     )
                 val config = ConfigTranslator.translate(fetched.json)
@@ -1104,7 +1104,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
         Log.d(TAG, "importExe: identified '$displayName' (appId=${identity.appId}, source=${identity.source})")
         return try {
             // Delegate to the shared importer so the "+" flow and the File Manager's
-            // "Add to shortcuts" action write shortcuts identically. The proper name is
+            // "添加到快捷方式" action write shortcuts identically. The proper name is
             // written first; cover art (SGDB by appId → by name) resolves on a background
             // thread and calls back via onCoverArtReady once the icon lands.
             val shortcutFile = ExeShortcutImporter.addToShortcuts(
@@ -1285,7 +1285,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         // A shortcut name genuinely ties several canonical games when their match scores sit within
-        // this epsilon of the top score → the "Which game is this?" picker (issue #167). Capped so a
+        // this epsilon of the top score → the "这是哪个游戏?" picker (issue #167). Capped so a
         // very generic name can't spill a huge list into the sheet.
         private const val TIE_EPSILON = 1e-6
         private const val MAX_TIE_ALTERNATIVES = 6

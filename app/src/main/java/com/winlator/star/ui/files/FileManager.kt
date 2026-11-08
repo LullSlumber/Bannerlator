@@ -556,7 +556,7 @@ fun FileManagerRoot(
         return buildList {
             if (dir) add(FmMenuEntry("Open", Icons.Filled.FolderOpen) { p.openDir(f) })
             if (isArchive) add(FmMenuEntry("Browse", Icons.Filled.FolderZip) { p.open(FmLoc.InArchive(f, "")) })
-            if (!dir && isRunnable(f.name)) add(FmMenuEntry("Run", Icons.Filled.PlayArrow) { runFile(f) })
+            if (!dir && isRunnable(f.name)) add(FmMenuEntry("运行", Icons.Filled.PlayArrow) { runFile(f) })
             if (!dir && f.extension.equals("exe", true)) add(FmMenuEntry("Add to Games", Icons.Filled.AddToHomeScreen) { addShortcut(f) })
             if (unpackable) {
                 add(FmMenuEntry("Fast Extract", Icons.Filled.Bolt) { fastExtract(f) })
@@ -565,24 +565,24 @@ fun FileManagerRoot(
                 })
             }
             if (!dir) {
-                add(FmMenuEntry(if (isTextFile(f)) "Edit" else "Open as text", Icons.Filled.TextSnippet) {
+                add(FmMenuEntry(if (isTextFile(f)) "编辑" else "Open as text", Icons.Filled.TextSnippet) {
                     context.startActivity(TextEditorActivity.intent(context, f))
                 })
                 add(FmMenuEntry("Open with…", Icons.AutoMirrored.Filled.OpenInNew) { openWith(f) })
             }
             add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-            add(FmMenuEntry("Copy", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
+            add(FmMenuEntry("拷贝", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
             add(FmMenuEntry("Cut", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
             add(FmMenuEntry("Rename", Icons.Filled.Edit) { renameTarget = f })
             add(FmMenuEntry("Compress", Icons.Filled.FolderZip) { compressTargets = listOf(f) })
-            if (!dir) add(FmMenuEntry("Share", Icons.Filled.Share) { share(listOf(f)) })
+            if (!dir) add(FmMenuEntry("分享", Icons.Filled.Share) { share(listOf(f)) })
             if (dir) {
                 val fav = FavoritesStore.isFavorite(context, f.absolutePath)
                 add(FmMenuEntry(if (fav) "Remove from Favorites" else "Add to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
             }
             add(FmMenuEntry("Copy path", Icons.Filled.Link) { copyPath(f) })
-            add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
-            add(FmMenuEntry("Delete", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
+            add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
+            add(FmMenuEntry("删除", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
         }
     }
 
@@ -590,7 +590,7 @@ fun FileManagerRoot(
         add(FmMenuEntry("Open", if (item.isDir) Icons.Filled.FolderOpen else Icons.AutoMirrored.Filled.OpenInNew) { openItem(p, item) })
         add(FmMenuEntry("Extract…", Icons.Filled.Unarchive) { extractReq = p to listOf(item) })
         add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-        add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
+        add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
     }
 
     fun menuFor(p: FmPane, item: FmItem): (() -> List<FmMenuEntry>)? = when {
@@ -614,7 +614,7 @@ fun FileManagerRoot(
                 Triple("Downloads", HomeIcons.downloads, File(internal, "Download")),
                 Triple("Pictures", HomeIcons.pictures, File(internal, "Pictures")),
                 Triple("Documents", HomeIcons.documents, File(internal, "Documents")),
-                Triple("Games", HomeIcons.games, File(internal, "Winlator/Games")),
+                Triple("游戏", HomeIcons.games, File(internal, "Winlator/Games")),
                 Triple("Bannerlator", HomeIcons.folder, File(internal, "Bannerlator")),
             ).forEach { (t, icon, dir) ->
                 if (dir.isDirectory) add(FmHomeTile(t, icon, androidx.compose.ui.graphics.Color(0xFF2FA7A0), dir, countItems = t == "Downloads", subtitle = if (t == "Downloads") null else ""))
@@ -622,7 +622,7 @@ fun FileManagerRoot(
         }
         val drivesC = buildList {
             val seen = HashSet<String>()
-            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "This container")); seen.add(it.absolutePath) }
+            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "此容器")); seen.add(it.absolutePath) }
             containers.forEach { c ->
                 val dc = File(c.rootDir, ".wine/drive_c")
                 if (dc.isDirectory && seen.add(dc.absolutePath)) add(FmHomeTile(c.name, HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), dc, subtitle = "Drive C:"))
@@ -639,7 +639,7 @@ fun FileManagerRoot(
         return listOf(
             FmHomeSection("Storage", storage),
             FmHomeSection("Places", places),
-            FmHomeSection("Containers", drivesC),
+            FmHomeSection("容器管理", drivesC),
             FmHomeSection("Favorites", favorites),
         )
     }
@@ -777,7 +777,7 @@ fun FileManagerRoot(
             }) {
                 Icon(
                     when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                    "View",
+                    "查看",
                 )
             }
             IconButton(onClick = { sortFor = pane }) { Icon(Icons.Filled.Sort, "Sort") }
@@ -800,7 +800,7 @@ fun FileManagerRoot(
                             panes.forEach { it.applyShowHidden(v) }
                         })
                         if (pane.loc != FmLoc.Home) add(FmMenuEntry("Select all", Icons.Filled.SelectAll) { pane.selectAll() })
-                        add(FmMenuEntry("Refresh", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
+                        add(FmMenuEntry("刷新", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
                         if (pick == null) add(FmMenuEntry(if (dualPref) "One pane" else "Two panes", Icons.Filled.ViewColumn) {
                             dualPref = !dualPref
                             FmPrefs.setDualPane(context, dualPref)
@@ -901,7 +901,7 @@ fun FileManagerRoot(
                 FmSelAction("Extract", Icons.Filled.Unarchive, entries.isNotEmpty()) { extractReq = pane to entries },
                 FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() },
             ) else buildList {
-                add(FmSelAction("Copy", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
+                add(FmSelAction("拷贝", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
                 add(FmSelAction("Cut", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
                 if (otherDir != null) {
                     add(FmSelAction("Copy over", Icons.Filled.ContentCopy, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, false) })
@@ -911,10 +911,10 @@ fun FileManagerRoot(
                     add(FmSelAction("Move to", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Move to") { paste(d, it, true) } })
                 }
                 add(FmSelAction("Compress", Icons.Filled.FolderZip, disk.isNotEmpty()) { compressTargets = disk })
-                add(FmSelAction("Share", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
+                add(FmSelAction("分享", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
                 if (disk.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { renameTarget = disk[0]; pane.clearSelection() })
                 add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
-                add(FmSelAction("Delete", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
+                add(FmSelAction("删除", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
             }
             FmSelectionBar(pane.selected.size, actions) { pane.clearSelection() }
         }
@@ -1021,7 +1021,7 @@ private fun PaneView(
                 when {
                     pane.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     shown.isEmpty() && err != null -> FmEmpty(err)
-                    shown.isEmpty() && pane.deepSearching -> FmEmpty("Searching…")
+                    shown.isEmpty() && pane.deepSearching -> FmEmpty("正在搜索…")
                     shown.isEmpty() && (pane.query.isNotBlank() || pane.deepResults != null) -> FmEmpty("Nothing matches")
                     shown.isEmpty() -> FmEmpty("Empty folder")
                 }

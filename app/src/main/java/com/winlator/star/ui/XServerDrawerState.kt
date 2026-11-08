@@ -101,7 +101,7 @@ object XServerDrawerState {
     // when the guest's GL driver starts - so the row is a saved preference, not a live switch.
     private val _waylandGlSafeMode        = MutableStateFlow(true)
     val waylandGlSafeMode: StateFlow<Boolean> = _waylandGlSafeMode
-    // Steam (Linux) session: the drawer's "Steam client" section. `linuxSteamSession` shows it; the
+    // Steam (Linux) session: the drawer's "Steam 客户端" section. `linuxSteamSession` shows it; the
     // options are keyed by their LinuxTuning extra names and mirror the entry's Steam (Linux)
     // settings - a flip here is saved to the entry as well as applied (live where it can be).
     private val _linuxSteamSession        = MutableStateFlow(false)

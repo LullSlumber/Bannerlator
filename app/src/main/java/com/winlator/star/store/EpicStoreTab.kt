@@ -189,10 +189,10 @@ private fun EpicStorePortrait(
                 )
             }
         }
-        catalogRail("Free This Week", "Claim before it's gone", data.freeNow, "Epic", actionFor, onOpen, onAction)
-        catalogRail("On Sale", "Current discounts", data.onSale, "Epic", actionFor, onOpen, onAction)
-        catalogRail("New Releases", "Just landed", data.newReleases, "Epic", actionFor, onOpen, onAction)
-        catalogRail("Free To Play", "Always free", data.freeToPlay, "Epic", actionFor, onOpen, onAction)
+        catalogRail("本周免费", "在消失前领取", data.freeNow, "Epic", actionFor, onOpen, onAction)
+        catalogRail("促销中", "当前折扣", data.onSale, "Epic", actionFor, onOpen, onAction)
+        catalogRail("新发布", "刚刚上架", data.newReleases, "Epic", actionFor, onOpen, onAction)
+        catalogRail("免费游玩", "始终免费", data.freeToPlay, "Epic", actionFor, onOpen, onAction)
     }
 }
 
@@ -225,7 +225,7 @@ private fun EpicStoreLandscape(
             }
             val actOn = (data.freeNow + data.freeToPlay).distinctBy { it.id }
             if (actOn.isNotEmpty()) {
-                item(key = "free_hdr") { StoreSectionHeader("Free Games", "Claim on the Epic Games Store") }
+                item(key = "free_hdr") { StoreSectionHeader("免费游戏", "在Epic游戏商店领取") }
                 items(actOn, key = { "free_${it.id}" }) { g ->
                     CatalogResultRow(
                         item = g,
@@ -243,8 +243,8 @@ private fun EpicStoreLandscape(
             modifier = Modifier.weight(0.58f).fillMaxHeight().focusGroup(),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            catalogRail("On Sale", "Current discounts", data.onSale, "Epic", actionFor, onOpen, onAction)
-            catalogRail("New Releases", "Just landed", data.newReleases, "Epic", actionFor, onOpen, onAction)
+            catalogRail("促销中", "当前折扣", data.onSale, "Epic", actionFor, onOpen, onAction)
+            catalogRail("新发布", "刚刚上架", data.newReleases, "Epic", actionFor, onOpen, onAction)
             if (data.onSale.isEmpty() && data.newReleases.isEmpty()) {
                 item(key = "browse_empty") {
                     StoreNotice(title = "Nothing to browse right now", body = "Epic's store feeds came back empty.")

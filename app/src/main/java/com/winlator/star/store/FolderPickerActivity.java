@@ -32,7 +32,7 @@ import java.util.List;
  *   - SD Card        (getExternalFilesDirs(null)[1] if present)
  *
  * "New Folder" button creates a subdirectory inside the current directory.
- * "Select this folder" returns the current path via setResult().
+ * "选择这个文件夹" returns the current path via setResult().
  *
  * Result extras:
  *   "path" (String) — absolute path of the selected folder
@@ -89,7 +89,7 @@ public class FolderPickerActivity extends Activity {
         header.setPadding(dp(12), dp(10), dp(12), dp(10));
 
         TextView titleTV = new TextView(this);
-        titleTV.setText("Select Folder");
+        titleTV.setText("选择文件夹");
         titleTV.setTextColor(0xFFFFFFFF);
         titleTV.setTextSize(16f);
         titleTV.setTypeface(null, Typeface.BOLD);
@@ -97,7 +97,7 @@ public class FolderPickerActivity extends Activity {
 
         // Root location spinner
         TextView locationLabel = new TextView(this);
-        locationLabel.setText("Location:");
+        locationLabel.setText("位置:");
         locationLabel.setTextColor(0xFF8888AA);
         locationLabel.setTextSize(11f);
         LinearLayout.LayoutParams llLp = new LinearLayout.LayoutParams(-2, -2);
@@ -138,7 +138,7 @@ public class FolderPickerActivity extends Activity {
         btnRowLp.setMargins(dp(12), dp(8), dp(12), dp(4));
         btnRow.setLayoutParams(btnRowLp);
 
-        Button selectBtn = makeBtn("✓  Select this folder", 0xFF2E7D32);
+        Button selectBtn = makeBtn("✓  选择此文件夹", 0xFF2E7D32);
         selectBtn.setOnClickListener(v -> {
             Intent result = new Intent();
             result.putExtra("path", currentDir.getAbsolutePath());
@@ -149,7 +149,7 @@ public class FolderPickerActivity extends Activity {
         selLp.rightMargin = dp(6);
         btnRow.addView(selectBtn, selLp);
 
-        Button newFolderBtn = makeBtn("+ New", 0xFF444466);
+        Button newFolderBtn = makeBtn("+ 新建", 0xFF444466);
         newFolderBtn.setOnClickListener(v -> showNewFolderDialog());
         btnRow.addView(newFolderBtn, new LinearLayout.LayoutParams(dp(90), dp(44)));
 
@@ -240,22 +240,22 @@ public class FolderPickerActivity extends Activity {
             .setPositiveButton("Create", (d, w) -> {
                 String name = input.getText().toString().trim();
                 if (name.isEmpty()) {
-                    showThemedMessage("Enter a folder name");
+                    showThemedMessage("请输入文件夹名称");
                     return;
                 }
                 // Reject names with path separators
                 if (name.contains("/") || name.contains("\\")) {
-                    showThemedMessage("Folder name cannot contain slashes");
+                    showThemedMessage("文件夹名称不能包含斜杠");
                     return;
                 }
                 File newDir = new File(currentDir, name);
                 if (newDir.exists()) {
-                    showThemedMessage("Folder already exists");
+                    showThemedMessage("文件夹已存在");
                 } else if (newDir.mkdir()) {
                     refreshList();
-                    showThemedMessage("Created: " + name);
+                    showThemedMessage("已创建: " + name);
                 } else {
-                    showThemedMessage("Failed to create folder");
+                    showThemedMessage("创建文件夹失败");
                 }
             })
             .setNegativeButton("Cancel", null)

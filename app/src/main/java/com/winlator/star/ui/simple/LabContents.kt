@@ -116,7 +116,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Memory,
                         actions = listOf(
                             MenuAction(L("Set as default…"), { defaultItem = item }),
-                            MenuAction(L("Remove"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
+                            MenuAction(L("移除"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
                         ),
                     ),
                 )
@@ -127,7 +127,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                     MenuEntry(
                         key = "w$id", title = name, group = L("Wayland game drivers"),
                         subtitle = wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
@@ -137,7 +137,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                     MenuEntry(
                         key = "l$id", title = name, group = L("Linux runtime drivers"),
                         subtitle = linux?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
@@ -154,7 +154,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                             icon = Icons.Filled.Extension,
                             actions = buildList {
                                 if (item != null) add(MenuAction(L("Set as default…"), { defaultItem = item }))
-                                add(MenuAction(L("Remove"), {
+                                add(MenuAction(L("移除"), {
                                     runCatching { cm?.removeContent(p); cm?.syncContents() }
                                     vm.refreshStatus(); tick++
                                     toast(context, L("Removed %1\$s %2\$s", label, p.verName))
@@ -191,7 +191,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
 
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Contents"),
+        title = L("存档与云"),
         sections = listOf(
             MenuSection("download", L("Download components"), Icons.Filled.Download, download, empty = L("No repositories."), primary = MenuAction(L("Add a repository"), { addRepo = true })),
             MenuSection("installed", L("Installed"), Icons.Filled.CheckCircle, installed, empty = L("Only the built-in components so far."), primary = MenuAction(L("Install content from file"), { fromFile() })),
@@ -203,7 +203,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
             .firstOrNull { !it.terminal }?.let { L("Downloading %1\$s · %2\$s%%", it.title, (it.fraction * 100).toInt()) },
     )
     defaultItem?.let { item ->
-        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; tick++; toast(context, L("Set as default")) }
+        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; tick++; toast(context, L("设为默认")) }
     }
     if (addRepo) AddRepoDialog(vm, onDismiss = { addRepo = false })
 }

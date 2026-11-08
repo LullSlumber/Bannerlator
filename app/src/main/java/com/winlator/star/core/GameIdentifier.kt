@@ -118,7 +118,7 @@ object GameIdentifier {
         var dir = exe.absoluteFile.parentFile
         repeat(3) { if (dir != null && dir!!.name.lowercase() in BUILD_DIRS) dir = dir!!.parentFile }
         // An Unreal game: <Game>/<Project>/Binaries/Win64, with Engine/ beside the project folder.
-        if (isUnrealShipping(exe) && File(dir?.parentFile, "Engine").isDirectory) dir = dir?.parentFile
+        if (isUnrealShipping(exe) && File(dir?.parentFile, "引擎").isDirectory) dir = dir?.parentFile
         return dir
     }
 

@@ -476,7 +476,7 @@ internal fun SimpleHome(
     val manage = remember {
         listOf(
             SimpleItem("add", "Add a game", "An .exe from your files, or a store game", Icons.Filled.Add, open = addGame),
-            SimpleItem("containers", "Containers", "Wine prefixes and their settings", Icons.Filled.Layers, open = { navigate(Screen.Containers.route) }),
+            SimpleItem("containers", "容器管理", "Wine prefixes and their settings", Icons.Filled.Layers, open = { navigate(Screen.Containers.route) }),
             SimpleItem("components", "Components", "Wine and Proton, DXVK, VKD3D, FEX and Box64", Icons.Filled.Extension, open = { navigate(DeckRoutes.COMPONENTS) }),
             SimpleItem("drivers", "GPU drivers", "Turnip and Qualcomm drivers", Icons.Filled.Memory, open = { navigate(Screen.AdrenoTools.route) }),
             SimpleItem("controls", "Controls", "Controller and on-screen layouts", Icons.Filled.SportsEsports, open = { navigate(DeckRoutes.CONTROLS) }),
@@ -493,7 +493,7 @@ internal fun SimpleHome(
             SimpleItem("appearance", "Appearance", "Interface style, theme and accent colour", Icons.Filled.Palette, open = { navigate(Screen.Appearance.route) }),
             SimpleItem("settings", "Settings", "Everything else about the app", Icons.Filled.Settings, open = { navigate(Screen.Settings.route) }),
             SimpleItem("defaults", "Container defaults", "What every new container starts with", Icons.Filled.Tune, open = { navigate(DeckSettingsRoutes.DEFAULTS) }),
-            SimpleItem("about", "About", "Version and credits", Icons.Filled.Info, open = { about() }),
+            SimpleItem("about", "关于", "Version and credits", Icons.Filled.Info, open = { about() }),
         )
     }
     var menuFor by remember { mutableStateOf<Shortcut?>(null) }

@@ -215,14 +215,14 @@ fun TextEditorScreen(file: File, readOnly: Boolean = false, title: String? = nul
     if (askLeave) {
         OutlinedAlertDialog(
             onDismissRequest = { askLeave = false },
-            title = { Text("Save changes?") },
+            title = { Text("保存更改？") },
             text = { Text(file.name) },
             confirmButton = {
                 TextButton(onClick = { askLeave = false; save { leaveEditor() } }) { Text("Save") }
             },
             dismissButton = {
                 Row {
-                    TextButton(onClick = { askLeave = false; leaveEditor() }) { Text("Discard") }
+                    TextButton(onClick = { askLeave = false; leaveEditor() }) { Text("放弃") }
                     TextButton(onClick = { askLeave = false }) { Text("Cancel") }
                 }
             },
@@ -275,10 +275,10 @@ fun TextEditorScreen(file: File, readOnly: Boolean = false, title: String? = nul
                 }
             } else {
                 IconButton(onClick = { findOpen = !findOpen; if (!findOpen) find.query = "" }, enabled = doc != null) {
-                    Icon(Icons.Filled.Search, "Find")
+                    Icon(Icons.Filled.Search, "查找")
                 }
                 if (canEdit) {
-                    IconButton(onClick = { startEditing() }) { Icon(Icons.Filled.Edit, "Edit", tint = cs.primary) }
+                    IconButton(onClick = { startEditing() }) { Icon(Icons.Filled.Edit, "编辑", tint = cs.primary) }
                 }
             }
             Box {
@@ -308,7 +308,7 @@ fun TextEditorScreen(file: File, readOnly: Boolean = false, title: String? = nul
                     )
                     if (editor != null) {
                         DropdownMenuItem(
-                            text = { Text("View") },
+                            text = { Text("查看") },
                             leadingIcon = { Icon(Icons.Filled.Visibility, null) },
                             onClick = { menuOpen = false; if (dirty) askLeave = true else leaveEditor() },
                         )
@@ -327,7 +327,7 @@ fun TextEditorScreen(file: File, readOnly: Boolean = false, title: String? = nul
                     value = find.query,
                     onValueChange = { find.query = it },
                     singleLine = true,
-                    placeholder = { Text("Find", fontSize = 13.sp) },
+                    placeholder = { Text("查找", fontSize = 13.sp) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { find.step(1) }),
                     modifier = Modifier.weight(1f),

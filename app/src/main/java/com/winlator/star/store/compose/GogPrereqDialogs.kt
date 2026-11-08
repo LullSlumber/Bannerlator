@@ -20,7 +20,7 @@ import com.winlator.star.ui.screens.OutlinedAlertDialog
 
 /**
  * The GOG prerequisites dialogs, drawn from [GogRedistInstaller.PrereqUi]: the container picker,
- * "Install prerequisites?", and the progress window with one line per GOG dep → Win Component.
+ * "安装必备组件？", and the progress window with one line per GOG dep → Win Component.
  */
 @Composable
 fun GogPrereqDialogs(ui: GogRedistInstaller.PrereqUi) {
@@ -37,7 +37,7 @@ fun GogPrereqDialogs(ui: GogRedistInstaller.PrereqUi) {
     ui.confirm?.let { confirm ->
         OutlinedAlertDialog(
             onDismissRequest = { ui.confirm = null },
-            title = { Text("Install prerequisites?") },
+            title = { Text("安装必备组件？") },
             text = {
                 Text(
                     "This game needs: ${confirm.deps.joinToString(", ")}.\n\n" +
@@ -50,7 +50,7 @@ fun GogPrereqDialogs(ui: GogRedistInstaller.PrereqUi) {
                 TextButton(onClick = { ui.confirm = null; confirm.onInstall() }) { Text("Install") }
             },
             dismissButton = {
-                TextButton(onClick = { ui.confirm = null }) { Text("Skip") }
+                TextButton(onClick = { ui.confirm = null }) { Text("跳过") }
             },
         )
     }

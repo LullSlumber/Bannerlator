@@ -349,7 +349,7 @@ private fun InGameChatThread(friend: SteamFriendsStore.SteamFriend, onBack: () -
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (messages.isEmpty()) {
                 Text(
-                    text = "No messages yet. Say hello!",
+                    text = "暂无消息。打个招呼吧！",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center),
@@ -384,7 +384,7 @@ private fun InGameChatThread(friend: SteamFriendsStore.SteamFriend, onBack: () -
                 value = draft,
                 onValueChange = { draft = it; if (it.isNotEmpty()) SteamFriendsStore.sendTyping(friend.steamId) },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Message", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                placeholder = { Text("消息", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 maxLines = 3,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { send() }),

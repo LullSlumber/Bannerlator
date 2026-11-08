@@ -79,7 +79,7 @@ internal class ContainerFormSource(
         if (duplicates.isNotEmpty()) {
             Toast.makeText(
                 env.context,
-                "Two drives share " + duplicates.sorted().joinToString(", ") { "$it:" } + ". Give each drive its own letter (Windows › Drives).",
+                "两个驱动器共用了 " + duplicates.sorted().joinToString(", ") { "$it:" } + ". Give each drive its own letter (Windows › Drives).",
                 Toast.LENGTH_LONG,
             ).show()
             onDone(false)
@@ -115,7 +115,7 @@ internal class ContainerFormSource(
  * and only keys the user actually changed are ever written. A setting the user never touched stays
  * absent from the shortcut, so the launch path keeps following the container. Reset removes the
  * game's own value. [containerVm] is the game's container form, the value an unset game follows;
- * [defaultsVm] is All containers, used to tell "From container" from "Default".
+ * [defaultsVm] is All containers, used to tell "来自容器" from "Default".
  */
 internal class GameSource(
     env: SettingsEnv,

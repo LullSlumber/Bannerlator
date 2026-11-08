@@ -82,7 +82,7 @@ object SteamCloudSaveManager {
     fun downloadSaves(ctx: Context, appId: Int, localFolder: File, cb: Callback) {
         Thread({
             try {
-                val steamCloud = requireCloud() ?: run { cb.onError("Not signed in to Steam"); return@Thread }
+                val steamCloud = requireCloud() ?: run { cb.onError("未登录 Steam"); return@Thread }
 
                 cb.onStatus("Fetching cloud file list…")
                 val files = steamCloud.listFiles(appId)
@@ -163,7 +163,7 @@ object SteamCloudSaveManager {
     fun uploadSaves(ctx: Context, appId: Int, localFolder: File, cb: Callback) {
         Thread({
             try {
-                val steamCloud = requireCloud() ?: run { cb.onError("Not signed in to Steam"); return@Thread }
+                val steamCloud = requireCloud() ?: run { cb.onError("未登录 Steam"); return@Thread }
 
                 cb.onStatus("Scanning local saves…")
                 normalizeLibrary(localFolder, appId)
@@ -446,7 +446,7 @@ object SteamCloudSaveManager {
      *  single [Callback.onError] if the game isn't in a container yet. */
     fun syncFromCloud(ctx: Context, appId: Int, installDir: String, cb: Callback) {
         if (SteamCloudSavePaths.resolveContainer(ctx, appId, installDir) == null) {
-            cb.onError("This game needs to be added to a container first.")
+            cb.onError("此游戏需要先添加到容器中。")
             return
         }
         // Phase 1: Download. Its onDone chains into phase 2; its onError stops the whole combo.
@@ -470,7 +470,7 @@ object SteamCloudSaveManager {
      *  No work + a single [Callback.onError] if the game isn't in a container yet. */
     fun syncToCloud(ctx: Context, appId: Int, installDir: String, cb: Callback) {
         if (SteamCloudSavePaths.resolveContainer(ctx, appId, installDir) == null) {
-            cb.onError("This game needs to be added to a container first.")
+            cb.onError("此游戏需要先添加到容器中。")
             return
         }
         // Phase 1: Collect. Its onDone chains into phase 2; its onError stops the whole combo.
@@ -578,7 +578,7 @@ object SteamCloudSaveManager {
     fun syncFromCloudNewestWins(ctx: Context, appId: Int, installDir: String): String {
         return try {
             if (SteamCloudSavePaths.resolveContainer(ctx, appId, installDir) == null) {
-                return "This game needs to be added to a container first."
+                return "此游戏需要先添加到容器中。"
             }
             // Same pre-launch signal the genuine client sends (`CCloud.AppLaunchIntent`): Steam
             // reports pending cloud operations from another machine. Logged only — the newest-wins
@@ -669,13 +669,13 @@ object SteamCloudSaveManager {
             try {
                 val library = SteamCloudSavePaths.libraryDir(ctx, appId)
                 val target = resolveTarget(ctx, appId, installDir)
-                    ?: run { cb.onError("This game isn't set up in a container yet"); return@Thread }
+                    ?: run { cb.onError("此游戏尚未在容器中设置"); return@Thread }
                 normalizeLibrary(library, appId)
 
-                cb.onStatus("Scanning Library…")
+                cb.onStatus("正在扫描库…")
                 val files = enumerateLocal(library)
                 if (files.isEmpty()) {
-                    cb.onDone("Library is empty — download from the cloud first")
+                    cb.onDone("库为空——请先从云端下载")
                     return@Thread
                 }
 
@@ -732,13 +732,13 @@ object SteamCloudSaveManager {
             try {
                 val library = SteamCloudSavePaths.libraryDir(ctx, appId)
                 val target = resolveTarget(ctx, appId, installDir)
-                    ?: run { cb.onError("This game isn't set up in a container yet"); return@Thread }
+                    ?: run { cb.onError("此游戏尚未在容器中设置"); return@Thread }
                 normalizeLibrary(library, appId)
 
-                cb.onStatus("Scanning container saves…")
+                cb.onStatus("正在扫描容器存档…")
                 val saves = enumerateContainerSaves(ctx, target, allowNetwork = true)
                 if (saves.isEmpty()) {
-                    cb.onDone("No saves found in " +
+                    cb.onDone("未找到存档在 " +
                         "${SteamCloudSavePaths.containerLabel(target.container)} to collect")
                     return@Thread
                 }

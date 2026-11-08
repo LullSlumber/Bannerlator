@@ -274,7 +274,7 @@ internal fun ShortcutsXmbView(
     val actions = if (focused == null) listOf(XmbAction(allLabel, Icons.Filled.GridView, allCount) { allOpen = true }) else buildList<XmbAction> {
         add(
             if (selectionMode) XmbAction(if (isSelected) "Deselect" else "Select", Icons.Filled.Checklist) { onToggleSelect(focused) }
-            else XmbAction("Play", Icons.Filled.PlayArrow, playtime?.let { "$it played" } ?: "Not played yet") { onPlay(focused) }
+            else XmbAction("Play", Icons.Filled.PlayArrow, playtime?.let { "$it played" } ?: "尚未游玩") { onPlay(focused) }
         )
         addAll(actionsFor(focused))
     }
@@ -644,7 +644,7 @@ internal fun ShortcutsXmbView(
                         XmbHint("A", Color(0xFF3DDC84), if (upperOpen) upperRow[upIdx].label else if (onAll) allLabel else if (centered) "Options" else actions[actIdx].label, hs)
                         XmbHint("B", Color(0xFFFF5252), "Back", hs)
                         if (!m.port && m.w >= 600f) {
-                            XmbKeyHint("◀ ▶", "Games", hs); XmbKeyHint("▲ ▼", "Options", hs); XmbKeyHint("L1 R1", if (inDeckShell) "Tabs" else "Jump", hs)
+                            XmbKeyHint("◀ ▶", "游戏", hs); XmbKeyHint("▲ ▼", "Options", hs); XmbKeyHint("L1 R1", if (inDeckShell) "Tabs" else "Jump", hs)
                         }
                     }
                 }
@@ -1250,7 +1250,7 @@ private fun XmbInfo(s: Shortcut, playtime: String?, descLines: Int, storeBadges:
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Filled.Schedule, contentDescription = null, tint = Color(0xFFBBBBBB), modifier = Modifier.size(13.dp))
             Spacer(Modifier.width(4.dp))
-            Text(playtime ?: "Not played yet", color = factColor, fontSize = 12.sp)
+            Text(playtime ?: "尚未游玩", color = factColor, fontSize = 12.sp)
         }
         if (details.genres.isNotEmpty()) Text(details.genres.take(3).joinToString(" · "), color = factColor, fontSize = 12.sp)
         details.releaseYear?.takeIf { it.isNotBlank() }?.let { Text(it, color = factColor, fontSize = 12.sp) }

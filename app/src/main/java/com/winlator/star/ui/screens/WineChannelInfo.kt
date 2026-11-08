@@ -18,23 +18,23 @@ package com.winlator.star.ui.screens
  */
 object WineChannelInfo {
 
-    const val CAT_TRACING = "Errors and tracing"
-    const val CAT_GRAPHICS = "Direct3D and graphics"
-    const val CAT_AUDIO = "Sound"
-    const val CAT_VIDEO = "Video and media playback"
-    const val CAT_UI = "Windows, menus and controls"
-    const val CAT_INPUT = "Input and devices"
-    const val CAT_NET = "Networking and the internet"
-    const val CAT_FILES = "Files and storage"
-    const val CAT_RUNTIME = "Processes, threads and memory"
-    const val CAT_REGISTRY = "Registry and settings"
-    const val CAT_SECURITY = "Security and encryption"
-    const val CAT_COM = "COM, scripting and automation"
-    const val CAT_TEXT = "Fonts and text"
-    const val CAT_PRINT = "Printing"
-    const val CAT_INSTALL = "Installers and packaging"
-    const val CAT_HOST = "The Android side"
-    const val CAT_OTHER = "Everything else"
+    const val CAT_TRACING = "错误与追踪"
+    const val CAT_GRAPHICS = "Direct3D 与图形"
+    const val CAT_AUDIO = "声音"
+    const val CAT_VIDEO = "视频与媒体播放"
+    const val CAT_UI = "窗口、菜单与控件"
+    const val CAT_INPUT = "输入与设备"
+    const val CAT_NET = "网络与互联网"
+    const val CAT_FILES = "文件与存储"
+    const val CAT_RUNTIME = "进程、线程与内存"
+    const val CAT_REGISTRY = "注册表与设置"
+    const val CAT_SECURITY = "安全与加密"
+    const val CAT_COM = "COM、脚本与自动化"
+    const val CAT_TEXT = "字体与文本"
+    const val CAT_PRINT = "打印"
+    const val CAT_INSTALL = "安装程序与打包"
+    const val CAT_HOST = "Android 端"
+    const val CAT_OTHER = "其他所有"
 
     /** Order the browse dialog groups them in — most useful first, not alphabetical. */
     val CATEGORY_ORDER = listOf(
@@ -45,23 +45,23 @@ object WineChannelInfo {
 
     /** Short note on what each category is for, shown once above its group. */
     fun categoryBlurb(category: String): String = when (category) {
-        CAT_TRACING -> "Start here. These decide how much detail everything else prints."
-        CAT_GRAPHICS -> "The graphics stack — where most game problems actually live."
-        CAT_AUDIO -> "Sound output, mixing and the audio APIs games use."
-        CAT_VIDEO -> "Cutscenes, codecs and media playback."
-        CAT_INPUT -> "Controllers, mouse, keyboard and other hardware."
-        CAT_UI -> "Windows, dialogs and the standard Windows controls."
-        CAT_RUNTIME -> "How the program runs: processes, threads, memory, exceptions."
-        CAT_FILES -> "Reading and writing files, drives and the filesystem."
-        CAT_NET -> "Anything that talks over a network."
-        CAT_REGISTRY -> "The Windows registry and configuration."
-        CAT_SECURITY -> "Certificates, encryption, credentials and permissions."
-        CAT_COM -> "Windows' component/automation plumbing, used heavily by launchers."
-        CAT_TEXT -> "Font loading and text rendering."
-        CAT_PRINT -> "Printers and print jobs."
-        CAT_INSTALL -> "Game and dependency installers."
-        CAT_HOST -> "Where Wine meets Android — the display driver and sound backends."
-        else -> "Components without an obvious home. Mostly niche Windows DLLs."
+        CAT_TRACING -> "从这里开始。这些决定了其他所有内容的输出详细程度。"
+        CAT_GRAPHICS -> "图形栈 — 大多数游戏问题实际发生的地方。"
+        CAT_AUDIO -> "声音输出、混音以及游戏使用的音频 API。"
+        CAT_VIDEO -> "过场动画、编解码器与媒体播放。"
+        CAT_INPUT -> "控制器、鼠标、键盘和其他硬件。"
+        CAT_UI -> "窗口、对话框以及标准 Windows 控件。"
+        CAT_RUNTIME -> "程序如何运行：进程、线程、内存、异常。"
+        CAT_FILES -> "读写文件、驱动器和文件系统。"
+        CAT_NET -> "任何通过网络通信的内容。"
+        CAT_REGISTRY -> "Windows 注册表与配置。"
+        CAT_SECURITY -> "证书、加密、凭据与权限。"
+        CAT_COM -> "Windows 的组件/自动化基础设施，启动器大量使用。"
+        CAT_TEXT -> "字体加载与文本渲染。"
+        CAT_PRINT -> "打印机与打印任务。"
+        CAT_INSTALL -> "游戏与依赖项安装程序。"
+        CAT_HOST -> "Wine 与 Android 的对接层 — 显示驱动与音频后端。"
+        else -> "没有明确归属的组件。大部分是偏门 Windows DLL。"
     }
 
     /**
@@ -70,221 +70,221 @@ object WineChannelInfo {
      */
     private val DESCRIPTIONS: Map<String, String> = mapOf(
         // ── Tracing. The ones that change the character of the whole log. ──────────────────
-        "err" to "Real errors. On by default, and the first thing to read.",
-        "warn" to "Warnings — something unexpected but not fatal. On by default.",
-        "fixme" to "Wine admitting a feature is missing or faked. Very often the cause of a bug.",
+        "err" to "真实的错误。默认开启，是首先需要查看的内容。",
+        "warn" to "警告 — 发生了意外但非致命的问题。默认开启。",
+        "fixme" to "Wine 表示某个功能缺失或被模拟。通常是 bug 的根源。",
         "seh" to "Windows exceptions as they are thrown. Invaluable for a crash, but games throw " +
             "these constantly, so it makes logs huge and slows the game down noticeably.",
         "relay" to "Logs every call in and out of a DLL. Extremely detailed and extremely slow — " +
             "useful for a specific hang, unusable as a general setting.",
-        "snoop" to "Like relay, but for calls Wine did not build itself. Same cost.",
-        "exception" to "Exception handling as it unwinds. Pairs with seh.",
-        "unwind" to "Stack unwinding during exception handling.",
+        "snoop" to "与 relay 类似，但针对 Wine 自身未构建的调用。性能开销相同。",
+        "exception" to "异常展开时的异常处理。与 seh 配合使用。",
+        "unwind" to "异常处理期间的栈展开。",
         "debugstr" to "Text the program itself prints with OutputDebugString — often the " +
             "developer's own messages.",
-        "debug_buffer" to "Contents of buffers passed around, dumped as hex.",
+        "debug_buffer" to "传递的缓冲区内容，以十六进制转储。",
 
         // ── Graphics ──────────────────────────────────────────────────────────────────────
-        "d3d" to "Direct3D core. The general starting point for a graphics problem.",
-        "d3d8" to "Direct3D 8 — older games.",
-        "d3d9" to "Direct3D 9 — the most common API for games of that era.",
+        "d3d" to "Direct3D 核心。排查图形问题的一般起点。",
+        "d3d8" to "Direct3D 8 — 面向较老的游戏。",
+        "d3d9" to "Direct3D 9 — 那个时代游戏最常用的 API。",
         "d3d10" to "Direct3D 10.",
-        "d3d10core" to "Direct3D 10 core layer.",
-        "d3d11" to "Direct3D 11 — what most modern games in Bannerlator use.",
-        "d3d12" to "Direct3D 12, translated by VKD3D.",
-        "d3d_shader" to "Shader compilation. Try this for missing or corrupted visuals.",
-        "d3d_decl" to "Vertex declarations — how geometry is described to the GPU.",
-        "d3dcompiler" to "The shader compiler itself.",
-        "d3dx" to "The D3DX helper library games use for textures, maths and effects.",
+        "d3d10core" to "Direct3D 10 核心层。",
+        "d3d11" to "Direct3D 11 — Bannerlator 中大多数现代游戏使用的 API。",
+        "d3d12" to "Direct3D 12，由 VKD3D 转换。",
+        "d3d_shader" to "着色器编译。遇到画面缺失或损坏时可尝试此频道。",
+        "d3d_decl" to "顶点声明 — 几何体如何描述给 GPU。",
+        "d3dcompiler" to "着色器编译器本身。",
+        "d3dx" to "游戏用于纹理、数学计算和特效的 D3DX 辅助库。",
         "dxgi" to "DXGI — swapchains, display modes and presentation. Good for black-screen, " +
             "fullscreen and refresh-rate problems.",
-        "ddraw" to "DirectDraw — 2D and pre-Direct3D-8 titles.",
-        "vulkan" to "Vulkan calls. This is what DXVK and VKD3D ultimately produce.",
-        "opengl" to "OpenGL calls.",
-        "wgl" to "The glue between OpenGL and Windows windows.",
-        "gl_compat" to "OpenGL compatibility workarounds.",
-        "gdi" to "GDI — classic 2D Windows drawing. Menus and launchers use it heavily.",
-        "gdiplus" to "GDI+ — the newer 2D drawing library.",
+        "ddraw" to "DirectDraw — 2D 及 Direct3D 8 之前的游戏。",
+        "vulkan" to "Vulkan 调用。这是 DXVK 和 VKD3D 最终产生的内容。",
+        "opengl" to "OpenGL 调用。",
+        "wgl" to "连接 OpenGL 与 Windows 窗口的桥梁。",
+        "gl_compat" to "OpenGL 兼容性解决方案。",
+        "gdi" to "GDI — 经典的 Windows 2D 绘图。菜单和启动器大量使用它。",
+        "gdiplus" to "GDI+ — 较新的 2D 绘图库。",
         "d2d" to "Direct2D.",
-        "dcomp" to "DirectComposition — desktop composition of windows.",
-        "dwmapi" to "Desktop Window Manager — compositing and window effects.",
-        "bitblt" to "Bitmap block transfers, the workhorse of 2D drawing.",
-        "bitmap" to "Bitmap handling.",
-        "palette" to "Colour palettes, used by older games.",
-        "dxcore" to "DXCore — how the app enumerates graphics adapters.",
-        "dxva2" to "Hardware video acceleration.",
-        "asmshader" to "Assembly shader parsing, for older shader models.",
+        "dcomp" to "DirectComposition — 窗口的桌面合成。",
+        "dwmapi" to "Desktop Window Manager — 合成与窗口效果。",
+        "bitblt" to "位图块传输，2D 绘图的主力。",
+        "bitmap" to "位图处理。",
+        "palette" to "颜色调色板，用于较老的游戏。",
+        "dxcore" to "DXCore — 应用如何枚举图形适配器。",
+        "dxva2" to "硬件视频加速。",
+        "asmshader" to "汇编着色器解析，用于较旧的着色器模型。",
 
         // ── Audio ─────────────────────────────────────────────────────────────────────────
-        "dsound" to "DirectSound — the usual audio API for older games.",
-        "dsound3d" to "DirectSound 3D positional audio.",
-        "xaudio2" to "XAudio2 — the usual audio API for modern games.",
-        "mmdevapi" to "The modern Windows audio device API (WASAPI).",
-        "coreaudio" to "Core audio routing.",
-        "winmm" to "Multimedia — legacy sound, MIDI and timers.",
-        "midi" to "MIDI playback.",
-        "wavemap" to "Wave audio mapping between formats.",
-        "sound" to "General sound output.",
-        "alsa" to "The ALSA backend — one way sound leaves Wine on the Android side.",
-        "pulse" to "The PulseAudio backend.",
-        "oss" to "The OSS audio backend.",
+        "dsound" to "DirectSound — 较老游戏常用的音频 API。",
+        "dsound3d" to "DirectSound 3D 定位音频。",
+        "xaudio2" to "XAudio2 — 现代游戏常用的音频 API。",
+        "mmdevapi" to "现代 Windows 音频设备 API（WASAPI）。",
+        "coreaudio" to "核心音频路由。",
+        "winmm" to "多媒体 — 旧版声音、MIDI 和计时器。",
+        "midi" to "MIDI 播放。",
+        "wavemap" to "波形音频格式之间的映射。",
+        "sound" to "通用声音输出。",
+        "alsa" to "ALSA 后端 — 音频从 Wine 输��到 Android 端的途径之一。",
+        "pulse" to "PulseAudio 后端。",
+        "oss" to "OSS 音频后端。",
         "dmusic" to "DirectMusic.",
-        "dmsynth" to "The DirectMusic software synthesiser.",
-        "msacm" to "Audio compression and decompression.",
+        "dmsynth" to "DirectMusic 软件合成器。",
+        "msacm" to "音频压缩与解压缩。",
 
         // ── Video / media ─────────────────────────────────────────────────────────────────
-        "quartz" to "DirectShow — cutscene and video playback. Try this when intro videos hang.",
-        "mfplat" to "Media Foundation, the modern video pipeline. Also common for cutscenes.",
-        "evr" to "The Enhanced Video Renderer.",
-        "devenum" to "Enumeration of installed codecs and capture devices.",
-        "avifile" to "AVI file handling.",
-        "mciavi" to "AVI playback through the MCI interface.",
+        "quartz" to "DirectShow — 过场动画与视频播放。片头视频卡住时可尝试此频道。",
+        "mfplat" to "Media Foundation — 现代视频管线。过场动画中也常见。",
+        "evr" to "增强视频渲染器。",
+        "devenum" to "已安装编解码器和采集设备的枚举。",
+        "avifile" to "AVI 文件处理。",
+        "mciavi" to "通过 MCI 接口的 AVI 播放。",
         "wmvcore" to "Windows Media Video.",
-        "msvideo" to "Video compression and decompression.",
-        "mmio" to "Multimedia file I/O.",
+        "msvideo" to "视频压缩与解压缩。",
+        "mmio" to "多媒体文件 I/O。",
 
         // ── Input ─────────────────────────────────────────────────────────────────────────
-        "dinput" to "DirectInput — controllers and joysticks in older games.",
-        "xinput" to "XInput — the modern gamepad API. Try this when a controller isn't detected.",
-        "rawinput" to "Raw input — mouse and keyboard straight from the device. Common in shooters.",
-        "hid" to "USB HID devices, which is what most controllers are.",
-        "joycpl" to "The joystick control panel.",
-        "keyboard" to "Keyboard handling.",
-        "cursor" to "Mouse cursor. Worth trying for an invisible or stuck cursor.",
-        "input" to "General input dispatch.",
-        "usb" to "USB devices.",
-        "wintab32" to "Graphics-tablet input.",
+        "dinput" to "DirectInput — 较老游戏中的控制器和摇杆。",
+        "xinput" to "XInput — 现代手柄 API。当控制器未被检测到时尝试此频道。",
+        "rawinput" to "原始输入 — 直接来自设备的鼠标和键盘。射击游戏中常见。",
+        "hid" to "USB HID 设备 — 大多数控制器属于此类。",
+        "joycpl" to "摇杆控制面板。",
+        "keyboard" to "键盘处理。",
+        "cursor" to "鼠标光标。光标不可见或卡住时值得尝试。",
+        "input" to "通用输入分发。",
+        "usb" to "USB 设备。",
+        "wintab32" to "绘图板输入。",
 
         // ── Windows and controls ──────────────────────────────────────────────────────────
-        "win" to "Window creation and management. Broad, and useful for windowing problems.",
-        "message" to "The Windows message loop — every event the program receives. Very verbose.",
-        "msg" to "Individual window messages.",
-        "nonclient" to "Title bars, borders and window frames.",
-        "dialog" to "Dialog boxes.",
-        "menu" to "Menus.",
-        "user" to "USER32 — the core windowing library.",
-        "clipboard" to "Copy and paste.",
-        "dragdrop" to "Drag and drop.",
-        "hook" to "Windows hooks, which intercept events. Overlays and anti-cheat use these.",
-        "theme_scroll" to "Themed scrollbar drawing.",
-        "uxtheme" to "Visual themes and control styling.",
-        "commctrl" to "The standard Windows controls, as a group.",
-        "commdlg" to "The standard file/print/colour dialogs.",
-        "edit" to "Text edit boxes.",
-        "listbox" to "List boxes.",
-        "listview" to "List views.",
-        "combo" to "Combo boxes (drop-downs).",
-        "button" to "Buttons.",
-        "toolbar" to "Toolbars.",
-        "tooltips" to "Tooltips.",
-        "treeview" to "Tree views.",
-        "statusbar" to "Status bars.",
-        "systray" to "The system tray / notification area.",
-        "shell" to "The Windows shell — folders, icons and file associations.",
-        "explorerframe" to "Explorer window framing.",
+        "win" to "窗口创建与管理。范围广泛，对窗口相关问题有用。",
+        "message" to "Windows 消息循环 — 程序接收的每个事件。非常冗长。",
+        "msg" to "单个窗口消息。",
+        "nonclient" to "标题栏、边框和窗口框架。",
+        "dialog" to "对话框。",
+        "menu" to "菜单。",
+        "user" to "USER32 — 核心窗口库。",
+        "clipboard" to "复制与粘贴。",
+        "dragdrop" to "拖放。",
+        "hook" to "Windows 钩子，用于拦截事件。覆盖层和反作弊系统使用它们。",
+        "theme_scroll" to "主题滚动条绘制。",
+        "uxtheme" to "视觉主题与控件样式。",
+        "commctrl" to "标准 Windows 控件组。",
+        "commdlg" to "标准文件/打印/颜色对话框。",
+        "edit" to "文本框。",
+        "listbox" to "列表框。",
+        "listview" to "列表视图。",
+        "combo" to "组合框（下拉列表）。",
+        "button" to "按钮。",
+        "toolbar" to "工具栏。",
+        "tooltips" to "工具提示。",
+        "treeview" to "树形视图。",
+        "statusbar" to "状态栏。",
+        "systray" to "系统托盘 / 通知区域。",
+        "shell" to "Windows shell — 文件夹、图标和文件关联。",
+        "explorerframe" to "Explorer 窗口框架。",
 
         // ── Runtime ───────────────────────────────────────────────────────────────────────
-        "process" to "Process creation and exit. Good for a game that closes immediately.",
-        "thread" to "Thread creation and scheduling.",
-        "threadpool" to "The thread pool.",
-        "module" to "DLL loading — which libraries the game pulls in. Very useful early on.",
-        "loaddll" to "Each DLL as it loads, one line apiece. Cheap and often enough on its own.",
-        "unloaddll" to "DLLs being unloaded.",
-        "heap" to "Memory allocation. Verbose, but the place to look for memory corruption.",
-        "globalmem" to "Global memory allocation.",
-        "sync" to "Locks, mutexes and synchronisation. The channel for a hang or deadlock.",
-        "ntdll" to "The lowest-level Windows library. Broad and noisy.",
-        "kernelbase" to "Core kernel API calls.",
-        "ntoskrnl" to "Kernel-side calls, used by drivers and anti-cheat.",
-        "syslevel" to "Legacy 16-bit locking.",
-        "environ" to "Environment variables as the process sees them.",
-        "exec" to "Program execution.",
-        "toolhelp" to "Process and module enumeration, used by tools and anti-cheat.",
-        "vcruntime" to "The Visual C++ runtime.",
-        "msvcrt" to "The Microsoft C runtime — the standard library most games link against.",
-        "msvcp" to "The Microsoft C++ standard library.",
-        "concrt" to "Microsoft's concurrency runtime.",
-        "vcomp" to "OpenMP parallel processing.",
-        "wow" to "32-bit-on-64-bit translation.",
-        "int" to "DOS-era interrupt handling.",
-        "int21" to "DOS interrupt 21h, for very old software.",
-        "vxd" to "Windows 9x virtual device drivers.",
+        "process" to "进程创建与退出。适用于立即关闭的游戏。",
+        "thread" to "线程创建与调度。",
+        "threadpool" to "线程池。",
+        "module" to "DLL 加载 — 游戏引入了哪些库。早期排查非常有用。",
+        "loaddll" to "每个 DLL 加载时各占一行。开销小，通常单独使用就已足够。",
+        "unloaddll" to "DLL 卸载。",
+        "heap" to "内存分配。较为冗长，但排查内存损坏时应查看此频道。",
+        "globalmem" to "全局内存分配。",
+        "sync" to "锁、互斥量与同步。排查卡死或死锁的频道。",
+        "ntdll" to "最低层的 Windows 库。范围广泛且信息量较大。",
+        "kernelbase" to "核心内核 API 调用。",
+        "ntoskrnl" to "内核端调用，驱动程序和反作弊系统使用。",
+        "syslevel" to "旧版 16 位锁定。",
+        "environ" to "进程视角下的环境变量。",
+        "exec" to "程序执行。",
+        "toolhelp" to "进程和模块枚举，工具和反作弊系统使用。",
+        "vcruntime" to "Visual C++ 运行库。",
+        "msvcrt" to "Microsoft C 运行库 — 大多数游戏链接的标准库。",
+        "msvcp" to "Microsoft C++ 标准库。",
+        "concrt" to "Microsoft 并发运行库。",
+        "vcomp" to "OpenMP 并行处理。",
+        "wow" to "32 位在 64 位上的转换。",
+        "int" to "DOS 时代的中断处理。",
+        "int21" to "DOS 中断 21h，用于非常古老的软件。",
+        "vxd" to "Windows 9x 虚拟设备驱动程序。",
 
         // ── Files, registry ───────────────────────────────────────────────────────────────
-        "file" to "File opens, reads and writes. Broad, and the channel for a missing-file problem.",
-        "reg" to "Registry reads and writes. Good for a game that won't see its own settings.",
-        "storage" to "Structured storage files.",
-        "volume" to "Drives and volumes.",
-        "mountmgr" to "Drive letter assignment — relevant to how Bannerlator maps your storage.",
-        "cabinet" to "CAB archive extraction, used by installers.",
-        "profile" to "INI file reads and writes. Older games keep settings this way.",
-        "path" to "Path handling and conversion between Windows and Linux paths.",
-        "dosmem" to "DOS memory emulation.",
+        "file" to "文件打开、读写。范围广泛，排查文件缺失问题的频道。",
+        "reg" to "注册表读写。适用于游戏无法识别自身设置的问题。",
+        "storage" to "结构化存储文件。",
+        "volume" to "驱动器和卷。",
+        "mountmgr" to "盘符分配 — 与 Bannerlator 如何映射存储相关。",
+        "cabinet" to "CAB 压缩包解压，安装程序使用。",
+        "profile" to "INI 文件读写。老游戏以此方式保存设置。",
+        "path" to "路径处理与 Windows/Linux 路径之间的转换。",
+        "dosmem" to "DOS 内存仿真。",
 
         // ── Networking ────────────────────────────────────────────────────────────────────
-        "winsock" to "Sockets — the base of nearly all networking. Start here for online problems.",
-        "wininet" to "The classic HTTP/FTP library, used by launchers and updaters.",
-        "winhttp" to "The newer HTTP library.",
-        "http" to "HTTP handling.",
-        "urlmon" to "URL handling and downloads.",
-        "dnsapi" to "DNS lookups.",
-        "iphlpapi" to "Network adapter and IP configuration queries.",
-        "netapi32" to "Windows networking and domain queries.",
-        "dplay" to "DirectPlay — multiplayer in older games.",
-        "dpnet" to "DirectPlay 8 networking.",
-        "rpc" to "Remote procedure calls, used between Windows components.",
-        "mswsock" to "Winsock extensions.",
+        "winsock" to "套接字 — 几乎所有网络的基础。排查网络问题从此开始。",
+        "wininet" to "经典 HTTP/FTP 库，启动器和更新程序使用。",
+        "winhttp" to "较新的 HTTP 库。",
+        "http" to "HTTP 处理。",
+        "urlmon" to "URL 处理与下载。",
+        "dnsapi" to "DNS 查询。",
+        "iphlpapi" to "网络适配器与 IP 配置查询。",
+        "netapi32" to "Windows 网络与域查询。",
+        "dplay" to "DirectPlay — 较老游戏中的多人模式。",
+        "dpnet" to "DirectPlay 8 网络。",
+        "rpc" to "远程过程调用，用于 Windows 组件之间。",
+        "mswsock" to "Winsock 扩展。",
 
         // ── Security ──────────────────────────────────────────────────────────────────────
-        "crypt" to "Cryptography.",
-        "crypto" to "Low-level cryptographic operations.",
-        "bcrypt" to "The modern cryptography API.",
-        "ncrypt" to "Key storage and management.",
-        "schannel" to "TLS/SSL — secure connections. Try this when a launcher can't log in.",
-        "secur32" to "Authentication.",
-        "wintrust" to "Signature verification, including anti-tamper checks.",
-        "cred" to "Stored credentials.",
-        "security" to "Permissions and access checks.",
-        "advapi" to "Advanced Windows APIs: services, registry and security.",
+        "crypt" to "加密。",
+        "crypto" to "底层加密操作。",
+        "bcrypt" to "现代加密 API。",
+        "ncrypt" to "密钥存储与管理。",
+        "schannel" to "TLS/SSL — 安全连接。启动器无法登录时尝试此频道。",
+        "secur32" to "身份验证。",
+        "wintrust" to "签名验证，包括防篡改检查。",
+        "cred" to "存储的凭据。",
+        "security" to "权限与访问检查。",
+        "advapi" to "高级 Windows API：服务、注册表和安全。",
 
         // ── COM / scripting ───────────────────────────────────────────────────────────────
-        "ole" to "COM/OLE — Windows' component system. Launchers lean on it heavily.",
-        "combase" to "The COM base library.",
-        "olemalloc" to "COM memory allocation.",
-        "variant" to "COM variant type conversion.",
-        "msi" to "Windows Installer. The channel for a failing .msi install.",
-        "msxml" to "XML parsing.",
-        "xmllite" to "Lightweight XML parsing.",
+        "ole" to "COM/OLE — Windows 的组件系统。启动器大量依赖它。",
+        "combase" to "COM 基础库。",
+        "olemalloc" to "COM 内存分配。",
+        "variant" to "COM 变体类型转换。",
+        "msi" to "Windows Installer。排查 .msi 安装失败的频道。",
+        "msxml" to "XML 解析。",
+        "xmllite" to "轻量级 XML 解析。",
         "vbscript" to "VBScript.",
         "jscript" to "JScript/JavaScript.",
-        "mshtml" to "The embedded web browser control, used by some launchers.",
+        "mshtml" to "嵌入式 Web 浏览器控件，部分启动器使用。",
         "actctx" to "Activation contexts and side-by-side assemblies — a common source of " +
             "\"the application failed to initialize\" errors.",
-        "sxs" to "Side-by-side assembly resolution, the same family as actctx.",
-        "fusion" to ".NET assembly loading.",
+        "sxs" to "并行程序集解析，与 actctx 同属一类。",
+        "fusion" to ".NET 程序集加载。",
 
         // ── Text and printing ─────────────────────────────────────────────────────────────
-        "font" to "Font loading and matching. The channel for missing or wrong text.",
-        "dwrite" to "DirectWrite — modern text rendering.",
-        "fontcache" to "The font cache service.",
-        "text" to "Text drawing.",
-        "string" to "String handling.",
-        "nls" to "Locale and codepage handling — relevant to non-English text.",
-        "locale" to "Regional settings.",
-        "imm" to "Input method editors, for CJK text entry.",
-        "print" to "Printing.",
-        "winspool" to "The print spooler.",
+        "font" to "字体加载与匹配。文字缺失或错误的排查频道。",
+        "dwrite" to "DirectWrite — 现代文本渲染。",
+        "fontcache" to "字体缓存服务。",
+        "text" to "文本绘制。",
+        "string" to "字符串处理。",
+        "nls" to "区域设置与代码页处理 — 与非英文文本相关。",
+        "locale" to "区域设置。",
+        "imm" to "输入法编辑器，用于中日韩文字输入。",
+        "print" to "打印。",
+        "winspool" to "打印后台处理程序。",
 
         // ── Host side ─────────────────────────────────────────────────────────────────────
         "x11drv" to "The X11 display driver — how Wine's windows reach Bannerlator's screen. " +
             "The channel for windowing, fullscreen and mouse-capture problems.",
-        "waylanddrv" to "The Wayland display driver, used by the experimental Wayland path.",
-        "xrandr" to "Display modes and refresh rates under X11.",
-        "xrender" to "X11 accelerated drawing.",
-        "xim" to "X11 input methods.",
-        "xdnd" to "X11 drag and drop.",
-        "macdrv" to "The macOS display driver. Not used on Android.",
-        "winebrowser" to "Opening links in a browser.",
+        "waylanddrv" to "Wayland 显示驱动，用于实验性 Wayland 路径。",
+        "xrandr" to "X11 下的显示模式与刷新率。",
+        "xrender" to "X11 加速绘图。",
+        "xim" to "X11 输入法。",
+        "xdnd" to "X11 拖放。",
+        "macdrv" to "macOS 显示驱动。Android 上未使用。",
+        "winebrowser" to "在浏览器中打开链接。",
     )
 
     /** The specific description when there is one, otherwise an honest category-based line. */

@@ -9,7 +9,7 @@ import com.winlator.star.core.WinePath
 import java.io.File
 
 /**
- * Launches a Windows executable inside a Winlator container, the same way the File Manager's "Run"
+ * Launches a Windows executable inside a Winlator container, the same way the File Manager's "运行"
  * action does: map the exe's folder to a Wine drive letter (persisted on the container), write a
  * throwaway `.desktop` whose Exec is `wine <X:\path>`, and hand it to [XServerDisplayActivity].
  *

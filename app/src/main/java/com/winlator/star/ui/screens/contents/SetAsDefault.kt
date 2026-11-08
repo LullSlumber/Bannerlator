@@ -41,14 +41,14 @@ object SetAsDefault {
 
     /** What an item sets. [setting] reads in "sets the …" and "containers change their …". */
     enum class Kind(val setting: String) {
-        DRIVER("graphics driver"),
+        DRIVER("图形驱动程序"),
         DXVK("DX wrapper"),
         VEGAS("DX wrapper"),
-        VKD3D("VKD3D version"),
-        BOX64("Box64 version"),
-        WOWBOX64("WOWBox64 version"),
-        FEXCORE("FEXCore version"),
-        LAYER("compatibility layer"),
+        VKD3D("VKD3D 版本"),
+        BOX64("Box64 版本"),
+        WOWBOX64("WOWBox64 版本"),
+        FEXCORE("FEXCore 版本"),
+        LAYER("兼容层"),
     }
 
     /** An installed item that can be made a default. [value] is exactly what gets written. */

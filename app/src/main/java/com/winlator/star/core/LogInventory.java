@@ -54,7 +54,7 @@ public final class LogInventory {
 
     /**
      * All log groups, newest activity first. When per-game folders are off there is a single
-     * "All logs" entry pointing at the flat directory, so the same list UI works either way.
+     * "所有日志" entry pointing at the flat directory, so the same list UI works either way.
      */
     public static List<Entry> scan(Context context) {
         List<Entry> out = new ArrayList<>();
@@ -84,7 +84,7 @@ public final class LogInventory {
         if (!loose.isEmpty()) {
             long bytes = 0, newest = 0;
             for (File f : loose) { bytes += f.length(); newest = Math.max(newest, f.lastModified()); }
-            out.add(new Entry(sawFolder ? "Older logs" : "All logs", base,
+            out.add(new Entry(sawFolder ? "更早的日志" : "所有日志", base,
                     loose.size(), bytes, newest, false, 0, true));
         }
 
@@ -97,7 +97,7 @@ public final class LogInventory {
     }
 
     /**
-     * The log group for one game, or null when it has none yet. Used by the per-shortcut "View logs"
+     * The log group for one game, or null when it has none yet. Used by the per-shortcut "查看日志"
      * entry, which has a game name and nothing else to go on.
      *
      * Deliberately narrow: it resolves ONLY a per-game folder. With per-game folders off every game
@@ -246,7 +246,7 @@ public final class LogInventory {
      *
      * The first version of this method took a directory and deleteTree()'d it, which was only ever
      * safe while scan() never returned a folder we did not create — and scan() did exactly that
-     * (ReShade/), while the "Older logs" group points at the shared log root, which holds
+     * (ReShade/), while the "更早的日志" group points at the shared log root, which holds
      * steam_debug.txt and friends, and on a CUSTOM location is a folder full of the user's own
      * files. So this walks the folder and removes only names on {@link LogRotation#isOurRunLog}'s
      * allowlist plus our own crash reports, recurses ONLY into the {@code previous/} archive we

@@ -364,7 +364,7 @@ class AmazonGameDetailActivity : ComponentActivity() {
                 return@launch
             }
             if (!ok) {
-                withContext(Dispatchers.Main) { onInstallError("Download failed") }
+                withContext(Dispatchers.Main) { onInstallError("下载失败") }
                 return@launch
             }
 
@@ -537,14 +537,14 @@ class AmazonGameDetailActivity : ComponentActivity() {
         updateStatusText = if (storedVer != null) {
             "Installed: v${storedVer.take(12)}\u2026"
         } else if (installed) {
-            "Version not recorded \u2014 tap Check to verify"
+            "未记录版本 — 点击检查以验证"
         } else {
-            "Install the game first to check for updates."
+            "请先安装游戏以检查更新。"
         }
     }
 
     private fun onCheckUpdatesClick() {
-        updateStatusText = "Checking\u2026"
+        updateStatusText = "检查中…"
         checkUpdatesEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -553,7 +553,7 @@ class AmazonGameDetailActivity : ComponentActivity() {
                 if (token == null) {
                     withContext(Dispatchers.Main) {
                         checkUpdatesEnabled = true
-                        updateStatusText = "Login required."
+                        updateStatusText = "需要登录。"
                     }
                     return@launch
                 }
@@ -562,7 +562,7 @@ class AmazonGameDetailActivity : ComponentActivity() {
                 withContext(Dispatchers.Main) {
                     checkUpdatesEnabled = true
                     if (latestVer.isNullOrEmpty()) {
-                        updateStatusText = "Could not reach update server."
+                        updateStatusText = "无法访问更新服务器。"
                         return@withContext
                     }
                     val stored = prefs!!.getString(
@@ -572,10 +572,10 @@ class AmazonGameDetailActivity : ComponentActivity() {
                         prefs!!.edit()
                             .putString("amazon_manifest_version_$productId", latestVer)
                             .apply()
-                        updateStatusText = "Up to date \u2713"
+                        updateStatusText = "已是最新 ✓"
                         updateBtnVisible = false
                     } else if (stored == latestVer) {
-                        updateStatusText = "Up to date \u2713"
+                        updateStatusText = "已是最新 ✓"
                         updateBtnVisible = false
                     } else {
                         updateStatusText = "Update available!\n" +
@@ -708,7 +708,7 @@ class AmazonGameDetailActivity : ComponentActivity() {
 
         // Themed (StoreAlertDialogDark) so it matches the dark app instead of a white light dialog.
         android.app.AlertDialog.Builder(this, R.style.StoreAlertDialogDark)
-            .setTitle("Select game executable")
+            .setTitle("选择游戏可执行文件")
             .setItems(labels) { _, which ->
                 lifecycleScope.launch(Dispatchers.IO) {
                     onSelected(candidates[which])
@@ -787,9 +787,9 @@ private fun AmazonGameDetailScreen(
     val gear = buildList {
         // onInstallClick doubles as Cancel while the label reads "Cancel".
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstallClick))
-        if (setExeBtnVisible) add(StoreGearItem("🎯", "Set .exe…", onClick = onSetExeClick))
-        if (installed) add(StoreGearItem("🔄", "Check for updates", enabled = checkUpdatesEnabled, onClick = onCheckUpdatesClick))
-        if (updateBtnVisible) add(StoreGearItem("⬆️", "Update now", onClick = onUpdateNowClick))
+        if (setExeBtnVisible) add(StoreGearItem("🎯", "设置 .exe…", onClick = onSetExeClick))
+        if (installed) add(StoreGearItem("🔄", "检查更新", enabled = checkUpdatesEnabled, onClick = onCheckUpdatesClick))
+        if (updateBtnVisible) add(StoreGearItem("⬆️", "立即更新", onClick = onUpdateNowClick))
         if (uninstallBtnVisible) add(StoreGearItem("🗑️", "Uninstall", danger = true, onClick = onUninstallClick))
     }
     val dlcCount = remember(dlcJson) {
@@ -863,7 +863,7 @@ private fun AmazonGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "Updates") {
+                StoreSection(title = "更新s") {
                     AmazonUpdatesContent(
                         updateStatusText = updateStatusText,
                         checkUpdatesEnabled = checkUpdatesEnabled,
@@ -914,14 +914,14 @@ private fun AmazonUpdatesContent(
     Spacer(Modifier.height(8.dp))
     if (updateBtnVisible) {
         StoreActionButton(
-            text = "Update Now",
+            text = "立即更新",
             onClick = onUpdateNowClick,
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
     }
     StoreActionButton(
-        text = "Check for Updates",
+        text = "检查更新",
         onClick = onCheckUpdatesClick,
         modifier = Modifier.fillMaxWidth(),
         enabled = checkUpdatesEnabled,
@@ -946,11 +946,11 @@ private fun AmazonDlcContent(
     }
 
     if (parseError) {
-        StoreStatusText("Error reading DLC data")
+        StoreStatusText("读取DLC数据时出错")
         return
     }
     if (dlcArr == null || dlcArr.length() == 0) {
-        StoreStatusText("No DLCs in your library for this game")
+        StoreStatusText("您的库中没有此游戏的DLC")
         return
     }
 
@@ -1012,7 +1012,7 @@ private fun AmazonDlcContent(
                     onClick = {
                         if (dlcBtnText == "Downloading…") return@StoreActionButton
                         dlcBtnText = "Downloading…"
-                        dlcStatusText = "Starting…"
+                        dlcStatusText = "正在启动…"
                         onDlcInstall(dlcEid, dlcPid, dlcTitleText)
                     },
                     modifier = Modifier.fillMaxWidth(),

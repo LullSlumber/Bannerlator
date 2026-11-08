@@ -194,7 +194,7 @@ private fun FriendsTopBar(
             IconButton(onClick = onRefresh) {
                 Icon(
                     imageVector = Icons.Filled.Refresh,
-                    contentDescription = "Refresh",
+                    contentDescription = "刷新",
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -202,7 +202,7 @@ private fun FriendsTopBar(
         IconButton(onClick = onSettings) {
             Icon(
                 imageVector = Icons.Filled.Settings,
-                contentDescription = "Friends & chat settings",
+                contentDescription = "好友与聊天设置",
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
@@ -348,7 +348,7 @@ internal fun FriendsOffState(onBack: () -> Unit, showBackButton: Boolean = true)
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Steam friends & chat is off",
+                text = "Steam好友与聊天已关闭",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
@@ -363,7 +363,7 @@ internal fun FriendsOffState(onBack: () -> Unit, showBackButton: Boolean = true)
             )
             Spacer(Modifier.height(20.dp))
             Button(onClick = { SteamFriendsStore.setSocialEnabled(ctx, true) }) {
-                Text("Enable")
+                Text("启用")
             }
         }
     }
@@ -379,7 +379,7 @@ private fun EmptyChatState() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Select a friend to start chatting",
+            text = "选择一位好友开始聊天",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -396,7 +396,7 @@ private fun EmptyChatState() {
 enum class FriendPresenceFilter(val label: String) {
     ALL("All"),
     ONLINE("Online"),
-    IN_GAME("In-Game"),
+    IN_GAME("游戏中"),
     ;
 
     fun accepts(p: SteamFriendsStore.Presence): Boolean = when (this) {
@@ -413,7 +413,7 @@ enum class FriendPresenceFilter(val label: String) {
  * The roster body: connect / loading states and the grouped, collapsible friend list with the pinned
  * friend-requests block, long-press menu, and unread badges. Extracted so the single-pane and the
  * landscape two-pane layouts share one implementation. [selectedFriendId] highlights the open chat's
- * row (two-pane only); [showFilter] adds a client-side "Search friends" box atop the list;
+ * row (two-pane only); [showFilter] adds a client-side "搜索好友" box atop the list;
  * [presenceFilter] applies the storefront tab's All/Online/In-Game chips.
  *
  * `internal` (was private) so the storefront's Friends tab composes this exact roster instead of
@@ -491,7 +491,7 @@ internal fun FriendsListBody(
                     value = filter,
                     onValueChange = { filter = it },
                     singleLine = true,
-                    placeholder = { Text("Search friends") },
+                    placeholder = { Text("搜索好友") },
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -620,7 +620,7 @@ private fun FriendActionsDialog(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
                 )
                 HorizontalDivider(thickness = 1.dp, color = SectionDivider)
-                MenuActionRow("Message", onClick = onMessage)
+                MenuActionRow("消息", onClick = onMessage)
                 if (inGame) {
                     HorizontalDivider(thickness = 1.dp, color = RowDivider)
                     MenuActionRow("Join ${friend.gameName ?: "game"}", onClick = onJoin)
@@ -629,9 +629,9 @@ private fun FriendActionsDialog(
                 MenuActionRow("View Steam profile", onClick = onProfile)
                 HorizontalDivider(thickness = 1.dp, color = RowDivider)
                 if (!confirmRemove) {
-                    MenuActionRow("Remove friend", tint = MaterialTheme.colorScheme.error) { confirmRemove = true }
+                    MenuActionRow("移除好友", tint = MaterialTheme.colorScheme.error) { confirmRemove = true }
                 } else {
-                    MenuActionRow("Tap again to confirm removal", tint = MaterialTheme.colorScheme.error, onClick = onRemove)
+                    MenuActionRow("再次点击以确认移除", tint = MaterialTheme.colorScheme.error, onClick = onRemove)
                 }
             }
         }
@@ -699,7 +699,7 @@ private fun IncomingRequestRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "Wants to add you",
+                text = "想要添加您",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -711,7 +711,7 @@ private fun IncomingRequestRow(
             Text("Accept")
         }
         TextButton(onClick = onDecline, contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)) {
-            Text("Decline")
+            Text("拒绝")
         }
     }
 }
@@ -739,7 +739,7 @@ private fun OutgoingRequestRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "Pending — request sent",
+                text = "待处理——请求已发送",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -810,7 +810,7 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
     // scroll column in portrait, two side-by-side columns in landscape). Pure layout, no logic change.
     val friendCodeSection: @Composable () -> Unit = {
         Column {
-            Text("Your Friend Code", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("您的好友代码", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier
@@ -837,10 +837,10 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
                     },
                     enabled = myCode != null,
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                ) { Text("Copy") }
+                ) { Text("拷贝") }
             }
             Text(
-                "Share this so friends can add you — it's your Steam account number.",
+                "分享此代码以便好友可以添加您——这是您的Steam账号数字。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 6.dp),
@@ -850,24 +850,24 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
 
     val addByCodeSection: @Composable () -> Unit = {
         Column {
-            Text("Add by Friend Code", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("通过好友代码添加", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = codeInput,
                     onValueChange = { codeInput = it },
                     singleLine = true,
-                    placeholder = { Text("Enter a Friend Code") },
+                    placeholder = { Text("输入好友代码") },
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(8.dp))
                 Button(
                     onClick = { SteamFriendsStore.addByFriendCode(codeInput); codeInput = "" },
                     enabled = codeInput.isNotBlank(),
-                ) { Text("Add") }
+                ) { Text("添加") }
             }
             Text(
-                "Enter a friend's code to send a request. A full SteamID64 works too.",
+                "输入好友的代码以发送请求。完整的SteamID64也可用。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 6.dp),
@@ -877,14 +877,14 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
 
     val searchSection: @Composable () -> Unit = {
         Column {
-            Text("Search Steam by name", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("按名称搜索Steam", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(8.dp))
             XmbTapToEdit(Modifier.fillMaxWidth()) { fieldModifier, _ ->
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
                     singleLine = true,
-                    placeholder = { Text("Search for a player…") },
+                    placeholder = { Text("搜索玩家…") },
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                     trailingIcon = { if (searching) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) },
                     modifier = fieldModifier,
@@ -923,7 +923,7 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
                 )
             }
             Text(
-                "Tap Add next to the right person — avatars & names help you pick the correct account.",
+                "点击正确人员旁边的“添加”——头像和名称可帮助您选择正确的账号。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
@@ -933,12 +933,12 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
 
     val quickInviteSection: @Composable () -> Unit = {
         Column {
-            Text("Or send a Quick Invite", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("或发送快速邀请", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(8.dp))
             val link = inviteLink
             if (link == null) {
                 Button(onClick = { generateInvite() }, enabled = !generating) {
-                    Text(if (generating) "Generating…" else "Generate invite link")
+                    Text(if (generating) "正在生成…" else "生成邀请链接")
                 }
             } else {
                 Column(
@@ -963,16 +963,16 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
                                 Toast.makeText(ctx, "Invite link copied", Toast.LENGTH_SHORT).show()
                             },
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                        ) { Text("Copy") }
+                        ) { Text("拷贝") }
                     }
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = { generateInvite() }, enabled = !generating) {
-                        Text(if (generating) "Generating…" else "Generate new link")
+                        Text(if (generating) "正在生成…" else "Generate new link")
                     }
                 }
             }
             Text(
-                "A one-time link to share by message. Your friend is added instantly when they open it. Expires after 30 days.",
+                "一次性链接，可通过消息分享。好友打开后立即添加。30天后过期。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 6.dp),
@@ -997,7 +997,7 @@ private fun AddFriendDialog(onDismiss: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.People, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(10.dp))
-                Text("Add a friend")
+                Text("添加好友")
             }
         },
         // The dialog is a window of its own, so its fields take the XMB keyboard hook here.
@@ -1094,7 +1094,7 @@ private fun SearchResultRow(result: SteamUserSearch.Result, state: ResultState, 
         }
         Spacer(Modifier.width(8.dp))
         when (state) {
-            ResultState.ADD -> Button(onClick = onAdd, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { Text("Add") }
+            ResultState.ADD -> Button(onClick = onAdd, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { Text("添加") }
             ResultState.PENDING -> TextButton(onClick = {}, enabled = false) { Text("Pending") }
             ResultState.FRIEND -> TextButton(onClick = {}, enabled = false) { Text("Friend") }
         }
@@ -1124,7 +1124,7 @@ private fun ConnectState() {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Connect to Steam to see your friends and chat.",
+            text = "连接到Steam以查看好友和聊天。",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -1147,7 +1147,7 @@ private fun LoadingState() {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "Loading friends…",
+            text = "正在加载好友…",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -1445,7 +1445,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (messages.isEmpty()) {
                 Text(
-                    text = "No messages yet. Say hello!",
+                    text = "暂无消息。打个招呼吧！",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center),
@@ -1506,7 +1506,7 @@ fun ChatScreen(
                 IconButton(
                     onClick = {
                         pickImage.launch(
-                            InAppFilePicker.buildIntent(ctx, InAppFilePicker.IMAGES, "Send an image"),
+                            InAppFilePicker.buildIntent(ctx, InAppFilePicker.IMAGES, "发送图片"),
                         )
                     },
                 ) {
@@ -1556,7 +1556,7 @@ fun ChatScreen(
                     value = draft,
                     onValueChange = { draft = it; if (it.isNotEmpty()) SteamFriendsStore.sendTyping(friend.steamId) },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Message") },
+                    placeholder = { Text("消息") },
                     maxLines = 4,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(onSend = {

@@ -69,7 +69,7 @@ internal fun HelpTextDialog(text: String, onDismiss: () -> Unit) {
                     .verticalScroll(rememberScrollState())
             )
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Got it") } }
+        confirmButton = { TextButton(onClick = onDismiss) { Text("知道了") } }
     )
 }
 
@@ -90,6 +90,6 @@ internal fun HelpDialog(textResId: Int, onDismiss: () -> Unit) {
                     .verticalScroll(rememberScrollState())
             )
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Got it") } }
+        confirmButton = { TextButton(onClick = onDismiss) { Text("知道了") } }
     )
 }

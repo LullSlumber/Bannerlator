@@ -281,7 +281,7 @@ fun SteamFriendsAction(tint: Color = Color.White) {
         }) {
             Icon(
                 imageVector = Icons.Filled.People,
-                contentDescription = "Steam friends",
+                contentDescription = "Steam好友",
                 tint = tint,
             )
         }
@@ -309,15 +309,15 @@ fun SteamFriendsAction(tint: Color = Color.White) {
 }
 
 /**
- * The ONE reusable "Steam friends & chat" settings sheet, opened by BOTH cogs — the Steam store header
+ * The ONE reusable "Steam好友与聊天" settings sheet, opened by BOTH cogs — the Steam store header
  * and the friends-screen top bar. Because both surfaces open this same sheet, and it binds to the
  * shared [SteamFriendsStore.socialEnabled] flow + [SteamPrefs] gates, the two are inherently mirrored:
  * a change made in one is live in the other (and in the friends screen's off-state) with no extra
  * plumbing.
  *
- * - "Enable Steam friends & chat" → the master opt-in (default OFF), via [SteamFriendsStore.setSocialEnabled].
- * - "Chat notifications" → shade notifications, greyed while the master is off.
- * - "Notification sound" → sound / heads-up on those notifications, greyed while notifications are off.
+ * - "启用Steam好友与聊天" → the master opt-in (default OFF), via [SteamFriendsStore.setSocialEnabled].
+ * - "聊天通知" → shade notifications, greyed while the master is off.
+ * - "通知声音" → sound / heads-up on those notifications, greyed while notifications are off.
  */
 @Composable
 fun SteamSocialSettingsSheet(onDismiss: () -> Unit) {
@@ -338,13 +338,13 @@ fun SteamSocialSettingsSheet(onDismiss: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.People, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(10.dp))
-                Text("Steam friends & chat")
+                Text("Steam好友与聊天")
             }
         },
         text = {
             Column {
                 SocialSettingRow(
-                    title = "Enable Steam friends & chat",
+                    title = "启用Steam好友与聊天",
                     subtitle = "See your friends list, presence and chat. Off by default — no online status " +
                         "is shared until you turn this on.",
                     checked = socialEnabled,
@@ -353,16 +353,16 @@ fun SteamSocialSettingsSheet(onDismiss: () -> Unit) {
                 )
                 Spacer(Modifier.height(4.dp))
                 SocialSettingRow(
-                    title = "Chat notifications",
-                    subtitle = "Show a notification when a friend messages you.",
+                    title = "聊天通知",
+                    subtitle = "当好友给您发消息时显示通知。",
                     checked = chatNotifs,
                     enabled = socialEnabled,
                     onCheckedChange = { chatNotifs = it; SteamPrefs.setChatNotificationsEnabled(ctx, it) },
                 )
                 Spacer(Modifier.height(4.dp))
                 SocialSettingRow(
-                    title = "Notification sound",
-                    subtitle = "Play a sound and pop a heads-up for new messages.",
+                    title = "通知声音",
+                    subtitle = "新消息时播放声音并弹出提醒。",
                     checked = chatSound,
                     enabled = socialEnabled && chatNotifs,
                     onCheckedChange = { chatSound = it; SteamPrefs.setChatSoundEnabled(ctx, it) },

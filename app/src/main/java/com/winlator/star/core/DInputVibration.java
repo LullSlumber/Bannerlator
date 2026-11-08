@@ -4,7 +4,7 @@ import com.winlator.star.container.Container;
 import com.winlator.star.container.Shortcut;
 
 /**
- * "DirectInput vibration": DirectInput games can make the controller vibrate. With it on, the evdev
+ * "DirectInput 震动": DirectInput games can make the controller vibrate. With it on, the evdev
  * layer (libfakeinput.so) shows Wine the pads' force-feedback effects, so winebus offers DirectInput
  * force feedback (rumble, and the steady, periodic, ramp and spring-type forces racing and flight games
  * use). BANNERIN's effect engine mixes the effects into the two rumble motors and sends them to the app

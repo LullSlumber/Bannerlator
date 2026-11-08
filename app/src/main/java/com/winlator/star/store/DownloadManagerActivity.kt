@@ -297,7 +297,7 @@ class DownloadManagerActivity : ComponentActivity() {
     private fun launch(entry: DownloadEntry) {
         val dir = entry.installPath
         if (dir.isNullOrEmpty()) {
-            uninstallResult = "Install directory not set"
+            uninstallResult = "未设置安装目录"
             return
         }
         if (entry.store == Store.XBOX) {
@@ -408,18 +408,18 @@ class DownloadManagerActivity : ComponentActivity() {
     private fun cancelEntry(entry: DownloadEntry) {
         if (entry.store == Store.EPIC) {
             AlertDialog.Builder(this)
-                .setTitle("Cancel download?")
+                .setTitle("取消下载?")
                 .setMessage("Keep the partial download so you can resume later, or delete all " +
                         "downloaded files for this game?")
-                .setPositiveButton("Keep files") { _, _ ->
+                .setPositiveButton("保留文件") { _, _ ->
                     EpicCancelPolicy.setDeleteOnCancel(entry.id, false)
                     entry.cancel?.invoke()
                 }
-                .setNegativeButton("Delete files") { _, _ ->
+                .setNegativeButton("删除文件") { _, _ ->
                     EpicCancelPolicy.setDeleteOnCancel(entry.id, true)
                     entry.cancel?.invoke()
                 }
-                .setNeutralButton("Keep downloading", null)
+                .setNeutralButton("继续下载", null)
                 .show()
         } else {
             entry.cancel?.invoke()
@@ -572,7 +572,7 @@ private fun DownloadManagerScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Downloads & Library") },
+                title = { Text("下载和库") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -582,7 +582,7 @@ private fun DownloadManagerScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onClear) { Text("Clear ✓") }
+                    TextButton(onClick = onClear) { Text("清除 ✓") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -669,7 +669,7 @@ private fun XmbDownloadsBar(onBack: () -> Unit, onClear: () -> Unit, look: DmLoo
         }
         Spacer(Modifier.width(look.gap / 2))
         Text(
-            text = "Downloads & Library",
+            text = "下载和库",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -677,7 +677,7 @@ private fun XmbDownloadsBar(onBack: () -> Unit, onClear: () -> Unit, look: DmLoo
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        TextButton(onClick = onClear, modifier = Modifier.dmFocus(look, RoundedCornerShape(8.dp))) { Text("Clear ✓") }
+        TextButton(onClick = onClear, modifier = Modifier.dmFocus(look, RoundedCornerShape(8.dp))) { Text("清除 ✓") }
     }
 }
 
@@ -743,13 +743,13 @@ private fun DownloadCard(
                         // entry.updateAvailable gets the same marker.
                         if (entry.updateAvailable) {
                             Text(
-                                text = "● Installed — Update available",
+                                text = "● 已安装 — 有可用更新",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = UPDATE_AMBER,
                             )
                         } else {
                             Text(
-                                text = "● Installed",
+                                text = "● 已安装",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = INSTALLED_GREEN,
                             )
@@ -776,7 +776,7 @@ private fun DownloadCard(
 
                     DownloadState.FAILED -> {
                         Text(
-                            text = entry.error?.let { "Failed: $it" } ?: "Download failed",
+                            text = entry.error?.let { "Failed: $it" } ?: "下载失败",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             maxLines = 3,
@@ -788,7 +788,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("Dismiss", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                     }
 
                     DownloadState.CANCELLED -> {
@@ -803,7 +803,7 @@ private fun DownloadCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("Dismiss", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }
@@ -867,7 +867,7 @@ private fun ActiveContent(
     Text(
         text = when (entry.state) {
             DownloadState.PAUSED -> "Paused — $pct%$sizePart"
-            DownloadState.QUEUED -> "Queued…"
+            DownloadState.QUEUED -> "已排队…"
             else -> "Downloading… $pct%$sizePart$speedEta"
         },
         style = MaterialTheme.typography.bodySmall,
@@ -975,7 +975,7 @@ private fun QueuedCard(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("Start next", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                         OutlinedButton(
                             onClick = { onMoveUp(entry) },
                             shape = RoundedCornerShape(8.dp),

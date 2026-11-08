@@ -193,7 +193,7 @@ object UbisoftDiag {
             step(s, "PRE", "DECISIONS") { s.addMain("PRE", "DECISIONS", decisionsText(s)) }
             step(s, "PRE", "REGISTRATION") { s.addMain("PRE", "REGISTRATION (install record)", registrationText(s)) }
             step(s, "PRE", "REGISTRY SNAPSHOT") { s.addMain("PRE", "REGISTRY SNAPSHOT (after our write, before Wine starts)", registryText(s)) }
-            step(s, "PRE", "LAUNCH") { s.addMain("PRE", "LAUNCH (settings, command line, environment)", launchText(s)) }
+            step(s, "PRE", "启动") { s.addMain("PRE", "LAUNCH (settings, command line, environment)", launchText(s)) }
             s.status["PRE (inline)"] = "done in ${SystemClock.elapsedRealtime() - t0} ms"
             s.flushIndex()
             startSampler(s)

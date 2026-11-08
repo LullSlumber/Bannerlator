@@ -63,10 +63,10 @@ internal object TvRows {
         ),
         SettingDef(
             id = ID_MODE, category = "display", group = GROUP, level = ADVANCED,
-            label = L("Output mode"), hint = L("What the TV is told to run at."), tech = ExternalDisplay.EXTRA_MODE_ID,
+            label = L("输出模式"), hint = L("告诉电视以什么模式运行。"), tech = ExternalDisplay.EXTRA_MODE_ID,
             control = { env, values ->
                 val modes = runCatching { ExternalDisplay.selectableModes(display(env)) }.getOrDefault(emptyList())
-                val opts = listOf(Opt("0", L("Default (leave the TV as it is)"))) +
+                val opts = listOf(Opt("0", L("默认（保持电视原样）"))) +
                     modes.map { Opt("${it.modeId}", ExternalDisplay.modeLabel(it)) }
                 val current = values(ID_MODE)
                 // A mode stored for a TV that isn't plugged in stays listed, so the field never reads blank.

@@ -43,7 +43,7 @@ class ContainersViewModel(app: Application) : AndroidViewModel(app) {
 
     // Per-container in-place layer update state (see ContainerLayerUpdater). layerUpdates maps a
     // container id to the entry name of a newer INSTALLED build of its layer line; layerSnapshots
-    // to the snapshot a previous update left behind (= "Revert" is possible).
+    // to the snapshot a previous update left behind (= "还原" is possible).
     private val _layerUpdates = MutableStateFlow<Map<Int, String>>(emptyMap())
     val layerUpdates: StateFlow<Map<Int, String>> = _layerUpdates
 

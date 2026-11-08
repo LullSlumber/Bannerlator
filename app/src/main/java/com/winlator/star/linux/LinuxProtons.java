@@ -154,17 +154,17 @@ public final class LinuxProtons {
         if (build.isDepot()) {
             // Nothing to fetch: the client owns this one. Asking for it is the whole operation.
             return append(new File(root, URLS), "steam://install/" + build.appId)
-                    ? null : "Could not write the request.";
+                    ? null : "无法写入请求。";
         }
         File staging = new File(root, STAGING);
         if (!staging.isDirectory() && !staging.mkdirs()) {
-            return "Could not create the download folder — is the Linux runtime installed?";
+            return "无法创建下载文件夹 — Linux runtime是否已安装？";
         }
         // Room for the tarball and the tree it unpacks to, which runs to about three times the
         // packed size. Refusing here beats filling the device and failing mid-unpack.
         long need = build.size > 0 ? build.size * 4 : 4L << 30;
         if (staging.getUsableSpace() < need) {
-            return "Not enough free space — needs about " + (need >> 30) + " GB.";
+            return "可用空间不足 — 需要大约 " + (need >> 30) + " GB.";
         }
         File tarball = new File(staging, fileName(build));
         if (listener != null) listener.onProgress("Downloading", -1);
@@ -174,7 +174,7 @@ public final class LinuxProtons {
             }
         });
         if (!ok) {
-            return "Download failed.";
+            return "下载失败。";
         }
         if (listener != null) listener.onProgress("Verifying", -1);
         String actual;
@@ -182,15 +182,15 @@ public final class LinuxProtons {
             actual = sha512(tarball);
         } catch (Exception e) {
             Log.w(TAG, "sha512", e);
-            return "Could not check the download.";
+            return "无法检查下载。";
         }
         if (!build.sha512.equalsIgnoreCase(actual)) {
             //noinspection ResultOfMethodCallIgnored
             tarball.delete();
-            return "The download did not match its checksum and was deleted.";
+            return "下载与校验和不匹配，已被删除。";
         }
         if (!append(new File(root, REQUESTS), guestTarball(build))) {
-            return "Downloaded, but the request could not be written.";
+            return "已下载，但无法写入请求。";
         }
         return null;
     }

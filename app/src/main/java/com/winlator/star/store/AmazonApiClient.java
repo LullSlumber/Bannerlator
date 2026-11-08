@@ -340,7 +340,7 @@ public class AmazonApiClient {
             conn.disconnect();
 
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "HTTP " + code + " from " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
+                Log.e(TAG, "HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
                 return null;
             }
             return resp;
@@ -364,7 +364,7 @@ public class AmazonApiClient {
 
             int code = conn.getResponseCode();
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "getBytes HTTP " + code + " from " + StoreLog.redactUrl(urlStr));
+                Log.e(TAG, "getBytes HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr));
                 conn.disconnect();
                 return null;
             }

@@ -257,12 +257,12 @@ private fun androidx.compose.foundation.layout.RowScope.PresetImportAction(
             modifier = Modifier.outlinedMenuCard(),
         ) {
             DropdownMenuItem(
-                text = { Text("Browse files") },
+                text = { Text("浏览文件") },
                 onClick = { expanded = false; onInApp() },
             )
             MenuItemDivider()
             DropdownMenuItem(
-                text = { Text("Pick via system…") },
+                text = { Text("从系统选取…") },
                 onClick = { expanded = false; onSystem() },
             )
         }

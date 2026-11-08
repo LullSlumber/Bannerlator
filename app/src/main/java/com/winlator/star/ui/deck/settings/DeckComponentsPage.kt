@@ -298,7 +298,7 @@ internal class DeckComponentsState(
     // Recommended and Optional, then folded away what only sits in the game's folder; for a game only.
     private fun topItems(): List<PageExtra> {
         if (!forGame) return emptyList()
-        if (loading) return listOf(PageExtra("rec-loading") { StatusLine("Looking for what this game needs…", spinner = true) })
+        if (loading) return listOf(PageExtra("rec-loading") { StatusLine("正在查找此游戏需要什么…", spinner = true) })
         val picks = recommended()
         if (picks.isEmpty()) return emptyList()
         fun of(g: GameRecommendations.Group) = picks.filter { GameRecommendations.group(it.second) == g }
@@ -308,12 +308,12 @@ internal class DeckComponentsState(
         fun reasonIn(list: List<Pair<Component, DependencyDetector.Recommendation>>): (Component) -> String? =
             { c -> list.firstOrNull { it.first.name == c.name }?.second?.let(GameRecommendations::reason) }
         return buildList {
-            section("rec", "Recommended for this game", "What the game's store, its install script or its exe says it needs.", rec.map { it.first }, reasonIn(rec))
-            section("opt", "Optional", "Ships with the game: install only if it misbehaves.", opt.map { it.first }, reasonIn(opt))
+            section("rec", "推荐用于此游戏", "游戏的商店、其安装脚本或其 exe 所声明的需求。", rec.map { it.first }, reasonIn(rec))
+            section("opt", "Optional", "随游戏附带：仅在出现异常时安装。", opt.map { it.first }, reasonIn(opt))
             if (folder.isNotEmpty()) {
                 add(PageExtra("folder-toggle") {
                     GroupCard(first = true, last = !showFolder, highlight = false) {
-                        FoldToggle("Also in the game's folder (${folder.size})", "Installers in its folder that nothing says the game needs.", showFolder) { showFolder = !showFolder }
+                        FoldToggle("Also in the game's folder (${folder.size})", "其文件夹中的安装程序，没有任何信息表明游戏需要它们。", showFolder) { showFolder = !showFolder }
                     }
                 })
                 if (showFolder) folder.forEachIndexed { i, (c, r) ->
@@ -327,11 +327,11 @@ internal class DeckComponentsState(
 
     // The search and every component: what the container has, the rest, and folded away the ones that open the container.
     private fun bottomItems(): List<PageExtra> = buildList {
-        add(PageExtra("all-label") { GroupLabel("All components") })
+        add(PageExtra("all-label") { GroupLabel("所有组件") })
         add(PageExtra(SEARCH_KEY) { ComponentSearch(this@DeckComponentsState) })
         when {
-            loading -> add(PageExtra("all-loading") { StatusLine("Loading the component catalog…", spinner = true) })
-            loadError -> add(PageExtra("all-error") { StatusLine("Couldn't load the component catalog. Check the connection and open this page again.", spinner = false) })
+            loading -> add(PageExtra("all-loading") { StatusLine("正在加载组件目录…", spinner = true) })
+            loadError -> add(PageExtra("all-error") { StatusLine("无法加载组件目录。请检查连接并再次打开此页面。", spinner = false) })
             else -> {
                 val q = query
                 // The file-drop `_dll` variants are install plumbing (reached through targetOf), so they are not listed.
@@ -346,7 +346,7 @@ internal class DeckComponentsState(
                 val others = rest.filterNot(this@DeckComponentsState::opensContainer)
                 val session = rest.filter(this@DeckComponentsState::opensContainer)
                 if (shown.isEmpty()) add(PageExtra("all-none") { StatusLine("Nothing matches \"$q\".", spinner = false) })
-                section("have", "Installed in this container", null, have)
+                section("have", "已安装在此容器中", null, have)
                 section("rest", "Not installed", null, others)
                 if (session.isNotEmpty()) {
                     add(PageExtra("session-toggle") {
@@ -475,7 +475,7 @@ private fun ComponentRow(state: DeckComponentsState, c: Component, note: String?
                 // Installed: the check, and what A does on it.
                 isInstalled -> Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Icon(Icons.Filled.CheckCircle, contentDescription = "Installed", tint = cs.primary, modifier = Modifier.size(24.dp))
-                    StatePill("Remove", accent = false, dim = busy, icon = Icons.Filled.Delete)
+                    StatePill("移除", accent = false, dim = busy, icon = Icons.Filled.Delete)
                 }
                 reason != null -> StatePill("N/A", accent = false, dim = false)
                 else -> StatePill(if (state.opensContainer(c)) "Run installer" else "Install", accent = true, dim = busy)
@@ -560,7 +560,7 @@ private fun ComponentSearch(state: DeckComponentsState) {
                 value = state.query,
                 onValueChange = { state.query = it },
                 singleLine = true,
-                placeholder = { Text("Search components") },
+                placeholder = { Text("搜索组件") },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = if (state.query.isEmpty()) null else ({
                     Box(

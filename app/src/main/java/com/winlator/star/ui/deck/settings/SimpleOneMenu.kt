@@ -274,7 +274,7 @@ internal fun SimpleOneMenuSettings(
                     OneTab(L(c.label), c.icon, tab == i + 1) { tab = i + 1 }
                 }
                 Spacer(Modifier.width(6.dp))
-                OneTab(L("Logs"), Icons.Filled.Description, tab == logsTab) { tab = logsTab }
+                OneTab(L("日志"), Icons.Filled.Description, tab == logsTab) { tab = logsTab }
             }
             Spacer(Modifier.height(12.dp))
             if (tab == logsTab) {

@@ -513,9 +513,9 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     val xrMappingLabels = listOf(
-        "Button A", "Button B", "Button X", "Button Y",
-        "Button Grip", "Button Trigger",
-        "Thumbstick Up", "Thumbstick Down", "Thumbstick Left", "Thumbstick Right"
+        "按键 A", "Button B", "按键 X", "按键 Y",
+        "肩键", "扳机键",
+        "摇杆上", "摇杆下", "摇杆左", "摇杆右"
     )
 
     // ── Tab selection ─────────────────────────────────────────────────────────
@@ -693,7 +693,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
         autoCloseOnExit          = (seed?.getExtra("autoCloseOnExit", "1") ?: "1") == "1"
         selectedDXWrapper        = identifierToDisplay(seed?.getDXWrapper() ?: Container.DEFAULT_DXWRAPPER, dxWrapperEntries)
         dxWrapperConfig          = seed?.getDXWrapperConfig() ?: Container.DEFAULT_DXWRAPPERCONFIG
-        // No profile for this arch: lay its "Set as default" picks over the built-in defaults.
+        // No profile for this arch: lay its "设为默认" picks over the built-in defaults.
         if (seed == null) applyDefaultPicks(seedArch, archDependent = false)
 
         // Audio driver (load as display name). Emulator is arch-dependent → seedArchDependentDefaults.
@@ -1022,7 +1022,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * The sparse "Set as default" picks for [arch] (NewContainerDefaults.loadPicks), written onto the
+     * The sparse "设为默认" picks for [arch] (NewContainerDefaults.loadPicks), written onto the
      * form through the same writers the Contents hub uses for containers. Only used when [arch] has
      * no full profile (a profile carries the values itself). [archDependent] = the Box64/WOWBox64 and
      * FEXCore versions (seedArchDependentDefaults); otherwise the graphics driver and DX wrapper.
@@ -1548,7 +1548,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
             profile.remove("drives")
             profile.remove("wineVersion")
             NewContainerDefaults.save(context, defaultsArch, profile.toString())
-            // The form showed the arch's "Set as default" picks; they're in the profile now.
+            // The form showed the arch's "设为默认" picks; they're in the profile now.
             NewContainerDefaults.clearPicks(context, defaultsArch)
             AppUtils.showToast(context, R.string.new_container_defaults_saved)
         } catch (e: Exception) {
@@ -1560,7 +1560,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     /** Reset mode ✓: forget the CURRENT arch's profile and reload the form to its built-in defaults. */
     fun resetDefaults() {
         NewContainerDefaults.clear(context, defaultsArch)
-        // App defaults means app defaults: the arch's "Set as default" picks and layer go too.
+        // App defaults means app defaults: the arch's "设为默认" picks and layer go too.
         NewContainerDefaults.clearPicks(context, defaultsArch)
         NewContainerDefaults.clearLayer(context, defaultsArch)
         loadContainerData()   // template is now null → every field falls back to Container.DEFAULT_*

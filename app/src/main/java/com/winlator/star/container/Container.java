@@ -197,7 +197,7 @@ public class Container {
     // "Direct XInput (BANNERIN)": XInput games read the pad straight from the BANNERIN slot files
     // (core/BannerinXInput). Default off; only persisted when on.
     private boolean bannerinXInput = false;
-    // "Allow in-game switching" of Direct XInput: the BANNERIN-XInput DLLs go in for both states and Wine's
+    // "允许游戏内切换" of Direct XInput: the BANNERIN-XInput DLLs go in for both states and Wine's
     // own xinput is installed beside them as the forward target, so the mode can flip mid-game
     // (core/BannerinXInput). Default on (device-proven 2026-10-17: DiRT Showdown flipped Direct <-> Wine
     // live with rumble in both); always persisted, so an explicit off stays off.
@@ -1441,7 +1441,7 @@ public class Container {
 
     // The full config JSON exactly as saveData() persists it (extraData included). Split out of
     // saveData() so callers that need the serialized form WITHOUT writing to disk — e.g. the
-    // "New Container Defaults" profile, which templates a transient container and strips the
+    // "新建容器默认值" profile, which templates a transient container and strips the
     // per-container name/drives — can reuse the identical field set instead of drifting a copy.
     public JSONObject getData() throws JSONException {
         JSONObject data = new JSONObject();

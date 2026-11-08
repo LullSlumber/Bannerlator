@@ -162,14 +162,14 @@ fun GogProfileTab(
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 StoreFilterChip("Account on GOG.com", false) { onOpenWeb("https://www.gog.com/account", "GOG account") }
-                StoreFilterChip(if (loading) "Refreshing…" else "Refresh", false, onRefresh)
+                StoreFilterChip(if (loading) "正在刷新…" else "刷新", false, onRefresh)
             }
         }
     }
     val stats: @Composable () -> Unit = {
         val tiles = buildList {
-            add("Games" to (profile?.ownedGames?.takeIf { it > 0 } ?: libraryCount))
-            add("In library here" to libraryCount)
+            add("游戏" to (profile?.ownedGames?.takeIf { it > 0 } ?: libraryCount))
+            add("在此库中" to libraryCount)
             add("Installed" to installedCount)
             profile?.let { add("Friends" to it.friends.size) }
             profile?.wishlisted?.takeIf { it > 0 }?.let { add("Wishlisted" to it) }

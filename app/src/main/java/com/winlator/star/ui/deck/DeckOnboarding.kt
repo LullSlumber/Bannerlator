@@ -448,7 +448,7 @@ private fun StepBody(
                 trailing = { if (notifOk) GrantedMark() else DeckButton("Allow notifications", null, onRequestNotifications) },
             )
             DeckRowDivider()
-            DeckRow(title = "Skip", trailing = { DeckButton("Skip", null, onNext) })
+            DeckRow(title = "跳过", trailing = { DeckButton("跳过", null, onNext) })
         }
         3 -> {
             val presetIndex by AppThemeState.presetIndex.collectAsState()
@@ -506,7 +506,7 @@ private fun StepBody(
         4 -> {
             DeckCard {
                 DeckRow(
-                    title = if (installReady) "Base system installed" else "Installing…",
+                    title = if (installReady) "Base system installed" else "正在安装…",
                     subtitle = when {
                         !installing -> "Everything the games need is already on this device."
                         installReady -> "Done. Continue to finish setting up."
@@ -531,7 +531,7 @@ private fun StepBody(
                     val signedIn = stores[store] == true
                     DeckRow(
                         title = store.label,
-                        subtitle = if (signedIn) "Signed in" else null,
+                        subtitle = if (signedIn) "已登录" else null,
                         trailing = {
                             if (signedIn) GrantedMark()
                             else DeckButton("Sign in", null, { onLaunchStore(store) })
@@ -544,7 +544,7 @@ private fun StepBody(
                     trailing = { Switch(checked = !showStores, onCheckedChange = { AppThemeState.setShowStores(!it) }) },
                 )
                 DeckRowDivider()
-                DeckRow(title = "Skip", trailing = { DeckButton("Skip", null, onNext) })
+                DeckRow(title = "跳过", trailing = { DeckButton("跳过", null, onNext) })
             }
         }
         else -> DeckCard {

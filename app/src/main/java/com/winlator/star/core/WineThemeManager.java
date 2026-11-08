@@ -104,7 +104,7 @@ public abstract class WineThemeManager {
             else if (themeInfo.theme == Theme.DARK) {
                 registryEditor.setStringValue("Control Panel\\Colors", "ActiveBorder", "48 48 48");
                 registryEditor.setStringValue("Control Panel\\Colors", "ActiveTitle", "33 33 33");
-                registryEditor.setStringValue("Control Panel\\Colors", "Background", background);
+                registryEditor.setStringValue("Control Panel\\Colors", "Wine 版本", background);
                 registryEditor.setStringValue("Control Panel\\Colors", "ButtonAlternateFace", "33 33 33");
                 registryEditor.setStringValue("Control Panel\\Colors", "ButtonDkShadow", "0 0 0");
                 registryEditor.setStringValue("Control Panel\\Colors", "ButtonFace", "33 33 33");

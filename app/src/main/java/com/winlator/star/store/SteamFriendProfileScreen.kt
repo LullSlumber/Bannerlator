@@ -220,7 +220,7 @@ private fun ProfileTopBar(onBack: () -> Unit, onViewOnSteam: () -> Unit, onRemov
             )
         }
         Text(
-            text = "Profile",
+            text = "配置",
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 4.dp),
@@ -248,7 +248,7 @@ private fun ProfileMoreButton(onViewOnSteam: () -> Unit, onRemove: () -> Unit, t
             DropdownMenuItem(
                 text = {
                     Text(
-                        text = if (confirmRemove) "Tap again to confirm removal" else "Remove friend",
+                        text = if (confirmRemove) "再次点击以确认移除" else "移除好友",
                         color = MaterialTheme.colorScheme.error,
                     )
                 },
@@ -424,13 +424,13 @@ private fun ActionsRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Narrow content padding + softWrap=false: inside the Friends tab's right pane these
-        // buttons are only ~110dp wide, and the defaults wrapped "Message" to "Messag / e".
+        // buttons are only ~110dp wide, and the defaults wrapped "消息" to "Messag / e".
         // They now shrink their padding and ellipsize instead of ever breaking a word.
         Button(
             onClick = onMessage,
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
-        ) { ActionLabel("Message") }
+        ) { ActionLabel("消息") }
         Button(
             onClick = onInvite,
             modifier = Modifier.weight(1f),
@@ -461,7 +461,7 @@ private fun ActionLabel(text: String) {
 @Composable
 private fun AboutSection(summary: String?) {
     if (summary.isNullOrBlank()) return
-    Section("About") {
+    Section("关于") {
         Text(
             text = summary,
             style = MaterialTheme.typography.bodyMedium,
@@ -492,7 +492,7 @@ private fun OverviewGrid(profile: SteamFriendsStore.FriendProfile?) {
     // games + hours: per-account facts that are genuinely absent on a private profile, and it then
     // hides entirely rather than rendering a sparse row.
     val stats = buildList {
-        profile.gamesCount?.let { add("Games" to fmtInt(it)) }
+        profile.gamesCount?.let { add("游戏" to fmtInt(it)) }
         profile.hoursTotal?.let { add("Hours" to fmtInt(it.roundToInt())) }
         profile.badges?.let { add("Badges" to fmtInt(it)) }
         profile.mutualFriends?.let { add("Mutual" to fmtInt(it)) }
@@ -542,7 +542,7 @@ private fun StatCell(label: String, value: String, modifier: Modifier = Modifier
 @Composable
 private fun RecentlyPlayed(games: List<SteamFriendsStore.RecentGame>) {
     if (games.isEmpty()) return
-    Section("Recently played") {
+    Section("最近游玩") {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),

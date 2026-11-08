@@ -256,7 +256,7 @@ public final class WaylandCompositor {
 
     /** Milliseconds since the compositor last put a game frame on the display layer without a copy;
      *  -1 if it never has this session. Unlike nativeZeroCopyFrames this updates on every such frame
-     *  rather than once per 10 s window, so the drawer can tell "switching..." from "running" within
+     *  rather than once per 10 s window, so the drawer can tell "switching..." 来自 "running" within
      *  a frame or two of the live toggle. Read-only, any thread. */
     public static native int nativeZeroCopyLastFrameAgeMs();
 

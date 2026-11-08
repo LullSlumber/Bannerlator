@@ -618,12 +618,12 @@ internal fun EnvVarsEditor(
                         lastEmitted = it
                         onValueChange(it)
                     },
-                    label = { Text("NAME=VALUE, separated by spaces") },
+                    label = { Text("变量名称=变量值, 用空格分隔") },
                     isError = malformed.isNotEmpty(),
                     supportingText = if (malformed.isEmpty()) null else {
                         {
                             Text(
-                                "Ignored — needs NAME=VALUE: " + malformed.joinToString(", ") +
+                                "已忽略 — 需要 NAME=VALUE： " + malformed.joinToString(", ") +
                                     ". Values can't contain spaces.",
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -633,7 +633,7 @@ internal fun EnvVarsEditor(
                 )
             } else if (rows.isEmpty()) {
                 Text(
-                    "No environment variables set",
+                    "未设置环境变量",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 12.dp)

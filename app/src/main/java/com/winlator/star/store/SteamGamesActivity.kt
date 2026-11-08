@@ -112,7 +112,7 @@ private fun SteamLibraryScreen(onBack: () -> Unit) {
                     )
                 }
                 Text(
-                    text = "Steam Library",
+                    text = "Steam库",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(start = 4.dp),
@@ -140,7 +140,7 @@ private fun SteamLibraryScreen(onBack: () -> Unit) {
                 IconButton(onClick = library.refresh, modifier = Modifier.steamFocusRing()) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Refresh",
+                        contentDescription = "刷新",
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }

@@ -283,7 +283,7 @@ public final class SteamLiteLogCollector {
         try {
             com.winlator.star.store.NetworkProbe.Result net =
                     com.winlator.star.store.NetworkProbe.probeCachedOrFresh();
-            out.append("Network: ").append(net.logLine()).append('\n');
+            out.append("网络: ").append(net.logLine()).append('\n');
         } catch (Throwable ignored) {}
 
         // The scrub note, matching the app's own wording (Log Manager / LogReport).

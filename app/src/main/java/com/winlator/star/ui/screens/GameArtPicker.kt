@@ -107,7 +107,7 @@ object GameArtSources {
             val url = o.optString("url").takeIf { it.startsWith("http") } ?: return@mapNotNull null
             ArtChoice(o.optString("thumb").ifEmpty { url }, url)
         }.take(40)
-        return ArtSource("SteamGridDB", "Community covers" + if (byApp) " for Steam app $appId" else " for \"$name\"", choices)
+        return ArtSource("SteamGridDB", "社区封面" + if (byApp) " for Steam app $appId" else " for \"$name\"", choices)
     }
 
     private fun screenshots(appId: Int?): ArtSource? {
@@ -148,7 +148,7 @@ fun GameArtPickerSheet(
         DeckDialogScaled {
             Column(Modifier.fillMaxWidth().fillMaxHeight(0.85f).padding(bottom = 8.dp)) {
                 Text(
-                    "Game art",
+                    "游戏图像",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 2.dp),
                 )
@@ -160,7 +160,7 @@ fun GameArtPickerSheet(
                 )
                 LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 8.dp)) {
                     item(key = "files") {
-                        SourceHeader("Your files", "Any image on this device")
+                        SourceHeader("您的文件", "此设备上的任意图像")
                         Row(Modifier.padding(horizontal = 16.dp)) {
                             Box(
                                 modifier = Modifier
@@ -171,7 +171,7 @@ fun GameArtPickerSheet(
                                     .clickable { onPickFile() },
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Text("Choose\nimage…", fontSize = 12.sp, color = cs.primary, textAlign = TextAlign.Center)
+                                Text("选择\n图像…", fontSize = 12.sp, color = cs.primary, textAlign = TextAlign.Center)
                             }
                         }
                     }

@@ -68,11 +68,11 @@ internal val LAB_SECTIONS = listOf(
     LabSection(T("Home"), T("Home"), Icons.Filled.Home, DeckRoutes.HOME),
     LabSection(T("Library"), T("Library"), Icons.Filled.GridView, LabRoutes.LIBRARY),
     LabSection(T("Stores"), T("Stores"), Icons.Filled.Storefront, LabRoutes.STORES),
-    LabSection(T("Containers"), T("Containers"), Icons.Filled.Inventory2, SimpleRoutes.CONTAINERS),
-    LabSection(T("Contents"), T("Contents"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
+    LabSection(T("容器管理"), T("容器管理"), Icons.Filled.Inventory2, SimpleRoutes.CONTAINERS),
+    LabSection(T("存档与云"), T("存档与云"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
     LabSection(T("Controls"), T("Controls"), Icons.Filled.SportsEsports, SimpleRoutes.CONTROLS),
-    LabSection(T("Files & tools"), T("Tools"), Icons.Filled.FolderOpen, SimpleRoutes.TOOLS),
-    LabSection(T("Save Manager"), T("Saves"), Icons.Filled.Save, SimpleRoutes.SAVES),
+    LabSection(T("Files & tools"), T("工具"), Icons.Filled.FolderOpen, SimpleRoutes.TOOLS),
+    LabSection(T("存档管理器"), T("Saves"), Icons.Filled.Save, SimpleRoutes.SAVES),
     LabSection(T("Settings"), T("Settings"), Icons.Filled.Settings, DeckSettingsRoutes.APP),
 )
 

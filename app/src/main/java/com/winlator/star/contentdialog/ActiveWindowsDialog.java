@@ -31,7 +31,7 @@ public class ActiveWindowsDialog extends ContentDialog {
         try {
             setTitle(activity.getString(R.string.active_windows));
         } catch (Exception e) {
-            setTitle("Active Windows");
+            setTitle("活动窗口");
         }
 
         try {

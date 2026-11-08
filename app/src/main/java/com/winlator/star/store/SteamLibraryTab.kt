@@ -108,7 +108,7 @@ import com.winlator.star.ui.screens.OutlinedAlertDialog
  */
 enum class LibraryTypeFilter(val label: String) {
     ALL("All"),
-    GAMES("Games"),
+    GAMES("游戏"),
     DEMOS("Demos"),
     /** Games ∪ Demos that are downloaded on this device — what the user can launch right now. */
     INSTALLED("Installed"),
@@ -132,10 +132,10 @@ enum class LibraryTypeFilter(val label: String) {
 
     /** Copy shown when this chip matches nothing. */
     fun emptyMessage(): String = when (this) {
-        GAMES -> "No games in your library"
-        DEMOS -> "No demos in your library"
-        INSTALLED -> "Nothing installed yet"
-        ALL -> "No games yet"
+        GAMES -> "您的库中没有游戏"
+        DEMOS -> "您的库中没有演示"
+        INSTALLED -> "尚未安装任何内容"
+        ALL -> "尚无游戏"
     }
 
     companion object {
@@ -291,10 +291,10 @@ class SteamLibraryState internal constructor(
      *
      * Built from the FULL [games] list and NEVER from the type-filtered display list. If this
      * followed the chip, selecting "Demos" would tell the Store tab the account owns nothing but
-     * demos and every owned game in a rail would read "Not owned".
+     * demos and every owned game in a rail would read "未拥有".
      *
      * Including demos here also fixes a pre-existing bug: an owned demo used to be filtered out of
-     * the library entirely, so it showed as "Not owned" in Store rails.
+     * the library entirely, so it showed as "未拥有" in Store rails.
      */
     val ownedAppIds: Set<Int>,
     val refresh: () -> Unit,
@@ -403,7 +403,7 @@ fun rememberSteamLibrary(): SteamLibraryState {
                     // A different account is active: show what IT owns (the cached rows are filtered
                     // per account) until its own library sync lands.
                     StorefrontLog.i(StorefrontLog.LIBRARY, "account switched — re-reading cached rows")
-                    statusText = "Syncing library…"
+                    statusText = "正在同步库…"
                     load()
                 }
                 event.startsWith("SteamStatus:") -> {
@@ -453,7 +453,7 @@ fun rememberSteamLibrary(): SteamLibraryState {
         val staleThresholdSec = 4 * 60 * 60L
         val elapsed = System.currentTimeMillis() / 1000L - repo.lastSyncTime
         if (games.isEmpty() || elapsed > staleThresholdSec) {
-            statusText = if (games.isEmpty()) "Syncing library…" else "Refreshing library…"
+            statusText = if (games.isEmpty()) "正在同步库…" else "正在刷新库…"
             StorefrontLog.i(
                 StorefrontLog.LIBRARY,
                 "library sync KICKED (cached=${games.size}, ${elapsed}s since last sync)",
@@ -569,7 +569,7 @@ fun SteamLibraryTab(
     fun launchInstalled(game: SteamGame) {
         if (game.installDir.isEmpty()) {
             StorefrontLog.w(StorefrontLog.LIBRARY, "launch app ${game.appId} (${game.name}): installDir is EMPTY")
-            onMessage("Install directory not set")
+            onMessage("未设置安装目录")
             return
         }
         val installDir = java.io.File(game.installDir)
@@ -691,17 +691,17 @@ fun SteamLibraryTab(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when {
                 state.games.isEmpty() && !state.isLoading -> StoreNotice(
-                    title = "No games yet",
+                    title = "尚无游戏",
                     body = "Nothing in this account's Steam library has synced yet. Pull a fresh sync " +
                         "with Refresh, or add a free game from the Store tab.",
-                    actionLabel = "Refresh",
+                    actionLabel = "刷新",
                     onAction = state.refresh,
                     modifier = Modifier.align(Alignment.Center),
                 )
 
                 // The library HAS entries and the search matches none of them (under the current
                 // chip). Checked before the chip's own empty state so typing never reads as
-                // "No demos in your library".
+                // "您的库中没有演示".
                 shown.isEmpty() && !state.isLoading && query.isNotBlank() -> StoreNotice(
                     title = stringResource(R.string.steam_libsearch_empty_title),
                     body = if (typeFilter == LibraryTypeFilter.ALL) {
@@ -720,11 +720,11 @@ fun SteamLibraryTab(
                     title = typeFilter.emptyMessage(),
                     body = when (typeFilter) {
                         LibraryTypeFilter.DEMOS ->
-                            "Demos you have installed from the Steam store will appear here."
+                            "您从Steam商店安装的演示将出现在此处。"
                         LibraryTypeFilter.INSTALLED ->
-                            "Games and demos you download from your library will appear here."
+                            "您从库中下载的游戏和演示将出现在此处。"
                         else ->
-                            "Nothing in your library matches this filter."
+                            "您的库中没有匹配此过滤条件的内容。"
                     },
                     actionLabel = if (typeFilter != LibraryTypeFilter.ALL) "Show all" else null,
                     onAction = if (typeFilter != LibraryTypeFilter.ALL) {
@@ -1112,7 +1112,7 @@ private fun LibraryDetailRow(
                 }
                 if (game.isInstalled) {
                     Text(
-                        text = "● Installed",
+                        text = "● 已安装",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF4CAF50), // semantic installed-green (unchanged)
                         modifier = Modifier.padding(top = 2.dp),
@@ -1124,7 +1124,7 @@ private fun LibraryDetailRow(
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.height(32.dp).steamFocusRing(RoundedCornerShape(8.dp)),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                        ) { Text("Launch / Add", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("启动 / 添加", style = MaterialTheme.typography.labelSmall) }
                         OutlinedButton(
                             onClick = onUninstall,
                             shape = RoundedCornerShape(8.dp),
@@ -1210,9 +1210,9 @@ internal fun SteamSignOutDialog(
 ) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Sign out of Steam?") },
-        text = { Text("Your saved login will be removed. You will need to sign in again.") },
-        confirmButton = { TextButton(onClick = onConfirm) { Text("Sign Out") } },
+        title = { Text("退出Steam登录?") },
+        text = { Text("您保存的登录信息将被移除。您将需要重新登录。") },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("退出登录") } },
         // "Change account" is the non-destructive way out: it keeps every saved login (this one too).
         dismissButton = {
             Row {

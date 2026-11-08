@@ -82,15 +82,15 @@ fun AmazonProfileTab(
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 StoreFilterChip("Prime Gaming", false) { onOpenWeb("https://gaming.amazon.com/home", "Prime Gaming") }
-                StoreFilterChip(if (loading) "Refreshing…" else "Refresh", false, onRefresh)
+                StoreFilterChip(if (loading) "正在刷新…" else "刷新", false, onRefresh)
             }
         }
     }
     val stats: @Composable () -> Unit = {
         val tiles = buildList {
-            add("Games" to libraryCount)
+            add("游戏" to libraryCount)
             add("Installed" to installedCount)
-            if (updatableCount > 0) add("Updates" to updatableCount)
+            if (updatableCount > 0) add("更新s" to updatableCount)
         }
         val cols = if (wide) 3 else 2
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -103,7 +103,7 @@ fun AmazonProfileTab(
         }
     }
     val about: @Composable () -> Unit = {
-        StoreSection(title = "About Amazon Games here") {
+        StoreSection(title = "关于此处的Amazon Games") {
             StoreStatusText(
                 "Games you claim on Prime Gaming download through Amazon's distribution service and " +
                     "run without the Amazon Games app. Amazon exposes no friends or catalog API to " +

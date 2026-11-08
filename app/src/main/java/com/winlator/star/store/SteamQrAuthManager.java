@@ -159,7 +159,7 @@ public final class SteamQrAuthManager {
     private void startQrLoginRust(QrAuthListener listener) {
         BlSteamSession session = BlSteamEngine.INSTANCE.session();
         if (session == null || !BlSteamEngine.INSTANCE.isConnected()) {
-            mainHandler.post(() -> listener.onFailure("Not connected to Steam"));
+            mainHandler.post(() -> listener.onFailure("未连接到Steam"));
             return;
         }
         rustQrActive = true;

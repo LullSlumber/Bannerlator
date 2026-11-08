@@ -14,7 +14,7 @@ import java.io.File;
  * hidden on Android 12+.
  *
  * The choice lives in the default SharedPreferences under {@link #PREF_MODE} (one of the MODE_*
- * constants) plus {@link #PREF_CUSTOM_PATH} for the "Choose folder…" case. Everything that opens a
+ * constants) plus {@link #PREF_CUSTOM_PATH} for the "选择文件夹…" case. Everything that opens a
  * log goes through {@link #resolveLogDir(Context)}, which mkdirs()+writability-checks the target and
  * silently falls back to the app-data dir so a bad path can never kill logging.
  */

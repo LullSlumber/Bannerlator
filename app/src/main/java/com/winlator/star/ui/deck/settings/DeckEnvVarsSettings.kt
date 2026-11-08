@@ -305,8 +305,8 @@ internal class DeckEnvVarsSection(
             add(PageExtra("env-linux") {
                 GroupCard(first = true, last = true, highlight = false) {
                     DeckLine(
-                        L("One environment for the whole session"),
-                        L("These reach the Steam client and every game it launches. A variable here overrides the same name from the FEXCore preset."),
+                        L("整个会话使用一个环境"),
+                        L("这些会影响 Steam 客户端及其启动的每个游戏。此处的变量会覆盖 FEXCore 预设中的同名变量。"),
                         icon = Icons.Filled.Info,
                     )
                 }
@@ -341,13 +341,13 @@ internal class DeckEnvVarsSection(
             })
         }
 
-        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) L("This game's variables") else L("Environment variables")) })
+        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) L("此游戏的变量") else L("Environment variables")) })
         val shown = listed(vars)
         if (shown.isEmpty()) {
             add(PageExtra("env-none") {
                 GroupCard(first = true, last = false, highlight = false) {
                     DeckLine(
-                        L("No environment variables set"),
+                        L("未设置环境变量"),
                         when {
                             linux -> L("The session starts with the app's own variables only.")
                             game -> L("The game starts with its container's variables") + (if (containerVars.isEmpty()) "." else L(", listed below."))
@@ -384,7 +384,7 @@ internal class DeckEnvVarsSection(
         }
         add(PageExtra("env-add") {
             GroupCard(first = false, last = false, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("Add a variable"), L("Pick a known variable or type your own: NAME, or NAME=VALUE.")) { adding = true })
+                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("添加变量"), L("Pick a known variable or type your own: NAME, or NAME=VALUE.")) { adding = true })
             }
         })
         add(PageExtra("env-raw") {
@@ -396,13 +396,13 @@ internal class DeckEnvVarsSection(
         // The container's variables this game doesn't set itself: it starts with them as they are.
         val inherited = containerVars.values.filter { c -> vars.none { it.name == c.name } }
         if (inherited.isNotEmpty()) {
-            add(PageExtra("env-container-label") { GroupLabel(L("From the container")) })
+            add(PageExtra("env-container-label") { GroupLabel(L("来自容器")) })
             inherited.forEachIndexed { i, c ->
                 add(PageExtra("env-container:${c.name}") {
                     GroupCard(first = i == 0, last = i == inherited.lastIndex, highlight = false) {
                         DeckLine(
                             c.name,
-                            listOfNotNull(c.value.ifEmpty { L("(empty)") }, ownerOf(c.name)).joinToString(" · ") + L(" · Pick it to give this game its own value."),
+                            listOfNotNull(c.value.ifEmpty { L("(empty)") }, ownerOf(c.name)).joinToString(" · ") + L(" · 选择它为此游戏提供自己的值。"),
                             icon = Icons.Filled.Inventory2,
                             onClick = { editing = EnvEdit(c.name, 0, c.value, fromContainer = true) },
                         )
@@ -444,7 +444,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
             Column {
                 Text(e.name, fontFamily = FontFamily.Monospace, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (e.fromContainer) {
-                    Text(L("From the container. OK gives this game its own value."), fontSize = 12.5.sp, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+                    Text(L("来自容器。确定会为此游戏提供自己的值。"), fontSize = 12.5.sp, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
                 }
             }
         },
@@ -465,7 +465,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                         opts.forEachIndexed { i, o ->
                             EnvChoiceLine(o, null, selected = o == value, multi = false, modifier = if (i == 0) Modifier.focusRequester(first) else Modifier) { value = o }
                         }
-                        EnvValueField(value, L("Or type any value"), numeric = false) { value = it }
+                        EnvValueField(value, L("或输入任意值"), numeric = false) { value = it }
                     }
                     EnvVarType.SELECT_MULTIPLE -> {
                         val selected = value.split(",").filter { it.isNotBlank() }
@@ -474,7 +474,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                                 value = (if (o in selected) selected - o else selected + o).joinToString(",")
                             }
                         }
-                        EnvValueField(value, L("As text, comma-separated"), numeric = false) { value = it }
+                        EnvValueField(value, L("作为文本，以逗号分隔"), numeric = false) { value = it }
                     }
                     EnvVarType.NUMBER, EnvVarType.TEXT -> EnvValueField(value, L("Value"), numeric = type == EnvVarType.NUMBER) { value = it }
                 }
@@ -492,7 +492,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                     TextButton(onClick = {
                         s.removeAt(e.name, e.occ)
                         close()
-                    }) { Text(L("Remove"), color = cs.error) }
+                    }) { Text(L("移除"), color = cs.error) }
                 }
                 TextButton(onClick = { close() }) { Text(L("Cancel")) }
             }
@@ -513,7 +513,7 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
     val candidates = KnownEnvVars.names.filter { it !in existing && (name.isEmpty() || it.contains(name, ignoreCase = true)) }
     OutlinedAlertDialog(
         onDismissRequest = { s.adding = false },
-        title = { Text(L("Add a variable")) },
+        title = { Text(L("添加变量")) },
         text = {
             Column {
                 OutlinedTextField(
@@ -521,13 +521,13 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
                     onValueChange = { text = it },
                     singleLine = true,
                     isError = error != null,
-                    label = { Text(L("NAME or NAME=VALUE")) },
-                    supportingText = { Text(error ?: L("Or pick a known one below. Spaces are dropped.")) },
+                    label = { Text(L("NAME 或 NAME=VALUE")) },
+                    supportingText = { Text(error ?: L("或在下方选择一个已知变量。空格会被丢弃。")) },
                     shape = deckShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    if (candidates.isEmpty()) L("No known variable matches.") else L("Known variables"),
+                    if (candidates.isEmpty()) L("No known variable matches.") else L("已知变量"),
                     color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 12.5.sp,
                     modifier = Modifier.padding(top = 10.dp, bottom = 6.dp),
                 )
@@ -542,7 +542,7 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
             TextButton(
                 onClick = { s.addAndEdit(name, if (eq >= 0) cleaned.substring(eq + 1) else envDefault(name)) },
                 enabled = name.isNotEmpty() && error == null,
-            ) { Text(L("Add")) }
+            ) { Text(L("添加")) }
         },
         dismissButton = { TextButton(onClick = { s.adding = false }) { Text(L("Cancel")) } },
     )
@@ -562,7 +562,7 @@ private fun EnvRawDialog(s: DeckEnvVarsSection) {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text(L("NAME=VALUE, separated by spaces")) },
+                label = { Text(L("变量名称=变量值, 用空格分隔")) },
                 isError = malformed.isNotEmpty(),
                 supportingText = {
                     Text(
@@ -593,7 +593,7 @@ private fun EnvValueField(value: String, label: String, numeric: Boolean, onValu
         onValueChange = { onValue(it.replace(" ", "")) },
         singleLine = true,
         label = { Text(label) },
-        supportingText = { Text(L("Spaces are dropped: variables are separated by spaces.")) },
+        supportingText = { Text(L("空格会被丢弃：变量由空格分隔。")) },
         keyboardOptions = KeyboardOptions(keyboardType = if (numeric) KeyboardType.Number else KeyboardType.Text),
         shape = deckShape(14.dp),
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),

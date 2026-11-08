@@ -22,7 +22,7 @@ import java.util.Set;
  * have) loads instead of ours, and the game sees no pads. Wine can't prefer a system32 native over an
  * app-folder native, so per name:
  * <ul>
- *   <li>a name the user's WINEDLLOVERRIDES already sets (e.g. "Prefer game-folder DLLs",
+ *   <li>a name the user's WINEDLLOVERRIDES already sets (e.g. "优先使用游戏文件夹中的 DLL",
  *       {@code xinput1_3=n,b}) stays the user's: the game's copy loads if that says native first;</li>
  *   <li>a name the game ships gets {@code =b}, Wine's builtin xinput, exactly as before Direct XInput;</li>
  *   <li>every other name gets our {@code n,b}.</li>

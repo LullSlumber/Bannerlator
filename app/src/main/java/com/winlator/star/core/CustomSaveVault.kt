@@ -34,7 +34,7 @@ object CustomSaveVault {
     private const val AUTO_LATEST = "auto-latest.zip"
 
     /**
-     * The one per-game backup folder shared by the manual "Back up saves" flow and the auto vault:
+     * The one per-game backup folder shared by the manual "备份存档" flow and the auto vault:
      * `Downloads/Bannerlator/game saves/<sanitized game name>/`. Public so the manual flow writes its
      * timestamped zips into the same place as the auto snapshot.
      */
@@ -202,7 +202,7 @@ object CustomSaveVault {
     }
 
     /**
-     * Manual "Back up saves": discover the game's save roots (persisted sidecar first, else a fresh
+     * Manual "备份存档": discover the game's save roots (persisted sidecar first, else a fresh
      * discover; whole-container fallback when none found) and zip them to a timestamped
      * `<perGameDir>/<GameName>_<epoch>.zip` in the chosen [layout]. Shared by the shortcut ⋮ menu AND
      * the Save Manager Custom tab so both agree. Off the UI thread; posts [onResult] on the main

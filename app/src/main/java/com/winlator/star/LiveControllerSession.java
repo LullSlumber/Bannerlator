@@ -229,7 +229,7 @@ final class LiveControllerSession {
         if (direct == xinputDirect) return;
         xinputDirect = direct;
         saveXInput(direct);
-        logChange("XInput source -> " + (direct ? "Direct" : "Wine") + (xinputSwitchable ? "" : " (next launch)"));
+        logChange("XInput source -> " + (direct ? "直接" : "Wine") + (xinputSwitchable ? "" : " (next launch)"));
         if (!xinputSwitchable) {
             addNote(NOTE_XINPUT);
             publish();

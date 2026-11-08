@@ -114,7 +114,7 @@ object AmazonLibraryRepo {
             onStatus("Fetching game list…")
             val all = AmazonApiClient.getEntitlements(token, creds.deviceSerial)
             if (all.isNullOrEmpty()) {
-                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("No games found in your Amazon library")
+                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("在您的Amazon库中未找到游戏")
                 else SyncResult.Ok(cachedList)
             }
 
@@ -143,7 +143,7 @@ object AmazonLibraryRepo {
                 fresh.installSize = old.installSize
             }
 
-            onStatus("Checking for updates…")
+            onStatus("正在检查更新…")
             for (game in finalGames) {
                 if (p.getString("amazon_exe_${game.productId}", null) == null || game.productId.isEmpty()) continue
                 runCatching {

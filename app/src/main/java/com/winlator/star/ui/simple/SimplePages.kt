@@ -175,15 +175,15 @@ internal fun SimpleToolsPage(onNavigate: (String) -> Unit, onBack: () -> Unit, o
     var showHelp by remember { mutableStateOf(false) }
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Tools"),
+        title = L("工具"),
         sections = listOf(
             MenuSection(
                 key = "tools",
-                title = L("Tools"),
+                title = L("工具"),
                 icon = Icons.Filled.Build,
                 entries = listOf(
                     MenuEntry("files", L("File manager"), L("Internal storage, SD card and every container's drives"), icon = Icons.Filled.FolderOpen, onA = { onNavigate(SimpleRoutes.FILES) }),
-                    MenuEntry("saves", L("Save Manager"), L("Back up, restore and sync game saves"), icon = Icons.Filled.Save, onA = { onNavigate(SimpleRoutes.SAVES) }),
+                    MenuEntry("saves", L("存档管理器"), L("Back up, restore and sync game saves"), icon = Icons.Filled.Save, onA = { onNavigate(SimpleRoutes.SAVES) }),
                     MenuEntry("logs", L("Game logs"), L("What each game printed while it ran"), icon = Icons.Filled.Description, onA = { onNavigate(SimpleRoutes.LOGS) }),
                     MenuEntry("wrappers", L("Wrappers"), L("Graphics wrappers"), icon = Icons.Filled.Layers, onA = { onNavigate(Screen.Wrappers.route) }),
                     MenuEntry("drivers", L("GPU drivers"), L("Turnip and Qualcomm drivers"), icon = Icons.Filled.Memory, onA = { onNavigate(SimpleRoutes.DRIVERS) }),
@@ -194,8 +194,8 @@ internal fun SimpleToolsPage(onNavigate: (String) -> Unit, onBack: () -> Unit, o
                 title = L("Help"),
                 icon = Icons.Filled.Info,
                 entries = listOf(
-                    MenuEntry("account", L("My account"), L("Sign in to manage your shared configs"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
-                    MenuEntry("about", L("About"), L("Version, updates and credits"), icon = Icons.Filled.Info, onA = onAbout),
+                    MenuEntry("account", L("我的账户"), L("Sign in to manage your shared configs"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
+                    MenuEntry("about", L("关于"), L("Version, updates and credits"), icon = Icons.Filled.Info, onA = onAbout),
                     MenuEntry("help", L("Help and Support"), L("GitHub, issue tracker and Discord"), icon = Icons.Filled.HelpOutline, onA = { showHelp = true }),
                     MenuEntry("setup", L("Run setup again"), L("Permissions, theme and stores"), icon = Icons.Filled.RestartAlt, onA = { DeckSetup.requestRerun() }),
                 ),
@@ -239,7 +239,7 @@ internal fun NavGraphBuilder.simpleRoutes(
     composable(SimpleRoutes.COMPONENT_SOURCE, arguments = listOf(navArgument("i") { type = NavType.IntType; defaultValue = 0 })) { e ->
         SimpleComponentSourcePage(index = e.arguments?.getInt("i") ?: 0, onBack = back)
     }
-    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "Contents".
+    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "存档与云".
     composable(SimpleRoutes.DRIVERS) { SimpleContentsPage(onNavigate = open, onBack = back) }
     composable(SimpleRoutes.DRIVER_SOURCE, arguments = listOf(navArgument("i") { type = NavType.IntType; defaultValue = 0 })) { e ->
         SimpleDriverSourcePage(index = e.arguments?.getInt("i") ?: 0, onBack = back)
@@ -279,7 +279,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
         MenuAction(mark("Classic", style == "Classic"), { AppThemeState.setUiStyle(AppThemeState.UI_STYLE_CLASSIC) }),
     )
     val layouts = listOf(AppThemeState.SIMPLE_LAYOUT_SHELF to "Shelf", AppThemeState.SIMPLE_LAYOUT_RAIL to "Rail", AppThemeState.SIMPLE_LAYOUT_FOCUS to "Focus")
-    val orientations = listOf(AppOrientation.AUTO to L("Auto"), AppOrientation.PORTRAIT to L("Portrait"), AppOrientation.LANDSCAPE to L("Landscape"))
+    val orientations = listOf(AppOrientation.AUTO to L("Auto"), AppOrientation.PORTRAIT to L("竖屏"), AppOrientation.LANDSCAPE to L("横屏"))
     val scales = listOf(0.7f, 0.8f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f)
     fun pct(f: Float) = "${(f * 100).roundToInt()}%"
 
@@ -407,21 +407,21 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             actions = listOf(
                 MenuAction(L("Settings"), { onNavigate(DeckSettingsRoutes.container(c.id)) }),
                 MenuAction(L("Start its Windows desktop"), { startDesktop(c) }),
-                MenuAction(L("Duplicate"), { vm.duplicate(c) { toast(context, L("Duplicated %1\$s", c.name)) } }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)),
+                MenuAction(L("复制"), { vm.duplicate(c) { toast(context, L("Duplicated %1\$s", c.name)) } }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)),
                 MenuAction(L("Back up all saves"), {
                     GameSaveBackup.backup(context, c) { r -> (context as? Activity)?.runOnUiThread { toast(context, if (r.ok) L("Saves backed up (%1\$s files)", r.fileCount) else L("Backup failed: %1\$s", r.error ?: L("unknown"))) } }
                 }),
-                MenuAction(L("Export"), { vm.exportContainer(c) { path -> (context as? Activity)?.runOnUiThread { toast(context, if (path != null) L("Exported to %1\$s", path) else L("Export failed")) } } }),
-                MenuAction(L("Remove"), { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } }, danger = true, confirm = L("Remove %1\$s and everything in it? Its games' shortcuts go too.", c.name)),
+                MenuAction(L("导出"), { vm.exportContainer(c) { path -> (context as? Activity)?.runOnUiThread { toast(context, if (path != null) L("Exported to %1\$s", path) else L("Export failed")) } } }),
+                MenuAction(L("移除"), { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } }, danger = true, confirm = L("Remove %1\$s and everything in it? Its games' shortcuts go too.", c.name)),
             ),
         )
     }
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Containers"),
+        title = L("容器管理"),
         sections = listOf(
             MenuSection(
-                "containers", L("Containers"), Icons.Filled.Inventory2, entries,
+                "containers", L("容器管理"), Icons.Filled.Inventory2, entries,
                 empty = L("No containers yet."),
                 primary = MenuAction(L("New container"), {
                     if (com.winlator.star.xenvironment.ImageFs.find(context).isValid()) onNavigate(DeckSettingsRoutes.container(DeckSettingsRoutes.NEW_CONTAINER_ID))
@@ -429,7 +429,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                 }),
             ),
             MenuSection(
-                "import", L("Backups"), Icons.Filled.Restore,
+                "import", L("备份"), Icons.Filled.Restore,
                 backups.map { f ->
                     MenuEntry(
                         "b${f.absolutePath}", f.name, f.parent, icon = Icons.Filled.Restore,
@@ -440,7 +440,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             ),
             MenuSection(
                 "defaults", L("Defaults"), Icons.Filled.Tune,
-                listOf(MenuEntry("defaults", L("New container defaults"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
+                listOf(MenuEntry("defaults", L("新容器默认值"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
             ),
         ),
         onBack = onBack,
@@ -496,7 +496,7 @@ internal fun SimpleComponentsPage(onNavigate: (String) -> Unit, onBack: () -> Un
             icon = Icons.Filled.Extension,
             actions = buildList {
                 cm?.let { m -> runCatching { SetAsDefault.componentItem(context, m, p) }.getOrNull() }?.let { item -> add(MenuAction(L("Set as default…"), { defaultItem = item })) }
-                add(MenuAction(L("Remove"), {
+                add(MenuAction(L("移除"), {
                     runCatching { cm?.removeContent(p); cm?.syncContents() }
                     vm.refreshStatus(); tick++
                     toast(context, L("Removed %1\$s %2\$s", label, p.verName))
@@ -523,7 +523,7 @@ internal fun SimpleComponentsPage(onNavigate: (String) -> Unit, onBack: () -> Un
             actions = listOf(MenuAction(L("Delete the saved file"), { vm.deleteSaved(f) }, danger = true, confirm = L("Delete %1\$s?", f.name))),
         )
     }
-    val fromFile = MenuAction(L("Install from a file"), { picker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, L("Select content pack"))) })
+    val fromFile = MenuAction(L("Install from a file"), { picker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, L("选择内容包"))) })
     SimpleMenuPage(
         overline = L("Manage"),
         title = L("Components"),
@@ -539,7 +539,7 @@ internal fun SimpleComponentsPage(onNavigate: (String) -> Unit, onBack: () -> Un
         onBack = onBack,
     )
     defaultItem?.let { item ->
-        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; toast(context, L("Set as default")) }
+        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; toast(context, L("设为默认")) }
     }
 }
 
@@ -600,7 +600,7 @@ internal fun SimpleComponentSourcePage(index: Int, onBack: () -> Unit, vm: Conte
         )
     }
     SimpleMenuPage(
-        overline = L("Contents"),
+        overline = L("存档与云"),
         title = source?.name ?: L("Source"),
         sections = sections.ifEmpty { listOf(MenuSection("none", L("Components"), Icons.Filled.Extension, emptyList(), empty = if (loading) L("Loading the list…") else L("Nothing to download here."))) },
         onBack = onBack,
@@ -635,11 +635,11 @@ internal fun SimpleDriversPage(onNavigate: (String) -> Unit, onBack: () -> Unit)
             icon = Icons.Filled.Memory,
             actions = listOf(
                 MenuAction(L("Set as default…"), { defaultItem = SetAsDefault.driverItem(id, name) }),
-                MenuAction(L("Remove"), { manager?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
+                MenuAction(L("移除"), { manager?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
             ),
         )
     }
-    val fromFile = MenuAction(L("Install from a file"), { picker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, L("Select GPU driver"))) })
+    val fromFile = MenuAction(L("Install from a file"), { picker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, L("选择GPU驱动"))) })
     SimpleMenuPage(
         overline = L("Manage"),
         title = L("Drivers & components"),
@@ -660,7 +660,7 @@ internal fun SimpleDriversPage(onNavigate: (String) -> Unit, onBack: () -> Unit)
         onBack = onBack,
     )
     defaultItem?.let { item ->
-        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; toast(context, L("Set as default")) }
+        SetAsDefaultSheet(item, onDismiss = { defaultItem = null }) { defaultItem = null; toast(context, L("设为默认")) }
     }
 }
 
@@ -706,7 +706,7 @@ internal fun SimpleDriverSourcePage(index: Int, onBack: () -> Unit) {
                         trailing = p?.let { "${(it * 100).toInt()}%" }, progress = p,
                         icon = Icons.Filled.CloudDownload,
                         onA = { download(e) },
-                        actions = listOf(MenuAction(L("Download and install"), { download(e) })),
+                        actions = listOf(MenuAction(L("下载并安装"), { download(e) })),
                     )
                 },
                 empty = when {
@@ -789,17 +789,17 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             key = "p${p.id}", title = p.name,
             subtitle = if (layouts[p.id] == true) L("On-screen layout") else L("No on-screen layout yet"),
             trailing = if (on) L("Selected") else null, current = on,
-            icon = Icons.Filled.Gamepad, group = L("Profiles"),
+            icon = Icons.Filled.Gamepad, group = L("配置文件"),
             onA = { selId = p.id },
             play = { selId = p.id; editLayout(p) }, playIcon = Icons.Filled.Edit, playLabel = L("Edit layout"),
             actions = listOf(
                 MenuAction(L("Edit the on-screen layout"), { selId = p.id; editLayout(p) }),
                 MenuAction(L("Controller bindings"), { selId = p.id; bindings(p) }),
                 MenuAction(L("Rename"), { renaming = p }),
-                MenuAction(L("Duplicate"), { manager.duplicateProfile(p); tick++ }, confirm = L("Make a copy of %1\$s?", p.name)),
+                MenuAction(L("复制"), { manager.duplicateProfile(p); tick++ }, confirm = L("Make a copy of %1\$s?", p.name)),
                 MenuAction(L("Export (.icpx)"), { exported(runCatching { manager.exportProfile(p) }.getOrNull()) }),
                 MenuAction(L("Export (.icp, older versions)"), { exported(runCatching { manager.exportLegacyProfile(p) }.getOrNull()) }),
-                MenuAction(L("Delete"), { manager.removeProfile(p); if (selId == p.id) selId = -1; tick++ }, danger = true, confirm = L("Delete %1\$s?", p.name)),
+                MenuAction(L("删除"), { manager.removeProfile(p); if (selId == p.id) selId = -1; tick++ }, danger = true, confirm = L("Delete %1\$s?", p.name)),
             ),
         )
     } + listOf(
@@ -823,7 +823,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             actions = profiles.map { p -> MenuAction(p.name, { selId = p.id }) }))
         add(MenuEntry("test", L("Test and bind controllers"), L("Remap buttons and check every input"), icon = Icons.Filled.SportsEsports, onA = { testOpen = true }))
         add(MenuEntry("default", L("Default / Any controller"), L("%1\$s bindings · new controllers inherit these", defaultBinds), icon = Icons.Filled.SportsEsports,
-            group = L("Controllers"), onA = { bindings(sel) }))
+            group = L("备份与恢复"), onA = { bindings(sel) }))
         controllers.forEach { c ->
             val dev = if (c.isConnected) android.view.InputDevice.getDevice(c.deviceId) else null
             val battery = runCatching {
@@ -832,7 +832,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             val vib = runCatching { dev?.vibrator?.takeIf { it.hasVibrator() } }.getOrNull()
             add(
                 MenuEntry(
-                    key = "c${c.id}", title = c.name ?: c.id, group = L("Controllers"),
+                    key = "c${c.id}", title = c.name ?: c.id, group = L("备份与恢复"),
                     subtitle = listOfNotNull(L("%1\$s bindings", c.controllerBindingCount), if (c.isConnected) L("Connected") else L("Not connected"), battery?.let { L("Battery %1\$s%%", it) }).joinToString(" · "),
                     current = c.isConnected,
                     icon = Icons.Filled.SportsEsports,
@@ -857,9 +857,9 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
         overline = L("Manage"),
         title = L("Controls"),
         sections = listOf(
-            MenuSection("onscreen", L("On-screen"), Icons.Filled.TouchApp, onScreen, empty = L("No profiles yet."), primary = MenuAction(L("New profile"), { creating = true })),
+            MenuSection("onscreen", L("On-screen"), Icons.Filled.TouchApp, onScreen, empty = L("No profiles yet."), primary = MenuAction(L("新配置"), { creating = true })),
             MenuSection("controller", L("Controller"), Icons.Filled.SportsEsports, controllerTab, empty = L("Make a profile first (On-screen tab).")),
-            MenuSection("assign", L("Assign"), Icons.Filled.People, emptyList(), content = {
+            MenuSection("assign", L("分配"), Icons.Filled.People, emptyList(), content = {
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
                     com.winlator.star.ui.screens.GlobalPlayerSlotsSection()
                 }
@@ -876,7 +876,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
         ),
         onBack = onBack,
     )
-    if (creating) NameDialog(L("New profile"), L("Profile %1\$s", profiles.size + 1), onDismiss = { creating = false }) { name -> creating = false; manager.createProfile(name)?.let { selId = it.id }; tick++ }
+    if (creating) NameDialog(L("新配置"), L("Profile %1\$s", profiles.size + 1), onDismiss = { creating = false }) { name -> creating = false; manager.createProfile(name)?.let { selId = it.id }; tick++ }
     renaming?.let { p -> NameDialog(L("Rename"), p.name, onDismiss = { renaming = null }) { name -> renaming = null; p.name = name; p.save(); tick++ } }
     if (communityOpen) {
         val items = community

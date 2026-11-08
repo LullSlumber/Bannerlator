@@ -24,9 +24,9 @@ import java.io.File
 // screen only ever talks to a SettingsSource, so the same rows serve all four scopes.
 
 /** How much the editor shows. Simple is the handful most people touch; Expert is everything. */
-internal enum class SettingLevel(val label: String) { SIMPLE("Simple"), ADVANCED("Advanced"), EXPERT("Expert") }
+internal enum class SettingLevel(val label: String) { SIMPLE("简单"), ADVANCED("Advanced"), EXPERT("专家") }
 
-/** What one editor edits. DEFAULTS is "All containers", i.e. the New Container Defaults profile. */
+/** What one editor edits. DEFAULTS is "所有容器", i.e. the New Container Defaults profile. */
 internal enum class EditorScope { DEFAULTS, CONTAINER, GAME, APP }
 
 /**

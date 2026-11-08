@@ -80,7 +80,7 @@ object GameMatcher {
         // "Dragon Age" ties several canonical entries on score, and ranking by config count would
         // surface the more-popular game (Veilguard) over the user's (Inquisition). A stable
         // alphabetical tiebreak keeps ordering reproducible; genuine ties are disambiguated by the
-        // caller's "Which game is this?" picker (see matchCommunityConfigs). (issue #167)
+        // caller's "这是哪个游戏?" picker (see matchCommunityConfigs). (issue #167)
         return candidates.sortedWith(
             compareByDescending<GameCandidate> { it.score }
                 .thenBy { it.game.name.lowercase() }
@@ -133,7 +133,7 @@ object GameMatcher {
      * per-config "soc" is really a GPU-renderer string (e.g. "Adreno (TM) 750") that lands in
      * [CanonicalDevice.soc], while its underscored twin ("Adreno__TM__750") lands in
      * [CanonicalDevice.gpu] — matching only the same-named field misses on both axes. Exposed for the
-     * catalog browser's "Matches my device" filter.
+     * catalog browser's "匹配我的设备" filter.
      */
     fun deviceMatchesUser(device: CanonicalDevice, userSoc: String?, userGpu: String?): Boolean =
         hardwareMatchesUser(userSoc, userGpu, listOf(device.soc, device.gpu, device.model))
@@ -142,7 +142,7 @@ object GameMatcher {
      * True when any of the user's hardware tokens overlaps any of the supplied hardware [fields], all
      * normalized ([normHw]). The generic core [deviceMatchesUser] delegates to — pass a device's
      * soc/gpu/model, or an uploaded config's device/soc strings, and it matches the same way regardless
-     * of which named field a renderer/SoC spelling happens to land in. Used by the "Matches my device"
+     * of which named field a renderer/SoC spelling happens to land in. Used by the "匹配我的设备"
      * filters over both the catalog device rows and the per-uploaded-config list.
      */
     fun hardwareMatchesUser(userSoc: String?, userGpu: String?, fields: List<String>): Boolean =

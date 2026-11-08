@@ -83,7 +83,7 @@ internal fun DeleteDialog(names: List<String>, onDismiss: () -> Unit, onConfirm:
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onConfirm) { Text("Delete", color = cs.error) } },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("删除", color = cs.error) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }
@@ -104,9 +104,9 @@ internal fun ConflictDialog(name: String, isDir: Boolean, batch: Boolean, onAnsw
                     }
                 }
                 listOf(
-                    (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to (if (isDir) "Merge" else "Overwrite"),
+                    (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to (if (isDir) "Merge" else "覆盖"),
                     ConflictChoice.KEEP_BOTH to "Keep both",
-                    ConflictChoice.SKIP to "Skip",
+                    ConflictChoice.SKIP to "跳过",
                 ).forEach { (choice, label) ->
                     TextButton(modifier = Modifier.fillMaxWidth(), onClick = { onAnswer(choice, all) }) {
                         Text(label, modifier = Modifier.fillMaxWidth())
@@ -311,7 +311,7 @@ internal fun DiskPropertiesDialog(file: File, location: FavLocation?, onDismiss:
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("Hidden", fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                    Text("隐藏", fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                     Switch(
                         checked = st?.hidden == true,
                         enabled = st != null && st.hiddenSupported && !busy,

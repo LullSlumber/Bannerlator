@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * "Controller input" log (Settings › Log Manager, off by default): one {@code controller.txt} per
+ * "控制器输入" log (Settings › Log Manager, off by default): one {@code controller.txt} per
  * launch of a Wine game, next to the game's other logs, written when the game exits. It is what a
  * user sends when the controls don't work, for the BANNERIN input chain (DirectInput, Wine's XInput
  * and Direct XInput).
@@ -381,7 +381,7 @@ public final class ControllerLog {
         long uploads = stat(s, BannerinWriter.STAT_READER_FF_UPLOADS);
         long plays = stat(s, BannerinWriter.STAT_READER_FF_PLAYS);
         if (uploads > 0 || plays > 0) {
-            rows.add(info(p + "DINPUT FF", uploads + " DirectInput effects uploaded, " + plays + " played"
+            rows.add(info(p + "DINPUT FF", uploads + " DirectInput effects uploaded, " + plays + " 已玩"
                     + (plays == 0 ? " (uploaded but never started)" : "")));
         } else if (!dinputVibration) {
             rows.add(skip(p + "DINPUT FF", "DirectInput vibration is off"));

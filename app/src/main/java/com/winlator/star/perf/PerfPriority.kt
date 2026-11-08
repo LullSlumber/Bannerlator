@@ -6,7 +6,7 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Non-root thread-priority boost for the "Thread Priority Boost" toggle.
+ * Non-root thread-priority boost for the "线程优先级提升" toggle.
  *
  * WHY THE FIRST VERSION DID NOTHING (device finding): the app's own render/present threads in this
  * process already run at nice −10…−20 (Android's top-app scheduling + the app already prioritizes

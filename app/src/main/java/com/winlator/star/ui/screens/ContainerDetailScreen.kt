@@ -184,8 +184,8 @@ fun ContainerDetailScreen(
             viewModel.selectedTab = tabTitles.indexOf("DRIVES")
             Toast.makeText(
                 context,
-                "Two drives share " + duplicates.sorted().joinToString(", ") { "$it:" } +
-                    " — give each drive its own letter",
+                "两个驱动器共用了 " + duplicates.sorted().joinToString(", ") { "$it:" } +
+                    " — 请为每个驱动器分配不同的盘符",
                 Toast.LENGTH_LONG,
             ).show()
         } else if (!viewModel.isSaving) viewModel.confirm(
@@ -244,11 +244,11 @@ fun ContainerDetailScreen(
         val activeTab = tabTitles.getOrNull(viewModel.selectedTab) ?: "GENERAL"
         val screenTitle = when {
             viewModel.defaultsMode -> "New Container Defaults"
-            containerId <= 0 -> "New Container"
-            else -> "Edit Container"
+            containerId <= 0 -> "新建容器"
+            else -> "编辑容器"
         }
         val railLinks = buildList {
-            add(RailLink("What is all this?", Icons.Filled.Help) { glossaryQuery = "" })
+            add(RailLink("这些是什么?", Icons.Filled.Help) { glossaryQuery = "" })
             if (viewModel.defaultsMode) {
                 add(RailLink(stringResource(R.string.reset_to_app_defaults), Icons.Filled.Restore) { viewModel.resetDefaults() })
             }
@@ -694,7 +694,7 @@ internal fun VulkanSettingsDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.renderer_native), Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_renderer_native }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                     Switch(checked = nativeRender, onCheckedChange = { nativeRender = it })
                 }
@@ -719,7 +719,7 @@ internal fun VulkanSettingsDialog(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_renderer_native_backend }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -743,7 +743,7 @@ internal fun VulkanSettingsDialog(
                         modifier = (if (nativeRender) Modifier.alpha(0.5f) else Modifier).weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.renderer_present_mode_help_content }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 // FG temporarily forces Mailbox; caption the field so FIFO-while-FG-selected isn't confusing.
@@ -778,7 +778,7 @@ internal fun VulkanSettingsDialog(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_renderer_driver }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
 
@@ -804,10 +804,10 @@ internal fun VulkanSettingsDialog(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_renderer_colors }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
-                // NOTE: "Correct SurfaceFlinger colours" (sfCompatMode) is NOT shown here — this
+                // NOTE: "校正 SurfaceFlinger 颜色" (sfCompatMode) is NOT shown here — this
                 // dialog only opens for the Vulkan renderer, and that toggle only affects
                 // SurfaceFlinger. It's surfaced inline under the Renderer dropdown instead (see
                 // below). sfCompatMode is still round-tripped through this dialog's config so a
@@ -871,7 +871,7 @@ private fun TopLevelFields(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_screen_size }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
         }
         if (viewModel.selectedScreenSize.equals("custom", ignoreCase = true)) {
@@ -904,7 +904,7 @@ private fun TopLevelFields(
             val archLabels = listOf("x86-64", "arm64ec")
             val archIdx = archValues.indexOf(viewModel.defaultsArch).coerceAtLeast(0)
             LabeledDropdown(
-                label = "Architecture",
+                label = "架构",
                 options = archLabels,
                 selectedOption = archLabels[archIdx],
                 onSelect = { viewModel.selectDefaultsArch(archValues[archLabels.indexOf(it)]) }
@@ -921,7 +921,7 @@ private fun TopLevelFields(
                 )
                 ContentInstallGear(onDownloadFile = onShowWineDownloadSheet)
                 IconButton(onClick = { helpRes = R.string.help_wine_version }) {
-                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                 }
             }
             // Sync (esync / ntsync / fsync / wineserver) — belongs to the layer, so it sits right under
@@ -959,7 +959,7 @@ private fun TopLevelFields(
             }
             val selIdx = if (viewModel.isWaylandBackend) 1 else 0
             LabeledDropdown(
-                label = "Display backend",
+                label = "显示后端",
                 options = backendLabels,
                 selectedOption = backendLabels[selIdx],
                 disabledOptions = if (waylandCapable) emptySet() else setOf(backendLabels[1]),
@@ -991,7 +991,7 @@ private fun TopLevelFields(
                 )
                 if (viewModel.isWaylandStored) {
                     Text(
-                        "This container was saved on Wayland, but its Proton layer is no longer Wayland-capable: it runs on X11 and will be saved as X11.",
+                        "此容器保存在Wayland上，但其Proton层不再支持Wayland：它在X11上运行，并将保存为X11。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -1047,7 +1047,7 @@ private fun TopLevelFields(
                 )
             }
             IconButton(onClick = { helpRes = R.string.help_graphics_driver }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
             // Wrappers are X11 game-driver shims and driver configuration is X11 tuning (its only
             // live field, the Turnip version, is the Compositor driver dropdown), so both entry
@@ -1091,14 +1091,14 @@ private fun TopLevelFields(
                     TextButton(onClick = { showDriverDownload = true }) {
                         Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("Download a Turnip driver")
+                        Text("管理图形包装器")
                     }
                 }
                 viewModel.compositorDriverAutoPicked == compositorVersion -> Text(
                     if (viewModel.compositorDriverPickedFromDefaults)
-                        "Picked for you: the driver in your New Container Defaults."
+                        "为您选择：您的新容器默认值中的驱动程序。"
                     else
-                        "Picked for you: the newest installed Turnip that can import the game's frames.",
+                        "为您选择：可导入游戏帧的最新已安装 Turnip。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1128,7 +1128,7 @@ private fun TopLevelFields(
                     blobPicked -> "Qualcomm's own driver cannot put Wayland frames on screen, so the screen uses a " +
                         "bundled Turnip automatically" + (if (adapterChoice) " and the game renders on the bundled " +
                         "Wayland Turnip (the adapter needs a Turnip driver here)." else ".")
-                    adapterActive -> "Used for the game (through the Wayland adapter) and for putting its frames on screen."
+                    adapterActive -> "用于游戏（通过Wayland适配器）以及将其帧放到屏幕上。"
                     else -> "Used by the Wayland compositor to put frames on screen; the game renders on the " +
                         "Wayland game driver under Advanced."
                 },
@@ -1178,7 +1178,7 @@ private fun TopLevelFields(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     LabeledDropdown(
-                        label = "Wayland game driver",
+                        label = "Wayland游戏驱动程序",
                         options = labels,
                         selectedOption = labels[values.indexOf(shown)],
                         onSelect = { viewModel.waylandGameDriver = values[labels.indexOf(it)] },
@@ -1361,7 +1361,7 @@ private fun TopLevelFields(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_renderer }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
             if (rendererEnabled && viewModel.selectedRenderer == "Vulkan") {
                 IconButton(onClick = onShowVulkanConfig) {
@@ -1391,7 +1391,7 @@ private fun TopLevelFields(
                     )
                 }
                 IconButton(onClick = { helpRes = R.string.help_renderer_sf_compat }) {
-                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                 }
                 Switch(
                     checked = viewModel.rendererSfCompatMode,
@@ -1405,15 +1405,15 @@ private fun TopLevelFields(
         // The game renders at this multiple of the display res; the Vulkan compositor then does a
         // quality downscale. "1.0" = Off.
         // Greyed on Wayland (the Lanczos downscale lives in the X11 Vulkan renderer only); the
-        // control then DISPLAYS "Not used on Wayland" — the stored value is left untouched.
+        // control then DISPLAYS "在Wayland上不使用" — the stored value is left untouched.
         run {
             val renderScaleValues = listOf("1.0", "1.25", "1.5", "2.0")
             val renderScaleLabels = listOf("Off", "1.25x", "1.5x", "2x")
             val rsIdx = renderScaleValues.indexOf(viewModel.renderScale).coerceAtLeast(0)
             val rsEnabled = !viewModel.isWaylandBackend
-            val rsShown = if (rsEnabled) renderScaleLabels[rsIdx] else "Not used on Wayland"
+            val rsShown = if (rsEnabled) renderScaleLabels[rsIdx] else "在Wayland上不使用"
             LabeledDropdown(
-                label = "Render scale (supersampling)",
+                label = "渲染缩放（超采样）",
                 options = if (rsEnabled) renderScaleLabels else listOf(rsShown),
                 selectedOption = rsShown,
                 onSelect = { viewModel.renderScale = renderScaleValues[renderScaleLabels.indexOf(it)] },
@@ -1421,7 +1421,7 @@ private fun TopLevelFields(
             )
             if (!rsEnabled) {
                 Text(
-                    "Not used on Wayland: the compositor has no supersampling downscale. The stored value returns on X11.",
+                    "在Wayland上不使用：合成器没有超采样降分辨率。存储的值在X11上恢复。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1437,7 +1437,7 @@ private fun TopLevelFields(
                 onCheckedChange = { viewModel.autoCloseOnExit = it }
             )
             Spacer(Modifier.width(8.dp))
-            Text("Close when game exits")
+            Text("游戏退出时关闭")
         }
         Spacer(Modifier.height(8.dp))
 
@@ -1470,11 +1470,11 @@ private fun TopLevelFields(
             val audioId = StringUtils.parseIdentifier(viewModel.selectedAudioDriver)
             if (audioId == "pulseaudio" || audioId == "alsa" || audioId == "directaudio") {
                 IconButton(onClick = { showAudioSettings = true }) {
-                    Icon(Icons.Default.Settings, contentDescription = "Audio settings", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Settings, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                 }
             }
             IconButton(onClick = { helpRes = R.string.help_audio_driver }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
         }
         if (!directAudioSupported && directAudioEntry != null) {
@@ -1488,7 +1488,7 @@ private fun TopLevelFields(
         if (showAudioSettings) {
             AudioSettingsDialog(
                 initial = audioConfigFromEnv(viewModel.envVarsStr, StringUtils.parseIdentifier(viewModel.selectedAudioDriver)),
-                scopeLabel = "this container",
+                scopeLabel = "此容器",
                 latencyLive = true,
                 driverLabel = when (StringUtils.parseIdentifier(viewModel.selectedAudioDriver)) {
                     "alsa" -> "ALSA"; "pulseaudio" -> "PulseAudio"; "directaudio" -> "DirectAudio"
@@ -1520,7 +1520,7 @@ private fun TopLevelFields(
                     viewModel.envVarsStr = com.winlator.star.core.DirectAudioSupport.withMicEnabled(viewModel.envVarsStr, true)
                 } else {
                     viewModel.envVarsStr = com.winlator.star.core.DirectAudioSupport.withMicEnabled(viewModel.envVarsStr, false)
-                    Toast.makeText(micCtx, "Microphone permission denied — mic stays off.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(micCtx, "麦克风权限被拒绝 — 麦克风保持关闭。", Toast.LENGTH_SHORT).show()
                 }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1543,12 +1543,12 @@ private fun TopLevelFields(
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        "Microphone",
+                        "麦克风",
                         color = if (micDriverActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        if (micDriverActive) "Let games use the mic (DirectAudio captures input)"
-                        else "Available on the DirectAudio driver",
+                        if (micDriverActive) "让游戏使用麦克风（DirectAudio捕获输入）"
+                        else "可在DirectAudio驱动程序上使用",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.5.sp
                     )
@@ -1562,7 +1562,7 @@ private fun TopLevelFields(
         // StringUtils.parseIdentifier() persists as "box64". See EmulatorLabels.
         if (viewModel.isArm64EC) {
             LabeledDropdown(
-                label = "Emulator (32-bit)",
+                label = "转译器 (32位)",
                 options = EmulatorLabels.options(viewModel.emulatorEntries, true),
                 selectedOption = EmulatorLabels.display(viewModel.selectedEmulator, true),
                 enabled = viewModel.emulatorEnabled,
@@ -1578,7 +1578,7 @@ private fun TopLevelFields(
             // offered once a Box64EC component is installed (Advanced tab).
             val box64ECInstalled = viewModel.box64ECVersionEntries.isNotEmpty()
             LabeledDropdown(
-                label = "Emulator (64-bit)",
+                label = "转译器 (64位)",
                 options = viewModel.emulator64Entries,
                 selectedOption = viewModel.selectedEmulator64,
                 enabled = box64ECInstalled,
@@ -1586,7 +1586,7 @@ private fun TopLevelFields(
             )
             if (!box64ECInstalled) {
                 Text(
-                    "Install a Box64EC component (Advanced tab) to switch 64-bit games off FEXCore",
+                    "安装 Box64EC 组件（高级选项卡）以将 64 位游戏从 FEXCore 切换出来",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.5.sp
                 )
@@ -1700,7 +1700,7 @@ private fun TopLevelFields(
                 modifier = (if (!fgVulkan) Modifier.alpha(0.5f) else Modifier).weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_frame_generation }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
         }
         if (!fgVulkan) {
@@ -1835,7 +1835,7 @@ private fun TopLevelFields(
                 Text(stringResource(R.string.lsfg_vk11_compat), modifier = Modifier.weight(1f))
             }
             Text(
-                text = if (fgWayland) "Not used on Wayland: frame generation runs in the compositor on your Turnip driver, which does not need this compatibility mode." else stringResource(R.string.lsfg_vk11_compat_hint),
+                text = if (fgWayland) "在Wayland上不使用：帧生成在合成器中运行在您的Turnip驱动上，它不需要此兼容模式。" else stringResource(R.string.lsfg_vk11_compat_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 52.dp, top = 2.dp, bottom = 4.dp)
@@ -1853,7 +1853,7 @@ private fun TopLevelFields(
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.fps_limiter), modifier = Modifier.weight(1f))
             IconButton(onClick = { helpRes = R.string.help_fps_limiter }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
         }
         if (viewModel.fpsLimiterEnabled) {
@@ -2037,7 +2037,7 @@ private fun WineConfigTab(
             if (viewModel.desktopBgTypeIndex == WineThemeManager.BackgroundType.COLOR.ordinal) {
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Background Color", modifier = Modifier.weight(1f))
+                    Text("背景颜色", modifier = Modifier.weight(1f))
                     AndroidView(
                         factory = { ctx ->
                             ColorPickerView(ctx).also { cpv ->
@@ -2058,7 +2058,7 @@ private fun WineConfigTab(
             if (viewModel.desktopBgTypeIndex == WineThemeManager.BackgroundType.IMAGE.ordinal) {
                 val context = LocalContext.current
                 val ioScope = rememberCoroutineScope()
-                val scopeOptions = listOf("All containers", "This container")
+                val scopeOptions = listOf("所有容器", "此容器")
                 val currentScope = WineThemeManager.BackgroundScope.values()
                     .getOrElse(viewModel.desktopWallpaperScopeIndex) { WineThemeManager.BackgroundScope.GLOBAL }
                 // File depends on the selected scope; getNextContainerId() is O(1) so recomputing
@@ -2107,7 +2107,7 @@ private fun WineConfigTab(
 
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown(
-                    label = "Apply wallpaper to",
+                    label = "背景颜色",
                     options = scopeOptions,
                     selectedOption = scopeOptions.getOrElse(viewModel.desktopWallpaperScopeIndex) { scopeOptions[0] },
                     onSelect = { opt -> viewModel.desktopWallpaperScopeIndex = scopeOptions.indexOf(opt).coerceAtLeast(0) }
@@ -2131,13 +2131,13 @@ private fun WineConfigTab(
                             Text(if (preview != null) "Change" else "Browse")
                         }
                         DropdownMenu(expanded = showWallpaperMenu, onDismissRequest = { showWallpaperMenu = false }) {
-                            DropdownMenuItem(text = { Text("Browse files") }, onClick = {
+                            DropdownMenuItem(text = { Text("浏览文件") }, onClick = {
                                 showWallpaperMenu = false
                                 pickWallpaperInAppLauncher.launch(
                                     InAppFilePicker.buildIntent(context, InAppFilePicker.IMAGES, "Select wallpaper")
                                 )
                             })
-                            DropdownMenuItem(text = { Text("Pick via system…") }, onClick = {
+                            DropdownMenuItem(text = { Text("从系统选取…") }, onClick = {
                                 showWallpaperMenu = false
                                 pickWallpaperLauncher.launch("image/*")
                             })
@@ -2148,7 +2148,7 @@ private fun WineConfigTab(
         }
 
         // DirectInput section
-        SectionBox(title = "DirectInput") {
+        SectionBox(title = "DirectInput（直接输入）") {
             // Mouse warp (DirectInput's SetCursorPos re-centring) works on both backends: on Wayland
             // the compositor implements pointer constraints, which is what winewayland's SetCursorPos
             // goes through (lock + position hint + unlock).
@@ -2168,7 +2168,7 @@ private fun WineConfigTab(
                 Column(Modifier.weight(1f)) {
                     Text("Run as administrator")
                     Text(
-                        "Disables UAC so everything runs elevated (helps installers/tools that require admin)",
+                        "禁用UAC以使所有程序以提升权限运行（对需要管理员权限的安装程序和工具有帮助）",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -2202,7 +2202,7 @@ private fun WinComponentsTab(viewModel: ContainerDetailViewModel) {
         if (viewModel.container != null) {
             SectionBox(title = "Components") {
                 Text(
-                    "Install Wine dependencies — mono, gecko, .NET, VC++ runtimes, DirectX libraries, fonts and more.",
+                    "安装 Wine 依赖项 - mono、gecko、.NET、VC++ 运行库、DirectX 库、字体等。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -2210,7 +2210,7 @@ private fun WinComponentsTab(viewModel: ContainerDetailViewModel) {
                 OutlinedButton(onClick = { showComponentsSheet = true }, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.CloudDownload, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Browse & install components")
+                    Text("浏览并安装组件")
                 }
             }
         }
@@ -2237,7 +2237,7 @@ private fun WinComponentsTab(viewModel: ContainerDetailViewModel) {
         if (codecItems.isNotEmpty()) {
             SectionBox(title = "Codecs") {
                 Text(
-                    "Builtin decoder: which backend Wine's Media Foundation plays cutscenes with — GStreamer (default) or FFmpeg (winedmo; arm64ec layers only — on x86_64 it falls back to GStreamer). Software decoding keeps video frames off the GPU; try it for black video with sound.",
+                    "内置解码器：Wine 的媒体基础使用哪个后端播放过场动画 — GStreamer（默认）或 FFmpeg（winedmo；仅限 arm64ec 层 — 在 x86_64 上会回退到 GStreamer）。软件解码使视频帧不经过 GPU；对于有声音但黑屏的视频，可以尝试此选项。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -2337,7 +2337,7 @@ private fun DrivesTab(viewModel: ContainerDetailViewModel) {
         }
         if (duplicateLetters.isNotEmpty()) {
             Text(
-                "Each drive needs its own letter. Duplicated: " +
+                "每个驱动器都需要自己的盘符。重复的盘符: " +
                     duplicateLetters.sorted().joinToString(", ") { "$it:" },
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 12.sp,
@@ -2444,12 +2444,12 @@ private fun AdvancedTab(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
         // Box64EC — the x86-64 translator alternative to FEXCore on arm64ec. Installed components
-        // only (nothing is bundled); the General tab's "Emulator (64-bit)" picks between them.
+        // only (nothing is bundled); the General tab's "转译器 (64位)" picks between them.
         if (viewModel.isArm64EC) {
             SectionBox(title = "Box64EC") {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     LabeledDropdown(
-                        label = "Box64EC Version",
+                        label = "Box64EC 版本",
                         options = viewModel.box64ECVersionEntries,
                         selectedOption = viewModel.selectedBox64ECVersion,
                         enabled = viewModel.box64ECVersionEntries.isNotEmpty(),
@@ -2460,7 +2460,7 @@ private fun AdvancedTab(
                 }
                 if (viewModel.box64ECVersionEntries.isEmpty()) {
                     Text(
-                        "No Box64EC installed. Import a Box64EC .wcp with the gear button.",
+                        "未安装 Box64EC。使用齿轮按钮导入 Box64EC .wcp。",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.5.sp
                     )
@@ -2516,7 +2516,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                     ContentInstallGear(onDownloadFile = onShowFexCoreDownloadSheet)
                 }
@@ -2530,7 +2530,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_preset }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                     if (fexPresetCustomised) PresetCustomBadge()
                 }
@@ -2563,7 +2563,7 @@ private fun AdvancedTab(
                         )
                     }
                     IconButton(onClick = { helpRes = R.string.help_force_ssbs }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
             }
@@ -2758,22 +2758,22 @@ private fun AdvancedTab(
         // Player Slots section — manual controller->player-slot pins that the launch pre-assignment
         // applies. Same JSON schema and editor the in-game "Players" drawer tab uses, but here it's a
         // saved default (applied on next launch), not a live reassignment.
-        SectionBox(title = "Player Slots") {
+        SectionBox(title = "玩家槽位") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Pin controllers to players; assign two to one player to share control.",
+                    "将控制器固定到玩家；将两个分配给一个玩家以共享控制。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = { helpRes = R.string.help_player_slots }) {
-                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                 }
             }
             // On-screen priority: what happens to the on-screen pad when a physical pad connects mid-game.
-            val onScreenModeLabels = listOf("Keep on-screen player", "Yield Player 1 to pad", "Share the player")
+            val onScreenModeLabels = listOf("保持屏幕玩家", "将玩家1让给手柄", "共享该玩家")
             LabeledDropdown(
-                label = "On-screen priority",
+                label = "屏幕优先级",
                 options = onScreenModeLabels,
                 selectedOption = onScreenModeLabels.getOrElse(viewModel.onScreenControllerMode) { onScreenModeLabels[0] },
                 onSelect = { viewModel.onScreenControllerMode = onScreenModeLabels.indexOf(it).coerceAtLeast(0) },
@@ -2788,7 +2788,7 @@ private fun AdvancedTab(
                     onCheckedChange = { viewModel.autoHideControlsOnPad = it }
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Hide on-screen controls when a controller connects")
+                Text("当控制器连接时隐藏屏幕控制")
             }
             Spacer(Modifier.height(8.dp))
             PlayerSlotsEditor(
@@ -2837,7 +2837,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_mode }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -2862,7 +2862,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_target }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 val gyroActivatorLabels = listOf(
@@ -2884,7 +2884,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_activator }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 // Hold vs Toggle for that button. Pointless with "Always On" (no button to latch), so
@@ -2907,7 +2907,7 @@ private fun AdvancedTab(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_gyro_activation_mode }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -2919,7 +2919,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_sensitivity }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Slider(
@@ -2974,7 +2974,7 @@ private fun AdvancedTab(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_startup_selection }) {
-                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
             }
         }
 
@@ -3043,7 +3043,7 @@ private fun XRTab(viewModel: ContainerDetailViewModel) {
         )
 
         // Controller button mappings
-        SectionBox(title = "Controller Mapping") {
+        SectionBox(title = "手柄映射") {
             viewModel.xrMappingLabels.forEachIndexed { i, label ->
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text(label, modifier = Modifier.weight(1f))
@@ -3075,7 +3075,7 @@ internal fun StartupServicesToggleList(
     enabled: Set<String>,
     onToggle: (rawName: String, on: Boolean) -> Unit
 ) {
-    SectionBox(title = "Custom Services") {
+    SectionBox(title = "自定义服务") {
         Text(
             "Custom starts with every service off — turn on only what you need. " +
                 "Disabling Wine Bus/HID can break controllers.",
@@ -3277,7 +3277,7 @@ internal const val WAYLAND_DRIVER_SETTINGS_HELP =
         "if a game misbehaves)."
 
 /**
- * The Wayland adapter settings (the gear next to "Wayland game driver"), container default and per-game
+ * The Wayland adapter settings (the gear next to "Wayland游戏驱动程序"), container default and per-game
  * override alike. Three parts:
  *  - the ADAPTER REPORT: core.WaylandDriverProbe's capability probe of the graphics driver this config
  *    names (cached per driver + app build; run here when no cache exists, never beside a game session);
@@ -3418,7 +3418,7 @@ internal fun WaylandDriverSettingsDialog(
                 Spacer(Modifier.height(10.dp))
 
                 // ── Profile ────────────────────────────────────────────────────────────────────
-                Text("Profile", style = MaterialTheme.typography.titleSmall)
+                Text("配置", style = MaterialTheme.typography.titleSmall)
                 if (perGame) WaylandProfileRow(
                     label = "Inherit the container's (${containerProfile ?: "Auto"})",
                     help = "Use whatever the container is set to.",
@@ -3438,12 +3438,12 @@ internal fun WaylandDriverSettingsDialog(
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Applied at launch: " + effective.summary(storedPresent),
+                    "启动时应用： " + effective.summary(storedPresent),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "Env vars you type under Env vars always win over these; the switches below win over the profile.",
+                    "您在环境变量下输入的环境变量始终优先于这些设置；下面的开关优先于配置文件。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -3454,7 +3454,7 @@ internal fun WaylandDriverSettingsDialog(
                     Icon(if (advancedOpen) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                         contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text("Advanced: single switches", modifier = Modifier.weight(1f))
+                    Text("高级：单个开关", modifier = Modifier.weight(1f))
                 }
                 if (advancedOpen) {
                     val defaultWord = if (perGame) "Inherit" else "Default"
@@ -3467,7 +3467,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_PRESENT, it) }
                     )
                     WaylandTriStateRow(
-                        label = "Asynchronous copy",
+                        label = "异步复制",
                         help = "The compositor keeps frames in flight instead of waiting for each screen blit. Turn off if " +
                             "frames arrive out of order or a game stutters only on Wayland.",
                         options = triState(defaultWord),
@@ -3475,7 +3475,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_ASYNC_COPY, it) }
                     )
                     WaylandTriStateRow(
-                        label = "Zero-copy presentation",
+                        label = "零拷贝呈现",
                         help = "The game's own buffer goes on screen without a copy (lowest latency, less heat). Needs " +
                             "sync-file fences in the driver (see the report). Turn off if you see tearing or stale frames.",
                         options = triState(defaultWord),
@@ -3483,7 +3483,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_ZERO_COPY, it) }
                     )
                     WaylandTriStateRow(
-                        label = "Client render fences",
+                        label = "客户端渲染栅栏",
                         help = "With zero-copy, the game's driver tells the compositor when a frame is finished. Turn off " +
                             "only to compare; off can show half-drawn frames.",
                         options = triState(defaultWord),
@@ -3491,7 +3491,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_CLIENT_FENCE, it) }
                     )
                     WaylandTriStateRow(
-                        label = "UBWC / compressed buffers",
+                        label = "UBWC / 压缩缓冲区",
                         help = "Frames travel as compressed GPU buffers (less bandwidth). Turn off if the picture shows " +
                             "garbled blocks or stripes.",
                         options = triState(defaultWord),
@@ -3499,7 +3499,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_UBWC, it) }
                     )
                     WaylandTriStateRow(
-                        label = "DRM format modifiers",
+                        label = "DRM 格式修饰符",
                         help = "Lets the game's driver and the compositor agree on buffer layouts. Off makes the game use " +
                             "plain linear buffers (BANNER_WSI_NO_MODIFIERS=1); try it for a black screen or corrupt frames.",
                         options = triState(defaultWord),
@@ -3507,7 +3507,7 @@ internal fun WaylandDriverSettingsDialog(
                         onChange = { setKey(com.winlator.star.core.WaylandAdapterSettings.KEY_MODIFIERS, it) }
                     )
                     WaylandTriStateRow(
-                        label = "KGSL timing shim",
+                        label = "KGSL 时序垫片",
                         help = "Works around a Turnip bug where asking \"is the GPU done?\" waits for the whole frame " +
                             "(the report's timing bug). Default lets the adapter detect it; On forces it, Off disables it.",
                         options = triState(defaultWord),
@@ -3535,7 +3535,7 @@ internal fun WaylandDriverSettingsDialog(
                         gpuName, { gpuName = it }, modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gpu_name }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 vendorWarning?.let {
@@ -3548,20 +3548,20 @@ internal fun WaylandDriverSettingsDialog(
                         memoryEntry, { memoryEntry = it }, modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_max_device_memory }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
-                    "What DirectX games are told the GPU's memory is (DXVK's dxgi.maxDeviceMemory).",
+                    "告诉 DirectX 游戏 GPU 的显存是（DXVK 的 dxgi.maxDeviceMemory）。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = fdDevFeatures, onCheckedChange = { fdDevFeatures = it })
-                    Text("OneUI / HyperOS Fix (UBWC flag hint)", modifier = Modifier.weight(1f))
+                    Text("OneUI / HyperOS 修复（UBWC 标志提示）", modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_oneui_hyperos_fix }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -3658,11 +3658,11 @@ private fun WaylandAdapterReportBlock(
         probing -> Row(verticalAlignment = Alignment.CenterVertically) {
             CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
             Spacer(Modifier.width(8.dp))
-            Text("Checking driver… about 2 seconds", style = MaterialTheme.typography.bodySmall, color = dim)
+            Text("正在检查驱动程序… 大约 2 秒", style = MaterialTheme.typography.bodySmall, color = dim)
         }
         note != null -> Text(note, style = MaterialTheme.typography.bodySmall, color = dim)
         report == null -> Text("Not checked yet.", style = MaterialTheme.typography.bodySmall, color = dim)
-        !report.ok -> line("Could not check", report.error ?: "unknown error", bad = true)
+        !report.ok -> line("无法检查", report.error ?: "未知错误", bad = true)
         else -> {
             Text(report.driverLine(), style = MaterialTheme.typography.bodySmall)
             line("Timing bug", when (report.kgslZeroTimeoutBug) {
@@ -4199,14 +4199,14 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_vulkan_version), vulkanVersions, vulkanVersion, { vulkanVersion = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_vulkan_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_version), driverVersions, version, { version = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_graphics_driver_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4214,13 +4214,13 @@ internal fun GraphicsDriverConfigDialog(
                     Checkbox(checked = showAllDrivers, onCheckedChange = { showAllDrivers = it })
                     Text(stringResource(R.string.graphics_driver_show_incompatible), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_show_incompatible_drivers }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 if (isCustomDriver) {
                     Text(
-                        text = "Custom Qualcomm (Adreno) driver — its extensions load when a game starts, so none are listed here. That's expected, not an error: the driver is applied in-game, where your HUD will show it's active.",
+                        text = "自定义高通(Adreno)驱动程序 — 其扩展在游戏启动时加载，因此此处未列出任何扩展。这是预期情况，并非错误：该驱动程序在游戏中应用，您的HUD将显示其处于活动状态。",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 4.dp, end = 4.dp)
@@ -4235,7 +4235,7 @@ internal fun GraphicsDriverConfigDialog(
                             Text(stringResource(R.string.graphics_driver_available_extensions) + " ($enabled/${allExtensions.size})")
                         }
                         IconButton(onClick = { helpRes = R.string.help_available_extensions }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -4243,28 +4243,28 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.gpu_name), gpuNames, gpuName, { gpuName = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_gpu_name }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_max_device_memory), deviceMemoryEntries, selectedMemoryEntry, { selectedMemoryEntry = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_max_device_memory }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_present_modes), presentModeEntries, presentMode, { presentMode = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_wrapper_present_modes }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_resource_type), resourceTypeEntries, resourceType, { resourceType = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_resource_type }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4273,7 +4273,7 @@ internal fun GraphicsDriverConfigDialog(
                 // Adreno users understand why these options are inert for them (a real point of confusion).
                 Text(
                     (if (gpuModel.isNotEmpty()) "GPU: $gpuModel — " else "") +
-                        "BCn/compat layers apply to Mali and other non-Qualcomm GPUs",
+                        "BCn/兼容层适用于 Mali 及其他非高通 GPU",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -4281,21 +4281,21 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation), bcnEmulationEntries, bcnEmulation, { bcnEmulation = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation_type), bcnTypeEntries, bcnEmulationType, { bcnEmulationType = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation_type }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation_cache), bcnCacheEntries, bcnEmulationCache, { bcnEmulationCache = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation_cache }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4308,12 +4308,12 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnEmulationAstc, onCheckedChange = { bcnEmulationAstc = it })
                         Text(stringResource(R.string.graphics_driver_bcn_emulation_astc), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_transcode_astc }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (isQualcomm) {
                         Text(
-                            "No effect on Adreno (native BCn)",
+                            "对 Adreno（原生 BCn）无效果",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -4330,12 +4330,12 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnTranscodeAstc, onCheckedChange = { bcnTranscodeAstc = it })
                         Text(stringResource(R.string.bcn_layer_transcode_astc), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_transcode_astc }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (isQualcomm) {
                         Text(
-                            "No effect on Adreno (native BCn)",
+                            "对 Adreno（原生 BCn）无效果",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -4349,7 +4349,7 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnLayerFast, onCheckedChange = { bcnLayerFast = it })
                         Text(stringResource(R.string.bcn_layer_fast), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_layer_fast }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -4357,21 +4357,21 @@ internal fun GraphicsDriverConfigDialog(
                     Checkbox(checked = syncFrame, onCheckedChange = { syncFrame = it })
                     Text(stringResource(R.string.graphics_driver_sync_frame), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_sync_every_frame }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = disablePresentWait, onCheckedChange = { disablePresentWait = it })
                     Text(stringResource(R.string.graphics_driver_disable_present_wait), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_disable_present_wait }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = fdDevFeatures, onCheckedChange = { fdDevFeatures = it })
-                    Text("OneUI / HyperOS Fix", modifier = Modifier.weight(1f))
+                    Text("三星OneUI/小米HyperOS 修复", modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_oneui_hyperos_fix }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
 
@@ -4383,15 +4383,15 @@ internal fun GraphicsDriverConfigDialog(
                     style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(Modifier.height(4.dp))
-                val gmemLabels = listOf("Auto (Adreno 710/720/722)", "Force On", "Force Off")
+                val gmemLabels = listOf("自动 (Adreno 710/720/722)", "强制开启", "强制关闭")
                 val gmemValues = listOf("auto", "on", "off")
                 val gmemSel = gmemLabels[gmemValues.indexOf(turnipGmem).coerceAtLeast(0)]
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    LabeledDropdown("GMEM (tiled rendering)", gmemLabels, gmemSel, { picked ->
+                    LabeledDropdown("GMEM（分块渲染）", gmemLabels, gmemSel, { picked ->
                         turnipGmem = gmemValues[gmemLabels.indexOf(picked).coerceAtLeast(0)]
                     }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_turnip_gmem }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -4427,16 +4427,16 @@ internal fun GraphicsDriverConfigDialog(
                     Spacer(Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(checked = turnipForceCb, onCheckedChange = { turnipForceCb = it })
-                        Text("forcecb — force concurrent binning", modifier = Modifier.weight(1f))
+                        Text("forcecb — 强制并发分箱", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_concurrent_binning }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(checked = turnipNoCb, onCheckedChange = { turnipNoCb = it })
-                        Text("nocb — disable concurrent binning", modifier = Modifier.weight(1f))
+                        Text("nocb — 禁用并发分箱", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_concurrent_binning }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     // sysmem is the direct opposite of gmem and Turnip lets it defeat gmem, so when
@@ -4450,13 +4450,13 @@ internal fun GraphicsDriverConfigDialog(
                             enabled = !sysmemBlockedByGmem
                         )
                         Text(
-                            "sysmem — force sysmem (bypass GMEM)",
+                            "sysmem — 强制系统内存（绕过GMEM）",
                             modifier = Modifier.weight(1f),
                             color = if (sysmemBlockedByGmem) MaterialTheme.colorScheme.onSurfaceVariant
                                     else Color.Unspecified
                         )
                         IconButton(onClick = { helpRes = R.string.help_turnip_sysmem }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (sysmemBlockedByGmem) {
@@ -4468,9 +4468,9 @@ internal fun GraphicsDriverConfigDialog(
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(checked = turnipDeckEmu, onCheckedChange = { turnipDeckEmu = it })
-                        Text("deck_emu — advertise as SteamDeck", modifier = Modifier.weight(1f))
+                        Text("deck_emu — 伪装为SteamDeck", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_deck_emu }) {
-                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                         }
                     }
                     Text(
@@ -4507,7 +4507,7 @@ internal fun GraphicsDriverConfigDialog(
                         if (isQualcomm) {
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                "No effect on Adreno (native BCn) — these apply to Mali/non-Qualcomm GPUs",
+                                "对 Adreno（原生 BCn）无效果 — 这些适用于 Mali/非高通 GPU",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -4596,7 +4596,7 @@ internal fun GraphicsDriverConfigDialog(
                     )
                     Spacer(Modifier.height(2.dp))
                     Text(
-                        "Values are passed to the wrapper as-is; unknown ones are safe to leave blank.",
+                        "值会按原样传递给wrapper；未知项可安全留空。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -4725,7 +4725,7 @@ internal fun ExtensionPickerDialog(
         title = { Text(stringResource(R.string.graphics_driver_available_extensions)) },
         text = {
             if (extensions.isEmpty()) {
-                Text("No extensions available for this driver.")
+                Text("此驱动无可用扩展。")
             } else {
                 androidx.compose.foundation.lazy.LazyColumn {
                     items(extensions) { ext ->
@@ -4803,7 +4803,7 @@ internal fun DxvkConfigDialog(
     var isProcessing by remember { mutableStateOf(false) }
 
     // Virtual "Browse…" entry in the custom-source dropdown; launches the file picker.
-    val BROWSE_CONFIG_MARKER = "Browse for file…"
+    val BROWSE_CONFIG_MARKER = "浏览文件…"
 
     val allDxvkVersions = remember { mutableStateOf(listOf<String>()) }
     val vkd3dVersions   = remember { mutableStateOf(listOf<String>()) }
@@ -4828,7 +4828,7 @@ internal fun DxvkConfigDialog(
     // Capture-once backups: the auto slot is the FILE <name>.bak beside the live file.
     // It is created on the FIRST edit after a fresh selection/restore and then left
     // alone — across edits AND sessions (no in-memory set to reset). Restore consumes
-    // it, so the next edit recaptures. Manual "Backup now" copies use .bak-manual-N
+    // it, so the next edit recaptures. Manual "恢复…" copies use .bak-manual-N
     // and are never touched automatically.
     // §6c value editor: the row whose value picker is open + the freeform draft.
     var valuePickerRow by remember { mutableStateOf<VegasKeyKnowledge.EditRow?>(null) }
@@ -5315,7 +5315,7 @@ internal fun DxvkConfigDialog(
                 // Capture-once backup: create the auto slot ONLY when it does not exist
                 // yet (first edit after a fresh selection/restore). Never .bak-2, -3…
                 // from repeat edits or new sessions — the slot persists until consumed
-                // by a restore. Manual "Backup now" copies use .bak-manual-N instead.
+                // by a restore. Manual "恢复…" copies use .bak-manual-N instead.
                 val autoBak = java.io.File(target.absolutePath + ".bak")
                 if (!autoBak.isFile) {
                     runCatching { java.nio.file.Files.copy(target.toPath(), autoBak.toPath()) }
@@ -5455,7 +5455,7 @@ internal fun DxvkConfigDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 if (isVegas) {
-                    SectionLabel("VEGAS VERSION")
+                    SectionLabel("VEGAS 版本")
                     if (filteredDxvk.isEmpty()) {
                         Text(
                             "no VEGAS build installed — download one via the sheet",
@@ -5500,7 +5500,7 @@ internal fun DxvkConfigDialog(
                                                 }
                                             } else {
                                                 withContext(Dispatchers.Main) {
-                                                    Toast.makeText(activity, "No installed VEGAS version to delete", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(activity, "没有已安装的VEGAS版本可删除", Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -5516,7 +5516,7 @@ internal fun DxvkConfigDialog(
                             enabled = !isProcessing,
                             modifier = Modifier.size(40.dp)
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = "删除", tint = MaterialTheme.colorScheme.error)
                         }
                         IconButton(
                             onClick = { pickVegasLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "Select VEGAS package")) },
@@ -5573,14 +5573,14 @@ internal fun DxvkConfigDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Switch(checked = asyncEnabled, onCheckedChange = { asyncEnabled = it })
                         Spacer(Modifier.width(8.dp))
-                        Text("Async")
+                        Text("异步")
                     }
                 }
                 if (dxvkType == DXVKConfigDialog.DXVK_TYPE_GPLASYNC) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Switch(checked = asyncCacheEnabled, onCheckedChange = { asyncCacheEnabled = it })
                         Spacer(Modifier.width(8.dp))
-                        Text("Async Cache")
+                        Text("异步缓存")
                     }
                     Spacer(Modifier.height(8.dp))
                 }
@@ -5591,7 +5591,7 @@ internal fun DxvkConfigDialog(
                     LabeledDropdown("Anisotropic filtering", anisotropyLabels, selectedAnisotropy, { selectedAnisotropy = it },
                         modifier = Modifier.weight(1f))
                     IconButton(onClick = { textureHelpRes = R.string.help_anisotropic_filtering }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -5599,11 +5599,11 @@ internal fun DxvkConfigDialog(
                     LabeledDropdown("Texture sharpness", lodBiasLabels, selectedLodBias, { selectedLodBias = it },
                         modifier = Modifier.weight(1f))
                     IconButton(onClick = { textureHelpRes = R.string.help_texture_sharpness }) {
-                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
-                    "DirectX 9-11 games only. Applies the next time the game starts.",
+                    "仅限DirectX 9-11游戏。下次游戏启动时应用。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
@@ -5612,7 +5612,7 @@ internal fun DxvkConfigDialog(
                 SectionLabel("API FEATURE LEVEL")
                 LabeledDropdown("", featureLevelEntries, selectedFeatureLevel, { selectedFeatureLevel = it })
                 Spacer(Modifier.height(8.dp))
-                LabeledDropdown("DDraw Wrapper", ddraEntries, selectedDdra, { selectedDdra = it })
+                LabeledDropdown("DDraw Wrapper图形加速层", ddraEntries, selectedDdra, { selectedDdra = it })
                 // D7VK is a catalog-backed component: when it's the chosen DDraw wrapper, offer a
                 // version dropdown ("Bundled (default)" + any downloaded profiles) and a cloud button
                 // to fetch more — mirroring the DXVK/VKD3D version UI above.
@@ -5620,7 +5620,7 @@ internal fun DxvkConfigDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         LabeledDropdown(
-                            "D7VK Version", d7vkVersions.value, selectedD7vk, { selectedD7vk = it },
+                            "D7VK 版本", d7vkVersions.value, selectedD7vk, { selectedD7vk = it },
                             modifier = Modifier.weight(1f)
                         )
                         ContentInstallGear(onDownloadFile = onDownloadD7vk)
@@ -5690,7 +5690,7 @@ internal fun DxvkConfigDialog(
                                     if (useDefaults) {
                                         Spacer(Modifier.width(8.dp))
                                         Text(
-                                            "pick a config source first — defaults has no file to write to",
+                                            "先选择配置源 — 默认没有可写入的文件",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.weight(1f)
@@ -5765,7 +5765,7 @@ internal fun DxvkConfigDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Switch(checked = useDefaults, onCheckedChange = { useDefaults = it }, modifier = Modifier.height(32.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("Use defaults (no config file)", style = MaterialTheme.typography.bodySmall)
+                        Text("使用默认（无配置文件）", style = MaterialTheme.typography.bodySmall)
                     }
                     if (!useDefaults) {
                         // Option B: the selected path IS the live file — no adoption banner,
@@ -5806,9 +5806,9 @@ internal fun DxvkConfigDialog(
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 if (sidecarExists)
-                                    "Your edits live in your own copy — the stock version stays pristine."
+                                    "您的编辑保存在您自己的副本中 — 默认版本保持原始状态。"
                                 else
-                                    "Read-only until the first edit — changes create your own copy.",
+                                    "在首次编辑前为只读 — 更改会创建您自己的副本。",
                                 color = if (sidecarExists) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall
@@ -5822,7 +5822,7 @@ internal fun DxvkConfigDialog(
                             { c ->
                                 if (c == BROWSE_CONFIG_MARKER) {
                                     pickCustomConfigLauncher.launch(
-                                        InAppFilePicker.buildIntent(context, emptyArray(), "Select config file")
+                                        InAppFilePicker.buildIntent(context, emptyArray(), "选择配置文件")
                                     )
                                 } else {
                                     selectedCustom = c; selectedStock = null; useDefaults = false
@@ -5847,7 +5847,7 @@ internal fun DxvkConfigDialog(
                                     customEntries.value = customEntries.value.filter { it != selectedCustom }
                                     selectedCustom = null
                                     if (selectedStock == null) useDefaults = true
-                                }) { Text("Remove from list", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+                                }) { Text("立即备份", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
                             }
                         }
                         // Option B backups: .bak-* beside the CURRENT live file. Always visible
@@ -5858,7 +5858,7 @@ internal fun DxvkConfigDialog(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     if (backupsList.isEmpty())
-                                        "No backups yet — the first edit keeps a copy of the current file."
+                                        "尚无备份 — 首次编辑会保留当前文件的副本。"
                                     else
                                         "Backups: ${backupsList.size} — restore a previously saved state",
                                     style = MaterialTheme.typography.bodySmall,
@@ -5868,11 +5868,11 @@ internal fun DxvkConfigDialog(
                                 // snapshot taken by the user, never overwritten automatically.
                                 if (liveFile != null && liveFile.isFile) {
                                     TextButton(onClick = { manualBackup() }) {
-                                        Text("Backup now", style = MaterialTheme.typography.bodySmall)
+                                        Text("恢复…", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                                 if (backupsList.isNotEmpty()) {
-                                    TextButton(onClick = { showBackups = true }) { Text("Restore…", style = MaterialTheme.typography.bodySmall) }
+                                    TextButton(onClick = { showBackups = true }) { Text("添加键", style = MaterialTheme.typography.bodySmall) }
                                 }
                             }
                         }
@@ -5881,7 +5881,7 @@ internal fun DxvkConfigDialog(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Switch(checked = forkFilter, onCheckedChange = { forkFilter = it; forkFilterPrefs.edit().putBoolean("forkFilter", it).apply() }, modifier = Modifier.height(32.dp))
                                 Spacer(Modifier.width(6.dp))
-                                Text("Fork-feature filter", style = MaterialTheme.typography.bodySmall)
+                                Text("分支功能筛选", style = MaterialTheme.typography.bodySmall)
                             }
                             if (forkFilter) {
                                 // Combined semantics: fork-only view AND unavailable
@@ -5901,7 +5901,7 @@ internal fun DxvkConfigDialog(
                                 TextButton(onClick = { showAddKey = true; addKeyDraft = ""; addValueDraft = "" }) {
                                     Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(Modifier.width(4.dp))
-                                    Text("Add key", style = MaterialTheme.typography.bodySmall)
+                                    Text("添加键", style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                             Spacer(Modifier.height(2.dp))
@@ -6028,7 +6028,7 @@ internal fun DxvkConfigDialog(
                                             applyValue(sug, row.value)
                                             // delete old typo after a short delay so sidecar write settles
                                             scope.launch { kotlinx.coroutines.delay(300); applyDeleteKey(row.key) }
-                                        }) { Text("Fix", style = MaterialTheme.typography.bodySmall) }
+                                        }) { Text("添加", style = MaterialTheme.typography.bodySmall) }
                                     }
                                 }
                                 Text(badge, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
@@ -6045,7 +6045,7 @@ internal fun DxvkConfigDialog(
                                             enabled = !gated,
                                             onClick = { applyToggle(row.key, row.value, true) },
                                             modifier = Modifier.height(32.dp)
-                                        ) { Text("Add", style = MaterialTheme.typography.bodySmall) }
+                                        ) { Text("添加", style = MaterialTheme.typography.bodySmall) }
                                         Spacer(Modifier.width(6.dp))
                                         Text(
                                             row.key,
@@ -6087,7 +6087,7 @@ internal fun DxvkConfigDialog(
                     val footerText = if (vegasKnowledge != null)
                         "knowledge: fork ${vegasKnowledge.forkBuild()} · ${vegasKnowledge.generated()}"
                     else
-                        "knowledge data unavailable — showing keys unclassified"
+                        "知识数据不可用 — 显示未分类的键"
                     Text(footerText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     val catalogFooter = when {
                         vegasCatalog == null -> "catalog unavailable — classifier off, rows marked unverified"
@@ -6116,7 +6116,7 @@ internal fun DxvkConfigDialog(
                                         Text("$t — ${st?.name?.lowercase()?.replace('_', '-') ?: "?"}")
                                     }
                                     Spacer(Modifier.height(4.dp))
-                                    Text("Updated at build time (assistant-side maintenance).\nCheck for new builds")
+                                    Text("在构建时更新（助手侧维护）。\n检查新版本")
                                     Spacer(Modifier.height(6.dp))
                                     TextButton(onClick = { runLiveCheck() }, enabled = !liveChecking) {
                                         Text(if (liveChecking) "Checking…" else "Check for new builds", style = MaterialTheme.typography.bodySmall)
@@ -6142,14 +6142,14 @@ internal fun DxvkConfigDialog(
                             text = {
                                 Column {
                                     if (!r.feedOk) {
-                                        Text("Could not reach the release feed (network or API failure).")
+                                        Text("无法访问版本源（网络或API故障）。")
                                         Spacer(Modifier.height(4.dp))
-                                        Text("The bundled catalog is unchanged; keys for unknown builds stay 'unverified'.")
+                                        Text("捆绑目录未更改；未知版本的键保持'未验证'。")
                                     } else {
                                         Text("Catalog newest: ${r.catalogNewestTag ?: "?"} (${r.catalogNewestAt.ifEmpty { "?" }}).")
                                         Spacer(Modifier.height(4.dp))
                                         if (r.newerCount == 0) {
-                                            Text("No newer releases found.")
+                                            Text("未找到更新版本。")
                                         } else {
                                             Text("${r.newerCount} newer release(s) found" +
                                                     (if (r.newBuildCount > 0) " — $r.newBuildCount stable" else " (all prerelease)") + ":")
@@ -6157,11 +6157,11 @@ internal fun DxvkConfigDialog(
                                         }
                                         Spacer(Modifier.height(4.dp))
                                         Text(
-                                            if (r.installedFoundLive) "Your installed build is still listed upstream."
-                                            else "Your installed build is not in the current release list."
+                                            if (r.installedFoundLive) "您安装的版本仍列在上游。"
+                                            else "您安装的版本不在当前发布列表中。"
                                         )
                                         Spacer(Modifier.height(4.dp))
-                                        Text("This check only reports — no writes, no catalog change. Download and classification still use the existing flows; the catalog asset updates at build time.")
+                                        Text("此检查仅报告 — 无写入，无目录更改。下载和分类仍使用现有流程；目录资源在构建时更新。")
                                     }
                                 }
                             },
@@ -6172,8 +6172,8 @@ internal fun DxvkConfigDialog(
                     // "Use defaults" (no file to be edited).
                     if (stockEdited && !useDefaults) {
                         Text(
-                            if (sidecarExists) "Edited · yours now — saved to your own copy"
-                            else "Edited · saved to the live config file",
+                            if (sidecarExists) "已编辑 · 现在是您的 — 已保存到您的副本"
+                            else "已编辑 · 已保存到实时配置文件",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -6217,7 +6217,7 @@ internal fun DxvkConfigDialog(
                             text = {
                                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                                     if (backupsList.isEmpty()) {
-                                        Text("No backups yet — they appear after the first edit to this config file.")
+                                        Text("尚无备份 — 它们会在首次编辑此配置文件后出现。")
                                     }
                                     backupsList.forEach { b ->
                                         Row(
@@ -6259,7 +6259,7 @@ internal fun DxvkConfigDialog(
                             confirmButton = {
                                 DeckDialogBars()
                                 DeckDialogScaled {
-                                    TextButton(onClick = { restoreBackup(backup); restoreTarget = null }) { Text("Restore") }
+                                    TextButton(onClick = { restoreBackup(backup); restoreTarget = null }) { Text("恢复") }
                                 }
                             },
                             dismissButton = { TextButton(onClick = { restoreTarget = null }) { Text(stringResource(android.R.string.cancel)) } }
@@ -6282,7 +6282,7 @@ internal fun DxvkConfigDialog(
                             text = {
                                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                                     Text(
-                                        "Values used in stock configs — pick one, reset to stock, or type your own.",
+                                        "默认配置中使用的值 — 选择一个、重置为默认或自行输入。",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -6308,7 +6308,7 @@ internal fun DxvkConfigDialog(
                                     OutlinedTextField(
                                         value = customValueDraft,
                                         onValueChange = { customValueDraft = it },
-                                        label = { Text("Custom value") },
+                                        label = { Text("自定义值") },
                                         singleLine = true,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -6346,7 +6346,7 @@ internal fun DxvkConfigDialog(
                                     ) {
                                         Column(modifier = Modifier.padding(20.dp)) {
                                             Text(
-                                                "Remove key?",
+                                                "移除键？",
                                                 style = MaterialTheme.typography.titleMedium,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
@@ -6369,7 +6369,7 @@ internal fun DxvkConfigDialog(
                                                     },
                                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                                                 ) {
-                                                    Text("Remove")
+                                                    Text("移除")
                                                 }
                                             }
                                         }
@@ -6398,7 +6398,7 @@ internal fun DxvkConfigDialog(
                                     "the option cannot be applied and would be ignored."
                                 )
                             },
-                            confirmButton = { DeckDialogBars(); TextButton(onClick = { pendingSchemaBlock = null }) { Text("Got it") } }
+                            confirmButton = { DeckDialogBars(); TextButton(onClick = { pendingSchemaBlock = null }) { Text("知道了") } }
                         )
                     }
                     // (+) add-key dialog: freeform key/value appended to the live file.
@@ -6408,7 +6408,7 @@ internal fun DxvkConfigDialog(
                         val keyValid = VegasKeyKnowledge.isValidConfigKey(addKeyDraft.trim())
                         AlertDialog(
                             onDismissRequest = { showAddKey = false },
-                            title = { Text("Add config entry") },
+                            title = { Text("key键（例如 dxvk.maxFrameLatency）") },
                             text = {
                                 Column {
                                     OutlinedTextField(
@@ -6443,7 +6443,7 @@ internal fun DxvkConfigDialog(
                                             applyAddKey(addKeyDraft.trim(), addValueDraft.trim())
                                             showAddKey = false
                                         }
-                                    ) { Text("Add") }
+                                    ) { Text("添加") }
                                 }
                             },
                             dismissButton = { TextButton(onClick = { showAddKey = false }) { Text(stringResource(android.R.string.cancel)) } }
@@ -6518,17 +6518,17 @@ internal fun WineD3DConfigDialog(
         title = { Text("WineD3D ${stringResource(R.string.configuration)}") },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState()).fillMaxWidth()) {
-                LabeledDropdown("CSMT", csmtOptions, csmt, { csmt = it })
+                LabeledDropdown("CSMT（命令流多线程）", csmtOptions, csmt, { csmt = it })
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown(stringResource(R.string.gpu_name), gpuNames, gpuName, { gpuName = it })
                 Spacer(Modifier.height(8.dp))
-                LabeledDropdown("DDraw Wrapper", ddraEntries, ddra, { ddra = it })
+                LabeledDropdown("DDraw Wrapper图形加速层", ddraEntries, ddra, { ddra = it })
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown(stringResource(R.string.graphics_driver_max_device_memory), videoMemEntries, videoMem, { videoMem = it })
                 Spacer(Modifier.height(8.dp))
-                LabeledDropdown("Strict Shader Math", ssmOptions, ssm, { ssm = it })
+                LabeledDropdown("离屏渲染模式（Backbuffer可缓解黑屏）", ssmOptions, ssm, { ssm = it })
                 Spacer(Modifier.height(8.dp))
-                LabeledDropdown("Offscreen Rendering Mode", ormOptions, orm, { orm = it })
+                LabeledDropdown("离屏渲染模式（Backbuffer可缓解黑屏）", ormOptions, orm, { orm = it })
                 Spacer(Modifier.height(8.dp))
                 LabeledDropdown("Renderer", rendOptions, renderer, { renderer = it })
             }
@@ -6720,14 +6720,14 @@ internal fun FpsCounterConfigDialog(
                 }
                 Spacer(Modifier.height(12.dp))
                 HudThreeStop(
-                    "HUD style",
+                    "HUD 风格",
                     listOf("Classic", "GameHub", "GameNative", "Fusion"),
                     styles.indexOf(hudStyle).coerceAtLeast(0)
                 ) { hudStyle = styles[it] }
                 Text(
                     when (hudStyle) {
-                        "gamehub" -> "Rich overlay: skins, colored fields, live FPS graph."
-                        "gamenative" -> "GameNative-style overlay: compact pill or stacked list with live graphs."
+                        "gamehub" -> "丰富覆盖层：皮肤、彩色字段、实时FPS图表。"
+                        "gamenative" -> "GameNative风格覆盖层：紧凑药丸形或堆叠列表，带实时图表。"
                         "fusion" -> "Fusion overlay: one color-coded look in 5 sizes (Full/Tiles/Pill/Minimal/Mega) with percentile lows, VRAM + a Mega everything-view."
                         else -> "Classic Bannerlator overlay."
                     },
@@ -6743,14 +6743,14 @@ internal fun FpsCounterConfigDialog(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Tip: tap the HUD in-game to switch vertical/horizontal layout.",
+                    "提示：在游戏内点击HUD可切换垂直/水平布局。",
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(Modifier.height(12.dp))
 
                 // Compact multi-select metric chips (filled = on) in a wrap layout,
                 // so ~13 metrics fit in a few rows instead of stacked Switch rows.
-                Text("Metrics", style = MaterialTheme.typography.bodySmall)
+                Text("指标", style = MaterialTheme.typography.bodySmall)
                 Spacer(Modifier.height(4.dp))
                 // Build the currently-VISIBLE chips first (respecting per-style gating), then chunk
                 // into an aligned 3-wide grid — so hidden chips never leave holes. Each stays an
@@ -6797,22 +6797,22 @@ internal fun FpsCounterConfigDialog(
                 // ── Temperature display ── only meaningful when a temperature is on screen.
                 if (showTemp || ((gameNative || fusion) && (showGpuTemp || showBattery))) {
                     Spacer(Modifier.height(12.dp))
-                    HudThreeStop("Temp unit", listOf("\u00B0C", "\u00B0F"), if (tempUnitF) 1 else 0) {
+                    HudThreeStop("温度单位", listOf("\u00B0C", "\u00B0F"), if (tempUnitF) 1 else 0) {
                         tempUnitF = it == 1
                     }
                     Spacer(Modifier.height(4.dp))
                     // Danger bands as one 3-way rather than two toggles: "bands off but auto on"
                     // isn't a distinct state worth exposing.
                     val bandMode = if (!tempBands) 0 else if (tempAuto) 1 else 2
-                    HudThreeStop("Danger colors", listOf("Off", "Auto", "Manual"), bandMode) {
+                    HudThreeStop("危险温度颜色", listOf("Off", "Auto", "手动"), bandMode) {
                         tempBands = it != 0
                         tempAuto = it != 2
                     }
                     Text(
                         when (bandMode) {
-                            0 -> "Temperatures use their normal color."
-                            1 -> "Thresholds read from your device's own thermal trip points, falling back to safe defaults."
-                            else -> "Set the red point per sensor; amber sits just below it."
+                            0 -> "温度使用正常颜色显示。"
+                            1 -> "阈值从您设备自身的温度触发点读取，若无则回退到安全默认值。"
+                            else -> "为每个传感器设置红色阈值点，琥珀色阈值位于其下方。"
                         },
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -6860,9 +6860,9 @@ internal fun FpsCounterConfigDialog(
                     )
                     Spacer(Modifier.height(8.dp))
                     if (gameHub) {
-                        HudThreeStop("HUD skin", listOf("Classic", "Neon", "Mono"), skins.indexOf(skin)) { skin = skins[it] }
+                        HudThreeStop("HUD皮肤", listOf("Classic", "霓虹", "霓虹"), skins.indexOf(skin)) { skin = skins[it] }
                     }
-                    HudThreeStop("HUD color", listOf("Soft", "Mid", "Vivid"), colors.indexOf(color)) { color = colors[it] }
+                    HudThreeStop("HUD颜色", listOf("柔和", "柔和", "鲜艳"), colors.indexOf(color)) { color = colors[it] }
                     Spacer(Modifier.height(8.dp))
                     Text("HUD outline: $outlineValue", style = MaterialTheme.typography.bodySmall)
                     Slider(
@@ -6870,7 +6870,7 @@ internal fun FpsCounterConfigDialog(
                         onValueChange = { outlineValue = it.toInt() },
                         valueRange = 0f..100f, steps = 99
                     )
-                    HudThreeStop("Outline color", listOf("Gray", "Accent"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
+                    HudThreeStop("轮廓颜色", listOf("灰色", "灰色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
                 } else {
                     Spacer(Modifier.height(4.dp))
                     Text("HUD Transparency: $hudTransparency", style = MaterialTheme.typography.bodySmall)
@@ -6893,7 +6893,7 @@ internal fun FpsCounterConfigDialog(
                     Text("Export HUD diagnostics")
                 }
                 Text(
-                    "Saves a sensor report (CPU/GPU/temp/VRAM…) straight to your Downloads folder.",
+                    "将传感器报告（CPU/GPU/温度/显存…）直接保存到您的下载文件夹。",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -7091,9 +7091,9 @@ internal fun StockConfigDownloadSheet(
         DeckDialogBars()
         DeckDialogScaled {
             Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                Text("Stock configs", style = MaterialTheme.typography.titleMedium)
+                Text("默认配置", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "Tap a version to fetch its config. Builds without a shipped config show none.",
+                    "点击一个版本以获取其配置。没有附带配置的构建不会显示任何内容。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

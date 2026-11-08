@@ -41,7 +41,7 @@ import java.security.MessageDigest;
  * so a new build lands in a new folder by itself (older folders are removed). The json names the
  * build, so a set whose libEGL did not change still gets a new folder.
  *
- * <p>Driven by the "Fast OpenGL" setting ({@link FastOpenGL}: container, per-game override, support
+ * <p>Driven by the "快速 OpenGL" setting ({@link FastOpenGL}: container, per-game override, support
  * check, route); the launch calls {@link #apply} once it has decided. {@value #ENV_OVERRIDE}=0/1 and
  * {@value #ENV_GLX}=1 in the environment variables are power-user overrides of that decision (they
  * still need these bundled libraries).

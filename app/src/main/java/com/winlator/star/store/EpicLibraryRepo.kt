@@ -97,7 +97,7 @@ object EpicLibraryRepo {
             onStatus("Fetching game list…")
             val rawGames = EpicApiClient.getLibraryItems(token)
             if (rawGames.isNullOrEmpty()) {
-                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("No games found in your Epic library")
+                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("在您的Epic库中未找到游戏")
                 else SyncResult.Ok(cachedList, 0)
             }
 

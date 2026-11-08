@@ -83,7 +83,7 @@ internal fun MaliPanvkSection(state: MaliPanvkSettingsState, onHelp: (Int) -> Un
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { onHelp(R.string.help_mali_panvk) }) {
-            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
+            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
         }
     }
     Row(verticalAlignment = Alignment.CenterVertically) {

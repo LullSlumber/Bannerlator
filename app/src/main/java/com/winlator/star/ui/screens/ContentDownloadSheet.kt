@@ -90,7 +90,7 @@ fun ContentDownloadSheet(
     val context = LocalContext.current
     val cm = remember { ContentsManager(context) }
 
-    // Landscape turns the sheet into a master-detail "WIN Components" browser: the left rail lists ALL
+    // Landscape turns the sheet into a master-detail "WIN 组件" browser: the left rail lists ALL
     // installable component categories (see RAIL_TYPES) and the passed contentTypes only decides which
     // one is selected first. Portrait stays byte-for-byte scoped to the passed contentTypes as today.
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -213,7 +213,7 @@ fun ContentDownloadSheet(
                     refreshKey++
                     onContentChanged()
                 } else {
-                    installDialog = installDialog?.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                    installDialog = installDialog?.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
                 }
             }
         }
@@ -224,7 +224,7 @@ fun ContentDownloadSheet(
         OutlinedAlertDialog(
             onDismissRequest = { showInfoProfile = null },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            title = { Text("Content Info", color = MaterialTheme.colorScheme.onSurface) },
+            title = { Text("内容信息", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 androidx.compose.foundation.rememberScrollState().let { scroll ->
                     Column(Modifier.verticalScroll(scroll)) {
@@ -247,7 +247,7 @@ fun ContentDownloadSheet(
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemoveProfile = null },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            title = { Text("Remove content?", color = MaterialTheme.colorScheme.onSurface) },
+            title = { Text("移除内容?", color = MaterialTheme.colorScheme.onSurface) },
             text = { Text("Remove \"${profile.verName}\"?", color = MaterialTheme.colorScheme.onSurface) },
             confirmButton = {
                 TextButton(onClick = {
@@ -256,7 +256,7 @@ fun ContentDownloadSheet(
                     loadProfiles(cm, effectiveTypes) { profiles = it }
                     confirmRemoveProfile = null
                     onContentChanged()
-                }) { Text("Remove") }
+                }) { Text("移除") }
             },
             dismissButton = { TextButton(onClick = { confirmRemoveProfile = null }) { Text("Cancel") } }
         )
@@ -319,7 +319,7 @@ fun ContentDownloadSheet(
     }
     // Install-from-file launchers (progress lives in the content-card dialog). Shared by both layouts.
     val onBrowseFiles = {
-        filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "Select content file"))
+        filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "选择内容文件"))
     }
     val onPickSystem = {
         filePicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -351,7 +351,7 @@ fun ContentDownloadSheet(
                             Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 6.dp, bottom = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("WIN Components", color = cs.onSurface, fontWeight = FontWeight.Bold,
+                            Text("WIN 组件", color = cs.onSurface, fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.titleSmall)
                             Spacer(Modifier.width(16.dp))
                             // Component-source filter lives in the header (next to the title) in landscape, so the
@@ -469,7 +469,7 @@ fun ContentDownloadSheet(
                             Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 2.dp, bottom = 2.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("Tap a version to install",
+                            Text("点击版本以安装",
                                 color = cs.onSurfaceVariant, style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                             TextButton(onClick = onDismiss,
@@ -498,7 +498,7 @@ fun ContentDownloadSheet(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            if (multiType) "Compatibility Layer" else "${contentTypes.first()} Downloads",
+                            if (multiType) "兼容层" else "${contentTypes.first()} Downloads",
                             color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.weight(1f),
                         )
@@ -642,10 +642,10 @@ private fun DownloadContentItem(
                         Icon(Icons.Filled.CheckCircle, contentDescription = "Installed", tint = installedBlue,
                             modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(14.dp))
-                        Icon(Icons.Filled.Info, contentDescription = "Info", tint = cs.onSurfaceVariant,
+                        Icon(Icons.Filled.Info, contentDescription = "信息", tint = cs.onSurfaceVariant,
                             modifier = Modifier.size(20.dp).clickable(onClick = onInfo))
                         Spacer(Modifier.width(14.dp))
-                        Icon(Icons.Filled.Delete, contentDescription = "Remove", tint = Color(0xFFEF5350), // intentional: destructive-action red
+                        Icon(Icons.Filled.Delete, contentDescription = "移除", tint = Color(0xFFEF5350), // intentional: destructive-action red
                             modifier = Modifier.size(20.dp).clickable(onClick = onRemove))
                     }
                     communityInstalled -> Icon(Icons.Filled.CheckCircle, contentDescription = "Installed",
@@ -866,9 +866,9 @@ private fun SourceToggleBox(
                 Icon(Icons.Filled.Hub, contentDescription = null, tint = cs.primary, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Include community repos", style = MaterialTheme.typography.bodyMedium,
+                    Text("包含社区仓库", style = MaterialTheme.typography.bodyMedium,
                         color = cs.onSurface, fontWeight = FontWeight.SemiBold)
-                    Text("Add versions from the Contents screen's sources",
+                    Text("从内容屏幕的来源添加版本",
                         style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
                 }
                 Switch(checked = includeCommunity, onCheckedChange = onToggle,
@@ -969,9 +969,9 @@ private fun InstallFromFileButton(
             onDismissRequest = { showPickMenu = false },
             modifier = Modifier.outlinedMenuCard(),
         ) {
-            DropdownMenuItem(text = { Text("Browse files") }, onClick = { showPickMenu = false; onBrowseFiles() })
+            DropdownMenuItem(text = { Text("浏览文件") }, onClick = { showPickMenu = false; onBrowseFiles() })
             MenuItemDivider()
-            DropdownMenuItem(text = { Text("Pick via system…") }, onClick = { showPickMenu = false; onPickSystem() })
+            DropdownMenuItem(text = { Text("从系统选取…") }, onClick = { showPickMenu = false; onPickSystem() })
         }
     }
 }
@@ -1029,7 +1029,7 @@ private fun ColumnScope.ComponentVersionSections(
         Box(Modifier.fillMaxWidth().weight(1f)) {
             if (totalRows == 0 && !communityLoading) {
                 Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-                    Text("No content available.", color = MaterialTheme.colorScheme.onSurface)
+                    Text("无可用内容。", color = MaterialTheme.colorScheme.onSurface)
                 }
             } else {
                 LazyColumn(
@@ -1042,7 +1042,7 @@ private fun ColumnScope.ComponentVersionSections(
                         Text(
                             "Showing $totalRows version${if (totalRows != 1) "s" else ""} from " +
                                 "$nSrc source${if (nSrc != 1) "s" else ""}" +
-                                (if (!includeCommunity) " · community repos off" else ""),
+                                (if (!includeCommunity) " · 社区仓库关闭" else ""),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(start = 4.dp, bottom = 2.dp),
@@ -1115,7 +1115,7 @@ private fun railCat(type: ContentProfile.ContentType, icon: ImageVector, role: S
 // ContentProfile for it); the right pane renders AdrenoDriverListPane when it's the selected category.
 private val RAIL_GROUPS = listOf(
     RailGroup("Compatibility", listOf(
-        railCat(ContentProfile.ContentType.CONTENT_TYPE_WINE, Icons.Filled.Extension, "Windows API layer"),
+        railCat(ContentProfile.ContentType.CONTENT_TYPE_WINE, Icons.Filled.Extension, "Windows API 层"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_PROTON, Icons.Filled.Bolt, "Steam Play runtime"),
     )),
     RailGroup("Graphics", listOf(
@@ -1124,7 +1124,7 @@ private val RAIL_GROUPS = listOf(
         railCat(ContentProfile.ContentType.CONTENT_TYPE_D7VK, Icons.Filled.ViewInAr, "D3D7/8 → Vulkan"),
         RailCat("GPU Drivers", Icons.Filled.Memory, "Turnip / adrenotools", type = null),
     )),
-    RailGroup("x86 Translation", listOf(
+    RailGroup("x86 转译层", listOf(
         railCat(ContentProfile.ContentType.CONTENT_TYPE_FEXCORE, Icons.Filled.DeveloperBoard, "arm64ec x86 emu"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_BOX64, Icons.Filled.Dns, "x86_64 → ARM64"),
         railCat(ContentProfile.ContentType.CONTENT_TYPE_WOWBOX64, Icons.Filled.Widgets, "x86 on arm64ec"),
@@ -1176,7 +1176,7 @@ private fun ComponentRail(
     }
 }
 
-// Header-pinned component-source control (landscape). Sits next to the "WIN Components" title: Hub icon +
+// Header-pinned component-source control (landscape). Sits next to the "WIN 组件" title: Hub icon +
 // short label + switch, with the active-source chips in a scrollable row to the right when enabled. Keeps the
 // whole rail free for categories. Same state/callbacks as the portrait SourceToggleBox.
 @Composable
@@ -1192,7 +1192,7 @@ private fun HeaderSourceControl(
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Filled.Hub, contentDescription = null, tint = cs.primary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
-        Text("Community repos", style = MaterialTheme.typography.labelMedium, color = cs.onSurface,
+        Text("社区仓库", style = MaterialTheme.typography.labelMedium, color = cs.onSurface,
             fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(Modifier.width(8.dp))
         Switch(checked = includeCommunity, onCheckedChange = onToggle,

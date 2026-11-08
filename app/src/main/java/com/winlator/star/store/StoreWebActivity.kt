@@ -49,7 +49,7 @@ import com.winlator.star.core.AppOrientation
 import com.winlator.star.ui.theme.WinlatorTheme
 
 /**
- * The in-app store web page — where "Get for free" and "View on GOG / Epic" land.
+ * The in-app store web page — where "免费获取" and "View on GOG / Epic" land.
  *
  * GOG and Epic have no add-to-library API a third-party client may call: a free claim is a web
  * checkout (Epic's additionally carries a captcha), so the honest path is the store's own page in
@@ -130,7 +130,7 @@ class StoreWebActivity : ComponentActivity() {
                             IconButton(onClick = {
                                 runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(webView?.url ?: url))) }
                             }) {
-                                Icon(Icons.Filled.OpenInNew, contentDescription = "Open in browser", tint = MaterialTheme.colorScheme.primary)
+                                Icon(Icons.Filled.OpenInNew, contentDescription = "在浏览器中打开", tint = MaterialTheme.colorScheme.primary)
                             }
                         }
                         if (progress in 1..99) {

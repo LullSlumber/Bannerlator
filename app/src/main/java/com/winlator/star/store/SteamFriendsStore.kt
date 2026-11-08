@@ -1655,7 +1655,7 @@ object SteamFriendsStore {
      *    [ProfileInfoCallback] future — awaited directly, the same unified-future pattern as [mintWebToken],
      *    rather than a broadcast pump subscription that couldn't tell concurrent requests apart).
      *  - games count / total hours / recently-played ← Player.GetOwnedGames (include_appinfo +
-     *    include_played_free_games). "Recently played" is derived from that response (sorted by
+     *    include_played_free_games). "最近游玩" is derived from that response (sorted by
      *    rtime_last_played) because Player.GetRecentlyPlayedGames is NOT present in this fork.
      *  - level / featured badges / mutual friends are SKIPPED (left null): Player.GetSteamLevel,
      *    Player.GetBadges and a general per-friend GetMutualFriends RPC are not exposed here

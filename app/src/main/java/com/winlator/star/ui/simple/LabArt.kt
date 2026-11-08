@@ -63,20 +63,20 @@ internal object LabArt {
     const val ART3D = "3d"
     const val CLIPS = "clips"
     const val CLIPS3D = "3dclips"
-    val MODES = listOf(OFF to T("Off"), ART to T("Game art"), ART3D to T("3D art"), CLIPS to T("Art and previews"), CLIPS3D to T("3D art and previews"))
+    val MODES = listOf(OFF to T("Off"), ART to T("游戏图像"), ART3D to T("3D art"), CLIPS to T("Art and previews"), CLIPS3D to T("3D art and previews"))
     fun has3d(m: String) = m == ART3D || m == CLIPS3D
     fun hasClips(m: String) = m == CLIPS || m == CLIPS3D
 
     const val SOLID = "solid"
     const val GLASS = "glass"
     const val CLEAR = "clear"
-    val PANELS = listOf(SOLID to T("Solid"), GLASS to T("Glass"), CLEAR to T("Clear"))
+    val PANELS = listOf(SOLID to T("Solid"), GLASS to T("Glass"), CLEAR to T("清除"))
 
     const val COVERS = "covers"
     const val WIDE = "wide"
     const val ICONS = "icons"
     val CARDS = listOf(COVERS to T("Covers"), WIDE to T("Wide covers"), ICONS to T("Icons"))
-    val SIZES = listOf("s" to T("Small"), "m" to T("Medium"), "l" to T("Large"))
+    val SIZES = listOf("s" to T("Small"), "m" to T("中等"), "l" to T("Large"))
 
     // ── app-wide (Appearance) ──
     private var prefs: SharedPreferences? = null

@@ -5,7 +5,7 @@ import com.winlator.star.container.Shortcut;
 import com.winlator.star.winhandler.WinHandler;
 
 /**
- * "DirectInput games can see the controller": the one switch that replaced Enable XInput / Enable
+ * "DirectInput 游戏可以看到控制器": the one switch that replaced Enable XInput / Enable
  * DInput / Exclusive Input. At launch it decides the HKCU\Software\Wine\DirectInput\Joysticks entries
  * (WineUtils.setJoystickRegistryKeys, core.JoystickRegistry): on = no entry (visible, as the old Exclusive
  * Input off wrote), off = "disabled" (hidden). "override" only where visibility is forced for the launch.

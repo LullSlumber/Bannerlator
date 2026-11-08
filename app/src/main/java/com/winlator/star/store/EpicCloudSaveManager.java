@@ -56,7 +56,7 @@ public final class EpicCloudSaveManager {
                 if (accountId == null || accountId.isEmpty()) { cb.onError("Epic account ID not found — please sign in again"); return; }
                 debug(ctx, "Epic upload — appName=" + appName);
 
-                cb.onStatus("Fetching cloud file list…");
+                cb.onStatus("正在获取云文件列表…");
                 List<CloudFile> cloudFiles = listCloudFiles(ctx, accountId, appName, token);
 
                 // Recursive walk: collect every file under localFolder as a '/'-joined RELATIVE path
@@ -81,8 +81,8 @@ public final class EpicCloudSaveManager {
                 debug(ctx, "upload toUpload=" + toUpload.size() + " of " + localRel.size() + " (newer-than-cloud) " + toUpload);
 
                 if (toUpload.isEmpty()) {
-                    debug(ctx, "upload — already up to date, nothing PUT");
-                    cb.onDone("Already up to date");
+                    debug(ctx, "上传 — 已是最新，没有 PUT");
+                    cb.onDone("已是最新");
                     return;
                 }
 
@@ -92,7 +92,7 @@ public final class EpicCloudSaveManager {
 
                 int uploaded = 0;
                 for (WriteLink wl : writeLinks) {
-                    cb.onStatus("Uploading: " + wl.name);
+                    cb.onStatus("正在上传: " + wl.name);
                     File local = new File(localFolder, wl.name);
                     if (!local.exists()) { debug(ctx, "upload PUT skip (missing local): " + wl.name); continue; }
                     byte[] data = readFile(local);
@@ -105,7 +105,7 @@ public final class EpicCloudSaveManager {
 
                 markSynced(ctx, appName);
                 debug(ctx, "upload complete — uploaded=" + uploaded + " file(s)");
-                cb.onDone("Uploaded " + uploaded + " file" + (uploaded == 1 ? "" : "s"));
+                cb.onDone("已上传 " + uploaded + " file" + (uploaded == 1 ? "" : "s"));
 
             } catch (Exception e) {
                 Log.e(TAG, "uploadSaves failed", e);
@@ -125,7 +125,7 @@ public final class EpicCloudSaveManager {
                 if (accountId == null || accountId.isEmpty()) { cb.onError("Epic account ID not found — please sign in again"); return; }
                 debug(ctx, "Epic download — appName=" + appName);
 
-                cb.onStatus("Fetching cloud file list…");
+                cb.onStatus("正在获取云文件列表…");
                 List<CloudFile> cloudFiles = listCloudFiles(ctx, accountId, appName, token);
                 debug(ctx, "download cloudFiles=" + cloudFiles.size() + " -> localFolder=" + localFolder);
 
@@ -154,7 +154,7 @@ public final class EpicCloudSaveManager {
 
                 markSynced(ctx, appName);
                 debug(ctx, "download complete — downloaded=" + downloaded + " file(s)");
-                cb.onDone("Downloaded " + downloaded + " file" + (downloaded == 1 ? "" : "s"));
+                cb.onDone("已下载 " + downloaded + " file" + (downloaded == 1 ? "" : "s"));
 
             } catch (Exception e) {
                 Log.e(TAG, "downloadSaves failed", e);

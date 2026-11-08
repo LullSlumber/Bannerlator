@@ -107,7 +107,7 @@ import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.screens.UnsavedChangesDialog
 import kotlin.math.roundToInt
 
-/** One link of the "Inherits from" chain. A null [onClick] marks the level being edited. */
+/** One link of the "继承自" chain. A null [onClick] marks the level being edited. */
 internal class ChainLink(val label: String, val icon: ImageVector, val onClick: (() -> Unit)?)
 
 internal class EditorHeader(
@@ -144,7 +144,7 @@ private const val LEVEL_PREF = "deck_settings_level"
  * The Deck settings editor: categories on the left, the chosen category's rows on the right (on a
  * phone the categories are a list that drills into one category). Every value goes through [source],
  * so the same screen edits a game, a container, All containers and the app's own settings. Edits
- * land in a draft with an "Unsaved changes" bar; leaving with unsaved changes asks first. Categories
+ * land in a draft with an "未保存的更改" bar; leaving with unsaved changes asks first. Categories
  * whose rows are all handed off still list them, each opening the classic editor via [onHandoff].
  *
  * [onExit] is null when the editor is a tab's root page; Back then belongs to the Deck shell.
@@ -536,7 +536,7 @@ private fun EditorTop(
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(38.dp)) {
                         Icon(Icons.Filled.AccountTree, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("Inherits from", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text("继承自", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     }
                 }
                 header.chain.forEachIndexed { i, link ->
@@ -794,7 +794,7 @@ private fun CategoryPage(
         }
         extra?.bottom?.invoke()?.forEach { add(ExtraItem(it)) }
         if (handoffs.isNotEmpty()) {
-            add(GroupItem(if (rows.isEmpty()) "In the classic editor" else "More settings"))
+            add(GroupItem(if (rows.isEmpty()) "在经典编辑器中" else "更多设置"))
             handoffs.forEachIndexed { i, h -> add(HandoffItem(h, first = i == 0, last = i == handoffs.lastIndex)) }
         }
     }
@@ -1006,7 +1006,7 @@ private fun RowInfo(
                         .clip(CircleShape)
                         .clickable(onClick = onHelp),
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "What is this?", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "音频设置", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
         }
@@ -1032,9 +1032,9 @@ private fun SourceLine(origin: Origin, baselineLabel: String?, scope: EditorScop
     when (origin) {
         Origin.NONE -> Unit
         Origin.DEFAULT -> SourcePill("Default")
-        Origin.FROM_CONTAINER -> SourcePill("From container")
-        Origin.FROM_APP -> SourcePill("App setting")
-        Origin.CONTAINER_ONLY -> SourcePill("Container setting · change it in the container")
+        Origin.FROM_CONTAINER -> SourcePill("来自容器")
+        Origin.FROM_APP -> SourcePill("应用设置")
+        Origin.CONTAINER_ONLY -> SourcePill("容器设置 · 在容器中更改")
         Origin.SET_HERE -> Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(8.dp).clip(CircleShape).background(cs.primary))
@@ -1051,7 +1051,7 @@ private fun SourceLine(origin: Origin, baselineLabel: String?, scope: EditorScop
             }
             val shape = deckShape(12.dp)
             Text(
-                text = "Reset",
+                text = "重置",
                 color = cs.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
@@ -1524,7 +1524,7 @@ private fun SearchPane(
             value = query,
             onValueChange = onQuery,
             singleLine = true,
-            placeholder = { Text("Search every setting") },
+            placeholder = { Text("搜索所有设置") },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             trailingIcon = {
                 Box(
@@ -1538,7 +1538,7 @@ private fun SearchPane(
         )
         Spacer(Modifier.height(12.dp))
         when {
-            words.isEmpty() -> Text("Type to search every setting, at every level.", color = cs.onSurfaceVariant, fontSize = 14.sp)
+            words.isEmpty() -> Text("输入以在每一层级搜索所有设置。", color = cs.onSurfaceVariant, fontSize = 14.sp)
             results.isEmpty() && handoffResults.isEmpty() -> Text("Nothing matches \"$query\".", color = cs.onSurfaceVariant, fontSize = 14.sp)
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
@@ -1610,9 +1610,9 @@ private fun UnsavedBar(saving: Boolean, compact: Boolean, onDiscard: () -> Unit,
     ) {
         Box(Modifier.size(9.dp).clip(CircleShape).background(cs.primary))
         Spacer(Modifier.width(10.dp))
-        Text("Unsaved changes", color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.weight(1f))
+        Text("未保存的更改", color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.weight(1f))
         TextButton(onClick = onDiscard, enabled = !saving) {
-            Text("Discard", color = cs.onSurfaceVariant, fontWeight = FontWeight.Bold)
+            Text("放弃", color = cs.onSurfaceVariant, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.width(8.dp))
         Button(

@@ -73,7 +73,7 @@ interface SteamCloudBackend {
         /**
          * The backend for the live session: the Rust engine when the flag is ON (and it is logged on),
          * else the JavaSteam handler when bound. Null = not signed in / no session — the callers keep
-         * their "Not signed in to Steam" behaviour.
+         * their "未登录 Steam" behaviour.
          */
         @JvmStatic
         fun current(): SteamCloudBackend? {

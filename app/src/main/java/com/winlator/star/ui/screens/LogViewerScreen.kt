@@ -102,7 +102,7 @@ fun LogViewerScreen(entry: LogInventory.Entry, onClose: () -> Unit) {
     val listState = rememberLazyListState()
     val hScroll = rememberScrollState()
 
-    // Load, then keep loading while "following" is on. Reading happens on IO — a multi-megabyte
+    // Load, then keep loading while "已关注" is on. Reading happens on IO — a multi-megabyte
     // tail read on the main thread would jank the whole dialog.
     LaunchedEffect(selected, following) {
         val f = selected ?: return@LaunchedEffect
@@ -190,7 +190,7 @@ fun LogViewerScreen(entry: LogInventory.Entry, onClose: () -> Unit) {
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(
-                        if (following) "following" else "follow",
+                        if (following) "已关注" else "关注",
                         color = if (following) Color(0xFF5FBF6B) else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.sp
                     )
@@ -225,7 +225,7 @@ fun LogViewerScreen(entry: LogInventory.Entry, onClose: () -> Unit) {
                             // rather than emitted as a sibling.
                             Box {
                                 if (query.isEmpty()) {
-                                    Text("Find in this log…",
+                                    Text("在此日志中查找…",
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                                 }
                                 inner()
@@ -295,22 +295,22 @@ fun LogViewerScreen(entry: LogInventory.Entry, onClose: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
             ) {
-                ViewerAction("Wrap", active = wrap, modifier = Modifier.weight(1f)) { wrap = !wrap }
-                ViewerAction("Find", active = findOpen, modifier = Modifier.weight(1f)) {
+                ViewerAction("换行", active = wrap, modifier = Modifier.weight(1f)) { wrap = !wrap }
+                ViewerAction("查找", active = findOpen, modifier = Modifier.weight(1f)) {
                     findOpen = !findOpen
                     if (!findOpen) query = ""
                 }
-                ViewerAction("Copy", modifier = Modifier.weight(1f)) {
+                ViewerAction("拷贝", modifier = Modifier.weight(1f)) {
                     clipboard.setText(AnnotatedString(shown.joinToString("\n")))
                     Toast.makeText(context, "Copied ${shown.size} lines", Toast.LENGTH_SHORT).show()
                 }
-                ViewerAction("Share", primary = true, modifier = Modifier.weight(1f)) {
+                ViewerAction("分享", primary = true, modifier = Modifier.weight(1f)) {
                     selected?.let { shareLogFile(context, it) }
                 }
             }
 
             ViewerAction(
-                "Report a problem",
+                "报告问题",
                 modifier = Modifier.fillMaxWidth().padding(top = 6.dp)
             ) { reportOpen = true }
         }
@@ -343,13 +343,13 @@ private fun ReportDialog(entry: LogInventory.Entry, runDir: File, onDismiss: () 
 
     OutlinedAlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("Report a problem") },
+        title = { Text("报告问题") },
         text = {
             Column(modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("What went wrong?") },
+                    label = { Text("出了什么问题?") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -357,12 +357,12 @@ private fun ReportDialog(entry: LogInventory.Entry, runDir: File, onDismiss: () 
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Any detail that helps (optional)") },
+                    label = { Text("任何有助于排查的细节（可选）") },
                     minLines = 3,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(10.dp))
-                Text("Will be attached", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text("将一并附上", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                 willAttach.forEach {
                     Text("• $it", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
                 }
@@ -371,7 +371,7 @@ private fun ReportDialog(entry: LogInventory.Entry, runDir: File, onDismiss: () 
                     modifier = Modifier.fillMaxWidth().clickable { includeApp = !includeApp }
                 ) {
                     Checkbox(checked = includeApp, onCheckedChange = { includeApp = it })
-                    Text("Also app logcat and crash reports",
+                    Text("以及应用的 logcat 和崩溃报告",
                         color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
                 }
                 Text(
@@ -414,7 +414,7 @@ private fun ReportDialog(entry: LogInventory.Entry, runDir: File, onDismiss: () 
                         }
                     }
                 }
-            ) { Text(if (busy) "Working…" else "Continue on GitHub") }
+            ) { Text(if (busy) "正在处理…" else "在 GitHub 上继续") }
         },
         dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("Cancel") } }
     )
@@ -572,14 +572,14 @@ fun shareLogGroup(context: Context, entry: LogInventory.Entry) {
             putExtra(Intent.EXTRA_SUBJECT, if (entry.isAppBucket) "App & crash logs" else entry.name)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(send, "Share logs"))
+        context.startActivity(Intent.createChooser(send, "属性"))
     } catch (e: Exception) {
         Toast.makeText(context, "Couldn't share those logs.", Toast.LENGTH_SHORT).show()
     }
 }
 
 /**
- * "Share logs" in a game's menu: zips the game's whole log folder (current run, previous/ and
+ * "属性" in a game's menu: zips the game's whole log folder (current run, previous/ and
  * wayland/) into cacheDir/logs/share and opens Android's share sheet. The zip is built off the UI
  * thread; the zips of earlier shares are removed first so the cache doesn't grow.
  */
@@ -615,7 +615,7 @@ fun shareGameLogs(context: Context, gameName: String) {
                         clipData = android.content.ClipData.newRawUri(zip.name, uri)
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
-                    val chooser = Intent.createChooser(send, "Share logs")
+                    val chooser = Intent.createChooser(send, "属性")
                     if (context !is android.app.Activity) chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(chooser)
                 } catch (e: Exception) {

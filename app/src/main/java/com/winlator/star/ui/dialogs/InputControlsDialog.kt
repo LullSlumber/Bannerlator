@@ -51,7 +51,7 @@ fun InputControlsDialog(state: XServerDialogState) {
 
     OutlinedAlertDialog(
         onDismissRequest = { state.dismiss() },
-        title = { Text("Input Controls") },
+        title = { Text("虚拟按键") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 // Profile dropdown
@@ -63,7 +63,7 @@ fun InputControlsDialog(state: XServerDialogState) {
                         value = allItems.getOrElse(selectedIdx) { "-- Disabled --" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Profile") },
+                        label = { Text("配置") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -89,9 +89,9 @@ fun InputControlsDialog(state: XServerDialogState) {
 
                 Spacer(Modifier.height(8.dp))
 
-                CheckRow("Show Touchscreen Controls", showTouchscreen) { showTouchscreen = it }
-                CheckRow("Enable Timeout", timeoutEnabled) { timeoutEnabled = it }
-                CheckRow("Enable Haptics", hapticsEnabled) { hapticsEnabled = it }
+                CheckRow("显示触摸屏控件", showTouchscreen) { showTouchscreen = it }
+                CheckRow("启用延时", timeoutEnabled) { timeoutEnabled = it }
+                CheckRow("启用触觉反馈", hapticsEnabled) { hapticsEnabled = it }
 
                 Spacer(Modifier.height(8.dp))
 

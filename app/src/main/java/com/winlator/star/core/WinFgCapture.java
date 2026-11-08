@@ -176,7 +176,7 @@ public final class WinFgCapture {
 
     /**
      * Persist the anonymous consent attestation and enable capture. Call this only after the user has
-     * ticked "I understand" and confirmed in the consent dialog. Records the terms version + agreement
+     * ticked "我理解" and confirmed in the consent dialog. Records the terms version + agreement
      * timestamp, ensures the anon id exists, flips the toggle on, and writes consent.json into the
      * capture dir so the layer can pick it up even on the very first launch after opting in.
      */

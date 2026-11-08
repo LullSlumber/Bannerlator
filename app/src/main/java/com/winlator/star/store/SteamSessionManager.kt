@@ -74,15 +74,15 @@ object SteamSessionManager {
             repo.initialize(ctx.applicationContext)
             if (repo.isSessionLoggedOn) return SessionResult.Ok
             SteamPrefs.init(ctx)
-            if (!SteamPrefs.isLoggedIn) return SessionResult.NeedsSignIn("Not signed in to Steam")
+            if (!SteamPrefs.isLoggedIn) return SessionResult.NeedsSignIn("未登录 Steam")
             if (repo.isSuspendedForRealSteam) {
                 // A previous real-Steam game still holds the account (or its release is in flight).
-                progress("Releasing the previous game's Steam session…")
+                progress("正在释放上一个游戏的 Steam 会话…")
                 repo.resumeAfterRealSteam(0L)
             }
             when (repo.status) {
                 SteamRepository.SteamStatus.SIGNED_OUT ->
-                    return SessionResult.NeedsSignIn("Steam rejected the saved sign-in")
+                    return SessionResult.NeedsSignIn("Steam 拒绝了已保存的登录")
                 else -> {}
             }
             progress("Connecting to Steam…")
@@ -101,8 +101,8 @@ object SteamSessionManager {
                     progress(
                         when (st) {
                             SteamRepository.SteamStatus.CONNECTING -> "Signing in to Steam…"
-                            SteamRepository.SteamStatus.OFFLINE -> "Waiting for a Steam connection…"
-                            SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE -> "Account is signed in elsewhere…"
+                            SteamRepository.SteamStatus.OFFLINE -> "正在等待Steam连接…"
+                            SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE -> "账户已在别处登录…"
                             else -> "Connecting to Steam…"
                         },
                     )
@@ -225,7 +225,7 @@ object SteamSessionManager {
      * flow stops at the first blocking outcome ([PreflightListener.onNeedSignIn] /
      * [PreflightListener.onOffline] / [PreflightListener.onUpdateAvailable] /
      * [PreflightListener.onClientUpdateAvailable]) and it is the caller's job to continue (e.g.
-     * re-run with `skipSession`/`skipUpdate` after "Launch anyway"; the client offer is the last
+     * re-run with `skipSession`/`skipUpdate` after "仍要启动"; the client offer is the last
      * step, so the caller launches directly after it).
      */
     fun preflightAsync(
@@ -258,13 +258,13 @@ object SteamSessionManager {
                 if (skipSession) {
                     step(Step.SESSION, StepState.SKIPPED, "Launching without a live Steam session")
                 } else {
-                    step(Step.SESSION, StepState.RUNNING, "Checking Steam sign-in…")
+                    step(Step.SESSION, StepState.RUNNING, "正在检查Steam登录…")
                     val r = ensureSession(app) { msg -> step(Step.SESSION, StepState.RUNNING, msg) }
                     if (handle.isCancelled) { post { listener.onCancelled() }; return@Thread }
                     when (r) {
                         is SessionResult.Ok -> {
                             val renewed = maybeRenewRefreshToken(app)
-                            step(Step.SESSION, StepState.DONE, if (renewed) "Signed in (sign-in refreshed)" else "Signed in")
+                            step(Step.SESSION, StepState.DONE, if (renewed) "已登录（登录已刷新）" else "已登录")
                         }
                         is SessionResult.NeedsSignIn -> {
                             step(Step.SESSION, StepState.WARN, r.reason)
@@ -283,11 +283,11 @@ object SteamSessionManager {
                 // Steam sign-in and downloads work on any NAT; this is for games with their own
                 // servers / P2P (Brawlhalla "Incorrect Version" on a hotspot or VPN), so the user
                 // sees the network verdict up front instead of guessing.
-                step(Step.NETWORK, StepState.RUNNING, "Checking network…")
+                step(Step.NETWORK, StepState.RUNNING, "正在检查网络…")
                 netLatch.await(NETWORK_PROBE_MS + 500L, TimeUnit.MILLISECONDS)
                 val verdict = net
                 if (verdict == null) {
-                    step(Step.NETWORK, StepState.DONE, "Couldn't check")
+                    step(Step.NETWORK, StepState.DONE, "无法检查")
                 } else {
                     Log.i(TAG, "network: ${verdict.logLine()}")
                     step(Step.NETWORK, if (verdict.isWarning) StepState.NOTICE else StepState.DONE, verdict.verdict())
@@ -300,18 +300,18 @@ object SteamSessionManager {
                 // same save files right before the client's own sync (cloud-conflict prompts), so the
                 // app leaves cloud saves to the client.
                 if (req.clientSyncsCloud) {
-                    step(Step.CLOUD, StepState.SKIPPED, "Cloud saves: synced by the Steam client")
+                    step(Step.CLOUD, StepState.SKIPPED, "云存档：由 Steam 客户端同步")
                 } else if (!req.pullCloudSaves || req.appId <= 0 || req.installDir.isEmpty()) {
-                    step(Step.CLOUD, StepState.SKIPPED, if (req.appId <= 0) "Cloud saves: game not resolved" else "Cloud saves: off")
+                    step(Step.CLOUD, StepState.SKIPPED, if (req.appId <= 0) "云存档：游戏未解析" else "云存档：关闭")
                 } else if (skipSession || !isLoggedOn()) {
-                    step(Step.CLOUD, StepState.SKIPPED, "Cloud saves: skipped (no Steam session)")
+                    step(Step.CLOUD, StepState.SKIPPED, "云存档：已跳过（无 Steam 会话）")
                 } else {
                     // Engine-agnostic since Phase 3b-1: the same newest-wins pull runs on the
                     // JavaSteam handler or the Rust engine's ccloud calls (SteamCloudBackend).
-                    step(Step.CLOUD, StepState.RUNNING, "Syncing cloud saves…")
+                    step(Step.CLOUD, StepState.RUNNING, "正在同步云存档…")
                     val summary = runBounded(CLOUD_WAIT_MS) {
                         SteamCloudSaveManager.syncFromCloudNewestWins(app, req.appId, req.installDir)
-                    } ?: "Cloud saves: still syncing — launching with local saves"
+                    } ?: "云存档：仍在同步 — 使用本地存档启动"
                     Log.i(TAG, "cloud pull (appId ${req.appId}): $summary")
                     step(Step.CLOUD, StepState.DONE, summary)
                 }
@@ -321,7 +321,7 @@ object SteamSessionManager {
                 if (skipUpdate || !req.checkForUpdates || req.appId <= 0) {
                     step(Step.UPDATE, StepState.SKIPPED, if (skipUpdate) "Launching this build" else "Update check: off")
                 } else {
-                    step(Step.UPDATE, StepState.RUNNING, "Checking for updates…")
+                    step(Step.UPDATE, StepState.RUNNING, "正在检查更新…")
                     val status = checkForUpdateBlocking(app, req.appId)
                     if (handle.isCancelled) { post { listener.onCancelled() }; return@Thread }
                     when (status?.state) {
@@ -346,7 +346,7 @@ object SteamSessionManager {
 
                 // 5. Client package --------------------------------------------------------------------
                 // Safety net for remembered launches that skip the popup (which has its own
-                // "Update & Launch" gate). Bounded catalog fetch; offline / a failed fetch never
+                // "更新并启动" gate). Bounded catalog fetch; offline / a failed fetch never
                 // blocks — the installed package launches (even below MIN_AGENT_VERSION: the agent
                 // is backwards compatible, newer app features just stay off).
                 if (req.clientPackage == ClientPackage.APP_STEAM) {
@@ -372,7 +372,7 @@ object SteamSessionManager {
                         }
                     }
                 } else if (!SteamLiteComponent.isInstalled(app)) {
-                    step(Step.CLIENT, StepState.SKIPPED, "SteamLite client: downloaded by the launch")
+                    step(Step.CLIENT, StepState.SKIPPED, "SteamLite 客户端：由启动下载")
                 } else {
                     step(Step.CLIENT, StepState.RUNNING, "Checking for SteamLite updates…")
                     val check = SteamLiteComponent.checkUpdateBlocking(app)
@@ -383,7 +383,7 @@ object SteamSessionManager {
                             step(Step.CLIENT, StepState.DONE, "Couldn't check for SteamLite updates — using installed $installed")
                         check.available -> {
                             step(Step.CLIENT, StepState.WARN,
-                                (if (check.required) "Update required" else "Update available") +
+                                (if (check.required) "需要更新" else "Update available") +
                                     " ($installed → v${check.latestVersion})")
                             post { listener.onClientUpdateAvailable(check) }
                             return@Thread

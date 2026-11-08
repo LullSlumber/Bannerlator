@@ -47,7 +47,7 @@ fun DownloadsButton(modifier: Modifier = Modifier) {
         ) {
             Icon(
                 imageVector = Icons.Filled.Download,
-                contentDescription = "Downloads & Library",
+                contentDescription = "下载和库",
                 tint = MaterialTheme.colorScheme.primary,
             )
         }

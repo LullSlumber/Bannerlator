@@ -113,18 +113,18 @@ class ShortcutLauncher internal constructor(
     internal var ubisoftSetupError by mutableStateOf<String?>(null)
     private var ubisoftDownloadHandle: UbisoftInstallerDownload.Handle? = null
     // Who is waiting on this dialog when it was opened by [launchWithUbisoftGate] (a screen without its own launch flow):
-    // what "Launch anyway" runs, and the screen's "I am done with this game" call. Both null for the Games tab's own flow.
+    // what "仍要启动" runs, and the screen's "I am done with this game" call. Both null for the Games tab's own flow.
     private var ubisoftProceed: (() -> Unit)? = null
     private var ubisoftOnClosed: (() -> Unit)? = null
     // A gate check is deciding (a second tap on the same screen must not start another one).
     private var ubisoftGateBusy = false
     // SteamLite launch pre-flight (session → network → cloud saves → update check, BEFORE the container opens):
-    // the RealSteam game whose "Getting Steam ready" dialog is up (null = none). Every RealSteam
+    // the RealSteam game whose "正在准备Steam" dialog is up (null = none). Every RealSteam
     // launch — the popup pick and a remembered pick — routes through it; Goldberg/Raw never do.
     internal var preflightFor by mutableStateOf<Shortcut?>(null)
     // Steam account check (see SteamAccountStore.launchAccountCheck): a SteamLite / Headless Steam launch
     // whose game belongs to a different saved account waits here, before its component download and
-    // pre-flight, until the user switches, picks "Launch anyway" or closes it; a game no saved account
+    // pre-flight, until the user switches, picks "仍要启动" or closes it; a game no saved account
     // owns is refused. Goldberg/Raw never use it.
     internal var accountWarning by mutableStateOf<AccountWarning?>(null)
     // Download-on-launch progress overlay: the game we're about to launch once its picked component
@@ -142,7 +142,7 @@ class ShortcutLauncher internal constructor(
     internal var steamUpdateLabel by mutableStateOf("")
     internal var steamUpdateTitle by mutableStateOf("")
     internal var steamUpdateHandle by mutableStateOf<SteamGameUpdater.UpdateHandle?>(null)
-    // "Check for updates" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
+    // "检查更新" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
     // first, and when it finds a delta (or can't tell from cached data) this holds the game + its status so
     // the confirm dialog below can offer to apply it. null = no offer pending.
     internal var steamUpdateOffer by mutableStateOf<Pair<Shortcut, SteamGameUpdater.UpdateStatus>?>(null)
@@ -152,7 +152,7 @@ class ShortcutLauncher internal constructor(
     // surfaces as a toast. Cancellable via steamUpdateHandle (the modal's Cancel button).
     internal fun runSteamMaintenance(s: Shortcut, verify: Boolean) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = if (verify) "Verifying game files" else "Updating game"
+        steamUpdateTitle = if (verify) "验证游戏文件" else "正在更新游戏"
         steamUpdateLabel = if (verify) "Verifying ${s.name}…" else "Checking ${s.name} for updates…"
         steamUpdateProgress = -1f
         steamUpdateFor = s
@@ -173,14 +173,14 @@ class ShortcutLauncher internal constructor(
             else SteamGameUpdater.updateNow(context, appId, progress, done)
     }
 
-    // "Check for updates": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
+    // "检查更新": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
     // as the animated "Checking…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
     // not-installed just inform via a toast; an available (or can't-tell-offline) result opens the confirm
     // dialog, whose [Update now] / [Check online] hands off to runSteamMaintenance (the authoritative
     // updateNow pass). The onResult lands on the main thread (see checkForUpdate's doc).
     internal fun checkForUpdatesThenOffer(s: Shortcut) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = "Checking for updates"
+        steamUpdateTitle = "正在检查更新"
         steamUpdateLabel = "Checking ${s.name}…"
         steamUpdateProgress = -1f   // opens in the animated indeterminate state, never a static 0%.
         steamUpdateFor = s
@@ -218,7 +218,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!GoldbergComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Steam Emulator (Goldberg)"
+            componentDownloadLabel = "Steam 模拟器 (Goldberg)"
             componentDownloadProgress = 0f
             GoldbergComponent.downloadAsync(
                 context,
@@ -268,7 +268,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!SteamHostComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Headless Steam (Valve Steam client)"
+            componentDownloadLabel = "无窗口Steam（Valve Steam客户端）"
             componentDownloadProgress = 0f
             SteamHostComponent.downloadAsync(
                 context,
@@ -373,7 +373,7 @@ class ShortcutLauncher internal constructor(
      * wall, "Open with" > Play from library): one check, one dialog, then [proceed] launches the game. Only a Ubisoft
      * candidate ([UbisoftSupport.gateKind], string tests) is looked at, off the main thread and for at most a few seconds;
      * every other game just gets [proceed] straight away, as it always did. FAIL-OPEN: an exception, a timeout, an
-     * unanswerable check all mean [proceed]; the dialog's "Launch anyway" and a finished setup's automatic launch call
+     * unanswerable check all mean [proceed]; the dialog's "仍要启动" and a finished setup's automatic launch call
      * the raw launch, never this check again (the gate is this wrapper, not part of the launch itself). The screen must
      * also draw [ShortcutLaunchDialogs]; [onDone] is called once when the gate is finished with the game, whichever way
      * (launched, set up started, cancelled). A dialog-less entry (a pinned home-screen icon opening the session
@@ -427,7 +427,7 @@ class ShortcutLauncher internal constructor(
     }
 
     /**
-     * The dialog's "Launch anyway": the opening screen's own launch when the dialog came from [launchWithUbisoftGate],
+     * The dialog's "仍要启动": the opening screen's own launch when the dialog came from [launchWithUbisoftGate],
      * otherwise the Games tab flow's launch-method step. Neither goes through the setup check again.
      */
     internal fun ubisoftLaunchAnyway(s: Shortcut) {
@@ -596,10 +596,10 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                     val ok = onRemove(s)
                     Toast.makeText(
                         context,
-                        if (ok) "Shortcut removed." else "Failed to remove shortcut.",
+                        if (ok) "快捷方式已删除。" else "移除快捷方式失败。",
                         Toast.LENGTH_SHORT,
                     ).show()
-                }) { Text("Remove") }
+                }) { Text("移除") }
             },
             dismissButton = { TextButton(onClick = { launcher.androidMissingFor = null }) { Text("Keep") } },
         )
@@ -622,7 +622,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
     launcher.eaSetupFor?.let { s ->
         AlertDialog(
             onDismissRequest = { if (!launcher.eaSetupBusy) launcher.eaSetupFor = null },
-            title = { Text("Set up EA Desktop") },
+            title = { Text("设置EA Desktop") },
             text = {
                 Text(
                     "\"${s.name}\" is an EA title: it launches through EA Desktop, which isn't installed in this " +
@@ -673,7 +673,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                             launcher.eaSetupBusy = false
                             launcher.eaSetupFor = null
                         }
-                    }) { Text(if (launcher.eaSetupBusy) "Starting…" else "Set up") }
+                    }) { Text(if (launcher.eaSetupBusy) "正在启动…" else "设置") }
                 }
             },
             dismissButton = { TextButton(enabled = !launcher.eaSetupBusy, onClick = { launcher.eaSetupFor = null }) { Text("Cancel") } },
@@ -774,7 +774,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         LaunchMethodSheet(
             shortcut = s,
             onDismiss = { launcher.launchChoiceFor = null },
-            // Verify runs a full re-validate pass directly. "Check for updates" is check-THEN-offer: probe
+            // Verify runs a full re-validate pass directly. "检查更新" is check-THEN-offer: probe
             // first, then a confirm dialog lets the user choose to apply — it never auto-updates. Both
             // dismiss the sheet first (so no dialog is layered behind the ModalBottomSheet's window).
             onUpdateFiles = { launcher.launchChoiceFor = null; launcher.checkForUpdatesThenOffer(s) },
@@ -786,7 +786,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
                 // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
-                // Per-game "Steam Input" (SteamLite only; the agent configures the client's controller layer).
+                // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
                 // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
@@ -816,7 +816,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
 
     // ── Steam account check — before the SteamLite / Headless Steam launch goes on ──────────────────
     launcher.accountWarning?.let { w ->
-        // "Launch anyway" and "Switch account and launch" (once the switch succeeded) both go on with the
+        // "仍要启动" and "Switch account and launch" (once the switch succeeded) both go on with the
         // launch; the account was already checked.
         val proceed = {
             launcher.accountWarning = null
@@ -831,7 +831,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // ── SteamLite pre-flight ("Getting Steam ready") — runs BEFORE XServerDisplayActivity ──────────
+    // ── SteamLite pre-flight ("正在准备Steam") — runs BEFORE XServerDisplayActivity ──────────
     launcher.preflightFor?.let { s ->
         val appId = steamAppIdOf(s)
         val installDir = remember(s) {
@@ -931,7 +931,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // "Check for updates" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
+    // "检查更新" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
     // [Update now] / [Check online] runs the authoritative updateNow pass, [Later] / [Cancel] does nothing.
     launcher.steamUpdateOffer?.let { (s, status) ->
         val available = status.state == SteamGameUpdater.State.UPDATE_AVAILABLE
@@ -960,12 +960,12 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             },
             confirmButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null; launcher.runSteamMaintenance(s, verify = false) }) {
-                    Text(if (available) "Update now" else "Check online", color = MaterialTheme.colorScheme.primary)
+                    Text(if (available) "立即更新" else "Check online", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null }) {
-                    Text(if (available) "Later" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(if (available) "等待" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
         )

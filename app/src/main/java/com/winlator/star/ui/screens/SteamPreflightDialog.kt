@@ -101,7 +101,7 @@ private const val HELP_NETWORK =
         "as phone hotspots or many VPNs. Fix: home Wi-Fi, a hotspot with port mapping, or a VPN with " +
         "port forwarding."
 private const val HELP_UPDATE =
-    "Checks whether Steam has a newer build of the game; you choose whether to update before playing."
+    "检查Steam是否有游戏的更新版本；您可选择在游玩前是否更新。"
 private const val HELP_NEED_SIGN_IN =
     "Sign in — open the Steam login, then launch again.\n" +
         "Launch with Goldberg — play offline with the stand-in Steam (no online play, no VAC).\n" +
@@ -173,7 +173,7 @@ private fun trailOf(state: StepState?): Trail = when (state) {
 }
 
 /**
- * The SteamLite launch pre-flight ("Getting Steam ready") — a small modal that runs
+ * The SteamLite launch pre-flight ("正在准备Steam") — a small modal that runs
  * [SteamSessionManager.preflightAsync] for [shortcut] BEFORE the container opens: Steam sign-in →
  * network shape (NAT verdict, informational) → cloud saves → update check → SteamLite client check.
  * The body is a four-photo slideshow whose caption is the live step text (one photo per phase,
@@ -182,7 +182,7 @@ private fun trailOf(state: StepState?): Trail = when (state) {
  *
  * Outcomes:
  *  - all green → [onLaunch] (the caller starts `XServerDisplayActivity` with `preflightDone=1`);
- *  - unusable sign-in → "Steam isn't ready" with **Sign in** / **Launch with Goldberg (offline)** /
+ *  - unusable sign-in → "Steam 尚未就绪" with **Sign in** / **Launch with Goldberg (offline)** /
  *    **Cancel** ([onSignIn] / [onGoldberg] / [onDismiss]);
  *  - no session in time → **Retry** / **Launch anyway** / **Launch with Goldberg** / **Cancel**;
  *  - update available → **Update** ([onUpdate], the existing manual Update pass) / **Launch anyway**;
@@ -321,7 +321,7 @@ fun SteamPreflightDialog(
         clientOffer != null -> HELP_CLIENT_OFFER
         else -> HELP_PREFLIGHT
     }
-    val title = if (launching) "Launching ${shortcut.name}…" else "Getting Steam ready"
+    val title = if (launching) "Launching ${shortcut.name}…" else "正在准备Steam"
     val show = SlideShow(
         shown = shown,
         caption = caption,
@@ -394,19 +394,19 @@ private fun captionFor(
         return Caption(label, st?.second ?: pendingLine, toneOf(st?.first), trailOf(st?.first), help)
     }
     return when (slide) {
-        0 -> of("Steam sign-in", Step.SESSION, HELP_SESSION, "Checking Steam sign-in…")
+        0 -> of("Steam sign-in", Step.SESSION, HELP_SESSION, "正在检查Steam登录…")
         1 -> {
-            // "Signed in to Steam" only when that's true; a Launch-anyway pass (session skipped)
+            // "已登录Steam" only when that's true; a Launch-anyway pass (session skipped)
             // keeps the plain step name so the photo isn't captioned with a claim it can't make.
             val signedIn = states[Step.SESSION]?.first == StepState.DONE
-            of(if (signedIn) "Signed in to Steam" else "Network", Step.NETWORK, HELP_NETWORK, "Checking network…")
+            of(if (signedIn) "已登录Steam" else "Network", Step.NETWORK, HELP_NETWORK, "正在检查网络…")
         }
-        2 -> of("Cloud saves", Step.CLOUD, HELP_CLOUD, "Syncing cloud saves…")
+        2 -> of("云存档", Step.CLOUD, HELP_CLOUD, "正在同步云存档…")
         else -> when {
             launching -> Caption("Ready", "Launching $gameName…", Tone.OK, Trail.CHECK, HELP_PREFLIGHT)
-            states.containsKey(Step.CLIENT) && appSteam -> of("Valve Steam client", Step.CLIENT, HELP_CLIENT_APPSTEAM, "Checking Valve's Steam client…")
-            states.containsKey(Step.CLIENT) -> of("SteamLite client", Step.CLIENT, HELP_CLIENT, "Checking for SteamLite updates…")
-            else -> of("Game files", Step.UPDATE, HELP_UPDATE, "Checking for updates…")
+            states.containsKey(Step.CLIENT) && appSteam -> of("Valve Steam 客户端", Step.CLIENT, HELP_CLIENT_APPSTEAM, "Checking Valve's Steam client…")
+            states.containsKey(Step.CLIENT) -> of("SteamLite 客户端", Step.CLIENT, HELP_CLIENT, "Checking for SteamLite updates…")
+            else -> of("游戏文件", Step.UPDATE, HELP_UPDATE, "正在检查更新…")
         }
     }
 }
@@ -440,7 +440,7 @@ private fun failCardFor(
     val cs = MaterialTheme.colorScheme
     return when {
         needSignIn != null -> FailCardModel(
-            "Steam isn't ready",
+            "Steam 尚未就绪",
             "$needSignIn. Sign in again to play online with SteamLite, or launch offline with Goldberg.",
             red = true,
         ) {
@@ -448,12 +448,12 @@ private fun failCardFor(
             TextButton(onClick = onSignIn) { Text("Sign in", color = cs.primary) }
         }
         offline != null -> FailCardModel(
-            "Steam is unreachable",
+            "Steam 无法访问",
             "$offline. You can retry, launch anyway (the game's own Steam client will try to sign in), or launch offline with Goldberg.",
             red = true,
         ) {
             TextButton(onClick = onGoldberg) { Text("Goldberg", color = cs.onSurfaceVariant) }
-            TextButton(onClick = launchAnyway) { Text("Launch anyway", color = cs.onSurfaceVariant) }
+            TextButton(onClick = launchAnyway) { Text("仍要启动", color = cs.onSurfaceVariant) }
             TextButton(onClick = retry) { Text("Retry", color = cs.primary) }
         }
         updateOffer != null -> FailCardModel(
@@ -463,14 +463,14 @@ private fun failCardFor(
             else "A newer build of ${shortcut.name} is available.",
             red = false,
         ) {
-            TextButton(onClick = launchThisBuild) { Text("Launch anyway", color = cs.onSurfaceVariant) }
+            TextButton(onClick = launchThisBuild) { Text("仍要启动", color = cs.onSurfaceVariant) }
             TextButton(onClick = onUpdate) { Text("Update", color = cs.primary) }
         }
         clientOffer != null && !clientUpdating -> {
             val size = if (clientOffer.downloadMb > 0) " (~${clientOffer.downloadMb} MB)" else ""
             val installed = SteamLiteComponent.versionLabel(clientOffer.installed)
             FailCardModel(
-                if (clientOffer.required) "SteamLite update required" else "SteamLite update available",
+                if (clientOffer.required) "SteamLite 需要更新" else "SteamLite 有更新可用",
                 if (clientOffer.required)
                     "This version of Bannerlator needs SteamLite v${clientOffer.latestVersion} for live launch " +
                         "status and in-game friends. Update now$size; if the download fails, the " +
@@ -483,7 +483,7 @@ private fun failCardFor(
                 // Below MIN_AGENT_VERSION the only offered action is Update (a failed download
                 // still launches the installed package — see updateClientThenLaunch).
                 if (!clientOffer.required) {
-                    TextButton(onClick = launchInstalledClient) { Text("Launch anyway", color = cs.onSurfaceVariant) }
+                    TextButton(onClick = launchInstalledClient) { Text("仍要启动", color = cs.onSurfaceVariant) }
                 }
                 TextButton(onClick = updateClient) { Text("Update", color = cs.primary) }
             }
@@ -599,7 +599,7 @@ private fun LandscapeText(
     Text(gameName, style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
     if (summary) {
         Spacer(Modifier.height(4.dp))
-        Text("Five quick checks before the game starts.", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+        Text("游戏开始前的五项快速检查。", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
     }
     Spacer(Modifier.height(8.dp))
     Text(

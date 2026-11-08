@@ -175,7 +175,7 @@ object SteamInstallPaths {
     //
     // A game folder inside a steamapps/common may have been put there by another Steam client; this app
     // builds on it rather than owning it. Only a folder this app created itself carries the marker, and
-    // only such a folder is ever wiped wholesale by "Cancel & delete download". Legacy layouts (the app's
+    // only such a folder is ever wiped wholesale by "取消并删除下载". Legacy layouts (the app's
     // own steam_games trees) are always the app's, exactly as before.
 
     /** Marks [installDir] as created by this app when it is a steamapps game folder that does not exist

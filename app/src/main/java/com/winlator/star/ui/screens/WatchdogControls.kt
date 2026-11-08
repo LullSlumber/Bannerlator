@@ -56,7 +56,7 @@ private const val WATCHDOG_WHATS_THIS =
  *  - ON/OFF toggle with a DYNAMIC label showing the resolved ceiling + mode; turning it OFF requires
  *    the hard scroll+checkbox disclaimer, turning it ON does not.
  *  - Aggressiveness preset selector (Conservative / Balanced / Aggressive / Manual). Selecting one of
- *    the three presets shows an informational dialog (single "Got it") with the actual °C on THIS
+ *    the three presets shows an informational dialog (single "知道了") with the actual °C on THIS
  *    device. Manual reveals a slider (60–device top trip).
  */
 @Composable
@@ -83,7 +83,7 @@ fun WatchdogSection() {
         }
     }
 
-    // Dynamic ON/OFF row with a "What's this?" info button.
+    // Dynamic ON/OFF row with a "这是什么?" info button.
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text(
             "Thermal auto-revert (~$ceiling °C · ${modeLabel(mode)})",
@@ -91,7 +91,7 @@ fun WatchdogSection() {
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { showWhatsThis = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Outlined.Info, "What is the Temperature Watchdog?",
+            Icon(Icons.Outlined.Info, "什么是温度看门狗?",
                 tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
         }
         Spacer(Modifier.width(4.dp))
@@ -121,7 +121,7 @@ fun WatchdogSection() {
     }
 
     // Preset selector.
-    Text("Threshold", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+    Text("阈值", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
     ThresholdMode.values().forEach { m ->
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -163,10 +163,10 @@ fun WatchdogSection() {
         )
     }
 
-    // "What is the Temperature Watchdog?" explainer.
+    // "什么是温度看门狗?" explainer.
     if (showWhatsThis) {
         PerfInfoDialog(
-            title = "What is the Temperature Watchdog?",
+            title = "什么是温度看门狗?",
             body = WATCHDOG_WHATS_THIS,
             onDismiss = { showWhatsThis = false }
         )
@@ -184,9 +184,9 @@ fun WatchdogSection() {
     // Hard disclaimer to disarm the watchdog.
     if (showOffDisclaimer) {
         PerfDisclaimerDialog(
-            title = "Disable thermal safety?",
+            title = "禁用温度保护?",
             body = PerfDisclaimerCopy.WATCHDOG_OFF,
-            confirmLabel = "Turn watchdog OFF",
+            confirmLabel = "关闭看门狗",
             onDismiss = { showOffDisclaimer = false },
             onConfirm = { showOffDisclaimer = false; TempWatchdog.setWatchdogEnabled(false) }
         )
@@ -194,10 +194,10 @@ fun WatchdogSection() {
 }
 
 private fun modeLabel(mode: ThresholdMode): String = when (mode) {
-    ThresholdMode.CONSERVATIVE -> "Conservative"
+    ThresholdMode.CONSERVATIVE -> "保守"
     ThresholdMode.BALANCED -> "Balanced"
-    ThresholdMode.AGGRESSIVE -> "Aggressive"
-    ThresholdMode.MANUAL -> "Manual"
+    ThresholdMode.AGGRESSIVE -> "激进"
+    ThresholdMode.MANUAL -> "手动"
 }
 
 private fun presetInfo(mode: ThresholdMode): String {
@@ -213,6 +213,6 @@ private fun presetInfo(mode: ThresholdMode): String {
             "Maximum sustained clocks, only ~3°C of margin before the hard limit (~$ceiling°C). " +
                 "For users who know their device."
         ThresholdMode.MANUAL ->
-            "You choose the exact revert temperature."
+            "您自行选择精确的还原温度。"
     }
 }

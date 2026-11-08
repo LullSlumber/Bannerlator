@@ -66,7 +66,7 @@ class EpicFreeGamesActivity : ComponentActivity() {
         private const val TAG = "BH_EPIC_FREE"
     }
 
-    private var statusText by mutableStateOf("Loading free games\u2026")
+    private var statusText by mutableStateOf("正在加载免费游戏…")
     private var isLoading by mutableStateOf(true)
     private var currentFree by mutableStateOf<List<FreeGameEntry>>(emptyList())
     private var upcomingFree by mutableStateOf<List<FreeGameEntry>>(emptyList())
@@ -229,7 +229,7 @@ class EpicFreeGamesActivity : ComponentActivity() {
                     upcomingFree = upcoming
                     isLoading = false
                     if (current.isEmpty() && upcoming.isEmpty()) {
-                        setStatus("No free games available right now", false)
+                        setStatus("目前没有可用的免费游戏", false)
                     } else {
                         setStatus(
                             "${current.size} free now" +
@@ -240,7 +240,7 @@ class EpicFreeGamesActivity : ComponentActivity() {
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "fetchFreeGames failed: ${e.message}")
-                withContext(Dispatchers.Main) { setStatus("Failed to load free games", false) }
+                withContext(Dispatchers.Main) { setStatus("加载免费游戏失败", false) }
             }
         }
     }
@@ -304,7 +304,7 @@ private fun EpicFreeGamesScreen(
                 modifier = Modifier.height(40.dp),
             ) { Text("\u2190", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp) }
             Text(
-                text = "Free Games",
+                text = "免费游戏",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = StoreStyle.accent(Store.EPIC), // Epic brand blue (store identity)
@@ -352,7 +352,7 @@ private fun EpicFreeGamesScreen(
             }
             if (upcomingFree.isNotEmpty()) {
                 item {
-                    SectionLabel("FREE NEXT WEEK", Color(0xFFFFAA00))
+                    SectionLabel("下周免费", Color(0xFFFFAA00))
                 }
                 items(upcomingFree, key = { it.title + "_upcoming" }) { game ->
                     FreeGameCard(game = game, isFree = false, onClick = { onGameClick(game) })
@@ -398,7 +398,7 @@ private fun FreeGameCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = if (isFree) "FREE" else "SOON",
+                text = if (isFree) "免费" else "即将推出",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isFree) Color(0xFF00C853) else Color(0xFFFFAA00),

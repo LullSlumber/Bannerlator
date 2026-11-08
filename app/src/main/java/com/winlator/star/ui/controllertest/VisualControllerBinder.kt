@@ -110,7 +110,7 @@ fun VisualControllerBinder(
     Column(modifier.verticalScroll(rememberScrollState())) {
         // ── Toolbar: profile picker + new/rename + All-bindings ──
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Profile", fontSize = 11.sp, color = cs.onSurfaceVariant)
+            Text("配置", fontSize = 11.sp, color = cs.onSurfaceVariant)
             Spacer(Modifier.width(8.dp))
             Box {
                 OutlinedButton(
@@ -364,7 +364,7 @@ private fun BindEditor(
                 shape = RoundedCornerShape(9.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2564E).copy(alpha = 0.85f)),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-            ) { Text("Clear", fontSize = 11.sp) }
+            ) { Text("清除", fontSize = 11.sp) }
         }
     }
 }

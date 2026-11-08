@@ -108,12 +108,12 @@ fun VegasDownloadSheet(
                     }
                 }
                 releases = list
-                if (list.isEmpty()) errorMsg = "No releases found — check GitHub status or retry."
+                if (list.isEmpty()) errorMsg = "未找到版本 — 检查GitHub状态或重试。"
             } catch (e: Exception) {
                 errorMsg = "Failed to parse releases: ${e.message} — tap Retry."
             }
         } else {
-            errorMsg = "Failed to fetch releases from GitHub (rate limit 60/h or no network) — tap Retry."
+            errorMsg = "从GitHub获取版本失败（速率限制60/小时或无网络）— 点击重试。"
         }
         isLoading = false
     }
@@ -139,7 +139,7 @@ fun VegasDownloadSheet(
     errorMsg?.let { msg ->
         AlertDialog(
             onDismissRequest = { errorMsg = null },
-            title = { Text("Download failed", color = MaterialTheme.colorScheme.onSurface) },
+            title = { Text("下载失败", color = MaterialTheme.colorScheme.onSurface) },
             text = { Text(msg, color = MaterialTheme.colorScheme.onSurface) },
             confirmButton = { DeckDialogBars(); TextButton(onClick = { errorMsg = null }) { Text("OK") } },
             dismissButton = { TextButton(onClick = { errorMsg = null; retryKey++ }) { Text("Retry") } }
@@ -194,7 +194,7 @@ Column(modifier = Modifier.weight(1f)) {
                                     TextButton(onClick = {
                                         notesDialogTag = release.tagName
                                     }) {
-                                        Text("What's new", style = MaterialTheme.typography.bodySmall)
+                                        Text("新特性", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                                 Text(
@@ -268,7 +268,7 @@ Column(modifier = Modifier.weight(1f)) {
                                                             onDismiss()
                                                         }
                                                     } else {
-                                                        errorMsg = "Install failed."
+                                                        errorMsg = "安装失败。"
                                                     }
                                                 }
                                             } else {
@@ -518,6 +518,6 @@ internal object VegasStockConfigFetcher {
                 last = ParkResult.Ok(verName)
             }
             last ?: ParkResult.Fail("no target version derived")
-        }.getOrElse { ParkResult.Fail(it.message ?: "unknown error") }
+        }.getOrElse { ParkResult.Fail(it.message ?: "未知错误") }
     }
 }

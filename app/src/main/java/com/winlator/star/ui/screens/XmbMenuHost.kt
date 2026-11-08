@@ -302,7 +302,7 @@ internal fun XmbNavState.hint(xmb: XmbScope): XmbHint {
     val a = when (row) {
         is XmbRow.Toggle -> "Toggle"
         is XmbRow.Link, is XmbRow.Choice -> "Open"
-        is XmbRow.Text -> "Edit"
+        is XmbRow.Text -> "编辑"
         is XmbRow.External -> "Open ↗"
         else -> "Select"
     }
@@ -365,7 +365,7 @@ internal fun XmbNestedLayer(
                 if (flash > 0L && System.currentTimeMillis() - flash < 1500L) { showSaved = true; kotlinx.coroutines.delay(1200); showSaved = false }
             }
             val sa by animateFloatAsState(if (showSaved) 1f else 0f, tween(250), label = "xmbSaved")
-            Text("✓ Saved", color = Color(0xFF3DDC84), fontSize = 11.sp, modifier = Modifier.graphicsLayer { alpha = sa })
+            Text("✓ 已保存", color = Color(0xFF3DDC84), fontSize = 11.sp, modifier = Modifier.graphicsLayer { alpha = sa })
         }
 
         // icon strips: the game's options, then each menu behind the active one

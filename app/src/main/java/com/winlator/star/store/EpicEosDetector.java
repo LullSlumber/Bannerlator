@@ -67,7 +67,7 @@ public final class EpicEosDetector {
     /**
      * Read cached EOS flag. Returns false if never scanned, or scanned and no
      * markers found. Callers should use {@link #hasBeenScanned} to distinguish
-     * "definitely not EOS" from "haven't checked yet".
+     * "definitely not EOS" 来自 "haven't checked yet".
      */
     public static boolean isEosCached(Context ctx, String appName) {
         if (appName == null || appName.isEmpty()) return false;

@@ -447,7 +447,7 @@ object SteamDepotDownloader {
         installRoot: String? = null,
     ) {
         // One gate for all verbose diagnostics: on in debug builds, or when the user ticked
-        // "Log debug session" for this download. Off ⇒ steam_debug.txt is never created (no 4 MB
+        // "日志调试会话" for this download. Off ⇒ steam_debug.txt is never created (no 4 MB
         // firehose) and the JavaSteam bridge isn't wired; logcat + the always-on steam_session.txt
         // still record enough that a failure is never totally silent (see dlogError/emitFailed).
         val verbose = BuildConfig.DEBUG || debugLog
@@ -483,7 +483,7 @@ object SteamDepotDownloader {
                 // record of the logon/logoff EResult (e.g. LogonSessionReplaced, InvalidPassword)
                 // is in logcat, which the user can't reach.
                 dlog("Session status at failure: ${repo.lastSessionStatus}")
-                emitFailed(appId, "Steam session not ready — sign in again or retry in a moment")
+                emitFailed(appId, "Steam会话未就绪 — 请重新登录或稍后重试")
                 return
             }
         }
@@ -703,7 +703,7 @@ object SteamDepotDownloader {
             DepotDownloader(
                 steamClient = steamClient,
                 licenses = licenses,
-                debug = verbose,                 // gated: BuildConfig.DEBUG || user "Log debug session"
+                debug = verbose,                 // gated: BuildConfig.DEBUG || user "日志调试会话"
                 useLanCache = false,
                 maxDownloads = maxDownloads,      // cores × tier download ratio
                 maxDecompress = maxDecompress,    // cores × tier decompress ratio

@@ -399,7 +399,7 @@ object GoldbergPatcher {
         val root = File(installDir)
         if (!root.isDirectory) {
             rep.warn("install dir is not a directory")
-            return Pair(false, "Install directory not found.")
+            return Pair(false, "未找到安装目录。")
         }
 
         val targets = analyze(root)
@@ -407,7 +407,7 @@ object GoldbergPatcher {
             targets.joinToString(prefix = " [", postfix = "]") { "${it.dll.path.removePrefix(root.path)} (${it.arch})" })
         if (targets.isEmpty()) {
             rep.warn("no steam_api(64).dll in the install — nothing to patch")
-            return Pair(false, "This game doesn't use the Steam API — Goldberg doesn't apply.")
+            return Pair(false, "此游戏不使用Steam API — Goldberg不适用。")
         }
 
         // A game update / Verify may have replaced the original dll since the backup was made: refresh it first.

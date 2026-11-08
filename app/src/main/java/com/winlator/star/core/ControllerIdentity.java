@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * "Controller identity": what the virtual pads say they are to a Wine game.
+ * "控制器身份": what the virtual pads say they are to a Wine game.
  *
  * <p>The fake evdev layer (fakeinput.cpp, PAD_IDENTITIES) answers EVIOCGID / EVIOCGNAME with the
  * row picked by {@link #ENV}; unset or empty is the generic "Generic HID Gamepad N" (1234:5678+N),

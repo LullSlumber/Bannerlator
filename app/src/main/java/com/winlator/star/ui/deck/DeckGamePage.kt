@@ -274,18 +274,18 @@ internal fun DeckGamePage(
                 val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "Before tracking" else "Never"
                 if (!banner) FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val tile = Modifier.widthIn(min = 150.dp, max = 240.dp)
-                    DeckStat(playtimeShort(stats.ms), "Playtime", tile)
+                    DeckStat(playtimeShort(stats.ms), "游玩时间", tile)
                     DeckStat(lastPlayed, "Last played", tile)
                     achievements?.let { (got, total) ->
-                        DeckStat("$got / $total", "Achievements", tile, progress = got.toFloat() / total.coerceAtLeast(1))
+                        DeckStat("$got / $total", "成就", tile, progress = got.toFloat() / total.coerceAtLeast(1))
                     }
                     DeckStat(if (stats.count > 0) "${stats.count}" else "—", if (stats.count == 1) "Launch" else "Launches", tile)
                     if (!isAndroid) DeckStat(if (onSd) "SD card" else "Internal", "Storage", tile)
                 } else DeckStatStrip(
                     buildList {
-                        add(playtimeShort(stats.ms) to "Playtime")
+                        add(playtimeShort(stats.ms) to "游玩时间")
                         add(lastPlayed to "Last played")
-                        achievements?.let { (got, total) -> add("$got/$total" to "Achievements") }
+                        achievements?.let { (got, total) -> add("$got/$total" to "成就") }
                         add((if (stats.count > 0) "${stats.count}" else "—") to (if (stats.count == 1) "Launch" else "Launches"))
                         if (!isAndroid) add((if (onSd) "SD card" else "Internal") to "Storage")
                     },
@@ -476,7 +476,7 @@ internal fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>
         listOfNotNull(
             e(GameMenuAction.SETTINGS, "Display, graphics, controls and more, for this game only."),
             // Android games and the Linux Steam entry have no Wine container to open.
-            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("Container settings", "Opens the container this game runs in.", null),
+            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("容器设置", "Opens the container this game runs in.", null),
         ),
         listOfNotNull(
             e(GameMenuAction.GAME_DETAILS, "Name, Steam link, genres, year, description."),
@@ -507,7 +507,7 @@ private fun menuTitle(a: GameMenuAction): String = when (a) {
     GameMenuAction.GAME_DETAILS -> "Game details"
     GameMenuAction.SCRAPE_COVER -> "Cover art"
     GameMenuAction.COMMUNITY_CONFIGS -> "Community configs for this game"
-    GameMenuAction.CLOUD_SAVES -> "Cloud saves"
+    GameMenuAction.CLOUD_SAVES -> "云存档"
     GameMenuAction.VIEW_LOGS -> "View logs"
     else -> a.label
 }

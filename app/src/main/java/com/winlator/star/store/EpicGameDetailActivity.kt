@@ -114,7 +114,7 @@ class EpicGameDetailActivity : ComponentActivity() {
 
     private var dlcJson by mutableStateOf<String?>(null)
 
-    private var cloudSaveDirText by mutableStateOf("No save folder set")
+    private var cloudSaveDirText by mutableStateOf("未设置存档文件夹")
     private var cloudSaveDirColor by mutableIntStateOf(0xFF445566.toInt())
     private var cloudSaveStatusText by mutableStateOf("")
     private var cloudSaveStatusVisible by mutableStateOf(false)
@@ -197,7 +197,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                     onCheckUpdates = { doCheckUpdate() },
                     onUpdateClick = {
                         updateBtnVisible = false
-                        updateStatusText = "Updating\u2026"
+                        updateStatusText = "正在更新…"
                         startInstallInternal()
                     },
                     onVerifyRepair = { doVerifyRepair() },
@@ -315,18 +315,18 @@ class EpicGameDetailActivity : ComponentActivity() {
         if (installBtnText == "Cancel") {
             // Ask what to do with the partial download before cancelling.
             AlertDialog.Builder(this)
-                .setTitle("Cancel download?")
+                .setTitle("取消下载?")
                 .setMessage("Keep the partial download so you can resume later, or delete all " +
                         "downloaded files for this game?")
-                .setPositiveButton("Keep files") { _, _ ->
+                .setPositiveButton("保留文件") { _, _ ->
                     appName?.let { EpicCancelPolicy.setDeleteOnCancel(it, false) }
                     cancelDownload?.run(); cancelDownload = null
                 }
-                .setNegativeButton("Delete files") { _, _ ->
+                .setNegativeButton("删除文件") { _, _ ->
                     appName?.let { EpicCancelPolicy.setDeleteOnCancel(it, true) }
                     cancelDownload?.run(); cancelDownload = null
                 }
-                .setNeutralButton("Keep downloading", null)
+                .setNeutralButton("继续下载", null)
                 .show()
             return
         }
@@ -404,7 +404,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                 }
 
                 if (cancelled.get()) {
-                    // Delete the partial download if the user chose "Delete files" on any Cancel dialog.
+                    // Delete the partial download if the user chose "删除文件" on any Cancel dialog.
                     if (EpicCancelPolicy.consumeDeleteOnCancel(an)) {
                         try { deleteDir(installDir) } catch (_: Exception) {}
                         // Also clear the install record (exe/dir/version/size prefs) so the action row
@@ -414,7 +414,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                     }
                     onInstallCancelled(); return@launch
                 }
-                if (!ok) { onInstallError(EpicDownloadManager.withFailureReason("Download failed")); return@launch }
+                if (!ok) { onInstallError(EpicDownloadManager.withFailureReason("下载失败")); return@launch }
 
                 try {
                     val vid = JSONObject(manifestJson).optString("versionId", "")
@@ -500,7 +500,7 @@ class EpicGameDetailActivity : ComponentActivity() {
     private fun confirmUninstall() {
         AlertDialog.Builder(this)
             .setTitle("Uninstall $title?")
-            .setMessage("This will delete all installed game files.")
+            .setMessage("这将删除所有已安装的游戏文件。")
             .setPositiveButton("Uninstall") { _, _ ->
                 val an = appName ?: return@setPositiveButton
                 val dir = prefs!!.getString("epic_dir_$an", null) ?: return@setPositiveButton
@@ -579,7 +579,7 @@ class EpicGameDetailActivity : ComponentActivity() {
     }
 
     private fun doCheckUpdate() {
-        updateStatusText = "Checking\u2026"
+        updateStatusText = "检查中…"
         checkUpdatesEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -588,7 +588,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                 if (token == null) {
                     runOnUiThread {
                         checkUpdatesEnabled = true
-                        updateStatusText = "Login required."
+                        updateStatusText = "需要登录。"
                     }
                     return@launch
                 }
@@ -601,16 +601,16 @@ class EpicGameDetailActivity : ComponentActivity() {
                 runOnUiThread {
                     checkUpdatesEnabled = true
                     if (latest.isNullOrEmpty()) {
-                        updateStatusText = "Could not reach update server."
+                        updateStatusText = "无法访问更新服务器。"
                         return@runOnUiThread
                     }
                     val stored = prefs!!.getString("epic_manifest_version_$appName", null)
                     if (stored == null) {
                         prefs!!.edit().putString("epic_manifest_version_$appName", latest).apply()
-                        updateStatusText = "Up to date \u2713"
+                        updateStatusText = "已是最新 ✓"
                         updateBtnVisible = false
                     } else if (stored == latest) {
-                        updateStatusText = "Up to date \u2713"
+                        updateStatusText = "已是最新 ✓"
                         updateBtnVisible = false
                     } else {
                         updateStatusText = "Update available!\nInstalled: ${stored.substring(0, minOf(12, stored.length))}\u2026  \u2192  Latest: ${latest.substring(0, minOf(12, latest.length))}\u2026"
@@ -643,7 +643,7 @@ class EpicGameDetailActivity : ComponentActivity() {
             try {
                 val token = EpicCredentialStore.getValidAccessToken(appCtx)
                 if (token == null) {
-                    runOnUiThread { verifyEnabled = true; verifyStatusText = "Login required." }
+                    runOnUiThread { verifyEnabled = true; verifyStatusText = "需要登录。" }
                     return@launch
                 }
                 val manifestJson = EpicApiClient.getManifestApiJson(token, namespace, catalogItemId, an)
@@ -778,7 +778,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                 runOnUiThread { cloudSaveStatusText = "No save folder found for this game"; cloudButtonsEnabled = true }
                 return@Thread
             }
-            runOnUiThread { cloudSaveStatusText = "Preparing upload\u2026" }
+            runOnUiThread { cloudSaveStatusText = "正在准备上传…" }
             EpicCloudSaveManager.uploadSaves(this, appName!!, dir, object : EpicCloudSaveManager.Callback {
                 override fun onStatus(msg: String) { runOnUiThread { cloudSaveStatusText = msg } }
                 override fun onDone(msg: String) { runOnUiThread { cloudSaveStatusText = msg; cloudButtonsEnabled = true } }
@@ -797,7 +797,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                 runOnUiThread { cloudSaveStatusText = "No save folder found for this game"; cloudButtonsEnabled = true }
                 return@Thread
             }
-            runOnUiThread { cloudSaveStatusText = "Preparing download\u2026" }
+            runOnUiThread { cloudSaveStatusText = "正在准备下载…" }
             EpicCloudSaveManager.downloadSaves(this, appName!!, dir, object : EpicCloudSaveManager.Callback {
                 override fun onStatus(msg: String) { runOnUiThread { cloudSaveStatusText = msg } }
                 override fun onDone(msg: String) { runOnUiThread { cloudSaveStatusText = msg; cloudButtonsEnabled = true } }
@@ -813,7 +813,7 @@ class EpicGameDetailActivity : ComponentActivity() {
             (if (parent != null) "${parent.name}/${f.name}" else f.name)
         }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("Select game executable")
+            .setTitle("选择游戏可执行文件")
             .setItems(labels) { _, which -> onSelected(candidates[which]) }
             .setCancelable(false)
             .show()
@@ -904,9 +904,9 @@ private fun EpicGameDetailScreen(
     val gear = buildList {
         // onInstallClick doubles as Cancel (keep / delete dialog) while the label reads "Cancel".
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstallClick))
-        if (setExeBtnVisible) add(StoreGearItem("🎯", "Set .exe…", onClick = onSetExeClick))
+        if (setExeBtnVisible) add(StoreGearItem("🎯", "设置 .exe…", onClick = onSetExeClick))
         if (installed) {
-            add(StoreGearItem("🔄", "Check for updates", enabled = checkUpdatesEnabled, onClick = onCheckUpdates))
+            add(StoreGearItem("🔄", "检查更新", enabled = checkUpdatesEnabled, onClick = onCheckUpdates))
             add(StoreGearItem("🩹", "Verify / repair files", enabled = verifyEnabled, onClick = onVerifyRepair))
         }
         if (uninstallBtnVisible) add(StoreGearItem("🗑️", "Uninstall", danger = true, onClick = onUninstallClick))
@@ -936,7 +936,7 @@ private fun EpicGameDetailScreen(
     }
     val hasMedia = media?.isEmpty == false
     // Appended LAST so the Details / DLC / Cloud saves indices never move.
-    val tabs = if (hasMedia) listOf("Details", "DLC", "Cloud saves", "Media") else listOf("Details", "DLC", "Cloud saves")
+    val tabs = if (hasMedia) listOf("Details", "DLC", "云存档", "Media") else listOf("Details", "DLC", "云存档")
     if (tab >= tabs.size) tab = 0
 
     StoreDetailScaffold(
@@ -998,9 +998,9 @@ private fun EpicGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "Updates") {
+                StoreSection(title = "更新s") {
                     if (!installed) {
-                        StoreStatusText("Install the game first to check for updates.")
+                        StoreStatusText("请先安装游戏以检查更新。")
                     } else {
                         val displayText = if (updateStatusText.isNotEmpty()) updateStatusText
                         else {
@@ -1012,14 +1012,14 @@ private fun EpicGameDetailScreen(
                         Spacer(Modifier.height(8.dp))
                         if (updateBtnVisible) {
                             StoreActionButton(
-                                text = "Update Now",
+                                text = "立即更新",
                                 onClick = onUpdateClick,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                             Spacer(Modifier.height(8.dp))
                         }
                         StoreActionButton(
-                            text = "Check for Updates",
+                            text = "检查更新",
                             onClick = onCheckUpdates,
                             modifier = Modifier.fillMaxWidth(),
                             enabled = checkUpdatesEnabled,
@@ -1030,7 +1030,7 @@ private fun EpicGameDetailScreen(
                             Spacer(Modifier.height(8.dp))
                         }
                         StoreActionButton(
-                            text = "Verify / Repair Files",
+                            text = "验证/修复文件",
                             onClick = onVerifyRepair,
                             modifier = Modifier.fillMaxWidth(),
                             enabled = verifyEnabled,
@@ -1042,9 +1042,9 @@ private fun EpicGameDetailScreen(
             1 -> Column(modifier = Modifier.padding(top = 6.dp, bottom = 8.dp)) {
                 StoreSection(title = "DLC") {
                     if (dlcArr == null) {
-                        StoreStatusText("No DLCs in your library for this game")
+                        StoreStatusText("您的库中没有此游戏的DLC")
                     } else if (dlcArr.length() == 0) {
-                        StoreStatusText("No DLCs in your library for this game")
+                        StoreStatusText("您的库中没有此游戏的DLC")
                     } else {
                         Text(
                             text = "${dlcArr.length()} DLC${if (dlcArr.length() == 1) "" else "s"} owned",
@@ -1099,7 +1099,7 @@ private fun EpicGameDetailScreen(
             }
 
             2 -> Column(modifier = Modifier.padding(top = 6.dp, bottom = 8.dp)) {
-                StoreSection(title = "Cloud Saves") {
+                StoreSection(title = "云端存档") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
@@ -1120,14 +1120,14 @@ private fun EpicGameDetailScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                     StoreActionButton(
-                        text = "Upload Saves",
+                        text = "上传存档",
                         onClick = onCloudUpload,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = cloudButtonsEnabled,
                     )
                     Spacer(Modifier.height(8.dp))
                     StoreActionButton(
-                        text = "Download Saves",
+                        text = "下载存档",
                         onClick = onCloudDownload,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = cloudButtonsEnabled,

@@ -320,19 +320,19 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     }
     fun setGame(key: String, v: String?) = LabArt.putGame(s, key, v)
 
-    val notSet = L("Not set")
+    val notSet = L("未设置")
     val detailsRows = listOf(
         MenuEntry("d-name", L("Name"), s.name, icon = Icons.Filled.TextFields, onA = { textFor = "name" }),
         MenuEntry(
             "d-steam", L("Steam"), details.steamAppId?.let { L("Steam app %1\$s", it) } ?: L("Not linked to Steam"), icon = Icons.Filled.Link,
             actions = listOfNotNull(
-                MenuAction(L("Search Steam by name"), { searchSteam() }),
-                details.steamAppId?.let { MenuAction(L("Unlink"), { saveDetails(details.copy(steamAppId = null)) }) },
+                MenuAction(L("按名称搜索Steam"), { searchSteam() }),
+                details.steamAppId?.let { MenuAction(L("解除关联"), { saveDetails(details.copy(steamAppId = null)) }) },
             ),
         ),
-        MenuEntry("d-genres", L("Genres"), details.genres.joinToString(", ").ifBlank { notSet }, icon = Icons.Filled.Tag, onA = { textFor = "genres" }),
-        MenuEntry("d-year", L("Release year"), details.releaseYear ?: notSet, icon = Icons.Filled.CalendarMonth, onA = { textFor = "year" }),
-        MenuEntry("d-meta", L("Metacritic"), details.metacritic?.toString() ?: notSet, icon = Icons.Filled.Star, onA = { textFor = "meta" }),
+        MenuEntry("d-genres", L("类型"), details.genres.joinToString(", ").ifBlank { notSet }, icon = Icons.Filled.Tag, onA = { textFor = "genres" }),
+        MenuEntry("d-year", L("发行年份"), details.releaseYear ?: notSet, icon = Icons.Filled.CalendarMonth, onA = { textFor = "year" }),
+        MenuEntry("d-meta", L("Metacritic评分"), details.metacritic?.toString() ?: notSet, icon = Icons.Filled.Star, onA = { textFor = "meta" }),
         MenuEntry("d-desc", L("Description"), details.description ?: notSet, icon = Icons.Filled.Description, onA = { textFor = "desc" }),
     )
     val clipPick = s.getExtra(LabArt.K_CLIP, "")
@@ -405,12 +405,12 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     textFor?.let { f ->
         val (title, start) = when (f) {
             "name" -> L("Name") to s.name
-            "genres" -> L("Genres") to details.genres.joinToString(", ")
-            "year" -> L("Release year") to (details.releaseYear ?: "")
-            "meta" -> L("Metacritic") to (details.metacritic?.toString() ?: "")
+            "genres" -> L("类型") to details.genres.joinToString(", ")
+            "year" -> L("发行年份") to (details.releaseYear ?: "")
+            "meta" -> L("Metacritic评分") to (details.metacritic?.toString() ?: "")
             else -> L("Description") to (details.description ?: "")
         }
-        LabTextDialog(title, start, hint = when (f) { "genres" -> L("Action, RPG, Strategy"); "meta" -> "1–100"; else -> null }, multiline = f == "desc", onDismiss = { textFor = null }) { v ->
+        LabTextDialog(title, start, hint = when (f) { "genres" -> L("描述"); "meta" -> "1–100"; else -> null }, multiline = f == "desc", onDismiss = { textFor = null }) { v ->
             textFor = null
             when (f) {
                 "name" -> rename(v)

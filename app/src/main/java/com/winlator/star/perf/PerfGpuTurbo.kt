@@ -10,7 +10,7 @@ import java.io.File
  *
  * It is the fallback half of [PerfRootApplier.applyGpuMaxClockLock]: with root granted we keep using
  * the sysfs pwrlevel pin (stronger, snapshot-reverted); without root we come here instead. Users
- * without root therefore get a working "Lock GPU to max clock" toggle for the first time.
+ * without root therefore get a working "锁定 GPU 最高频率" toggle for the first time.
  *
  * Limits worth knowing:
  *  - **Adreno/KGSL only.** No `/dev/kgsl-3d0` (Mali, Xclipse, PowerVR) => [isSupported] is false and

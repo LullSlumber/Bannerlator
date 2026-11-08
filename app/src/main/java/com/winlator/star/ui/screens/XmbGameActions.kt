@@ -48,21 +48,21 @@ internal fun xmbGameActions(
 ): List<XmbAction> = buildList {
     // An Android game has no Wine side: no settings, saves, configs, logs or container moves.
     if (AndroidGames.isAndroidEntry(shortcut)) {
-        add(XmbAction("Game Details", Icons.Filled.Edit, "Name, genres, year, description", menu = { xmbGameDetailsMenu(it, shortcut) }))
-        add(XmbAction("Scrape cover", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
-        add(XmbAction("Add to home screen", Icons.Filled.AddToHomeScreen, "Android's pin prompt") { addToHomeScreen(context, shortcut) })
-        add(XmbAction("Remove", Icons.Filled.Delete, "Asks to confirm first", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
+        add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
+        add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
+        add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
+        add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
         return@buildList
     }
     // The Linux Steam entry: its settings are the Linux-side ones only, which the pop-up editor
     // already knows (the XMB settings columns are Wine rows), and none of the Wine actions apply.
     if (LinuxShortcuts.isLinuxEntry(shortcut)) {
         add(XmbAction("Settings", Icons.Filled.Settings, "Steam (Linux) display, driver, controls…") { openSettings(shortcut) })
-        add(XmbAction("Game Details", Icons.Filled.Edit, "Name, genres, year, description", menu = { xmbGameDetailsMenu(it, shortcut) }))
-        add(XmbAction("Scrape cover", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
-        add(XmbAction("Add to home screen", Icons.Filled.AddToHomeScreen, "Android's pin prompt") { addToHomeScreen(context, shortcut) })
-        add(XmbAction("Properties", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
-        add(XmbAction("Remove", Icons.Filled.Delete, "Asks to confirm first", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
+        add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
+        add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
+        add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
+        add(XmbAction("属性", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
+        add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
         return@buildList
     }
     if (settingsAsColumns) {
@@ -70,25 +70,25 @@ internal fun xmbGameActions(
     } else {
         add(XmbAction("Settings", Icons.Filled.Settings, "Display, graphics, controller…") { openSettings(shortcut) })
     }
-    add(XmbAction("Game Details", Icons.Filled.Edit, "Name, genres, year, description", menu = { xmbGameDetailsMenu(it, shortcut) }))
+    add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
     if (isSteamOriginShortcut(shortcut)) {
-        add(XmbAction("Cloud Saves", Icons.Filled.CloudSync, "Steam Cloud sync — opens its own screen") { launchSaveManager(context, steamAppIdOf(shortcut)) })
+        add(XmbAction("云端存档", Icons.Filled.CloudSync, "Steam Cloud sync — opens its own screen") { launchSaveManager(context, steamAppIdOf(shortcut)) })
     }
     if (isCustomShortcut(shortcut)) {
-        add(XmbAction("Back up saves", Icons.Filled.Archive, menu = { xmbBackupSavesMenu(it, shortcut) }))
-        add(XmbAction("Restore saves", Icons.Filled.Unarchive, menu = { xmbRestoreSavesMenu(it, shortcut) }))
+        add(XmbAction("备份存档", Icons.Filled.Archive, menu = { xmbBackupSavesMenu(it, shortcut) }))
+        add(XmbAction("恢复存档", Icons.Filled.Unarchive, menu = { xmbRestoreSavesMenu(it, shortcut) }))
     }
-    add(XmbAction("Community configs", Icons.Filled.Public, "Shared settings for this game", menu = { xmbCommunityConfigsMenu(it, shortcut) }))
-    add(XmbAction("Scrape cover", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
+    add(XmbAction("社区配置", Icons.Filled.Public, "Shared settings for this game", menu = { xmbCommunityConfigsMenu(it, shortcut) }))
+    add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
     add(XmbAction("View logs", Icons.Filled.Description, menu = { xmbLogsMenu(it, shortcut) }))
-    add(XmbAction("Share logs", Icons.Filled.Share) { shareGameLogs(context, shortcut.name) })
-    add(XmbAction("Clone to container", Icons.Filled.ContentCopy, menu = { xmbCloneMenu(it, shortcut, host) }))
-    add(XmbAction("Copy to Drive C…", Icons.Filled.DriveFileMove, menu = { xmbCopyToDriveCMenu(it, shortcut) }))
-    add(XmbAction("Change executable…", Icons.Filled.SwapHoriz, menu = { xmbChangeExeMenu(it, shortcut) }))
-    add(XmbAction("Add to home screen", Icons.Filled.AddToHomeScreen, "Android's pin prompt") { addToHomeScreen(context, shortcut) })
-    add(XmbAction("Export", Icons.Filled.Upload) { exportShortcut(context, shortcut) })
-    add(XmbAction("Properties", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
-    add(XmbAction("Remove", Icons.Filled.Delete, "Asks to confirm first", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
+    add(XmbAction("属性", Icons.Filled.Share) { shareGameLogs(context, shortcut.name) })
+    add(XmbAction("复制到容器", Icons.Filled.ContentCopy, menu = { xmbCloneMenu(it, shortcut, host) }))
+    add(XmbAction("复制到C盘…", Icons.Filled.DriveFileMove, menu = { xmbCopyToDriveCMenu(it, shortcut) }))
+    add(XmbAction("更改可执行文件…", Icons.Filled.SwapHoriz, menu = { xmbChangeExeMenu(it, shortcut) }))
+    add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
+    add(XmbAction("导出", Icons.Filled.Upload) { exportShortcut(context, shortcut) })
+    add(XmbAction("属性", Icons.Filled.Info, "Times played, playtime", menu = { xmbPropertiesMenu(it, shortcut) }))
+    add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
 }
 
 /** The store pills over an XMB cover (the same set the Games grid draws). */

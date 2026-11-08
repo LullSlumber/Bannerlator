@@ -571,7 +571,7 @@ fun StoreActionButton(
         ) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(4.dp))
-            Text("Add to Library", style = style, maxLines = 1)
+            Text("添加到库", style = style, maxLines = 1)
         }
 
         StoreAction.Working -> Button(
@@ -587,7 +587,7 @@ fun StoreActionButton(
                 color = MaterialTheme.colorScheme.onPrimary,
             )
             Spacer(Modifier.width(6.dp))
-            Text("Adding…", style = style, maxLines = 1)
+            Text("正在添加…", style = style, maxLines = 1)
         }
 
         StoreAction.Download -> Button(
@@ -613,7 +613,7 @@ fun StoreActionButton(
             contentPadding = pad,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
-            Text("Not owned", style = style, maxLines = 1)
+            Text("未拥有", style = style, maxLines = 1)
         }
     }
 }

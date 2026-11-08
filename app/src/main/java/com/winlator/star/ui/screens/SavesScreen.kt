@@ -153,12 +153,12 @@ fun SavesScreen(vm: SavesViewModel = viewModel()) {
                     onDismissRequest = { showImportMenu = false },
                     modifier = Modifier.outlinedMenuCard(),
                 ) {
-                    DropdownMenuItem(text = { Text("Browse files") }, onClick = {
+                    DropdownMenuItem(text = { Text("浏览文件") }, onClick = {
                         showImportMenu = false
                         importInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select save archive"))
                     })
                     MenuItemDivider()
-                    DropdownMenuItem(text = { Text("Pick via system…") }, onClick = {
+                    DropdownMenuItem(text = { Text("从系统选取…") }, onClick = {
                         showImportMenu = false
                         importLauncher.launch("*/*")
                     })
@@ -287,7 +287,7 @@ private fun SaveItem(
                 modifier = Modifier.outlinedMenuCard(),
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text("编辑") },
                     leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     onClick = { menuExpanded = false; onEdit() },
                 )
@@ -299,13 +299,13 @@ private fun SaveItem(
                 )
                 MenuItemDivider()
                 DropdownMenuItem(
-                    text = { Text("Export") },
+                    text = { Text("导出") },
                     leadingIcon = { Icon(Icons.Filled.FileDownload, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     onClick = { menuExpanded = false; onExport() },
                 )
                 MenuItemDivider()
                 DropdownMenuItem(
-                    text = { Text("Share") },
+                    text = { Text("分享") },
                     leadingIcon = { Icon(Icons.Filled.Share, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     onClick = { menuExpanded = false; onShare() },
                 )
@@ -398,7 +398,7 @@ private fun NewSaveDialog(
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Select Save Path", color = MaterialTheme.colorScheme.primary)
+                    Text("选择保存路径", color = MaterialTheme.colorScheme.primary)
                 }
                 if (selectedPath.isNotEmpty()) {
                     Text(text = selectedPath, fontSize = 11.sp, color = OnSurfaceVariant)
@@ -571,7 +571,7 @@ private fun ImportContainerSelectDialog(
         confirmButton = {
             TextButton(onClick = {
                 containers.getOrNull(selectedIndex)?.let { onConfirm(it) }
-            }) { Text("Import") }
+            }) { Text("导入") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }

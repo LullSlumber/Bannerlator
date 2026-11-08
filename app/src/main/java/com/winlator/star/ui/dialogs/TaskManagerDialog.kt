@@ -86,7 +86,7 @@ fun TaskManagerDialog(state: XServerDialogState) {
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                Text("Task Manager", style = MaterialTheme.typography.titleMedium)
+                Text("任务管理器", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "Processes: $count",
@@ -99,7 +99,7 @@ fun TaskManagerDialog(state: XServerDialogState) {
                 // Process list
                 if (processes.isEmpty()) {
                     Text(
-                        text = "No processes",
+                        text = "没有进程",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 8.dp)
@@ -197,7 +197,7 @@ private fun ProcessRow(proc: XServerDialogState.TmProcess, state: XServerDialogS
                 modifier = Modifier.outlinedMenuCard()
             ) {
                 DropdownMenuItem(
-                    text = { Text("Bring to Front") },
+                    text = { Text("置于前面") },
                     onClick = {
                         menuExpanded = false
                         state.onTmBringToFront?.invoke(proc.name, proc.pid)
@@ -206,7 +206,7 @@ private fun ProcessRow(proc: XServerDialogState.TmProcess, state: XServerDialogS
                 )
                 MenuItemDivider()
                 DropdownMenuItem(
-                    text = { Text("End Process") },
+                    text = { Text("结束进程") },
                     onClick = {
                         menuExpanded = false
                         state.onTmKillProcess?.invoke(proc.name)

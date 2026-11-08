@@ -153,7 +153,7 @@ class XboxNativePlayerActivity : ComponentActivity() {
     private fun fail(stage: String, detail: String) {
         log("failed at $stage: $detail")
         if (closed) return
-        if (connectedOnce) showNotice("The connection to the cloud console was lost",
+        if (connectedOnce) showNotice("与云主机的连接已断开",
             "The stream stopped reaching this device ($detail). Restart the stream to play again: the game starts over, " +
                 "unsaved progress is lost.", webPlayer = false)
         else showNotice("The native stream could not start ($stage)",
@@ -620,7 +620,7 @@ class XboxNativePlayerActivity : ComponentActivity() {
                             XboxMenuEntry("Xbox menu", "The game's Xbox menu (also: Guide once)", entries[1], { lastMainEntry = 1 }) { closeMenu(); pressNexus() }
                             XboxMenuEntry("Frame generation & low latency", "Now: ${fgName(current.frameGen)}" + if (zeroCopy) " · zero-copy" else "",
                                 entries[2], { lastMainEntry = 2 }) { menuPage = "framegen" }
-                            XboxMenuEntry("Frame rate", "Target: ${fpsName(current)}", entries[3], { lastMainEntry = 3 }) { menuPage = "framerate" }
+                            XboxMenuEntry("帧率", "Target: ${fpsName(current)}", entries[3], { lastMainEntry = 3 }) { menuPage = "framerate" }
                             XboxMenuEntry("Stream quality", "Engine, resolution, region, codec, bitrate (next stream)", entries[4], { lastMainEntry = 4 }) { menuPage = "stream" }
                             XboxMenuEntry("Performance overlay and rumble", if (current.statsLevel == 0) "Overlay off"
                                 else "Overlay: " + listOf("", "FPS only", "Basic", "Detailed", "Full")[current.statsLevel] + ", " + current.statsLayout,
@@ -637,8 +637,8 @@ class XboxNativePlayerActivity : ComponentActivity() {
                                 XboxMenuEntry((if (current.frameGen == mode) "✓  " else "") + fgName(mode), when (mode) {
                                     XboxNativeVideo.FG_WINFG -> "Bannerlator's own frame generation; doubles the shown frame rate"
                                     XboxNativeVideo.FG_LSFG, XboxNativeVideo.FG_LSFG3, XboxNativeVideo.FG_LSFG4 ->
-                                        "Lossless Scaling frame generation (Lossless.dll from Settings); the frame-rate target caps the output"
-                                    else -> "Show the stream's own frames only"
+                                        "Lossless Scaling 帧生成（来自设置的 Lossless.dll）；帧率目标会限制输出"
+                                    else -> "仅显示串流自身的帧"
                                 }, choices[i]) { current = current.copy(frameGen = mode); setFrameGen(mode) }
                             }
                             if (!lsfg) androidx.compose.material3.Text("LSFG appears here once Lossless.dll is imported in Settings.",

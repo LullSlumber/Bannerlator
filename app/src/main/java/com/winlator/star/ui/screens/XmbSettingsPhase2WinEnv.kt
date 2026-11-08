@@ -128,7 +128,7 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
     fun onInstallTap(c: Component) {
         if (installing != null) return
         if (!File(container.rootDir, ".wine").isDirectory) {
-            xmb.toast("Launch the game once first, then install its components from the game's settings.")
+            xmb.toast("请先启动游戏一次，然后从游戏设置中安装其组件。")
             return
         }
         // Prefer the file-drop `_dll` variant when the catalog has one (no container session).
@@ -138,7 +138,7 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         if (reason != null) { xmb.toast(reason); return }
         when {
             ComponentExecInstaller.isExecComponent(target) -> xmb.confirm(
-                XmbConfirm("Install ${c.name}", "Opens this game's container and runs the installer (shared by every game on it). Click through it, then close the container.", "Continue")
+                XmbConfirm("Install ${c.name}", "打开此游戏的容器并运行安装程序（由其上的每个游戏共享）。点击完成，然后关闭容器。", "Continue")
             ) { runExecInstall(target) }
             ComponentExecInstaller.handlesComponent(target) -> runExecInstall(target)
             else -> {
@@ -164,7 +164,7 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         val rows = mutableListOf<XmbRow>()
 
         if (recLoading) {
-            rows += XmbRow.Info("recLoading", "Looking for recommended components…", Icons.Filled.Search)
+            rows += XmbRow.Info("recLoading", "正在查找推荐组件…", Icons.Filled.Search)
         } else if (recs.isNotEmpty()) {
             // GameRecommendations.group: what the game's store, install script or exe says it needs;
             // loose runtime DLLs it ships (optional); installers that only sit in its folder (folded).
@@ -183,7 +183,7 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                         if (isInstalled) Icons.Filled.CheckCircle else Icons.Filled.Download,
                         subtitle = GameRecommendations.reason(rec),
                         value = when {
-                            isInstalling -> if (progress >= 0f) "Installing ${(progress * 100).toInt()}%" else "Installing…"
+                            isInstalling -> if (progress >= 0f) "Installing ${(progress * 100).toInt()}%" else "正在安装…"
                             isInstalled -> "Installed"
                             else -> "Install"
                         },
@@ -191,8 +191,8 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                     ) { onInstallTap(c) }
                 }
             }
-            if (recommended.isNotEmpty()) group("hRec", "Recommended components", recommended)
-            if (optional.isNotEmpty()) group("hOpt", if (recommended.isEmpty()) "Optional components" else "Optional", optional)
+            if (recommended.isNotEmpty()) group("hRec", "推荐组件", recommended)
+            if (optional.isNotEmpty()) group("hOpt", if (recommended.isEmpty()) "可选组件" else "Optional", optional)
             if (inFolder.isNotEmpty()) {
                 rows += XmbRow.Toggle(
                     "recFolder", "Also in the game's folder (${inFolder.size})", Icons.Filled.Search, showFolder,
@@ -226,7 +226,7 @@ internal fun xmbWinComponentsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             rows += XmbRow.Header("hCodecs", "Codecs")
             codecs.forEach { addChoice(it, MediaDecoder.optionsFor(it.first).toList()) }
         }
-        if (all.isEmpty()) rows += XmbRow.Info("noComponents", "No Windows components configured", Icons.Filled.Info)
+        if (all.isEmpty()) rows += XmbRow.Info("noComponents", "未配置Windows组件", Icons.Filled.Info)
         rows
     }
 }
@@ -349,21 +349,21 @@ internal fun xmbEnvVarsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         rows += XmbRow.Toggle(
             "preferDlls", "Prefer game-folder DLLs", Icons.Filled.Extension, allPreferred,
             subtitle = if (anyPreferred && !allPreferred) "Some game-folder DLLs on — see below"
-                       else "Load the game's own " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") + " instead of Wine's",
+                       else "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") + " 而不是Wine的",
         ) { on ->
             val cur = overridesNow()
             env.putVar(DllOverrides.VAR, if (on) DllOverrides.enable(cur, masterScope) else DllOverrides.disable(cur, dllBaseline, masterScope))
         }
         foundDlls.forEach { dll ->
             rows += XmbRow.Toggle("dll:$dll", "$dll.dll", Icons.Filled.Extension, DllOverrides.isEnabled(overrides, dll),
-                subtitle = "Found in the game folder") { on ->
+                subtitle = "在游戏文件夹中找到") { on ->
                 val cur = overridesNow()
                 env.putVar(DllOverrides.VAR, if (on) DllOverrides.enable(cur, dll) else DllOverrides.disable(cur, dllBaseline, dll))
             }
         }
 
         rows += XmbRow.Header("hVars", "Environment variables")
-        if (list.isEmpty()) rows += XmbRow.Info("noVars", "No environment variables set", Icons.Filled.Info)
+        if (list.isEmpty()) rows += XmbRow.Info("noVars", "未设置环境变量", Icons.Filled.Info)
         val seen = HashMap<String, Int>()
         list.forEach { r ->
             val occ = seen[r.name] ?: 0
@@ -373,12 +373,12 @@ internal fun xmbEnvVarsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 value = r.value.ifEmpty { "(empty)" },
             ) { p2EnvVarMenu(env, r.name, occ) }
         }
-        rows += XmbRow.Link("add", "Add variable", Icons.Filled.Add, subtitle = "Pick a known variable or type your own") { p2EnvAddMenu(env) }
+        rows += XmbRow.Link("add", "添加变量", Icons.Filled.Add, subtitle = "选择已知变量或输入您自己的") { p2EnvAddMenu(env) }
         val malformed = env.raw().split(" ").filter { it.isNotBlank() && it.indexOf('=') <= 0 }
         rows += XmbRow.Text(
             "raw", "Edit as text", Icons.Filled.ShortText, env.raw(),
-            subtitle = if (malformed.isEmpty()) "NAME=VALUE, separated by spaces"
-                       else "Ignored — needs NAME=VALUE: " + malformed.joinToString(", "),
+            subtitle = if (malformed.isEmpty()) "变量名称=变量值, 用空格分隔"
+                       else "已忽略 — 需要 NAME=VALUE： " + malformed.joinToString(", "),
         ) { v -> p2Put(xmb, shortcut, "envVars", v.ifEmpty { null }) }
         rows
     }
@@ -410,11 +410,11 @@ private fun p2EnvVarMenu(env: P2Env, name: String, occ: Int): XmbMenu {
                 val presets = p2Unique(known?.options.orEmpty())
                 val opts = if (cur.isNotEmpty() && cur !in presets) presets + cur else presets
                 if (opts.isNotEmpty()) {
-                    rows += XmbRow.Choice("preset", "Value", Icons.Filled.Tune, opts, cur, subtitle = "Presets — or type any value below") { v ->
+                    rows += XmbRow.Choice("preset", "Value", Icons.Filled.Tune, opts, cur, subtitle = "预设 — 或在下方输入任意值") { v ->
                         env.setAt(name, occ, v)
                     }
                 }
-                rows += XmbRow.Text("custom", "Custom value", Icons.Filled.Edit, cur, subtitle = "Kept exactly as typed (no spaces)") { v ->
+                rows += XmbRow.Text("custom", "自定义值", Icons.Filled.Edit, cur, subtitle = "Kept exactly as typed (no spaces)") { v ->
                     env.setAt(name, occ, v)
                 }
             }
@@ -430,12 +430,12 @@ private fun p2EnvVarMenu(env: P2Env, name: String, occ: Int): XmbMenu {
             }
             EnvVarType.NUMBER, EnvVarType.TEXT -> {
                 rows += XmbRow.Text("value", "Value", Icons.Filled.Edit, cur, numeric = type == EnvVarType.NUMBER,
-                    subtitle = "Spaces are dropped — variables are separated by spaces") { v -> env.setAt(name, occ, v) }
+                    subtitle = "空格会被丢弃 — 变量由空格分隔") { v -> env.setAt(name, occ, v) }
             }
         }
         env.help(name)?.let { rows.add(XmbRow.Info("help", it, Icons.Filled.Info)) }
-        rows += XmbRow.Action("remove", "Remove variable", Icons.Filled.Delete, danger = true) {
-            xmb.confirm(XmbConfirm("Remove variable", "Remove $name from this game?", "Remove", danger = true)) {
+        rows += XmbRow.Action("remove", "移除变量", Icons.Filled.Delete, danger = true) {
+            xmb.confirm(XmbConfirm("移除变量", "Remove $name from this game?", "移除", danger = true)) {
                 env.removeAt(name, occ)
                 xmb.pop()
             }
@@ -452,10 +452,10 @@ private fun p2EnvAddMenu(env: P2Env): XmbMenu {
         if (!env.add(name, value)) { xmb.toast("“$name” is already in the list"); return }
         xmb.push(p2EnvVarMenu(env, name, 0))
     }
-    return XmbMenu("Add variable", Icons.Filled.Add) {
+    return XmbMenu("添加变量", Icons.Filled.Add) {
         val rows = mutableListOf<XmbRow>()
         val existing = env.rows().map { it.name }.toSet()
-        rows += XmbRow.Text("name", "Name", Icons.Filled.Add, "", subtitle = "Type NAME or NAME=VALUE",
+        rows += XmbRow.Text("name", "Name", Icons.Filled.Add, "", subtitle = "输入 NAME 或 NAME=VALUE",
             placeholder = "e.g. DXVK_FRAME_RATE") { raw ->
             val cleaned = raw.trim().replace(" ", "")
             val eq = cleaned.indexOf('=')
@@ -464,7 +464,7 @@ private fun p2EnvAddMenu(env: P2Env): XmbMenu {
             addAndOpen(name, value)
         }
         val candidates = KnownEnvVars.names.filter { it !in existing }
-        if (candidates.isNotEmpty()) rows += XmbRow.Header("hKnown", "Known variables")
+        if (candidates.isNotEmpty()) rows += XmbRow.Header("hKnown", "已知变量")
         candidates.forEach { n ->
             rows += XmbRow.Action("k:$n", n, Icons.Filled.Tune, subtitle = env.help(n)) { addAndOpen(n, p2EnvDefault(n)) }
         }

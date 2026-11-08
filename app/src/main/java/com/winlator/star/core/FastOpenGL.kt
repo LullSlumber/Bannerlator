@@ -32,7 +32,7 @@ object FastOpenGL {
 
     const val EXTRA = "fastOpenGL"
     const val TITLE = "Fast OpenGL"
-    const val HINT = "Faster OpenGL games, and DirectDraw / older Direct3D games through WineD3D."
+    const val HINT = "更快的 OpenGL 游戏，以及通过 WineD3D 的 DirectDraw / 较旧 Direct3D 游戏。"
     const val WAYLAND_ALWAYS_ON = "Always on with Wayland"
     const val NEEDS_TURNIP = "Needs a Turnip driver"
     const val NOT_BUNDLED = "Not in this build"
@@ -41,7 +41,7 @@ object FastOpenGL {
     // both reach Mesa on either path (GLX or EGL) and on Wayland, so they are never greyed.
     /** "Show OpenGL FPS": GALLIUM_HUD=fps, Mesa's fps counter in the game's top-left corner. */
     @JvmField val FPS_HUD = GlLaunchSwitch(
-        "glFpsHud", "Show OpenGL FPS", "Mesa's fps counter in the corner of OpenGL games.",
+        "glFpsHud", "Show OpenGL FPS", "Mesa 的 fps 计数器，位于 OpenGL 游戏的角落。",
         defaultOn = false, envName = "GALLIUM_HUD", envValue = "fps")
 
     /** "OpenGL vsync off": vblank_mode=0, so a GL game's SwapBuffers stops waiting for the refresh. */

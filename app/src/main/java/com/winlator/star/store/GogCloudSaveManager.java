@@ -67,7 +67,7 @@ public final class GogCloudSaveManager {
                 if (token == null) token = galaxyToken; // fallback
                 debug(ctx, "GOG upload — gameId=" + gameId + " clientId=" + clientId + " scopedToken=" + (token.equals(galaxyToken) ? "fallback" : "ok"));
 
-                cb.onStatus("Fetching cloud file list…");
+                cb.onStatus("正在获取云文件列表…");
                 List<CloudFile> cloudFiles = listCloudFiles(ctx, userId, clientId, token);
 
                 // Recursive walk: collect every file under localFolder (incl. subfolders
@@ -151,9 +151,9 @@ public final class GogCloudSaveManager {
                 if (firstError.get() != null) { cb.onError("Upload error: " + firstError.get()); return; }
                 int up = uploaded.get(), sk = skipped.get();
                 if (up == 0 && sk > 0) {
-                    cb.onDone("Already up to date (" + sk + " file" + (sk == 1 ? "" : "s") + ")");
+                    cb.onDone("已经是最新版本 (" + sk + " file" + (sk == 1 ? "" : "s") + ")");
                 } else if (up > 0) {
-                    cb.onDone("Uploaded " + up + " file" + (up == 1 ? "" : "s")
+                    cb.onDone("已上传 " + up + " file" + (up == 1 ? "" : "s")
                             + (sk > 0 ? ", skipped " + sk : ""));
                 } else {
                     cb.onDone("No files to upload");
@@ -163,7 +163,7 @@ public final class GogCloudSaveManager {
                 Log.e(TAG, "uploadSaves failed", e);
                 debug(ctx, "uploadSaves exception: " + e.getClass().getSimpleName());
                 if ("CLOUD_SAVES_NOT_SUPPORTED".equals(e.getMessage()))
-                    cb.onError("This game does not support GOG cloud saves");
+                    cb.onError("此游戏不支持GOG云存档");
                 else
                     cb.onError("Upload error: " + e.getMessage());
             }
@@ -184,7 +184,7 @@ public final class GogCloudSaveManager {
                 if (token == null) token = galaxyToken; // fallback
                 debug(ctx, "GOG download — gameId=" + gameId + " clientId=" + clientId + " scopedToken=" + (token.equals(galaxyToken) ? "fallback" : "ok"));
 
-                cb.onStatus("Fetching cloud file list…");
+                cb.onStatus("正在获取云文件列表…");
                 List<CloudFile> cloudFiles = listCloudFiles(ctx, userId, clientId, token);
 
                 if (cloudFiles.isEmpty()) {
@@ -250,7 +250,7 @@ public final class GogCloudSaveManager {
                             firstError.compareAndSet(null, e.getMessage());
                         } finally {
                             // Neutral verb: fires per file completed whether pulled OR skipped.
-                            cb.onStatus("Syncing game saves… (" + completed.incrementAndGet() + "/" + total + ")");
+                            cb.onStatus("正在同步游戏存档… (" + completed.incrementAndGet() + "/" + total + ")");
                         }
                     });
                 }
@@ -260,9 +260,9 @@ public final class GogCloudSaveManager {
                 if (firstError.get() != null) { cb.onError("Download error: " + firstError.get()); return; }
                 int dl = downloaded.get(), sk = skipped.get();
                 if (dl == 0 && sk > 0) {
-                    cb.onDone("Already up to date (" + sk + " file" + (sk == 1 ? "" : "s") + ")");
+                    cb.onDone("已经是最新版本 (" + sk + " file" + (sk == 1 ? "" : "s") + ")");
                 } else {
-                    cb.onDone("Downloaded " + dl + " file" + (dl == 1 ? "" : "s")
+                    cb.onDone("已下载 " + dl + " file" + (dl == 1 ? "" : "s")
                             + (sk > 0 ? ", skipped " + sk : ""));
                 }
 
@@ -270,7 +270,7 @@ public final class GogCloudSaveManager {
                 Log.e(TAG, "downloadSaves failed", e);
                 debug(ctx, "downloadSaves exception: " + e.getClass().getSimpleName());
                 if ("CLOUD_SAVES_NOT_SUPPORTED".equals(e.getMessage()))
-                    cb.onError("This game does not support GOG cloud saves");
+                    cb.onError("此游戏不支持GOG云存档");
                 else
                     cb.onError("Download error: " + e.getMessage());
             }

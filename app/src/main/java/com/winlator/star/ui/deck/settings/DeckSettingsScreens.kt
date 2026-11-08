@@ -232,15 +232,15 @@ private fun DeckGameSettings(path: String, navController: NavHostController) {
     // Only a Wine game follows a Wine container: the Linux Steam client entry and Android games are
     // never linked to the container editor.
     val chain = if (env.world != World.WINE) emptyList() else listOf(
-        ChainLink(L("All containers"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+        ChainLink(L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
         ChainLink(containerName, Icons.Filled.Inventory2) { navController.navigate(DeckSettingsRoutes.container(containerId)) },
         ChainLink(L("This game"), Icons.Filled.SportsEsports, null),
     )
     DeckSettingsEditor(
         header = EditorHeader(
             overline = when (env.world) {
-                World.LINUX -> L("Linux Steam client")
-                World.ANDROID -> L("Android game")
+                World.LINUX -> L("Linux Steam 客户端")
+                World.ANDROID -> L("Android 游戏")
                 World.WINE -> L("Game settings")
             },
             title = shortcut.name,
@@ -381,22 +381,22 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
     val extras = remember(components, graphics, sections) { categoryExtras(components, graphics, sections) }
 
     val header = if (createMode) {
-        EditorHeader(overline = L("New container"), title = L("New Container"), icon = Icons.Filled.Inventory2)
+        EditorHeader(overline = L("New container"), title = L("新建容器"), icon = Icons.Filled.Inventory2)
     } else if (defaultsMode) {
         EditorHeader(
             overline = L("Defaults for every container"),
-            title = L("All containers"),
+            title = L("所有容器"),
             icon = Icons.Filled.Layers,
             subtitle = L("New containers start from these values. Existing containers keep their own."),
         )
     } else {
         EditorHeader(
-            overline = L("Container settings"),
+            overline = L("容器设置"),
             title = vm.container?.name ?: vm.containerName,
             icon = Icons.Filled.Inventory2,
             chain = listOf(
-                ChainLink(L("All containers"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
-                ChainLink(L("This container"), Icons.Filled.Inventory2, null),
+                ChainLink(L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+                ChainLink(L("此容器"), Icons.Filled.Inventory2, null),
             ),
             meta = listOf(vm.selectedWineVersion, if (vm.isArm64EC) "arm64ec" else "x86_64").filter { it.isNotEmpty() }.joinToString(" · "),
         )
@@ -411,7 +411,7 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
         onHandoff = { h -> if (h.target == SettingsRegistry.TARGET_CLASSIC) navController.navigate("container_detail?id=$id") },
         onChainLink = { link -> link.onClick?.invoke() },
         createMode = createMode,
-        yAction = if (!defaultsMode) null else ("Switch architecture" to {
+        yAction = if (!defaultsMode) null else ("容器设置" to {
             val next = if (arch == NewContainerDefaults.ARCH_ARM64EC) NewContainerDefaults.ARCH_X86_64 else NewContainerDefaults.ARCH_ARM64EC
             if (source.dirty) Toast.makeText(context, L("Save or discard your changes first."), Toast.LENGTH_SHORT).show()
             else {
@@ -474,7 +474,7 @@ private fun categoryExtras(components: DeckComponentsState?, graphics: DeckGraph
 @Composable
 private fun ArchSwitch(arch: String, onArch: (String) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(L("Container type"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text(L("容器类型"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
         DeckSegmented(
             options = listOf(Opt(NewContainerDefaults.ARCH_ARM64EC, "ARM64EC"), Opt(NewContainerDefaults.ARCH_X86_64, "x86-64")),
             value = arch,

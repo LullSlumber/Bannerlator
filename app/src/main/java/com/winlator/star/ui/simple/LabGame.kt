@@ -74,12 +74,12 @@ import kotlin.math.roundToInt
 
 /** The game page's quick settings: the first of each group that applies to this game (X11 or Wayland driver ...). */
 private val QUICK = listOf(
-    listOf("graphics.driver", "graphics.compositorDriver") to L("GPU driver"),
+    listOf("graphics.driver", "graphics.compositorDriver") to L("虚幻引擎 HDR 修复"),
     listOf("graphics.dxWrapper") to L("DX wrapper"),
     listOf("display.resolution") to L("Resolution"),
     listOf("hud.show") to L("FPS overlay"),
     listOf("performance.frameGen") to L("Frame gen"),
-    listOf("performance.fpsLimiter") to L("FPS limiter"),
+    listOf("performance.fpsLimiter") to L("FPS 限制器"),
     listOf("performance.syncMode") to L("Sync"),
     listOf("input.controlsProfile") to L("Controls"),
 )
@@ -250,7 +250,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.weight(1f).height(tileH).labPanel().labTile(onClick = { onNavigate(DeckSettingsRoutes.game(shortcut.file.path)) }).padding(12.dp),
                     ) {
-                        LabTileLabel(L("Everything else"))
+                        LabTileLabel(L("其他所有"))
                         Text(L("All settings ›"), color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
@@ -266,7 +266,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                             )
                             LabSparkline(fps.history, Modifier.fillMaxWidth().weight(1f))
                         } else {
-                            LabTileLabel(L("Playtime"))
+                            LabTileLabel(L("游玩时间"))
                             Text(
                                 L("%1\$s · %2\$s sessions", playtimeLabel(stats?.ms ?: 0L), stats?.count ?: 0),
                                 color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1,

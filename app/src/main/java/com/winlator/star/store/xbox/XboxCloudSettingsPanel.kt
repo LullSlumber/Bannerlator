@@ -111,9 +111,9 @@ private fun PanelContent(
     var profiles by remember { mutableStateOf(XboxCloudSettings.wineProfiles(ctx)) }
     var naming by remember { mutableStateOf(false) }
 
-    if (section == null || section == "stream") Section("Stream", if (live) "Applies to the next stream." else "Applies when a stream starts.") {
+    if (section == null || section == "stream") Section("Stream", if (live) "Applies to the next stream." else "在串流开始时应用。") {
         if (XboxNativePlayerActivity.supported()) {
-            Choice("Player engine", listOf("web" to "Web", "native" to "Native (frame gen)"), settings.playerEngine,
+            Choice("播放器引擎", listOf("web" to "网页", "native" to "原生（帧生成）"), settings.playerEngine,
                 pending { it.playerEngine != settings.playerEngine }) { onChange(settings.copy(playerEngine = it)) }
             val lsfg = remember { com.winlator.star.core.LsfgNative.isDllAvailable(ctx) }
             Choice("Frame generation", listOf("off" to "Off", "winfg" to "Win-FG 2×") +
@@ -126,80 +126,80 @@ private fun PanelContent(
         }
         // What Microsoft sends depends on the device profile we report: the PC profile gave 2560x1440 on the
         // Pocket FIT (10-23), so it is labelled by profile, not by a fixed size.
-        Choice("Resolution", listOf("720p" to "720p (phone profile)", "1080p" to "Best (PC profile)", "1080p_hq" to "1080p HQ (TV profile)"),
+        Choice("Resolution", listOf("720p" to "720p（手机配置）", "1080p" to "最佳（PC 配置）", "1080p_hq" to "1080p 高清（电视配置）"),
             settings.resolution, pending { it.resolution != settings.resolution }) { onChange(settings.copy(resolution = it)) }
-        Choice("Server region", listOf("" to "Automatic") + regions.map { it to it }, settings.region,
+        Choice("服务器区域", listOf("" to "Automatic") + regions.map { it to it }, settings.region,
             pending { it.region != settings.region }) { onChange(settings.copy(region = it)) }
-        Choice("Game language", XboxCloudSettings.LANGUAGES, settings.language,
+        Choice("游戏语言", XboxCloudSettings.LANGUAGES, settings.language,
             pending { it.language != settings.language }) { onChange(settings.copy(language = it)) }
-        Choice("Video codec quality", listOf("default" to "Automatic", "high" to "High", "normal" to "Normal", "low" to "Low"), settings.codec,
+        Choice("视频编解码器质量", listOf("default" to "Automatic", "high" to "高", "normal" to "Normal", "low" to "Low"), settings.codec,
             pending { it.codec != settings.codec }) { onChange(settings.copy(codec = it)) }
-        Choice("Bitrate limit", listOf(0 to "No limit") + listOf(5, 8, 10, 12, 15, 20, 25, 30, 40, 50).map { it to "$it Mb/s" }, settings.bitrateMbps,
+        Choice("比特率限制", listOf(0 to "无限制") + listOf(5, 8, 10, 12, 15, 20, 25, 30, 40, 50).map { it to "$it Mb/s" }, settings.bitrateMbps,
             pending { it.bitrateMbps != settings.bitrateMbps }) { onChange(settings.copy(bitrateMbps = it)) }
-        Toggle("Stop quality drops", "Keeps the resolution up when this device decodes slowly.", settings.preventDrops) { onChange(settings.copy(preventDrops = it)) }
+        Toggle("阻止质量下降", "当此设备解码缓慢时保持分辨率不降。", settings.preventDrops) { onChange(settings.copy(preventDrops = it)) }
     }
 
     if ((section == null && XboxNativePlayerActivity.supported()) || section == "framerate") Section("Frame rate (native engine)",
-        "With frame generation this is the rate shown; without it, only targets below the stream's 60 fps change anything.") {
-        Choice("Target", listOf(0 to "Screen's rate", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps", 120 to "120 fps", 144 to "144 fps", 165 to "165 fps"),
+        "开启帧生成时，这是显示的速率；未开启时，只有低于串流 60 fps 的目标才会产生变化。") {
+        Choice("Target", listOf(0 to "屏幕刷新率", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps", 120 to "120 fps", 144 to "144 fps", 165 to "165 fps"),
             settings.fpsLimit) { onChange(settings.copy(fpsLimit = it, fpsCustomOn = false)) }
-        Toggle("Custom frame rate", "Set any rate from 10 to 165 fps with the slider.", settings.fpsCustomOn) { onChange(settings.copy(fpsCustomOn = it)) }
+        Toggle("自定义帧率", "使用滑块设置 10 到 165 fps 之间的任意速率。", settings.fpsCustomOn) { onChange(settings.copy(fpsCustomOn = it)) }
         if (settings.fpsCustomOn) SliderRow("Custom", settings.fpsCustom, 10, 165) { onChange(settings.copy(fpsCustom = it)) }
     }
 
     if ((section == null && XboxNativePlayerActivity.supported()) || section == "latency") Section("Low latency (native engine)", null) {
-        Toggle("Instant controller input", "Sends each press the moment it happens instead of every 16 ms.", settings.instantInput) {
+        Toggle("即时控制器输入", "每次按下时立即发送，而不是每 16 毫秒发送一次。", settings.instantInput) {
             onChange(settings.copy(instantInput = it))
         }
-        Toggle("Small network buffer", "Shows frames as soon as they are decoded. Less delay; may stutter on weak Wi-Fi.",
+        Toggle("小网络缓冲区", "帧解码后立即显示。延迟更低；在弱 Wi-Fi 下可能卡顿。",
             settings.smallBuffer, pending { it.smallBuffer != settings.smallBuffer }) { onChange(settings.copy(smallBuffer = it)) }
-        Toggle("Fast decoder", "The video chip's low-latency mode.", settings.fastDecoder,
+        Toggle("快速解码器", "视频芯片的低延迟模式。", settings.fastDecoder,
             pending { it.fastDecoder != settings.fastDecoder }) { onChange(settings.copy(fastDecoder = it)) }
-        Toggle("Zero-copy picture", "Frames go straight from the video chip to the screen: the lowest delay. Used while frame generation is off; switches live.",
+        Toggle("零拷贝画面", "帧从视频芯片直接到屏幕：最低延迟。在帧生成关闭时使用；实时切换。",
             settings.zeroCopy) { onChange(settings.copy(zeroCopy = it)) }
     }
 
     if (section == null || section == "picture") Section("Picture", "Shader effects on the stream; the profiles are shared with the Wine games' screen effects.") {
-        Choice("Profile", listOf("" to "None") + profiles.keys.map { it to it }, settings.profile) { name ->
+        Choice("配置", listOf("" to "None") + profiles.keys.map { it to it }, settings.profile) { name ->
             onChange(if (name.isEmpty()) settings.copy(profile = "") else settings.withEffects(profiles.getValue(name), name))
         }
-        Step("Brightness", "${settings.brightness}", { onChange(settings.copy(brightness = (settings.brightness - 5).coerceAtLeast(-50))) },
+        Step("亮度", "${settings.brightness}", { onChange(settings.copy(brightness = (settings.brightness - 5).coerceAtLeast(-50))) },
             { onChange(settings.copy(brightness = (settings.brightness + 5).coerceAtMost(50))) })
-        Step("Contrast", "${settings.contrast}", { onChange(settings.copy(contrast = (settings.contrast - 10).coerceAtLeast(-100))) },
+        Step("对比度", "${settings.contrast}", { onChange(settings.copy(contrast = (settings.contrast - 10).coerceAtLeast(-100))) },
             { onChange(settings.copy(contrast = (settings.contrast + 10).coerceAtMost(100))) })
-        Step("Gamma", String.format("%.1f", settings.gamma), { onChange(settings.copy(gamma = ((settings.gamma * 10).toInt() - 1).coerceAtLeast(5) / 10f)) },
+        Step("伽马", String.format("%.1f", settings.gamma), { onChange(settings.copy(gamma = ((settings.gamma * 10).toInt() - 1).coerceAtLeast(5) / 10f)) },
             { onChange(settings.copy(gamma = ((settings.gamma * 10).toInt() + 1).coerceAtMost(30) / 10f)) })
-        Step("Saturation", "${settings.saturation}%", { onChange(settings.copy(saturation = (settings.saturation - 10).coerceAtLeast(0))) },
+        Step("饱和度", "${settings.saturation}%", { onChange(settings.copy(saturation = (settings.saturation - 10).coerceAtLeast(0))) },
             { onChange(settings.copy(saturation = (settings.saturation + 10).coerceAtMost(200))) })
-        Step("Sharpen", if (settings.sharpen == 0) "Off" else "${settings.sharpen}", { onChange(settings.copy(sharpen = (settings.sharpen - 1).coerceAtLeast(0))) },
+        Step("画面锐化", if (settings.sharpen == 0) "Off" else "${settings.sharpen}", { onChange(settings.copy(sharpen = (settings.sharpen - 1).coerceAtLeast(0))) },
             { onChange(settings.copy(sharpen = (settings.sharpen + 1).coerceAtMost(10))) })
-        Choice("Sharpen type", listOf("cas" to "Contrast-adaptive", "usm" to "Unsharp mask"), settings.sharpenMode) { onChange(settings.copy(sharpenMode = it)) }
-        Step("Deband", if (settings.deband == 0) "Off" else "${settings.deband}", { onChange(settings.copy(deband = (settings.deband - 1).coerceAtLeast(0))) },
+        Choice("锐化类型", listOf("cas" to "对比度自适应", "usm" to "钝化蒙版"), settings.sharpenMode) { onChange(settings.copy(sharpenMode = it)) }
+        Step("去条带", if (settings.deband == 0) "Off" else "${settings.deband}", { onChange(settings.copy(deband = (settings.deband - 1).coerceAtLeast(0))) },
             { onChange(settings.copy(deband = (settings.deband + 1).coerceAtMost(8))) })
-        Toggle("FXAA", "Smooths jagged edges.", settings.fxaa) { onChange(settings.copy(fxaa = it)) }
-        Toggle("CRT", "Scanlines and colour fringes.", settings.crt) { onChange(settings.copy(crt = it)) }
-        Toggle("NTSC", "Old TV signal look.", settings.ntsc) { onChange(settings.copy(ntsc = it)) }
-        Toggle("Toon", "Cartoon outlines.", settings.toon) { onChange(settings.copy(toon = it)) }
-        Choice("Frame-rate cap", listOf(0 to "Off", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps"), settings.maxFps) { onChange(settings.copy(maxFps = it)) }
+        Toggle("快速近似抗锯齿", "平滑锯齿边缘。", settings.fxaa) { onChange(settings.copy(fxaa = it)) }
+        Toggle("复古电视显像管滤镜", "扫描线和彩色边缘。", settings.crt) { onChange(settings.copy(crt = it)) }
+        Toggle("NTSC电视滤镜", "旧电视信号外观。", settings.ntsc) { onChange(settings.copy(ntsc = it)) }
+        Toggle("卡通风格", "卡通轮廓。", settings.toon) { onChange(settings.copy(toon = it)) }
+        Choice("帧率上限", listOf(0 to "Off", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps"), settings.maxFps) { onChange(settings.copy(maxFps = it)) }
         Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { naming = true }) { Text("Save as profile") }
-            OutlinedButton(onClick = { onChange(settings.withoutEffects()) }) { Text("Reset picture") }
+            OutlinedButton(onClick = { naming = true }) { Text("保存为配置") }
+            OutlinedButton(onClick = { onChange(settings.withoutEffects()) }) { Text("重置画面") }
         }
-        Text("Effects cost a little GPU time; with none set the stream is shown directly.", style = MaterialTheme.typography.bodySmall,
+        Text("效果会消耗少量 GPU 时间；未设置任何效果时，串流将直接显示。", style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
     }
 
     // "overlay-native": the native player's page (its sound has no volume boost).
     if (section == null || section == "overlay" || section == "overlay-native") Section("Overlay and sound", null) {
-        Choice("Performance overlay", listOf(0 to "Off", 1 to "FPS only", 2 to "Basic", 3 to "Detailed", 4 to "Full"), settings.statsLevel) {
+        Choice("性能覆盖层", listOf(0 to "Off", 1 to "FPS only", 2 to "Basic", 3 to "Detailed", 4 to "Full"), settings.statsLevel) {
             onChange(settings.copy(statsLevel = it))
         }
-        Choice("Overlay layout", listOf("horizontal" to "Horizontal", "vertical" to "Vertical"), settings.statsLayout) { onChange(settings.copy(statsLayout = it)) }
+        Choice("叠加层布局", listOf("horizontal" to "水平", "vertical" to "垂直"), settings.statsLayout) { onChange(settings.copy(statsLayout = it)) }
         Text("Top right. Basic: fps, ping, resolution. Detailed: + bitrate, decode time, packet loss. Full: + codec, jitter, " +
             "dropped frames, server.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (section != "overlay-native") Step("Volume", "${settings.volume}%", { onChange(settings.copy(volume = (settings.volume - 25).coerceAtLeast(100))) },
             { onChange(settings.copy(volume = (settings.volume + 25).coerceAtMost(300))) })
-        Step("Controller rumble", if (settings.rumble == 0) "Off" else "${settings.rumble}%", { onChange(settings.copy(rumble = (settings.rumble - 25).coerceAtLeast(0))) },
+        Step("控制器震动", if (settings.rumble == 0) "Off" else "${settings.rumble}%", { onChange(settings.copy(rumble = (settings.rumble - 25).coerceAtLeast(0))) },
             { onChange(settings.copy(rumble = (settings.rumble + 25).coerceAtMost(100))) })
     }
 
@@ -207,7 +207,7 @@ private fun PanelContent(
         var name by remember { mutableStateOf(settings.profile) }
         AlertDialog(
             onDismissRequest = { naming = false },
-            title = { Text("Save picture profile") },
+            title = { Text("保存画面配置") },
             text = { XmbKeyboardWindow { OutlinedTextField(value = name, onValueChange = { name = it.replace(":", "").replace(",", "").take(40) }, singleLine = true,
                 label = { Text("Name") }) } },
             confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = {

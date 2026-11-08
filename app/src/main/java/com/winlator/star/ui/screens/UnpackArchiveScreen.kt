@@ -416,7 +416,7 @@ fun UnpackArchiveScreen(
                 ) {
                     Icon(Icons.Filled.Folder, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(6.dp))
-                    Text("Change folder", color = MaterialTheme.colorScheme.onBackground)
+                    Text("更改文件夹", color = MaterialTheme.colorScheme.onBackground)
                 }
             }
 
@@ -428,7 +428,7 @@ fun UnpackArchiveScreen(
                 Text("Power", style = sectionTitle())
                 Spacer(Modifier.height(8.dp))
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    val modes = listOf(PowerMode.AUTO to "Auto", PowerMode.MAX to "Max", PowerMode.MANUAL to "Manual")
+                    val modes = listOf(PowerMode.AUTO to "Auto", PowerMode.MAX to "Max", PowerMode.MANUAL to "手动")
                     modes.forEachIndexed { index, (mode, label) ->
                         SegmentedButton(
                             selected = powerMode == mode,
@@ -559,7 +559,7 @@ fun UnpackArchiveScreen(
                                 }
                             },
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        ) { Text("App settings", color = MaterialTheme.colorScheme.onBackground) }
+                        ) { Text("应用设置", color = MaterialTheme.colorScheme.onBackground) }
                         Spacer(Modifier.width(8.dp))
                         OutlinedButton(
                             onClick = {
@@ -567,7 +567,7 @@ fun UnpackArchiveScreen(
                                 prefs.edit().putBoolean("unpackOemHintDismissed", true).apply()
                             },
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        ) { Text("Got it", color = MaterialTheme.colorScheme.onBackground) }
+                        ) { Text("知道了", color = MaterialTheme.colorScheme.onBackground) }
                     }
                 }
                 Spacer(Modifier.height(12.dp))

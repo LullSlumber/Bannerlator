@@ -6,7 +6,7 @@ import android.view.InputDevice;
 import java.util.Locale;
 
 /**
- * "Rumble motors": how a game's two XInput rumble requests reach a controller.
+ * "震动马达": how a game's two XInput rumble requests reach a controller.
  *
  * <p>{@link #BOTH} (PC-accurate) drives the strong (low-frequency) and weak (high-frequency) motors
  * independently, as a PC pad does. {@link #SINGLE} folds both requests onto the strong motor at

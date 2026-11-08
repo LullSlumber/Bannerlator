@@ -83,7 +83,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * The game actions that are not tied to a list on screen: the "Add games" flows (one exe, a games
+ * The game actions that are not tied to a list on screen: the "添加游戏" flows (one exe, a games
  * folder scanned for its games with the review and Confirm game dialogs, Android games), and the
  * one-shot requests other screens post (GamesScreenRequests, AccountUiBus's My account, the
  * component-install return to a game's settings). Lifted out of the Games screen so the Deck shell
@@ -106,7 +106,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     // The + flow asks WHAT to add first; only the two Wine imports then ask for a container, and
     // this holds which of them the container pick is for (null = none pending).
     var pendingImportKind by remember { mutableStateOf<ImportKind?>(null) }
-    // "Add Android game": the picker, and the write that follows its Add.
+    // "添加 Android 游戏": the picker, and the write that follows its Add.
     var showAndroidPicker by remember { mutableStateOf(false) }
     var androidAddRunning by remember { mutableStateOf(false) }
     var folderScanRunning by remember { mutableStateOf(false) }
@@ -219,7 +219,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                 }
             }
             if (found.isEmpty()) {
-                Toast.makeText(context, "No games found in that folder", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "在该文件夹中未找到游戏", Toast.LENGTH_LONG).show()
                 pendingImportContainerIndex = -1
             }
         }
@@ -244,7 +244,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
         }?.let { settingsShortcut = it }
     }
 
-    // One-shot requests (see GamesScreenRequests): the + button, the Deck's "Add games", and the game
+    // One-shot requests (see GamesScreenRequests): the + button, the Deck's "添加游戏", and the game
     // actions the Deck settings pages hand over (Game details, Copy to Drive C, Change executable, Move).
     LaunchedEffect(GamesScreenRequests.pending) {
         val req = GamesScreenRequests.pending ?: return@LaunchedEffect
@@ -394,10 +394,10 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
             ImportKind.EXE ->
                 if (importUseSystemPicker) importFileLauncher.launch("*/*")
                 else importFileInAppLauncher.launch(
-                    InAppFilePicker.buildIntent(context, InAppFilePicker.SHORTCUT, "Select .exe / .desktop / .lnk", driveCPath = driveC?.absolutePath)
+                    InAppFilePicker.buildIntent(context, InAppFilePicker.SHORTCUT, "选择 .exe / .desktop / .lnk", driveCPath = driveC?.absolutePath)
                 )
             ImportKind.FOLDER -> importFolderLauncher.launch(
-                InAppFilePicker.buildDirIntent(context, "Select your games folder", driveCPath = driveC?.absolutePath)
+                InAppFilePicker.buildDirIntent(context, "选择您的游戏文件夹", driveCPath = driveC?.absolutePath)
             )
         }
     }
@@ -407,12 +407,12 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     if (showImportMethodPicker) {
         OutlinedAlertDialog(
             onDismissRequest = { showImportMethodPicker = false },
-            title = { Text("Add games") },
+            title = { Text("添加游戏") },
             text = {
                 Column {
                     MenuOptionCard(
-                        title = "Add game EXE",
-                        subtitle = "Pick one game's .exe file",
+                        title = "添加游戏EXE",
+                        subtitle = "选择一个游戏的.exe文件",
                         icon = Icons.Default.InsertDriveFile,
                     ) {
                         showImportMethodPicker = false
@@ -420,8 +420,8 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         showImportContainerPicker = true
                     }
                     MenuOptionCard(
-                        title = "Add games folder",
-                        subtitle = "Pick the folder holding all your games — each one is scanned for its .exe",
+                        title = "添加游戏文件夹",
+                        subtitle = "选择存放所有游戏的文件夹——每个游戏都会扫描其.exe文件",
                         icon = Icons.Default.Folder,
                     ) {
                         showImportMethodPicker = false
@@ -430,8 +430,8 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                     }
                     // No container: Android games live in their own home (see AndroidGames).
                     MenuOptionCard(
-                        title = "Add Android game",
-                        subtitle = "Pick games installed on this phone — they open as normal Android apps",
+                        title = "添加 Android 游戏",
+                        subtitle = "选择安装在此手机上的游戏 — 它们会作为普通 Android 应用打开",
                         icon = Icons.Filled.Android,
                     ) {
                         showImportMethodPicker = false
@@ -473,7 +473,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     if (folderScanRunning) {
         OutlinedAlertDialog(
             onDismissRequest = {},
-            title = { Text("Scanning for games") },
+            title = { Text("正在扫描游戏") },
             text = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
@@ -586,7 +586,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         }
                     },
                 ) {
-                    Text(if (folderImportRunning) "Adding…" else "Add $selectedCount")
+                    Text(if (folderImportRunning) "正在添加…" else "Add $selectedCount")
                 }
             },
             dismissButton = {
@@ -610,14 +610,14 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                 showImportContainerPicker = false
                 pendingImportKind = null
             },
-            title = { Text("Select container") },
+            title = { Text("选择容器") },
             text = {
                 Column {
                     if (containers.isEmpty()) {
-                        Text("No containers found.", color = OnSurfaceVariant)
+                        Text("未找到容器。", color = OnSurfaceVariant)
                     } else {
                         // Scroll the container list so it can't be clipped when there are many
-                        // containers and vertical space is tight (landscape). "Pick via system…"
+                        // containers and vertical space is tight (landscape). "从系统选取…"
                         // stays pinned below the scroll area so it's always reachable.
                         Column(
                             modifier = Modifier
@@ -638,7 +638,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         }
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
                             Checkbox(checked = importUseSystemPicker, onCheckedChange = { importUseSystemPicker = it })
-                            Text("Pick via system…", color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                            Text("从系统选取…", color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
@@ -666,7 +666,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
         vm.consumeImportedNameUpdate()
     }
 
-    // Confirm game after import: editable name + "Search Steam" picker (fixes launcher-named
+    // Confirm game after import: editable name + "搜索 Steam" picker (fixes launcher-named
     // shortcuts + wrong cover art). Reuses the existing rename mechanism on Save.
     if (showRenameDialog) {
         val confirmContainer = vm.containers().getOrNull(renameDialogContainerIndex)
@@ -677,7 +677,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
             .filter { it.second >= 2 }.maxByOrNull { it.second }?.first?.appId
         OutlinedAlertDialog(
             onDismissRequest = { showRenameDialog = false },
-            title = { Text("Confirm game") },
+            title = { Text("确认游戏") },
             text = {
                 Column(
                     modifier = Modifier
@@ -699,12 +699,12 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                     OutlinedTextField(
                         value = confirmNameField,
                         onValueChange = { confirmNameField = it; confirmNameEdited = true },
-                        label = { Text("Game name") },
+                        label = { Text("游戏名称") },
                         singleLine = true,
                         trailingIcon = {
                             if (confirmNameField.isNotEmpty()) {
                                 IconButton(onClick = { confirmNameField = ""; confirmNameEdited = true }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                                    Icon(Icons.Default.Close, contentDescription = "清除")
                                 }
                             }
                         },
@@ -731,17 +731,17 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         if (steamSearching) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                             Spacer(Modifier.width(8.dp))
-                            Text("Searching…")
+                            Text("正在搜索…")
                         } else {
                             Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("Search Steam")
+                            Text("搜索 Steam")
                         }
                     }
 
                     if (steamSearchResults.isNotEmpty()) {
                         Text(
-                            "Tap a result to set the name + cover art:",
+                            "点击结果以设置名称+封面图:",
                             color = OnSurfaceVariant,
                             fontSize = 12.sp,
                         )
@@ -791,7 +791,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         }
                     } else if (!steamSearching) {
                         Text(
-                            "Not the right game? Edit the name and tap Search Steam to pick the correct one.",
+                            "不是正确的游戏？编辑名称并点击搜索Steam以选择正确的游戏。",
                             color = OnSurfaceVariant,
                             fontSize = 12.sp,
                         )
@@ -845,21 +845,21 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         }
                     }
                     showRenameDialog = false
-                    Toast.makeText(context, "Shortcut imported.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "快捷方式已导入。", Toast.LENGTH_SHORT).show()
                 }) { Text("Save") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showRenameDialog = false
-                    Toast.makeText(context, "Shortcut imported.", Toast.LENGTH_SHORT).show()
-                }) { Text("Skip") }
+                    Toast.makeText(context, "快捷方式已导入。", Toast.LENGTH_SHORT).show()
+                }) { Text("跳过") }
             },
         )
     }
 }
 
 /**
- * The Deck shell's game actions, mounted once over every Deck page: "Add games", My account and the
+ * The Deck shell's game actions, mounted once over every Deck page: "添加游戏", My account and the
  * game actions the Deck settings pages hand over open in place, never on the classic All games list.
  * Its list refreshes reach every other library on screen (the Deck home, a game page), so a game added
  * or renamed here shows up there at once.

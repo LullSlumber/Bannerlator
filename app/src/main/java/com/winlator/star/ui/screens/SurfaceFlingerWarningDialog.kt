@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 fun SurfaceFlingerWarningDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("SurfaceFlinger renderer — Experimental") },
+        title = { Text("SurfaceFlinger 将游戏帧直接交给 Android 的合成器。它可能更快，但在某些设备上会显示黑屏或颜色错误。如果发生这种情况，请切换回 Vulkan 或 OpenGL。") },
         text = {
             Text(
                 "The SurfaceFlinger renderer composites game frames directly through your device's " +
@@ -25,7 +25,7 @@ fun SurfaceFlingerWarningDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                 "Use at your own risk."
             )
         },
-        confirmButton = { TextButton(onClick = onConfirm) { Text("I understand, use it") } },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("我理解，继续使用") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }

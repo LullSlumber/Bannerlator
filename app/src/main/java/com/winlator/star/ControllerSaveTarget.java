@@ -49,7 +49,7 @@ final class ControllerSaveTarget {
         toGame = game;
         preferences.edit().putString(PREF_KEY, game ? SCOPE_GAME : SCOPE_CONTAINER).apply();
         lastSaved = null;
-        Log.i(TAG, "in-game changes now save for " + (game ? "this game" : "all games in the container"));
+        Log.i(TAG, "in-game changes now save for " + (game ? "此游戏" : "all games in the container"));
         publish();
     }
 

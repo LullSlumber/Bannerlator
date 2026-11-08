@@ -206,10 +206,10 @@ private fun PlayerRail(
     }
 
     Column(modifier.fillMaxSize()) {
-        Text("Player slots", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        Text("玩家槽位", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         Spacer(Modifier.height(2.dp))
         Text(
-            "Pads emulate as Xbox 360 to the game; the picture shows the physical pad you're holding.",
+            "手柄在游戏中模拟为Xbox 360；图片显示的是您握持的物理手柄。",
             style = MaterialTheme.typography.bodySmall,
             color = cs.onSurfaceVariant
         )
@@ -231,7 +231,7 @@ private fun PlayerRail(
         }
 
         Spacer(Modifier.height(6.dp))
-        // Global "Reset Input" — rebuild the whole fake-input transport in place (existing recovery).
+        // Global "重置输入" — rebuild the whole fake-input transport in place (existing recovery).
         OutlinedButton(
             onClick = {
                 state.onResetInput?.run()
@@ -239,9 +239,9 @@ private fun PlayerRail(
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
-        ) { Text("Reset Input") }
+        ) { Text("重置输入") }
         Text(
-            "Re-handshake controllers & on-screen if input stops responding.",
+            "如果输入停止响应，重新连接控制器和屏幕控制。",
             style = MaterialTheme.typography.bodySmall,
             color = cs.onSurfaceVariant
         )
@@ -260,8 +260,8 @@ private fun PlayerCard(
     val subtitle = when {
         row.currentSlot >= 0 -> "Currently Player ${row.currentSlot + 1}"
         row.override == XServerDialogState.SLOT_IGNORE -> "Ignored"
-        else -> "Unassigned"
-    } + if (row.isOnScreen) " · on-screen" else ""
+        else -> "未分配"
+    } + if (row.isOnScreen) " · 屏幕" else ""
 
     Column(
         Modifier
@@ -294,7 +294,7 @@ private fun PlayerCard(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(9.dp),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
-                ) { Text("Identify", fontSize = 12.sp) }
+                ) { Text("识别", fontSize = 12.sp) }
                 OutlinedButton(
                     onClick = {
                         // Per-card reset: clear this device's override → Auto, then rebuild the pipeline.
@@ -305,7 +305,7 @@ private fun PlayerCard(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(9.dp),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
-                ) { Text("Reset", fontSize = 12.sp) }
+                ) { Text("重置", fontSize = 12.sp) }
             }
         }
     }
@@ -357,7 +357,7 @@ private fun TestPanel(state: XServerDialogState, selected: String?, modifier: Mo
 
     ControllerTestPanel(
         snapshot = snap,
-        title = "Controller Test",
+        title = "控制器测试",
         subtitle = selectedRow?.displayName ?: "No controller selected",
         resetKey = selected,
         manualArt = manualArt,
@@ -468,7 +468,7 @@ private fun InGameBindPanel(state: XServerDialogState, modifier: Modifier) {
                         state.onProfilesChanged?.run()                            // keep the Touch list live
                     }
                     deleting = false
-                }) { Text("Delete") }
+                }) { Text("删除") }
             },
             dismissButton = { TextButton(onClick = { deleting = false }) { Text("Cancel") } }
         )

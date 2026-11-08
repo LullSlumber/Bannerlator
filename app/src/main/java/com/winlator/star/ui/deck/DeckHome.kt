@@ -158,7 +158,7 @@ private enum class LibraryMode(val label: String, val icon: ImageVector) {
     XMB("XMB", Icons.Filled.ViewCarousel),
 }
 
-private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("Played"), NEVER("Never played") }
+private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("已玩"), NEVER("Never played") }
 
 private const val PREF_MODE = "deck_library_mode"
 private const val PREF_SORT = "deck_library_sort"
@@ -414,7 +414,7 @@ internal fun DeckHome(
                 art = XmbCardArt(null, listOf(Color(0xFF134E4A), Color(0xFF0A2B29)))) {
                 runCatching { context.startActivity(Intent(context, SteamFriendsActivity::class.java)) }
             })
-            add(XmbAction("Community configs", Icons.Filled.Public, "Shared settings for your games",
+            add(XmbAction("社区配置", Icons.Filled.Public, "Shared settings for your games",
                 art = XmbCardArt(null, listOf(Color(0xFF2E2A6B), Color(0xFF17153A)))) { actions.showCommunityBrowser = true })
             add(XmbAction("Add game", Icons.Filled.Add, "Add games to your library",
                 art = XmbCardArt(null, XMB_PLAIN_CARD)) { addGame() })
@@ -450,8 +450,8 @@ internal fun DeckHome(
                     shortcut = s,
                     eyebrow = when {
                         continuePlaying.firstOrNull() == s && (st.lastPlayed > 0L || st.ms > 0L) -> "Continue playing"
-                        st.ms > 0L || st.lastPlayed > 0L -> "In your library"
-                        else -> "Ready to play"
+                        st.ms > 0L || st.lastPlayed > 0L -> "在您的库中"
+                        else -> "可游玩"
                     },
                     meta = buildList {
                         add(Icons.Filled.Storefront to storeLabelOf(s))
@@ -645,8 +645,8 @@ private fun LibraryToolbar(
             Spacer(Modifier.width(8.dp))
         }
         DeckButton(if (filterCount > 0) "Filters · $filterCount" else "Filter & sort", Icons.Filled.FilterList, onFilter)
-        DeckButton("Add games", Icons.Filled.Add, onAddGame)
-        IconTile(Icons.Filled.Public, "Community configs", onCommunity)
+        DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
+        IconTile(Icons.Filled.Public, "社区配置", onCommunity)
         // Steam friends and chat; renders only while signed in to Steam.
         Box(
             contentAlignment = Alignment.Center,
@@ -654,7 +654,7 @@ private fun LibraryToolbar(
         ) {
             SteamFriendsAction(tint = cs.onSurface)
         }
-        IconTile(Icons.Filled.Tv, "Big Picture", onBigPicture)
+        IconTile(Icons.Filled.Tv, "容器管理", onBigPicture)
     }
 }
 
@@ -709,7 +709,7 @@ private fun FilteredEmpty(onClear: () -> Unit, onAddGame: () -> Unit) {
         Text("Clear the filters to see your whole library.", color = cs.onSurfaceVariant, fontSize = 14.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             DeckButton("Clear filters", Icons.Filled.Close, onClear, primary = true)
-            DeckButton("Add games", Icons.Filled.Add, onAddGame)
+            DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
         }
     }
 }
@@ -769,7 +769,7 @@ private fun LibraryFilterDialog(
                         }
                     }
                 }
-                DeckSectionLabel("Played", Modifier.padding(top = 8.dp))
+                DeckSectionLabel("已玩", Modifier.padding(top = 8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     PlayedFilter.entries.forEach { p ->
                         DeckChoiceChip(p.label, selected = filter.played == p) { onChange(filter.copy(played = p)) }

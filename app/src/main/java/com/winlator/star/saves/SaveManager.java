@@ -133,13 +133,13 @@ public class SaveManager {
             }
 
             // Log the paths for debugging
-            Log.d("SaveManager", "Cloning files from " + srcPath.getAbsolutePath() + " to " + destPath.getAbsolutePath());
+            Log.d("SaveManager", "Cloning files from " + srcPath.getAbsolutePath() + " 到 " + destPath.getAbsolutePath());
 
             // Copy the files from the source path to the destination path
             if (FileUtils.copy(srcPath, destPath)) {
                 Log.d("SaveManager", "Files successfully cloned.");
             } else {
-                throw new IOException("Failed to clone files from " + srcPath.getAbsolutePath() + " to " + destPath.getAbsolutePath());
+                throw new IOException("Failed to clone files from " + srcPath.getAbsolutePath() + " 到 " + destPath.getAbsolutePath());
             }
 
             // Generate a unique name for the cloned save

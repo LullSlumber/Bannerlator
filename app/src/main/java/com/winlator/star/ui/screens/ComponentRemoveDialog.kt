@@ -31,7 +31,7 @@ internal fun ComponentRemoveDialog(
     containerColor: Color = AlertDialogDefaults.containerColor,
 ) {
     val name = plan.name
-    val where = if (forGame) containerName else "this container"
+    val where = if (forGame) containerName else "此容器"
     val blocked = plan.blocked
     if (blocked != null) {
         val reinstall = onReinstall?.takeIf { blocked == ComponentUninstaller.NO_RECORD }
@@ -80,7 +80,7 @@ internal fun ComponentRemoveDialog(
         confirmButton = {
             TextButton(onClick = onRemove) {
                 // intentional: destructive-action red
-                Text(if (plan.viaUninstaller) "Run uninstaller" else "Remove", color = Color(0xFFE57373))
+                Text(if (plan.viaUninstaller) "Run uninstaller" else "移除", color = Color(0xFFE57373))
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
