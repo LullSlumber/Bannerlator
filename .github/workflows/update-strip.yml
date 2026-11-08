@@ -1,0 +1,57 @@
+name: Update Strip pack (merge upstream + build standard)
+
+# One-click maintenance: pull the latest upstream Bannerlator into this fork's
+# main (which permanently carries the Strip HUD pack), then trigger a
+# standard-only build. The Strip pack also lives on the `strip-pack` branch as
+# a standalone backup.
+#
+# If upstream changed the same HUD/CI lines the pack touches, the merge fails
+# with an ::error and aborts cleanly — resolve manually, push main, then run
+# the "CI Build (artifacts only)" workflow with flavors=standard.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge upstream main into fork main
+        id: merge
+        run: |
+          BEFORE=$(git rev-parse HEAD)
+          git config user.name "strip-pack-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add upstream https://github.com/The412Banner/Bannerlator.git
+          git fetch upstream main
+          if git merge upstream/main --no-edit -m "merge upstream Bannerlator (Strip pack kept)"; then
+            git push origin main
+          else
+            git merge --abort
+            echo "::error::Upstream update conflicts with the Strip pack. Resolve locally (git fetch upstream && git merge upstream/main), push main, then run the CI workflow with flavors=standard."
+            exit 1
+          fi
+          AFTER=$(git rev-parse HEAD)
+          if [ "$BEFORE" != "$AFTER" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Upstream update merged."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Already up to date with upstream."
+          fi
+
+      - name: Trigger standard-only build
+        if: steps.merge.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run build-artifacts.yml --ref main \
+            -f release_number=update -f flavors=standard
+          echo "standard-only build dispatched"
