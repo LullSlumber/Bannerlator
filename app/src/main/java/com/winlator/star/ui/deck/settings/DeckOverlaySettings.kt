@@ -151,7 +151,7 @@ internal object OverlayRows {
             decode = { cfg -> raw(cfg, "hudStyle") ?: "fusion" },
             encode = { v -> mapOf("hudStyle" to v) },
             tech = "hudStyle",
-            hint = L("Fusion: one colour-coded look in five sizes. Tap the HUD in-game to switch vertical and horizontal."),
+            hint = L("Fusion: one colour-coded look in six sizes. Tap the HUD in-game to switch vertical and horizontal."),
         ),
         hudRow(
             ID_SIZE, L("Overlay"), L("Size"), SIMPLE,
