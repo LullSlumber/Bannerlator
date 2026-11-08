@@ -1169,6 +1169,14 @@ class FusionHudView(
                 pieces.add(StripPiece(runWidth(full)) { x -> placeRun(x, baseline, full) })
             }
         }
+        if ((showBattery || showPower) && s.battery.runtimeText != null) {
+            // Runtime-left (GameNative-parity): sits right after BAT/PWR; the clock stays pinned at
+            // the far right, so it reads ... BAT 45% PWR 1.5W LEFT 6h 27m ... TIME. runtimeText is
+            // "LEFT 6h 27m" or "LEFT CHG" — split off the label and keep the Strip's own styling.
+            val v = s.battery.runtimeText!!.removePrefix("LEFT ")
+            val l = listOf(Span("LEFT", colBat, unitPx), gap(unitPx), Span(v, colValue, px))
+            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        }
         if (displayServer.isNotBlank()) {
             val l = listOf(Span(displayServer, colDisp, unitPx))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
