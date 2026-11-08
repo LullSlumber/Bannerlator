@@ -111,7 +111,14 @@ jobs:
             "$UTILS_FILE"
         fi
 
-        ./gradlew jar --no-daemon 2>&1 | tail -20
+        set -o pipefail
+        gradle_ok=0
+        for js_att in 1 2 3 4 5; do
+          if ./gradlew jar --no-daemon 2>&1 | tail -20; then gradle_ok=1; break; fi
+          echo "::warning::gradlew attempt ${js_att} failed, retrying in 30s"
+          sleep 30
+        done
+        if [ "$gradle_ok" != "1" ]; then echo "::error::gradlew failed after 5 attempts"; exit 1; fi
 
         MAIN_JAR=""
         for j in $(find . -name "*.jar" -path "*/build/libs/*" \
@@ -658,7 +665,14 @@ jobs:
     - name: Build the Xbox backend (only if not cached)
       if: steps.xbox-backend.outputs.cache-hit != 'true'
       timeout-minutes: 60
-      run: bash tools/xbox/build-android.sh build-xbox/out
+      run: |
+        xbox_ok=0
+        for xb_att in 1 2 3; do
+          if bash tools/xbox/build-android.sh build-xbox/out; then xbox_ok=1; break; fi
+          if [ "$xb_att" = "3" ]; then echo "::error::xbox build failed after 3 attempts"; exit 1; fi
+          echo "::warning::xbox build attempt ${xb_att} failed, retrying in 60s"
+          sleep 60
+        done
 
     - name: Save the Xbox backend
       if: steps.xbox-backend.outputs.cache-hit != 'true'
