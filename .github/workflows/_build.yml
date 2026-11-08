@@ -94,6 +94,9 @@ jobs:
       run: |
         git clone --depth 1 -b gamenative-latest https://github.com/joshuatam/JavaSteam javasteam_src
         cd javasteam_src
+        # Rewrite wrapper dist URL: github release-asset CDN 504s from runners; services.gradle.org is reliable
+        sed -i 's|https://github.com/gradle/gradle-distributions/releases/download/|https://services.gradle.org/distributions/|' gradle/wrapper/gradle-wrapper.properties
+        grep distributionUrl gradle/wrapper/gradle-wrapper.properties
 
         HW_FILE=$(find . -name "HardwareUtils.java" 2>/dev/null | head -1)
         if [ -n "$HW_FILE" ]; then
