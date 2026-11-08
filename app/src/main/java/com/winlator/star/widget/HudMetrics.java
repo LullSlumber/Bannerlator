@@ -784,7 +784,12 @@ public class HudMetrics {
             Boolean sysCharging = readChargingFromPowerSupply();
             if (sysCharging != null) charging = sysCharging;
         }
-        long currentMicroAmps = Math.abs(bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW));
+        // Runtime-left current source: resolved below via batteryCurrentAmps() (framework CURRENT_NOW →
+        // power_supply current_now sysfs, µA/mA auto-detect) plus power_now ÷ voltage as a last resort.
+        // New Qualcomm fuel gauges (e.g. Snapdragon 8 Elite) often return 0/Long.MIN_VALUE from the
+        // framework property — the raw framework-only read here silently hid the LEFT estimate while
+        // wattage still worked (its path has sysfs fallbacks). Rebuilt from normalized amps so devices
+        // whose sysfs reports mA stay ratio-correct against CHARGE_COUNTER (µAh).
         long chargeCounter = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
         int voltageMv = status.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
 
@@ -800,10 +805,19 @@ public class HudMetrics {
             if (uv != null && uv > 0) voltageMv = (int) (Math.abs(uv) / 1000L);
         }
         // Wattage = current × voltage, with current UNIT auto-detected (CURRENT_NOW is nominally µA but
-        // many OEMs — e.g. this HONOR — report mA; see batteryCurrentAmps). currentMicroAmps above stays
-        // as-is for the runtime estimate (a ratio, so unit-independent). If neither current nor voltage
-        // resolves, fall back to power_now (µW) directly.
+        // many OEMs — e.g. this HONOR — report mA; see batteryCurrentAmps). The runtime estimate uses the
+        // same normalized amps (µA = amps × 1e6, a ratio against µAh, so unit-independent). If neither
+        // current nor voltage resolves, wattage falls back to power_now (µW) directly.
         float amps = batteryCurrentAmps(bm);
+        if (amps <= 0f) {
+            // Last resort for both wattage and LEFT: power_now (µW) ÷ voltage_now (µV) → A.
+            Long uw = readLongFromChannels(POWER_CHANNELS);
+            Long uvP = (uw != null && uw != 0L) ? readLongFromChannels(VOLTAGE_CHANNELS) : null;
+            if (uw != null && uw != 0L && uvP != null && uvP > 0L) {
+                amps = (Math.abs(uw) / 1_000_000f) / (uvP / 1_000_000f);
+            }
+        }
+        long currentMicroAmps = (long) (amps * 1_000_000f);
         float watts = 0f;
         if (amps > 0f && voltageMv > 0) {
             watts = (voltageMv / 1000f) * amps;
