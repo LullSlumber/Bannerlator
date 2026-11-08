@@ -1078,7 +1078,9 @@ class FusionHudView(
         val pad = sp(7f); val itemGap = sp(10f)
         // Phones have rounded screen corners; the strip spans the full parent width, so
         // inset both ends further than the vertical pad to keep the first/last item clear.
+        // The left corner radius eats deeper in practice — give the first item extra room.
         val endPad = sp(16f)
+        val startPad = sp(24f)
 
         // Full parent width. Parent wins over displayMetrics when attached (real, current size);
         // the 1 s self-refresh rebuild picks up rotations once the parent has laid out.
@@ -1167,9 +1169,9 @@ class FusionHudView(
         }
 
         // Place while they fit; from the first overflow onward everything drops (lowest priority first).
-        var x = endPad
+        var x = startPad
         for (p in pieces) {
-            val nextGap = if (x > endPad) itemGap else 0f
+            val nextGap = if (x > startPad) itemGap else 0f
             if (x + nextGap + p.w > rightLimit) break
             x += nextGap
             p.place(x)
