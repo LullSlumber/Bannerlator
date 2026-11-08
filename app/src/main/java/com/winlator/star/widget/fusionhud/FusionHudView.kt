@@ -171,9 +171,6 @@ class FusionHudView(
     private val tileRects = ArrayList<RectF>()
     private var pillBorder: RectF? = null
     private var graphRect: RectF? = null
-    // Strip's accent marker dot (the ● at the left end, DroidDeck-style).
-    private val stripDotPaint = android.graphics.Paint().apply { isAntiAlias = true }
-    private var stripDot: RectF? = null
     private var contentW = 0f
     private var contentH = 0f
 
@@ -465,7 +462,7 @@ class FusionHudView(
 
     // ---- Layout builders --------------------------------------------------
     private fun rebuild() {
-        glyphs.clear(); tileRects.clear(); pillBorder = null; graphRect = null; stripDot = null
+        glyphs.clear(); tileRects.clear(); pillBorder = null; graphRect = null
         val s = snap
         if (s == null) { contentW = 0f; contentH = 0f; return }
         when (size) {
@@ -1100,12 +1097,6 @@ class FusionHudView(
         class StripPiece(val w: Float, val place: (Float) -> Unit)
         val pieces = ArrayList<StripPiece>()
 
-        // Marker dot (DroidDeck-style accent ●) — first, so it's the last thing to drop.
-        val dotR = px * 0.35f
-        pieces.add(StripPiece(dotR * 2) { x ->
-            stripDot = RectF(x, contentH / 2f - dotR, x + dotR * 2, contentH / 2f + dotR)
-        })
-
         if (showFPS) {
             val l = listOf(
                 Span(apiLabel(), colFps, px), gap(unitPx),
@@ -1230,12 +1221,6 @@ class FusionHudView(
             drawPaint.textSize = g.sizePx
             drawPaint.color = g.color
             canvas.drawText(g.text, g.x, g.baseline, drawPaint)
-        }
-
-        // Strip marker dot — accent colour, like DroidDeck's.
-        stripDot?.let {
-            stripDotPaint.color = AppThemeState.getCurrentAccentArgb()
-            canvas.drawCircle(it.centerX(), it.centerY(), it.width() / 2f, stripDotPaint)
         }
 
         // Frametime graph
