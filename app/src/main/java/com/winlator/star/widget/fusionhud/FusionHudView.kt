@@ -355,25 +355,33 @@ class FusionHudView(
     private fun lowText(v: Float): String? = if (v <= 0f) null else fmt1(v)
 
     // number (white, or "—" muted when null) + unit (muted, smaller)
-    private fun numUnit(num: String?, unit: String, numPx: Float, unitPx: Float): List<Span> =
-        if (num == null) listOf(Span("—", colDim, numPx), Span(unit, colDim, unitPx))
+    private fun numUnit(num: String?, unit: String, numPx: Float, unitPx: Float, numGap: Float = 0f): List<Span> {
+        val core = if (num == null) listOf(Span("—", colDim, numPx), Span(unit, colDim, unitPx))
         else listOf(Span(num, colValue, numPx), Span(unit, colDim, unitPx))
-
-    // "0.2GiB"/"75%"/"1938MHz" → white number + muted suffix
-    private fun valueUnit(text: String, numPx: Float, unitPx: Float): List<Span> {
-        val i = text.indexOfFirst { !(it.isDigit() || it == '.' || it == '-') }
-        return if (i <= 0) listOf(Span(text, colValue, numPx))
-        else listOf(Span(text.substring(0, i), colValue, numPx), Span(text.substring(i), colDim, unitPx))
+        return if (numGap > 0f && core.size == 2) listOf(core[0], gap(numGap), core[1]) else core
     }
 
-    private fun tempSpans(c: Int?, sensor: HudMetrics.TempSensor, numPx: Float, unitPx: Float): List<Span> {
+    // "0.2GiB"/"75%"/"1938MHz" → white number + muted suffix
+    private fun valueUnit(text: String, numPx: Float, unitPx: Float, numGap: Float = 0f): List<Span> {
+        val i = text.indexOfFirst { !(it.isDigit() || it == '.' || it == '-') }
+        return when {
+            i <= 0 -> listOf(Span(text, colValue, numPx))
+            numGap > 0f -> listOf(Span(text.substring(0, i), colValue, numPx), gap(numGap), Span(text.substring(i), colDim, unitPx))
+            else -> listOf(Span(text.substring(0, i), colValue, numPx), Span(text.substring(i), colDim, unitPx))
+        }
+    }
+
+    private fun tempSpans(c: Int?, sensor: HudMetrics.TempSensor, numPx: Float, unitPx: Float, numGap: Float = 0f): List<Span> {
         if (c == null) return emptyList()
         val txt = HudMetrics.formatTemp(c.toFloat(), tempDisplay, false) // "81°C"
         val col = HudMetrics.tempColor(
             c.toFloat(), metrics.resolveThresholds(sensor, tempDisplay), tempDisplay, colValue)
         val i = txt.indexOf('°')
-        return if (i <= 0) listOf(Span(txt, col, numPx))
-        else listOf(Span(txt.substring(0, i), col, numPx), Span(txt.substring(i), colDim, unitPx))
+        return when {
+            i <= 0 -> listOf(Span(txt, col, numPx))
+            numGap > 0f -> listOf(Span(txt.substring(0, i), col, numPx), gap(numGap), Span(txt.substring(i), colDim, unitPx))
+            else -> listOf(Span(txt.substring(0, i), col, numPx), Span(txt.substring(i), colDim, unitPx))
+        }
     }
 
     private fun gap(unitPx: Float) = Span("  ", colDim, unitPx)
@@ -1072,15 +1080,16 @@ class FusionHudView(
      * drag it to the top or bottom edge and long-press to lock it there — no edge snapping needed.
      */
     private fun buildStrip(s: HudMetrics.Snapshot) {
-        // Faithful replica of DroidDeck's Strip (PR #1935): one uniform font size, an
-        // accent marker dot at the left end, coloured labels with white values.
-        val px = sp(12f); val unitPx = px
+        // Faithful replica of DroidDeck's Strip (PR #1935): values at full size, units a
+        // notch smaller sharing the baseline (bottom-aligned look), thin gap between a
+        // number and its unit, coloured labels with white values.
+        val px = sp(12f); val unitPx = px * 0.85f; val numGap = px * 0.28f
         val pad = sp(7f); val itemGap = sp(10f)
         // Phones have rounded screen corners; the strip spans the full parent width, so
         // inset both ends further than the vertical pad to keep the first/last item clear.
         // The left corner radius eats deeper in practice — give the first item extra room.
         val endPad = sp(16f)
-        val startPad = sp(24f)
+        val startPad = sp(34f)
 
         // Full parent width. Parent wins over displayMetrics when attached (real, current size);
         // the 1 s self-refresh rebuild picks up rotations once the parent has laid out.
@@ -1101,8 +1110,8 @@ class FusionHudView(
 
         if (showFPS) {
             val l = listOf(
-                Span(apiLabel(), colFps, px), gap(unitPx),
-                Span(fpsText(fpsNow), colValue, px), Span("fps", colDim, unitPx))
+                Span(apiLabel(), colFps, unitPx), gap(unitPx),
+                Span(fpsText(fpsNow), colValue, px), gap(numGap), Span("fps", colDim, unitPx))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         val graphW = if (showGraph) sp(56f) else 0f
@@ -1121,35 +1130,40 @@ class FusionHudView(
         if (showGPU) {
             val l = ArrayList<Span>()
             l += Span("GPU", colGpu, unitPx); l += gap(unitPx)
-            l += numUnit(s.gpuPercent?.toString(), "%", px, unitPx)
-            if (showGpuTemp) tempSpans(s.gpuTempC, HudMetrics.TempSensor.GPU, px, unitPx)
+            l += numUnit(s.gpuPercent?.toString(), "%", px, unitPx, numGap)
+            if (showGpuTemp) tempSpans(s.gpuTempC, HudMetrics.TempSensor.GPU, px, unitPx, numGap)
                 .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showCPU) {
             val l = ArrayList<Span>()
             l += Span("CPU", colCpu, unitPx); l += gap(unitPx)
-            l += numUnit(s.cpuPercent?.toString(), "%", px, unitPx)
-            if (showCpuTemp) tempSpans(s.cpuTempC, HudMetrics.TempSensor.CPU, px, unitPx)
+            l += numUnit(s.cpuPercent?.toString(), "%", px, unitPx, numGap)
+            if (showCpuTemp) tempSpans(s.cpuTempC, HudMetrics.TempSensor.CPU, px, unitPx, numGap)
                 .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showVram && s.vramText() != null) {
-            val l = listOf(Span("VRAM", colVram, unitPx), gap(unitPx)) + valueUnit(s.vramText()!!, px, unitPx)
+            val l = listOf(Span("VRAM", colVram, unitPx), gap(unitPx)) + valueUnit(s.vramText()!!, px, unitPx, numGap)
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showRAM) {
             val l = listOf(
                 Span("RAM", colRam, unitPx), gap(unitPx),
-                Span("${s.ramPercent.roundToInt()}%", colValue, px))
+                Span("${s.ramPercent.roundToInt()}", colValue, px), gap(numGap), Span("%", colDim, unitPx))
             pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
         }
         if (showBattery || showPower) {
             val l = ArrayList<Span>(); var any = false
-            if (showBattery && s.battery.percent != null) { l += Span("${s.battery.percent}%", colValue, px); any = true }
-            if (showBatteryTemp) tempSpans(s.battery.tempC, HudMetrics.TempSensor.BATTERY, px, unitPx)
+            if (showBattery && s.battery.percent != null) {
+                l += Span("${s.battery.percent}", colValue, px); l += gap(numGap); l += Span("%", colDim, unitPx); any = true
+            }
+            if (showBatteryTemp) tempSpans(s.battery.tempC, HudMetrics.TempSensor.BATTERY, px, unitPx, numGap)
                 .let { if (it.isNotEmpty()) { if (any) l += gap(unitPx); l += it; any = true } }
-            if (showPower && s.battery.watts > 0f) { if (any) l += gap(unitPx); l += Span("${fmt1(s.battery.watts)}W", colDim, px); any = true }
+            if (showPower && s.battery.watts > 0f) {
+                if (any) l += gap(unitPx)
+                l += Span(fmt1(s.battery.watts), colValue, px); l += gap(numGap); l += Span("W", colDim, px); any = true
+            }
             if (any) {
                 val full = listOf(Span("BAT", colBat, unitPx), gap(unitPx)) + l
                 pieces.add(StripPiece(runWidth(full)) { x -> placeRun(x, baseline, full) })
