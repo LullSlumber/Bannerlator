@@ -29,6 +29,10 @@ on:
         description: 'Label for APK file names'
         required: true
         type: string
+      flavors:
+        description: 'JSON array of {id,task} objects — which flavors to build. Empty = all four.'
+        required: false
+        type: string
     secrets:
       # Samsung Galaxy Performance SDK jar (base64), optional. Supplied only by callers that
       # opt in (test builds). When absent the build proceeds without it and the Galaxy
@@ -53,11 +57,7 @@ jobs:
     strategy:
       fail-fast: false          # one flavor failing must NOT cancel the others
       matrix:
-        flavor:
-          - { id: standard, task: assembleStandardRelease }
-          - { id: ludashi,  task: assembleLudashiRelease  }
-          - { id: pubg,     task: assemblePubgRelease     }
-          - { id: antutu,   task: assembleAntutuRelease   }
+        flavor: ${{ fromJSON(inputs.flavors != '' && inputs.flavors || '[{"id":"standard","task":"assembleStandardRelease"},{"id":"ludashi","task":"assembleLudashiRelease"},{"id":"pubg","task":"assemblePubgRelease"},{"id":"antutu","task":"assembleAntutuRelease"}]') }}
 
     name: build (${{ matrix.flavor.id }})
 

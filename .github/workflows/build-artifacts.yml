@@ -18,6 +18,10 @@ on:
         description: 'Label for APK file names (e.g. 1.0-fixes)'
         required: true
         default: '1.0-test'
+      flavors:
+        description: 'Flavors to build (standard/ludashi/pubg/antutu, comma-separated). Empty = all.'
+        required: false
+        default: 'standard'
 
 permissions:
   contents: read
@@ -28,10 +32,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Convert the comma-separated flavor picker ('standard' / 'standard,antutu' / '') into
+  # the JSON array of {id,task} objects the reusable matrix build expects.
+  prep:
+    runs-on: ubuntu-22.04
+    outputs:
+      flavors: ${{ steps.mk.outputs.json }}
+    steps:
+      - id: mk
+        run: |
+          IN="${{ inputs.flavors }}"
+          if [ -z "$IN" ]; then IN="standard,ludashi,pubg,antutu"; fi
+          JSON=""
+          FIRST=1
+          IFS=',' read -ra PARTS <<< "$IN"
+          for F0 in "${PARTS[@]}"; do
+            F=$(echo "$F0" | tr -d ' ')
+            if [ -z "$F" ]; then continue; fi
+            T="assemble${F^}Release"
+            if [ "$FIRST" = "0" ]; then JSON+=","; fi
+            JSON+="{\"id\":\"$F\",\"task\":\"$T\"}"
+            FIRST=0
+          done
+          JSON="[$JSON]"
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
+          echo "matrix flavors: $JSON"
+
   build:
+    needs: prep
     uses: ./.github/workflows/_build.yml
     with:
       release_number: ${{ inputs.release_number || 'main' }}
+      flavors: ${{ needs.prep.outputs.flavors }}
     secrets:
       # Test builds bundle the Samsung Galaxy Performance SDK when the secret is present
       # (empty otherwise). release.yml deliberately does NOT pass this, so public release
