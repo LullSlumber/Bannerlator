@@ -188,8 +188,8 @@ fun AppearanceScreen() {
         var orientationMode by remember { mutableStateOf(AppOrientation.mode(context)) }
         val orientationOptions = listOf(
             AppOrientation.AUTO to "Auto",
-            AppOrientation.PORTRAIT to "Portrait",
-            AppOrientation.LANDSCAPE to "Landscape",
+            AppOrientation.PORTRAIT to "竖屏",
+            AppOrientation.LANDSCAPE to "横屏",
         )
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             orientationOptions.forEachIndexed { index, (mode, label) ->
@@ -205,7 +205,7 @@ fun AppearanceScreen() {
             }
         }
         Text(
-            text = "Auto follows device rotation (default).",
+            text = "自动跟随设备旋转（默认）。",
             color = OnSurfaceVariant,
             fontSize = 11.sp,
             modifier = Modifier.padding(top = 4.dp),
@@ -215,9 +215,9 @@ fun AppearanceScreen() {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         // ── Interface scale ──────────────────────────────────────────────
-        SectionLabel("Interface Scale")
+        SectionLabel("界面缩放")
         Text(
-            text = "Scales the app's own UI — games keep their own size.",
+            text = "缩放应用自身的UI — 游戏保持其自身大小。",
             color = OnSurfaceVariant,
             fontSize = 12.sp,
         )
@@ -225,12 +225,12 @@ fun AppearanceScreen() {
         val uiScale by AppThemeState.uiScale.collectAsState()
         val fontScale by AppThemeState.fontScale.collectAsState()
         ScaleSlider(
-            label = "UI Scale",
+            label = "UI 缩放",
             value = uiScale,
             onValueChange = { AppThemeState.setUiScale(it) },
         )
         ScaleSlider(
-            label = "Font Size",
+            label = "字体大小",
             value = fontScale,
             onValueChange = { AppThemeState.setFontScale(it) },
         )

@@ -229,16 +229,16 @@ private fun DeckGameSettings(path: String, navController: NavHostController) {
     // Only a Wine game follows a Wine container: the Linux Steam client entry and Android games are
     // never linked to the container editor.
     val chain = if (env.world != World.WINE) emptyList() else listOf(
-        ChainLink("All containers", Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+        ChainLink("所有容器", Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
         ChainLink(containerName, Icons.Filled.Inventory2) { navController.navigate(DeckSettingsRoutes.container(containerId)) },
-        ChainLink("This game", Icons.Filled.SportsEsports, null),
+        ChainLink("此游戏", Icons.Filled.SportsEsports, null),
     )
     DeckSettingsEditor(
         header = EditorHeader(
             overline = when (env.world) {
-                World.LINUX -> "Linux Steam client"
-                World.ANDROID -> "Android game"
-                World.WINE -> "Game settings"
+                World.LINUX -> "Linux Steam 客户端"
+                World.ANDROID -> "Android 游戏"
+                World.WINE -> "游戏设置"
             },
             title = shortcut.name,
             icon = Icons.Filled.SportsEsports,
@@ -378,18 +378,18 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
     val header = if (defaultsMode) {
         EditorHeader(
             overline = "Defaults for every container",
-            title = "All containers",
+            title = "所有容器",
             icon = Icons.Filled.Layers,
             subtitle = "New containers start from these values. Existing containers keep their own.",
         )
     } else {
         EditorHeader(
-            overline = "Container settings",
+            overline = "容器设置",
             title = vm.container?.name ?: vm.containerName,
             icon = Icons.Filled.Inventory2,
             chain = listOf(
-                ChainLink("All containers", Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
-                ChainLink("This container", Icons.Filled.Inventory2, null),
+                ChainLink("所有容器", Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+                ChainLink("此容器", Icons.Filled.Inventory2, null),
             ),
             meta = listOf(vm.selectedWineVersion, if (vm.isArm64EC) "arm64ec" else "x86_64").filter { it.isNotEmpty() }.joinToString(" · "),
         )
@@ -457,7 +457,7 @@ private fun categoryExtras(components: DeckComponentsState?, graphics: DeckGraph
 @Composable
 private fun ArchSwitch(arch: String, onArch: (String) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Container type", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text("容器类型", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
         DeckSegmented(
             options = listOf(Opt(NewContainerDefaults.ARCH_ARM64EC, "ARM64EC"), Opt(NewContainerDefaults.ARCH_X86_64, "x86-64")),
             value = arch,

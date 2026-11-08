@@ -86,7 +86,7 @@ fun ReshadeLoadoutPicker(
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.weight(1f)) {
-            Text("ReShade loadout", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+            Text("ReShade 滤镜配置", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             Text(
                 if (selectedNames.isEmpty()) "None"
                 else "${selectedNames.size} effect${if (selectedNames.size == 1) "" else "s"}: ${selectedNames.joinToString(", ")}",
@@ -101,7 +101,7 @@ fun ReshadeLoadoutPicker(
     }
     if (!supported && selectedNames.isNotEmpty()) {
         Text(
-            "ReShade only applies to DXVK/VKD3D (Vulkan) games; it has no effect with this DX wrapper.",
+            "ReShade仅适用于DXVK/VKD3D（Vulkan）游戏；对此DXwrapper无效。",
             style = MaterialTheme.typography.bodySmall, color = cs.error,
             modifier = Modifier.padding(top = 2.dp),
         )
@@ -161,7 +161,7 @@ private fun ReshadeCatalogSheet(
 
     // Rows: catalog entries + any locally-installed effect not in the catalog (user-dropped), then
     // filtered by the search query (name/author/category) and split into the pinned "Installed"
-    // group and the "Available" group, each sorted A→Z by display name.
+    // group and the "可用" group, each sorted A→Z by display name.
     val groups = remember(catalog, installed, query) {
         val q = query.trim()
         val catIds = catalog.map { it.id }.toSet()
@@ -210,19 +210,19 @@ private fun ReshadeCatalogSheet(
             Column(Modifier.fillMaxWidth().fillMaxHeight(0.92f).padding(bottom = 12.dp)) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "ReShade Effects",
+                        "ReShade 滤镜效果",
                         color = cs.onSurface, style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                     )
                     if (selectedNames.isNotEmpty()) {
-                        TextButton(onClick = onClear) { Text("Clear all", color = cs.primary) }
+                        TextButton(onClick = onClear) { Text("全部清除", color = cs.primary) }
                     }
                 }
                 if (offline && !loading) {
                     Text(
                         if (source == ReshadeCatalog.Source.CACHE)
                             "Offline — showing a cached list. Connect to download new effects."
-                        else "Offline — showing installed effects only. Connect to browse the catalog.",
+                        else "离线状态 — 仅显示已安装的滤镜效果。请连接网络以浏览目录。",
                         color = cs.onSurfaceVariant, style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 2.dp),
                     )
@@ -234,11 +234,11 @@ private fun ReshadeCatalogSheet(
                     value = query,
                     onValueChange = { query = it },
                     singleLine = true,
-                    placeholder = { Text("Search effects…") },
+                    placeholder = { Text("搜索滤镜效果…") },
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                     trailingIcon = {
                         if (query.isNotEmpty()) {
-                            Icon(Icons.Filled.Close, contentDescription = "Clear",
+                            Icon(Icons.Filled.Close, contentDescription = "清除",
                                 modifier = Modifier.size(20.dp).clickable { query = "" })
                         }
                     },
@@ -281,7 +281,7 @@ private fun ReshadeCatalogSheet(
                                 item("__empty__") {
                                     Text(
                                         if (query.isNotBlank()) "No effects match \"$query\"."
-                                        else "No effects available. Connect to the internet to browse the catalog.",
+                                        else "无可用滤镜效果。请连接网络以浏览目录。",
                                         color = cs.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.padding(24.dp),
                                     )
@@ -298,7 +298,7 @@ private fun ReshadeCatalogSheet(
     }
 
     // Confirm-then-delete: removes the effect's folder from the ReShade dir, drops the row back to
-    // "Available", and takes it out of the loadout. Re-downloadable afterwards.
+    // "可用", and takes it out of the loadout. Re-downloadable afterwards.
     pendingDelete?.let { entry ->
         AlertDialog(
             onDismissRequest = { pendingDelete = null },
@@ -313,12 +313,12 @@ private fun ReshadeCatalogSheet(
                         scope.launch {
                             val ok = withContext(Dispatchers.IO) { ReshadeManager.deleteEffect(context, id) }
                             if (ok) {
-                                installed = installed - id      // row drops back to the "Available" group
+                                installed = installed - id      // row drops back to the "可用" group
                                 onToggle(id, false)             // and out of the current loadout
                                 onCatalogChanged()              // parent rescans the drop-in folder
                             } else errorMsg = "Couldn't delete ${entry.name}."
                         }
-                    }) { Text("Delete", color = cs.error) }
+                    }) { Text("删除", color = cs.error) }
                 }
             },
             dismissButton = {
@@ -362,7 +362,7 @@ private fun CatalogRowItem(
             when {
                 isInstalled -> onToggle(entry.id, !selected)             // toggle membership
                 downloadingId != null -> {}                              // one at a time
-                offline -> onHint("Connect to the internet to download effects.")
+                offline -> onHint("连接到互联网以下载效果。")
                 else -> onDownload(entry)
             }
         },
@@ -429,7 +429,7 @@ private fun ReshadeCatalogRow(
                     // Trash: its own tap target, so it never triggers the row's loadout toggle.
                     onDelete?.let { del ->
                         IconButton(onClick = del, modifier = Modifier.size(34.dp)) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Delete download",
+                            Icon(Icons.Filled.Delete, contentDescription = "删除下载",
                                 tint = cs.onSurfaceVariant, modifier = Modifier.size(19.dp))
                         }
                     }

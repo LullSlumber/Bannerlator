@@ -569,7 +569,7 @@ public final class SteamDatabase extends SQLiteOpenHelper {
      * Replace the FULL DLC catalogue for a base game (from extended/listofdlc). Preserves any
      * previously cached name / lazily-resolved kind for DLC still present, updates ownership, and
      * prunes DLC no longer listed. An EMPTY set writes ONLY the resolved-empty sentinel
-     * (dlc_app_id = 0) so the tab can distinguish "no DLC" from "not resolved yet". DISPLAY-ONLY —
+     * (dlc_app_id = 0) so the tab can distinguish "no DLC" 来自 "not resolved yet". DISPLAY-ONLY —
      * never touches steam_games.included_dlc, so the download picker/size are unaffected.
      */
     public void replaceDlcSet(int baseAppId, List<DlcRow> entries) {

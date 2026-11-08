@@ -129,7 +129,7 @@ internal fun p2ContentDownloadMenu(
     return XmbMenu(title, Icons.Filled.CloudDownload, onClose = { jobs.cancel() }) {
         val rows = mutableListOf<XmbRow>()
         when {
-            loading -> rows += XmbRow.Info("loading", "Loading versions…", Icons.Filled.CloudDownload)
+            loading -> rows += XmbRow.Info("loading", "正在加载版本…", Icons.Filled.CloudDownload)
             profiles.isEmpty() -> rows += XmbRow.Info("none",
                 if (failed) "Couldn't read the catalog — check your connection" else "No versions available", Icons.Filled.Info)
             else -> {
@@ -140,7 +140,7 @@ internal fun p2ContentDownloadMenu(
                     val key = ContentsManager.getEntryName(p)
                     rows += XmbRow.Info("i:$key", p.verName ?: key, Icons.Filled.CheckCircle, "Installed")
                 }
-                if (remote.isNotEmpty()) rows += XmbRow.Header("hAvailable", "Available")
+                if (remote.isNotEmpty()) rows += XmbRow.Header("hAvailable", "可用")
                 remote.forEach { p ->
                     val key = ContentsManager.getEntryName(p)
                     val st = states[key]
@@ -154,9 +154,9 @@ internal fun p2ContentDownloadMenu(
                     }
                     rows += XmbRow.Action(
                         "r:$key", p.verName ?: key, Icons.Filled.Download,
-                        subtitle = p.desc?.takeIf { it.isNotBlank() } ?: "Download and install",
+                        subtitle = p.desc?.takeIf { it.isNotBlank() } ?: "下载并安装",
                         value = value,
-                        disabledReason = if (busy) "Already downloading" else null,
+                        disabledReason = if (busy) "已在下载" else null,
                     ) {
                         started.add(key)
                         startContentDownload(ctx.applicationContext, p)

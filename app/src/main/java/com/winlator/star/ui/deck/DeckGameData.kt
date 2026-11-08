@@ -38,7 +38,7 @@ internal fun lastPlayedOf(s: Shortcut): Long = s.getExtra(EXTRA_LAST_PLAYED, "")
 internal fun playtimeLabel(ms: Long): String {
     val minutes = ms / 60_000L
     return when {
-        ms <= 0L -> "Not played yet"
+        ms <= 0L -> "尚未游玩"
         minutes < 60L -> "${minutes.coerceAtLeast(1L)} min played"
         else -> "%.1f h played".format(ms / 3_600_000.0)
     }
@@ -82,9 +82,9 @@ internal fun continuePlayingOrder(shortcuts: List<Shortcut>, stats: Map<String, 
 /** Store shelves in the order the Stores tab lists them, then Android games. Linux runtime entries sit in no store shelf. */
 internal val STORE_SHELVES: List<Pair<String, (Shortcut) -> Boolean>> = listOf(
     "Steam" to { s: Shortcut -> isSteamOriginShortcut(s) && !LinuxShortcuts.isLinuxEntry(s) },
-    "Epic Games" to { s: Shortcut -> s.getExtra("storeSource") == "epic" },
+    "Epic 游戏" to { s: Shortcut -> s.getExtra("storeSource") == "epic" },
     "GOG" to { s: Shortcut -> isGogShortcut(s) },
-    "Amazon Games" to { s: Shortcut -> isAmazonShortcut(s) },
+    "Amazon 游戏" to { s: Shortcut -> isAmazonShortcut(s) },
     "Xbox" to { s: Shortcut -> isXboxShortcut(s) },
     "Android" to { s: Shortcut -> AndroidGames.isAndroidEntry(s) },
     "Added by me" to { s: Shortcut -> isCustomOriginShortcut(s) },

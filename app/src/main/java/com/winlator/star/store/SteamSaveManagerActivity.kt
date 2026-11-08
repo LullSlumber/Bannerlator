@@ -303,7 +303,7 @@ internal fun SaveManagerScreen(
     suspend fun syncOne(appId: Int, syncFrom: Boolean): Boolean {
         if (appId in busyAppIds) return false
         busyAppIds = busyAppIds + appId
-        rowProgress[appId] = RowProgress(if (syncFrom) "Preparing sync from Cloud…" else "Preparing sync to Cloud…")
+        rowProgress[appId] = RowProgress(if (syncFrom) "正在准备从云端同步…" else "正在准备同步到云端…")
         // Use the same installDir source as SaveSyncStore + the detail page (getGame), so the combo
         // resolves the identical container. An empty dir → the manager's not-set-up guard fires.
         val installDir = withContext(Dispatchers.IO) {
@@ -418,7 +418,7 @@ internal fun SaveManagerScreen(
                 }
             }
             Text(
-                text = "Save Manager",
+                text = "存档管理器",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -455,7 +455,7 @@ internal fun SaveManagerScreen(
         Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
             CollapsibleRail(
                 state = railState,
-                title = "Save Manager",
+                title = "存档管理器",
                 sections = listOf(
                     RailSection(
                         header = null,
@@ -554,7 +554,7 @@ internal fun SaveManagerScreen(
                         statuses.isEmpty() -> {
                             Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "Nothing to sync yet.\nDownload a game's cloud save from its detail page to start.",
+                                    text = "尚无内容可同步。\n从游戏详情页下载其云存档即可开始。",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -616,7 +616,7 @@ internal fun SaveManagerScreen(
         pendingCloudAction?.let { action ->
             OutlinedAlertDialog(
                 onDismissRequest = { pendingCloudAction = null },
-                title = { Text("Third-party cloud sync") },
+                title = { Text("第三方云同步") },
                 text = {
                     Text(
                         "Steam Cloud save syncing here is handled by a third-party tool, not " +
@@ -630,7 +630,7 @@ internal fun SaveManagerScreen(
                         context.getSharedPreferences("steam_prefs", Context.MODE_PRIVATE)
                             .edit().putBoolean("cloud_saves_disclaimer_accepted", true).apply()
                         action()
-                    }) { Text("I understand") }
+                    }) { Text("我理解") }
                 },
                 dismissButton = {
                     TextButton(onClick = { pendingCloudAction = null }) { Text("Cancel") }
@@ -652,11 +652,11 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
     val prefs = remember { context.getSharedPreferences("save_manager_prefs", Context.MODE_PRIVATE) }
     var steamOn by remember { mutableStateOf(prefs.getBoolean("auto_collect_steam_on_exit", true)) }
     var steamUpOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_steam_on_exit", true)) }
-    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_steam_on_launch", true)) }
+    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("Steam 游戏", true)) }
     // Goldberg is an offline (emulated) Steam session, so cloud sync during Goldberg launches is OFF by default.
     var goldbergCloudOn by remember { mutableStateOf(prefs.getBoolean("goldberg_cloud_sync", true)) }
     var gogOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_gog_on_exit", true)) }
-    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_gog_on_launch", true)) }
+    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("GOG 游戏", true)) }
     var customOn by remember { mutableStateOf(prefs.getBoolean("auto_backup_custom_on_exit", true)) }
     // Achievement sync-back is owned by SteamPrefs (NOT save_manager_prefs) and is default OFF — it
     // writes unlocks to the user's REAL Steam account, so it's gated behind an ON warning below.
@@ -666,30 +666,30 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
 
     Column(modifier = modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)) {
         SettingsToggleRow(
-            title = "Steam games: auto-collect on exit",
-            subtitle = "Snapshot Steam-library saves to your local Library when a game exits.",
+            title = "Steam 游戏：退出时自动收集",
+            subtitle = "游戏退出时将 Steam 库存档快照保存到您的本地库。",
             checked = steamOn,
             // Don't flip/write here — route through the confirm (OFF) / info (ON) prompt.
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.STEAM, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "Steam games: auto-upload to cloud on exit",
-            subtitle = "Push Steam-library saves to Steam Cloud when a game exits (only after you accept the third-party cloud disclaimer; never deletes anything from the cloud).",
+            title = "Steam游戏：退出时自动上传至云端",
+            subtitle = "当游戏退出时，将Steam库存档推送到Steam云（仅在您接受第三方云免责声明后；不会从云端删除任何内容）。",
             checked = steamUpOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.STEAM_UP, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "Steam games: auto-download from cloud on launch",
-            subtitle = "Pull the latest Steam Cloud saves into the game before it starts (newest-wins — never overwrites a newer local save).",
+            title = "Steam游戏：启动时从云端自动下载",
+            subtitle = "在游戏启动前拉取最新的Steam云存档（最新优先——绝不会覆盖较新的本地存档）。",
             checked = steamDlOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.STEAM_DL, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "Steam games: sync with Steam Cloud during Goldberg launches",
-            subtitle = "On by default — games launched with Goldberg pull/push cloud saves and upload achievements like other launches (needs the toggles above and your Steam login). Turn off to keep Goldberg fully offline.",
+            title = "Steam 游戏：在 Goldberg 启动期间与 Steam 云同步",
+            subtitle = "默认开启 — 使用 Goldberg 启动的游戏会像其他启动一样拉取/推送云存档并上传成就（需要上面的开关和您的 Steam 登录）。关闭以保持 Goldberg 完全离线。",
             checked = goldbergCloudOn,
             onCheckedChange = {
                 goldbergCloudOn = it
@@ -698,29 +698,29 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "GOG games: auto-upload to cloud on exit",
-            subtitle = "Push GOG-library saves to GOG cloud when a game exits (newest-wins — never overwrites a newer cloud save).",
+            title = "GOG游戏：退出时自动上传到云端",
+            subtitle = "当游戏退出时将GOG库存档推送到GOG云（最新优先 — 永远不会覆盖较新的云存档）。",
             checked = gogOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.GOG, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "GOG games: auto-download from cloud on launch",
-            subtitle = "Pull the latest GOG cloud saves into the game before it starts (newest-wins — never overwrites a newer local save).",
+            title = "GOG游戏：启动时自动从云端下载",
+            subtitle = "在游戏启动前将最新的GOG云存档拉取到游戏中（最新优先 — 永远不会覆盖较新的本地存档）。",
             checked = gogDlOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.GOG_DL, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "Custom games: auto-back up on exit",
-            subtitle = "Snapshot custom-import saves to the local vault when a game exits.",
+            title = "自定义游戏：退出时自动备份",
+            subtitle = "游戏退出时将自行导入的存档快照保存到本地保险库。",
             checked = customOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.CUSTOM, it) },
         )
         Spacer(Modifier.height(16.dp))
         SettingsToggleRow(
-            title = "Steam achievements: sync unlocks to your Steam profile",
-            subtitle = "When ON, achievements you unlock in-game are written back to your REAL Steam account. Off by default — unlocks otherwise stay local to this device.",
+            title = "Steam成就：将解锁同步到您的Steam个人资料",
+            subtitle = "开启后，您在游戏中解锁的成就会写回您的真实Steam账号。默认关闭——否则解锁仅保留在此设备本地。",
             checked = achvSyncOn,
             onCheckedChange = { pendingToggle = TogglePrompt(ToggleKind.ACHV_SYNC, it) },
         )
@@ -735,7 +735,7 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
                 if (prompt.newValue) {
                     OutlinedAlertDialog(
                         onDismissRequest = { pendingToggle = null },
-                        title = { Text("Sync achievements to Steam?") },
+                        title = { Text("将成就同步到Steam？") },
                         text = {
                             Text(
                                 "Turning this ON writes achievements you unlock in-game back to your REAL " +
@@ -749,7 +749,7 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
                                 SteamPrefs.setAchievementSyncBackEnabled(context, true)
                                 achvSyncOn = true
                                 pendingToggle = null
-                            }) { Text("Turn on") }
+                            }) { Text("开启") }
                         },
                         dismissButton = {
                             TextButton(onClick = { pendingToggle = null }) { Text("Cancel") }
@@ -762,7 +762,7 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
                     }
                     OutlinedAlertDialog(
                         onDismissRequest = { pendingToggle = null },
-                        title = { Text("Achievement sync off") },
+                        title = { Text("成就同步关闭") },
                         text = {
                             Text(
                                 "In-game achievement unlocks will stay local to this device and won't be " +
@@ -778,9 +778,9 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
             val prefKey = when (prompt.kind) {
                 ToggleKind.STEAM -> "auto_collect_steam_on_exit"
                 ToggleKind.STEAM_UP -> "auto_upload_steam_on_exit"
-                ToggleKind.STEAM_DL -> "auto_download_steam_on_launch"
+                ToggleKind.STEAM_DL -> "Steam 游戏"
                 ToggleKind.GOG -> "auto_upload_gog_on_exit"
-                ToggleKind.GOG_DL -> "auto_download_gog_on_launch"
+                ToggleKind.GOG_DL -> "GOG 游戏"
                 ToggleKind.CUSTOM -> "auto_backup_custom_on_exit"
                 ToggleKind.ACHV_SYNC -> "" // unreachable — handled above
             }
@@ -847,22 +847,22 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
                 LaunchedEffect(prompt) { commit(true) }
                 OutlinedAlertDialog(
                     onDismissRequest = { pendingToggle = null },
-                    title = { Text("Auto-backup on") },
+                    title = { Text("自动备份已开启") },
                     text = {
                         Text(
                             when (prompt.kind) {
                                 ToggleKind.STEAM ->
-                                    "Automatic save backup on exit is ON for your Steam library games."
+                                    "退出时自动备份保存功能对您的Steam库游戏已开启。"
                                 ToggleKind.STEAM_UP ->
-                                    "Automatic cloud upload on exit is ON for your Steam library games."
+                                    "您的Steam库游戏退出时自动云端上传已开启。"
                                 ToggleKind.STEAM_DL ->
-                                    "Automatic cloud download on launch is ON for your Steam library games."
+                                    "您的Steam库游戏启动时自动云端下载已开启。"
                                 ToggleKind.GOG ->
-                                    "Automatic cloud upload on exit is ON for your GOG library games."
+                                    "您的GOG库游戏的退出时自动云上传已开启。"
                                 ToggleKind.GOG_DL ->
-                                    "Automatic cloud download on launch is ON for your GOG library games."
+                                    "您的GOG库游戏的启动时自动云下载已开启。"
                                 ToggleKind.CUSTOM ->
-                                    "Automatic save backup on exit is ON for your custom-imported games."
+                                    "退出时自动备份保存功能对您自定义导入的游戏已开启。"
                                 ToggleKind.ACHV_SYNC -> "" // unreachable — handled above
                             },
                         )
@@ -947,11 +947,11 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
         onMessage("Backing up saves for \"${s.name}\"…")
         CustomSaveVault.manualBackup(context, s.shortcut.container, s.shortcut, layout) { r ->
             if (r.wholeContainer && r.ok) {
-                onMessage("No per-game saves detected — backed up the whole container.")
+                onMessage("未检测到按游戏的存档 — 已备份整个容器。")
             }
             onMessage(
                 if (r.ok) "Backed up ${r.fileCount} files → ${r.path?.substringAfterLast('/')}"
-                else "Backup failed: ${r.error ?: "unknown error"}",
+                else "Backup failed: ${r.error ?: "未知错误"}",
             )
             busyKeys = busyKeys - key
             scope.launch { reload() }
@@ -965,7 +965,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
         CustomSaveVault.restoreLatest(context, s.shortcut, target) { r ->
             onMessage(
                 if (r.ok) "Restored ${r.filesWritten} files to \"${target.name}\""
-                else "Restore failed: ${r.error ?: "unknown error"}",
+                else "Restore failed: ${r.error ?: "未知错误"}",
             )
             emuConflicts = r.emuConflicts
             busyKeys = busyKeys - key
@@ -981,7 +981,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
         GameSaveBackup.restore(context, uri, target) { r ->
             onMessage(
                 if (r.ok) "Restored ${r.filesWritten} files to \"${target.name}\""
-                else "Restore failed: ${r.error ?: "unknown error"}",
+                else "Restore failed: ${r.error ?: "未知错误"}",
             )
             emuConflicts = r.emuConflicts
             busyKeys = busyKeys - key
@@ -996,7 +996,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
             }
             rows.isEmpty() -> Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No custom games found.\nImport a game (exe/folder), then back its saves up here.",
+                    text = "未找到自定义游戏。\n导入游戏（exe/文件夹），然后在此处备份其存档。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1027,11 +1027,11 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
     backupFor?.let { s ->
         OutlinedAlertDialog(
             onDismissRequest = { backupFor = null },
-            title = { Text("Backup format") },
+            title = { Text("备份格式") },
             text = {
                 Column {
                     Text(
-                        "Which tool is this backup for?",
+                        "此备份用于哪个工具?",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall,
                     )
@@ -1043,7 +1043,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
                             .padding(vertical = 8.dp),
                     ) {
                         Text("Winlator-native .zip", color = MaterialTheme.colorScheme.primary)
-                        Text("Sibling Winlator / WinNative builds", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        Text("同类Winlator / WinNative构建", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                     Column(
                         modifier = Modifier
@@ -1052,7 +1052,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
                             .padding(vertical = 8.dp),
                     ) {
                         Text("GameHub-compatible .zip", color = MaterialTheme.colorScheme.primary)
-                        Text("GameHub, Proton-based tools (default)", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        Text("GameHub, 基于Proton的工具 (默认)", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             },
@@ -1083,7 +1083,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
     restoreChooser?.let { s ->
         OutlinedAlertDialog(
             onDismissRequest = { restoreChooser = null },
-            title = { Text("Restore saves") },
+            title = { Text("恢复存档") },
             text = {
                 Column {
                     if (s.hasBackup) {
@@ -1093,7 +1093,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
                                 .clickable { restoreChooser = null; restoreFor = s }
                                 .padding(vertical = 8.dp),
                         ) {
-                            Text("Restore latest backup", color = MaterialTheme.colorScheme.primary)
+                            Text("恢复最新备份", color = MaterialTheme.colorScheme.primary)
                             Text("Backed up ${relTime(s.lastBackupMillis)}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         }
                     }
@@ -1103,7 +1103,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
                             .clickable {
                                 restoreChooser = null
                                 fileRestoreFor = s
-                                filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select a save .zip"))
+                                filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "选择一个save.zip"))
                             }
                             .padding(vertical = 8.dp),
                     ) {
@@ -1219,7 +1219,7 @@ private fun CustomSaveRow(
                 TextButton(onClick = onBackup) { Text("Back up") }
                 // Restore is always available: latest vault snapshot if present, else browse for a
                 // GameHub/Bannerlator save file (the chooser decides).
-                TextButton(onClick = onRestore) { Text("Restore") }
+                TextButton(onClick = onRestore) { Text("恢复") }
             }
         }
     }
@@ -1247,7 +1247,7 @@ private fun EpicSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMessa
     LaunchedEffect(Unit) { reload() }
 
     // Resolve the container + auto save dir (off-main), then drive the transport. Distinguishes
-    // "not set up in a container" from "no cloud-save folder" so the toast is actionable.
+    // "not set up in a container" 来自 "no cloud-save folder" so the toast is actionable.
     fun runSync(s: EpicCloudSavePaths.EpicSaveStatus, up: Boolean) {
         val key = s.appName
         if (key in busyKeys) return
@@ -1298,7 +1298,7 @@ private fun EpicSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMessa
             }
             rows.isEmpty() -> Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No installed Epic games found.\nInstall a game from the Epic store, then sync its cloud saves here.",
+                    text = "未找到已安装的Epic游戏。\n从Epic商店安装游戏，然后在此处同步其云存档。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1380,7 +1380,7 @@ private fun EpicSaveRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = status.containerLabel?.let { "Container: $it" } ?: "Not set up in a container",
+                text = status.containerLabel?.let { "Container: $it" } ?: "未在容器中设置",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -1389,10 +1389,10 @@ private fun EpicSaveRow(
             val statusLine = when {
                 !setUp -> "Add this game to a container first to sync."
                 status.cloudSaveEnabled && status.lastSyncMillis > 0L -> "Synced ${relTime(status.lastSyncMillis)}"
-                status.cloudSaveEnabled -> "Cloud saves ready — not synced yet"
+                status.cloudSaveEnabled -> "云存档就绪 — 尚未同步"
                 // Metadata fetched, but Epic ships no CloudSaveFolder for this title → genuinely unsupported.
-                status.metadataChecked -> "No cloud-save support for this title"
-                else -> "Open the Epic store to load this game's cloud-save info."
+                status.metadataChecked -> "此游戏不支持云存档"
+                else -> "打开 Epic 商店以加载此游戏的云存档信息。"
             }
             Text(
                 text = statusLine,
@@ -1586,7 +1586,7 @@ private fun GogSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMessag
             }
             rows.isEmpty() -> Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "No installed GOG games found.\nInstall a game from the GOG store, then sync its cloud saves here.",
+                    text = "未找到已安装的GOG游戏。\n从GOG商店安装游戏，然后在此处同步其云存档。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1677,7 +1677,7 @@ private fun GogSaveRow(
                 autoTail != null -> "Auto: …/$autoTail"
                 status.autoResolvable -> status.containerLabel?.let { "Container: $it" } ?: "Auto-resolve on sync"
                 status.containerLabel != null -> "Container: ${status.containerLabel}"
-                else -> "No save folder set"
+                else -> "未设置存档文件夹"
             }
             Text(
                 text = folderLine,
@@ -1789,7 +1789,7 @@ private fun SaveStatusRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = status.containerLabel?.let { "Container: $it" } ?: "Not set up in a container",
+                text = status.containerLabel?.let { "Container: $it" } ?: "未在容器中设置",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -1851,14 +1851,14 @@ private fun SaveStatusRow(
             IconButton(onClick = onSyncFrom, enabled = syncFromEnabled) {
                 Icon(
                     imageVector = Icons.Filled.CloudDownload,
-                    contentDescription = "Sync from Cloud",
+                    contentDescription = "从云端同步",
                     tint = if (syncFromEnabled) MaterialTheme.colorScheme.primary else disabledTint,
                 )
             }
             IconButton(onClick = onSyncTo, enabled = actionsEnabled) {
                 Icon(
                     imageVector = Icons.Filled.CloudUpload,
-                    contentDescription = "Sync to Cloud",
+                    contentDescription = "同步到云端",
                     tint = if (actionsEnabled) MaterialTheme.colorScheme.primary else disabledTint,
                 )
             }
@@ -1890,13 +1890,13 @@ private const val PROGRESS_LINGER_MS = 2500L
 
 // Green = settled, amber/orange = local drift, blue = cloud drift, grey = nothing to do / unset.
 private fun pillFor(state: SaveState): Pair<Color, String> = when (state) {
-    SaveState.IN_SYNC        -> Color(0xFF3BA55D) to "In sync"
-    SaveState.LOCAL_ONLY     -> Color(0xFFE0662E) to "Not backed up"
-    SaveState.LOCAL_AHEAD    -> Color(0xFFE0A82E) to "Local ahead"
-    SaveState.CLOUD_AHEAD    -> Color(0xFF4B9CE0) to "Cloud ahead"
-    SaveState.NEVER_SYNCED   -> Color(0xFFE07B2E) to "Never synced"
-    SaveState.NO_CLOUD_SAVES -> Color(0xFF9AA0A6) to "No cloud saves"
-    SaveState.NOT_SET_UP     -> Color(0xFF9AA0A6) to "Not set up"
+    SaveState.IN_SYNC        -> Color(0xFF3BA55D) to "已同步"
+    SaveState.LOCAL_ONLY     -> Color(0xFFE0662E) to "未备份"
+    SaveState.LOCAL_AHEAD    -> Color(0xFFE0A82E) to "本地领先"
+    SaveState.CLOUD_AHEAD    -> Color(0xFF4B9CE0) to "云端领先"
+    SaveState.NEVER_SYNCED   -> Color(0xFFE07B2E) to "从未同步"
+    SaveState.NO_CLOUD_SAVES -> Color(0xFF9AA0A6) to "无云存档"
+    SaveState.NOT_SET_UP     -> Color(0xFF9AA0A6) to "未设置"
     SaveState.UNKNOWN        -> Color(0xFF9AA0A6) to "Unknown"
 }
 

@@ -307,7 +307,7 @@ fun audioConfigFromEnv(env: String, driverId: String = ""): AudioConfig {
 }
 
 /**
- * The audio popup. `scopeLabel` names the target ("this container" / "this game" / "live · this
+ * The audio popup. `scopeLabel` names the target ("此容器" / "此游戏" / "live · this
  * session"). `latencyLive`=false shows the guest-buffer row tagged "next launch" (in-game).
  */
 @Composable
@@ -431,7 +431,7 @@ fun AudioSettingsDialog(
                             modifier = Modifier.fillMaxWidth()) {
                             Column(Modifier.padding(horizontal = 14.dp).alpha(ftAlpha)) {
                                 // Output mode
-                                FtRow("Output mode", "AAudio performance mode", cs,
+                                FtRow("输出模式", "AAudio性能模式", cs,
                                     onHelp = { helpRes = R.string.help_audio_perf_mode }) {
                                     Row {
                                         // DirectAudio must NOT offer POWER_SAVING: on this engine its AAudio
@@ -451,7 +451,7 @@ fun AudioSettingsDialog(
                                         }
                                     }
                                 }
-                                FtRow("Adaptive buffer", "Auto-grow only if it hears crackle", cs,
+                                FtRow("自适应缓冲区", "仅在检测到爆音时自动增长", cs,
                                     onHelp = { helpRes = R.string.help_audio_adaptive }) {
                                     Switch(checked = shown.adaptive, enabled = custom,
                                         onCheckedChange = { cfg = cfg.copy(adaptive = it) })
@@ -462,7 +462,7 @@ fun AudioSettingsDialog(
                                 // go below. PulseAudio keeps the guest winepulse buffer it always had.
                                 val latencyUsed = latencyUsedBy(driverId)
                                 FtRow(
-                                    if (directBuffer) "Audio buffer" else "Guest buffer",
+                                    if (directBuffer) "音频缓冲区" else "客户缓冲区",
                                     // ALSA reaches AAudio through the app's own server, which takes its sizing
                                     // from the buffer rows below - there is no guest-side latency for this row
                                     // to set, so say that rather than leaving a live-looking slider that does
@@ -487,12 +487,12 @@ fun AudioSettingsDialog(
                                             onValueChange = { cfg = cfg.copy(latencyMsec = (it / 10).toInt() * 10) },
                                             modifier = Modifier.width(140.dp))
                                 }
-                                FtStepper("Initial sink buffer", "frames · 0 = auto",
+                                FtStepper("初始sink缓冲区", "frames · 0 = auto",
                                     if (shown.bufferFrames > 0) "${shown.bufferFrames}" else "auto", custom, cs,
                                     onHelp = { helpRes = R.string.help_audio_buffer_frames }) {
                                     cfg = cfg.copy(bufferFrames = (cfg.bufferFrames + it * 256).coerceAtLeast(0))
                                 }
-                                FtStepper("Max sink buffer", "growth cap · 0 = device max",
+                                FtStepper("最大sink缓冲区", "growth cap · 0 = device max",
                                     if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else "device max", custom, cs,
                                     onHelp = { helpRes = R.string.help_audio_max_buffer_frames }) {
                                     cfg = cfg.copy(maxBufferFrames = (cfg.maxBufferFrames + it * 256).coerceAtLeast(0))

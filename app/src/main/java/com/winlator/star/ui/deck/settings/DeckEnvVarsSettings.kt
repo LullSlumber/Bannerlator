@@ -74,7 +74,7 @@ import java.util.Locale
 // As in the classic game editor, a Wine game's sync variables (WINEESYNC / WINENTSYNC / WINEFSYNC) are
 // not listed: Performance › Sync owns them. A game whose own string still carries them from before that
 // row existed keeps them as they are here; the Sync row reads them and clears them when it is set.
-// "Prefer game-folder DLLs" is the classic view over WINEDLLOVERRIDES (DllOverrides). Wine games, the
+// "优先使用游戏文件夹中的 DLL" is the classic view over WINEDLLOVERRIDES (DllOverrides). Wine games, the
 // Linux Steam client entry (whose string is the session's environment), containers and All containers.
 
 internal object EnvVarRows {
@@ -131,7 +131,7 @@ private val SYNC_VARS = setOf("WINEESYNC", "WINENTSYNC", "WINEFSYNC")
 /** The audio cog's own keys (audioConfigToEnv), one set per sound engine. */
 private val AUDIO_OWNED = Regex("""^BANNER_AUDIO_(ALSA|PULSE|DIRECT)_(PRESET|PERF|ADAPTIVE|LAT|BF|MBF)$""")
 
-/** The Expert page's variables and "Prefer game-folder DLLs", for a game, a container and All containers. */
+/** The Expert page's variables and "优先使用游戏文件夹中的 DLL", for a game, a container and All containers. */
 internal class DeckEnvVarsSection(
     val env: SettingsEnv,
     val source: SettingsSource,
@@ -240,10 +240,10 @@ internal class DeckEnvVarsSection(
         }
     }
 
-    /** What "Edit as text" starts from: the listed variables. */
+    /** What "以文本形式编辑" starts from: the listed variables. */
     fun rawVisible(): String = renderEnv(listed(all()).map { it.first })
 
-    /** "Edit as text": stored as typed, as the classic text box does, with a Wine game's kept sync variables after it. */
+    /** "以文本形式编辑": stored as typed, as the classic text box does, with a Wine game's kept sync variables after it. */
     fun setRaw(text: String) {
         val typed = text.replace('\n', ' ')
         val kept = all().filter { hidden(it) }
@@ -303,20 +303,20 @@ internal class DeckEnvVarsSection(
             add(PageExtra("env-linux") {
                 GroupCard(first = true, last = true, highlight = false) {
                     DeckLine(
-                        "One environment for the whole session",
-                        "These reach the Steam client and every game it launches. A variable here overrides the same name from the FEXCore preset.",
+                        "整个会话使用一个环境",
+                        "这些会影响 Steam 客户端及其启动的每个游戏。此处的变量会覆盖 FEXCore 预设中的同名变量。",
                         icon = Icons.Filled.Info,
                     )
                 }
             })
         }
 
-        add(PageExtra("env-compat-label") { GroupLabel("Compatibility") })
+        add(PageExtra("env-compat-label") { GroupLabel("兼容性") })
         add(PageExtra("env-compat") {
             LaunchedEffect(Unit) { scanGameDir() }
             GroupCard(first = true, last = found.isEmpty(), highlight = false) {
                 DeckLine(
-                    "Prefer game-folder DLLs",
+                    "优先使用游戏文件夹中的 DLL",
                     hint = (if (linux) "For the games the client launches, not the client itself, and for every one of them: the session has one environment. "
                         else "") +
                         "Loads the game's own " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
@@ -339,13 +339,13 @@ internal class DeckEnvVarsSection(
             })
         }
 
-        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) "This game's variables" else "Environment variables") })
+        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) "此游戏的变量" else "环境变量") })
         val shown = listed(vars)
         if (shown.isEmpty()) {
             add(PageExtra("env-none") {
                 GroupCard(first = true, last = false, highlight = false) {
                     DeckLine(
-                        "No environment variables set",
+                        "未设置环境变量",
                         when {
                             linux -> "The session starts with the app's own variables only."
                             game -> "The game starts with its container's variables" + (if (containerVars.isEmpty()) "." else ", listed below.")
@@ -382,25 +382,25 @@ internal class DeckEnvVarsSection(
         }
         add(PageExtra("env-add") {
             GroupCard(first = false, last = false, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.Add, "Add a variable", "Pick a known variable or type your own: NAME, or NAME=VALUE.") { adding = true })
+                DeckActionRow(DeckAction("add", Icons.Filled.Add, "添加变量", "Pick a known variable or type your own: NAME, or NAME=VALUE.") { adding = true })
             }
         })
         add(PageExtra("env-raw") {
             GroupCard(first = false, last = true, highlight = false) {
-                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, "Edit as text", "The whole list as NAME=VALUE, separated by spaces.") { rawText = true })
+                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, "以文本形式编辑", "The whole list as NAME=VALUE, separated by spaces.") { rawText = true })
             }
         })
 
         // The container's variables this game doesn't set itself: it starts with them as they are.
         val inherited = containerVars.values.filter { c -> vars.none { it.name == c.name } }
         if (inherited.isNotEmpty()) {
-            add(PageExtra("env-container-label") { GroupLabel("From the container") })
+            add(PageExtra("env-container-label") { GroupLabel("来自容器") })
             inherited.forEachIndexed { i, c ->
                 add(PageExtra("env-container:${c.name}") {
                     GroupCard(first = i == 0, last = i == inherited.lastIndex, highlight = false) {
                         DeckLine(
                             c.name,
-                            listOfNotNull(c.value.ifEmpty { "(empty)" }, ownerOf(c.name)).joinToString(" · ") + " · Pick it to give this game its own value.",
+                            listOfNotNull(c.value.ifEmpty { "(empty)" }, ownerOf(c.name)).joinToString(" · ") + " · 选择它为此游戏提供自己的值。",
                             icon = Icons.Filled.Inventory2,
                             onClick = { editing = EnvEdit(c.name, 0, c.value, fromContainer = true) },
                         )
@@ -442,7 +442,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
             Column {
                 Text(e.name, fontFamily = FontFamily.Monospace, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (e.fromContainer) {
-                    Text("From the container. OK gives this game its own value.", fontSize = 12.5.sp, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+                    Text("来自容器。确定会为此游戏提供自己的值。", fontSize = 12.5.sp, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
                 }
             }
         },
@@ -463,7 +463,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                         opts.forEachIndexed { i, o ->
                             EnvChoiceLine(o, null, selected = o == value, multi = false, modifier = if (i == 0) Modifier.focusRequester(first) else Modifier) { value = o }
                         }
-                        EnvValueField(value, "Or type any value", numeric = false) { value = it }
+                        EnvValueField(value, "或输入任意值", numeric = false) { value = it }
                     }
                     EnvVarType.SELECT_MULTIPLE -> {
                         val selected = value.split(",").filter { it.isNotBlank() }
@@ -472,7 +472,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                                 value = (if (o in selected) selected - o else selected + o).joinToString(",")
                             }
                         }
-                        EnvValueField(value, "As text, comma-separated", numeric = false) { value = it }
+                        EnvValueField(value, "作为文本，以逗号分隔", numeric = false) { value = it }
                     }
                     EnvVarType.NUMBER, EnvVarType.TEXT -> EnvValueField(value, "Value", numeric = type == EnvVarType.NUMBER) { value = it }
                 }
@@ -490,7 +490,7 @@ private fun EnvVarDialog(s: DeckEnvVarsSection, e: EnvEdit) {
                     TextButton(onClick = {
                         s.removeAt(e.name, e.occ)
                         close()
-                    }) { Text("Remove", color = cs.error) }
+                    }) { Text("移除", color = cs.error) }
                 }
                 TextButton(onClick = { close() }) { Text("Cancel") }
             }
@@ -511,7 +511,7 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
     val candidates = KnownEnvVars.names.filter { it !in existing && (name.isEmpty() || it.contains(name, ignoreCase = true)) }
     OutlinedAlertDialog(
         onDismissRequest = { s.adding = false },
-        title = { Text("Add a variable") },
+        title = { Text("添加变量") },
         text = {
             Column {
                 OutlinedTextField(
@@ -519,13 +519,13 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
                     onValueChange = { text = it },
                     singleLine = true,
                     isError = error != null,
-                    label = { Text("NAME or NAME=VALUE") },
-                    supportingText = { Text(error ?: "Or pick a known one below. Spaces are dropped.") },
+                    label = { Text("NAME 或 NAME=VALUE") },
+                    supportingText = { Text(error ?: "或在下方选择一个已知变量。空格会被丢弃。") },
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    if (candidates.isEmpty()) "No known variable matches." else "Known variables",
+                    if (candidates.isEmpty()) "No known variable matches." else "已知变量",
                     color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 12.5.sp,
                     modifier = Modifier.padding(top = 10.dp, bottom = 6.dp),
                 )
@@ -540,13 +540,13 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
             TextButton(
                 onClick = { s.addAndEdit(name, if (eq >= 0) cleaned.substring(eq + 1) else envDefault(name)) },
                 enabled = name.isNotEmpty() && error == null,
-            ) { Text("Add") }
+            ) { Text("添加") }
         },
         dismissButton = { TextButton(onClick = { s.adding = false }) { Text("Cancel") } },
     )
 }
 
-/** "Edit as text": the whole list in one box, stored as typed. */
+/** "以文本形式编辑": the whole list in one box, stored as typed. */
 @Composable
 private fun EnvRawDialog(s: DeckEnvVarsSection) {
     val context = LocalContext.current
@@ -555,12 +555,12 @@ private fun EnvRawDialog(s: DeckEnvVarsSection) {
     val malformed = text.replace('\n', ' ').split(" ").filter { it.isNotBlank() && it.indexOf('=') <= 0 }
     OutlinedAlertDialog(
         onDismissRequest = { s.rawText = false },
-        title = { Text("Edit as text") },
+        title = { Text("以文本形式编辑") },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("NAME=VALUE, separated by spaces") },
+                label = { Text("变量名称=变量值, 用空格分隔") },
                 isError = malformed.isNotEmpty(),
                 supportingText = {
                     Text(
@@ -591,7 +591,7 @@ private fun EnvValueField(value: String, label: String, numeric: Boolean, onValu
         onValueChange = { onValue(it.replace(" ", "")) },
         singleLine = true,
         label = { Text(label) },
-        supportingText = { Text("Spaces are dropped: variables are separated by spaces.") },
+        supportingText = { Text("空格会被丢弃：变量由空格分隔。") },
         keyboardOptions = KeyboardOptions(keyboardType = if (numeric) KeyboardType.Number else KeyboardType.Text),
         shape = RoundedCornerShape(14.dp),
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),

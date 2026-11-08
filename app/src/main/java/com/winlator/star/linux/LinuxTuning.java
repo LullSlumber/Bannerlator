@@ -258,12 +258,12 @@ public final class LinuxTuning {
                 {"Steam Deck mode", EXTRA_STEAMDECK},
                 {"App games in Steam", EXTRA_APP_GAMES},
                 {"Share saves with app", EXTRA_SHARE_SAVES},
-                {"Fill the screen", EXTRA_FILL_SCREEN},
+                {"填满屏幕", EXTRA_FILL_SCREEN},
                 {"Quake-engine windowed", EXTRA_IDTECH3},
                 {"Steam/QAM buttons", EXTRA_STEAM_BUTTONS},
                 {"Double Back opens QAM", EXTRA_DOUBLE_BACK_QAM},
                 {"Xalia off", EXTRA_NO_XALIA},
-                {"proot without seccomp", EXTRA_PROOT_NO_SECCOMP},
+                {"无 seccomp 的 proot", EXTRA_PROOT_NO_SECCOMP},
                 {"Steam offline mode", EXTRA_OFFLINE},
         };
         StringBuilder b = new StringBuilder();
@@ -280,7 +280,7 @@ public final class LinuxTuning {
         String sc = scaler(shortcut);
         b.append(String.format("%-24s", "Scaling mode")).append(sc.isEmpty() ? "(gamescope default)" : sc).append('\n');
         String fi = filter(shortcut);
-        b.append(String.format("%-24s", "Scaling filter")).append(fi.isEmpty() ? "(gamescope default)" : fi).append('\n');
+        b.append(String.format("%-24s", "缩放滤镜")).append(fi.isEmpty() ? "(gamescope default)" : fi).append('\n');
         String sysmem = turnipSysmemChoice(shortcut);
         b.append(String.format("%-24s", "Turnip sysmem")).append(sysmem.isEmpty() ? "automatic" : ("1".equals(sysmem) ? "on" : "off")).append('\n');
         return b.toString();

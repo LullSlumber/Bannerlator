@@ -32,7 +32,7 @@ import com.winlator.star.ui.deck.deckLine
 // What the Deck settings pages share besides their rows: a section (a list, a picker, an order, an
 // action) that a host screen adds to a category page, the action lines those sections show, and the
 // hidden rows a section reads and writes its stored string through, so it lands in the editor's
-// draft and "Unsaved changes" like any row.
+// draft and "未保存的更改" like any row.
 
 /**
  * One part of the editor that is not a setting row (e.g. the drive list or the ReShade effects). The

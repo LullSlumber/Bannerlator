@@ -38,7 +38,7 @@ public final class FeatureFlags {
     public static final boolean EPIC_OVERLAY_ENABLED = false;
 
     /**
-     * LSFG Native low-end experiments: the per-container "Capture resolution" (the frame-gen
+     * LSFG Native low-end experiments: the per-container "采集分辨率" (the frame-gen
      * chain runs below panel resolution and is blitted up; also live in the in-game drawer) and
      * "LSFG on Vulkan 1.1 drivers (compat)" (the capability probe accepts a Vulkan 1.1/1.2
      * compositor driver that offers VK_KHR_spirv_1_4 + VK_KHR_vulkan_memory_model, and the cached

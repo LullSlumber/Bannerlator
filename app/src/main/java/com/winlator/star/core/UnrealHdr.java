@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The "Unreal Engine HDR" setting: one place for what the container editor, the game-shortcut editor,
+ * The "虚幻引擎 HDR" setting: one place for what the container editor, the game-shortcut editor,
  * XMB game settings and the launch path must agree on. Off / DirectX 12 fix / DirectX 11 (NVAPI).
  *
  * <p><b>DirectX 12 fix</b> ({@link #DX12}) exports {@code DXVK_ENABLE_NVAPI=1} and nothing else. DXVK
@@ -39,7 +39,7 @@ public final class UnrealHdr {
     public static final String DX12 = "dx12";
     public static final String DX11 = "dx11";
 
-    public static final String TITLE = "Unreal Engine HDR";
+    public static final String TITLE = "虚幻引擎 HDR";
 
     /** The modes in picker order. */
     public static final List<String> MODES = Collections.unmodifiableList(Arrays.asList(OFF, DX12, DX11));
@@ -56,9 +56,9 @@ public final class UnrealHdr {
 
     /** The DirectX 11 mode's help; names the gear the NVIDIA spoof lives behind on this backend. */
     public static String helpDx11(boolean wayland) {
-        return "Experimental. Swaps in dxvk-nvapi for Unreal Engine DirectX 11 games. Pick an NVIDIA GPU in the "
-                + (wayland ? "Wayland driver settings" : "graphics driver configuration")
-                + ". Turn it off if a game misbehaves.";
+        return "实验性。为虚幻引擎 DirectX 11 游戏替换为 dxvk-nvapi。选择 NVIDIA GPU在 "
+                + (wayland ? "Wayland 驱动程序设置" : "图形驱动程序配置")
+                + ". 如果游戏出现异常，请将其关闭。";
     }
 
     /** The help shown under the picker: both modes, so the choice can be made from the text. */
@@ -66,19 +66,19 @@ public final class UnrealHdr {
         return "DirectX 12 fix: " + HELP_DX12 + "\nDirectX 11: " + helpDx11(wayland)
                 + " Needs DXVK 2.6 or newer; with an NVIDIA GPU showing, some games also try DLSS or Reflex, "
                 + "which dxvk-nvapi reports as unavailable.\n"
-                + (wayland ? "Both need HDR output on as well" : "HDR output itself needs the Wayland backend")
-                + ", and HDR switched on in the game. Applies from the next launch.";
+                + (wayland ? "两者都需要同时开启 HDR 输出" : "HDR 输出本身需要 Wayland 后端")
+                + ", 并且需要在游戏中开启 HDR。从下次启动开始生效。";
     }
 
     /** One line for XMB, whose subtitles are a single line. */
     public static final String HELP_SHORT =
-            "DX12 fix: -dx12 games with a greyed-out HDR option (safe). DX11: dxvk-nvapi, experimental.";
+            "虚幻引擎";
 
     /** Under the picker in DirectX 11 mode while the GPU-name spoof isn't an NVIDIA card. */
     public static String nvidiaHint(boolean wayland) {
         return "No NVIDIA GPU is being reported, and Unreal Engine only takes its NVAPI path on one: pick an "
                 + "NVIDIA GPU under GPU name in the "
-                + (wayland ? "Wayland driver settings (the gear next to Wayland game driver)" : "graphics driver configuration (the gear)")
+                + (wayland ? "Wayland 驱动程序设置（Wayland 游戏驱动程序旁边的齿轮）" : "图形驱动程序配置（齿轮）")
                 + ". " + SUGGESTED_NVIDIA + " matches the generation dxvk-nvapi reports. Optional.";
     }
 

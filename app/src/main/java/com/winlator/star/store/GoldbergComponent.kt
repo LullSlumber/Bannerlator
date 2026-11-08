@@ -28,7 +28,7 @@ import java.security.MessageDigest
  *     "schemaVersion": 1,
  *     "category": "steam-emulator",
  *     "release": "goldberg-v1",
- *     "name": "Steam Emulator (Goldberg)",
+ *     "name": "Steam 模拟器 (Goldberg)",
  *     "version": 1,
  *     "url": "https://github.com/The412Banner/winlator-contents/releases/download/goldberg-v1/goldberg.tzst",
  *     "file_size": "1234567",          // bytes, as a string
@@ -141,7 +141,7 @@ object GoldbergComponent {
         val url = o.optString("url").trim()
         if (url.isEmpty()) return null
         return Catalog(
-            name = o.optString("name").ifBlank { "Steam Emulator (Goldberg)" },
+            name = o.optString("name").ifBlank { "Steam 模拟器 (Goldberg)" },
             version = o.optInt("version", 1),
             url = url,
             fileSize = o.optString("file_size").toLongOrNull() ?: o.optLong("file_size", 0L),
@@ -176,14 +176,14 @@ object GoldbergComponent {
         val archive = File(cacheDir, "goldberg.tzst")
         try {
             if (!Downloader.downloadFile(catalog.url, archive) { f -> progress(f.coerceIn(0f, 1f)) }) {
-                return false to "Download failed. Please try again."
+                return false to "下载失败。请重试。"
             }
             // Verify the UPPERCASE MD5 from the catalog before trusting the archive (blank = skip).
             if (catalog.checksum.isNotBlank()) {
                 val actual = md5Upper(archive)
                 if (!actual.equals(catalog.checksum, ignoreCase = true)) {
                     Log.w(TAG, "checksum mismatch: expected ${catalog.checksum} got $actual")
-                    return false to "Downloaded file was corrupt (checksum mismatch). Try again."
+                    return false to "下载的文件已损坏（校验和不匹配）。请重试。"
                 }
             }
             val dest = installDir(context)
@@ -196,24 +196,24 @@ object GoldbergComponent {
             // The tar root holds the tier folders, so extract straight into the staging dir.
             if (!TarCompressorUtils.extract(TarCompressorUtils.Type.ZSTD, archive, staging)) {
                 staging.deleteRecursively()
-                return false to "Couldn't unpack the Steam Emulator package."
+                return false to "无法解压 Steam 模拟器包。"
             }
             if (!File(staging, MARKER_REL).exists()) {
                 staging.deleteRecursively()
-                return false to "Steam Emulator package was missing expected files."
+                return false to "Steam 模拟器包缺少预期文件。"
             }
             if (dest.exists()) dest.deleteRecursively()
             if (!staging.renameTo(dest)) {
                 staging.deleteRecursively()
-                return false to "Couldn't install the Steam Emulator package."
+                return false to "无法安装 Steam 模拟器包。"
             }
             if (!isInstalled(context)) {
-                return false to "Steam Emulator package was missing expected files."
+                return false to "Steam 模拟器包缺少预期文件。"
             }
             // Stamp the version we just installed AFTER the extract is confirmed
             // present, so a catalog bump later reads as outdated (see isOutdated).
             writeInstalledVersion(context, catalog.version)
-            return true to "Steam Emulator installed. Pick a mode below."
+            return true to "Steam模拟器已安装。在下方选择模式。"
         } finally {
             archive.delete()
         }

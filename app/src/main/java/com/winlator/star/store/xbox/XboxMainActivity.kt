@@ -180,8 +180,8 @@ class XboxMainActivity : ComponentActivity() {
 
 private val XBOX_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
-    StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
+    StoreSectionTab("library", "库", Icons.Filled.VideoLibrary),
+    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
 )
 
 /** The library as the tabs see it: cached at once, refreshed from Microsoft in the background. */
@@ -214,7 +214,7 @@ fun rememberXboxLibrary(account: String, onMessage: (String) -> Unit): XboxLibra
             val cached = withContext(Dispatchers.IO) { XboxLibraryCache.read(app, account, market) }
             if (cached != null) games = cached.games
             if (cached != null && !cached.needsRefresh(force)) { syncing = false; status = ""; return@launch }
-            status = "Syncing your Xbox library…"
+            status = "正在同步您的 Xbox 库…"
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val response = Xodus.run(app, listOf("library", "--json", "--market", market))
@@ -243,7 +243,7 @@ fun rememberXboxLibrary(account: String, onMessage: (String) -> Unit): XboxLibra
                 }
             }
             result.onSuccess { games = it; status = "" }
-                .onFailure { status = ""; onMessage(it.message ?: "The Xbox library could not be loaded.") }
+                .onFailure { status = ""; onMessage(it.message ?: "无法加载 Xbox 库。") }
             syncing = false
         }
     }
@@ -297,7 +297,7 @@ private fun XboxStorefrontHost(
                 Icon(Icons.Filled.Cloud, contentDescription = "Xbox Cloud Gaming", tint = MaterialTheme.colorScheme.primary)
             }
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -416,7 +416,7 @@ private fun XboxStoreTab(state: XboxLibraryState, wide: Boolean, onOpen: (XboxGa
         if (list != null || searching) {
             CatalogResults(results = list.orEmpty().map { XboxMainActivity.toCatalogItem(it, it.id in state.installedIds) },
                 searching = searching, query = query, wide = wide, storeLabel = "Xbox",
-                emptyBody = "No PC games match. Console-only titles are not listed.",
+                emptyBody = "没有匹配的 PC 游戏。仅主机游戏不会列出。",
                 actionFor = ::action, onOpen = ::open, onAction = ::open)
         } else LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
             val owned = state.games.filter { it.id !in state.installedIds }.take(20).map { XboxMainActivity.toCatalogItem(it) }
@@ -428,9 +428,9 @@ private fun XboxStoreTab(state: XboxLibraryState, wide: Boolean, onOpen: (XboxGa
                         onAction = { open(hero) }, modifier = Modifier.padding(14.dp), eyebrow = "TRENDING ON PC")
                 }
             }
-            if (installed.isNotEmpty()) catalogRail("Installed", "Ready to play", installed, "Xbox", ::action, { open(it) }, { open(it) })
-            if (owned.isNotEmpty()) catalogRail("In your library", "Owned and PC Game Pass", owned, "Xbox", ::action, { open(it) }, { open(it) })
-            if (trending.size > 1) catalogRail("Trending", "Popular PC games on the Microsoft Store", trending.drop(1), "Xbox", ::action, { open(it) }, { open(it) })
+            if (installed.isNotEmpty()) catalogRail("Installed", "可游玩", installed, "Xbox", ::action, { open(it) }, { open(it) })
+            if (owned.isNotEmpty()) catalogRail("在您的库中", "已拥有和 PC Game Pass", owned, "Xbox", ::action, { open(it) }, { open(it) })
+            if (trending.size > 1) catalogRail("趋势", "Microsoft Store 上的热门 PC 游戏", trending.drop(1), "Xbox", ::action, { open(it) }, { open(it) })
             featuredError?.let { err ->
                 item(key = "err") { StoreNotice(title = "Microsoft Store unavailable", body = err, modifier = Modifier.padding(14.dp)) }
             }
@@ -443,28 +443,28 @@ private fun XboxProfileTab(account: String, state: XboxLibraryState, modifier: M
     val ctx = LocalContext.current
     var cloud by remember { mutableStateOf(XboxMainActivity.cloudSaves(ctx)) }
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()).padding(top = 12.dp)) {
-        StoreSection(title = "Account") {
+        StoreSection(title = "账户") {
             Text(account, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             Text("${state.games.size} PC games · ${state.games.count { it.gamePass }} through PC Game Pass · ${state.installedIds.size} installed",
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        StoreSection(title = "Cloud saves (experimental)") {
+        StoreSection(title = "云存档（实验性）") {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Sync game saves with Xbox cloud", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
+                Text("将游戏存档与 Xbox 云同步", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface)
                 Switch(checked = cloud, onCheckedChange = { cloud = it; XboxMainActivity.prefs(ctx).edit().putBoolean(XboxMainActivity.PREF_CLOUD_SAVES, it).apply() })
             }
             Text("Off by default. Saves then stay on this device. Turning it on can overwrite your account's cloud saves; " +
                 "use a test account first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        StoreSection(title = "Cloud gaming") {
-            Text("Resolution, region, bitrate, picture effects, stats and sound for streamed games.",
+        StoreSection(title = "云游戏") {
+            Text("串流游戏的分辨率、区域、比特率、画面效果、统计信息和声音。",
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(6.dp))
             androidx.compose.material3.OutlinedButton(onClick = { ctx.startActivity(android.content.Intent(ctx, XboxCloudSettingsActivity::class.java)) },
-                modifier = Modifier.steamFocusRing()) { Text("Cloud gaming settings") }
+                modifier = Modifier.steamFocusRing()) { Text("云游戏设置") }
         }
-        StoreSection(title = "About") {
+        StoreSection(title = "关于") {
             Text("PC games from the Microsoft Store and PC Game Pass, downloaded with your own license and run in a Wine " +
                 "container. No console emulation; UWP/APPX apps are not supported. Microsoft may not welcome third-party " +
                 "clients; use an account you can afford to lose.", style = MaterialTheme.typography.bodySmall,
@@ -485,15 +485,15 @@ private fun XboxLoginScreen(backendReady: Boolean, message: String?, onLoginClic
         Column(Modifier.fillMaxWidth().padding(40.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("Xbox", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(16.dp))
-            Text("Sign in with your Microsoft account to download the PC games you own or have through PC Game Pass.",
+            Text("使用您的 Microsoft 账户登录，以下载您拥有或通过 PC Game Pass 获得的 PC 游戏。",
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
             Spacer(Modifier.height(8.dp))
-            Text("Experimental. Use an account you can afford to lose.", style = MaterialTheme.typography.bodySmall,
+            Text("实验性。请使用您可以承受丢失的账户。", style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
             message?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center) }
             Spacer(Modifier.height(24.dp))
             Button(onClick = onLoginClick, enabled = backendReady, shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(48.dp).steamFocusRing(RoundedCornerShape(8.dp))) { Text("Sign in with Microsoft") }
+                modifier = Modifier.height(48.dp).steamFocusRing(RoundedCornerShape(8.dp))) { Text("使用 Microsoft 登录") }
             if (!backendReady) {
                 Spacer(Modifier.height(8.dp))
                 Text("The Xbox backend is missing from this build.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)

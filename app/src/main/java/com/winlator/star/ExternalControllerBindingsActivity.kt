@@ -403,7 +403,7 @@ class ExternalControllerBindingsActivity : ComponentActivity() {
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Remove binding",
+                        contentDescription = "移除绑定",
                         tint = MaterialTheme.colorScheme.error,
                     )
                 }

@@ -117,7 +117,7 @@ object ContentsInstaller {
 
                 ContentDownloadRegistry.update(key) {
                     if (ok) it.copy(phase = ContentDownloadPhase.DONE, fraction = 1f)
-                    else it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                    else it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
                 }
                 if (ok) runCatching { onChanged() }
             } catch (c: CancellationException) {
@@ -125,7 +125,7 @@ object ContentsInstaller {
             } catch (e: Exception) {
                 Log.w(TAG, "install failed for $key", e)
                 ContentDownloadRegistry.update(key) {
-                    it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                    it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
                 }
             } finally {
                 // Best-effort cancel still deletes the temp archive and closes the FGS bracket.
@@ -302,13 +302,13 @@ object ContentsInstaller {
                 }
                 ContentDownloadRegistry.update(key) {
                     if (ok) it.copy(phase = ContentDownloadPhase.DONE, fraction = 1f)
-                    else it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                    else it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
                 }
             } catch (c: CancellationException) {
                 throw c // user Cancel — requestCancel already set the cancelled-terminal state; keep it.
             } catch (e: Exception) {
                 Log.w(TAG, "install-from-file failed for $key", e)
-                ContentDownloadRegistry.update(key) { it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.") }
+                ContentDownloadRegistry.update(key) { it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。") }
             } finally {
                 runCatching { onDone(ok) }
                 DownloadForegroundService.finish(key)
@@ -363,7 +363,7 @@ object ContentsInstaller {
     // ── Blocking installers (Activity-free; never touch runOnUiThread) ──────────
 
     /**
-     * A driver zip, routed to the manager that can actually use it. "GPU driver" is three different
+     * A driver zip, routed to the manager that can actually use it. "虚幻引擎 HDR 修复" is three different
      * things now and only one of them is an AdrenoTools package: the zip's own meta.json says which
      * ("kind"), so a "-Linux" (glibc ICD, the Linux runtime and its Steam client) or "-Wayland"
      * (bionic ICD, Wine on Wayland) zip is installed where it belongs instead of landing in the

@@ -71,10 +71,10 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
         connectWaitListener = null
         pendingUsername = null; pendingPassword = null
         val msg = when (reachState) {
-            1    -> "Steam CM connection timed out. Port 27017 may be blocked — try a VPN or mobile data."
-            2    -> "Steam is blocked on your network. A VPN is required."
-            3    -> "No internet connection detected."
-            else -> "Could not reach Steam servers. Check your network."
+            1    -> "Steam CM连接超时。端口27017可能被屏蔽 — 请尝试使用VPN或移动数据。"
+            2    -> "您的网络屏蔽了Steam。需要使用VPN。"
+            3    -> "未检测到网络连接。"
+            else -> "无法访问Steam服务器。请检查您的网络。"
         }
         onFailure(msg)
     }
@@ -122,7 +122,7 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
                         onDismiss = { guardDialog = null },
                         onSubmit = { code ->
                             guardDialog = null
-                            statusText = "Verifying…"
+                            statusText = "验证中…"
                             isStatusError = false
                             isLoading = true
                             SteamAuthManager.getInstance().submitGuardCode(code)
@@ -195,7 +195,7 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
         if (p.isEmpty())  { statusText = "Enter your password."; isStatusError = true; return }
         hideKeyboard()
         isStatusError = false
-        statusText = "Connecting to Steam\u2026"
+        statusText = "正在连接 Steam…"
         isLoading = true
 
         val repo = SteamRepository.getInstance()
@@ -239,7 +239,7 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
         isLoading = false
         statusText = ""
         guardDialog = GuardDialogData(
-            title     = if (codeWrong) "Incorrect code — try again" else "Steam Guard",
+            title     = if (codeWrong) "验证码错误 — 请重试" else "Steam 令牌",
             message   = "Enter the code Steam sent to your email ending in \u2026$emailDomain",
             isNumeric = false,
         )
@@ -249,21 +249,21 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
         isLoading = false
         statusText = ""
         guardDialog = GuardDialogData(
-            title     = if (codeWrong) "Incorrect code — try again" else "Steam Guard",
-            message   = "Enter the code from your Steam Guard Mobile Authenticator app",
+            title     = if (codeWrong) "验证码错误 — 请重试" else "Steam 令牌",
+            message   = "输入您的Steam令牌手机验证器应用中的验证码",
             isNumeric = true,
         )
     }
 
     override fun onDeviceConfirmationRequired() {
-        statusText = "Approve the login in your Steam mobile app\u2026"
+        statusText = "请在您的Steam手机应用中批准此登录…"
         isStatusError = false
         isLoading = true
     }
 
     override fun onSuccess(username: String, refreshToken: String) {
         SteamRepository.getInstance().loginWithToken(username, refreshToken)
-        statusText = "Signed in!"
+        statusText = "登录成功!"
         isStatusError = false
         isLoading = false
         // Back to the store-first host (singleTop + CLEAR_TOP reuses the instance that launched
@@ -351,7 +351,7 @@ private fun SteamGuardDialog(
                     Button(
                         onClick = { onSubmit(code.trim()) },
                         enabled = code.trim().isNotEmpty(),
-                    ) { Text("Submit") }
+                    ) { Text("提交") }
                 }
             }
         }
@@ -386,7 +386,7 @@ private fun SteamLoginScreen(
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Sign in to your account",
+            text = "登录您的账户",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -395,7 +395,7 @@ private fun SteamLoginScreen(
         OutlinedTextField(
             value = username,
             onValueChange = onUsernameChange,
-            label = { Text("Username") },
+            label = { Text("用户名") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth(),
@@ -422,7 +422,7 @@ private fun SteamLoginScreen(
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = RoundedCornerShape(8.dp),
-        ) { Text("Sign In") }
+        ) { Text("登录") }
         Spacer(Modifier.height(12.dp))
 
         // QR sign-in re-enabled: a QR-originated session stores the same
@@ -432,7 +432,7 @@ private fun SteamLoginScreen(
         // advisory to fall back to username + password if downloads or the
         // session keep dropping after signing in this way.
         TextButton(onClick = onQrClick) {
-            Text("Sign in with QR Code")
+            Text("使用QR码登录")
         }
         if (onSavedAccountsClick != null) {
             // Accounts signed in to before: pick one to switch without typing the password again.

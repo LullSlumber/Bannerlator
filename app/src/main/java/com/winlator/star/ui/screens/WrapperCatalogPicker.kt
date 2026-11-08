@@ -284,7 +284,7 @@ private fun WrapperCatalogRow(
             expanded = expanded,
             onToggleExpand = { expanded = !expanded },
             titleBadge = {
-                // #132: a durable "Update available" chip when the catalog carries a newer version than
+                // #132: a durable "有可用更新" chip when the catalog carries a newer version than
                 // what's installed (the download affordance below stays, to pull the update).
                 if (updateAvailable) {
                     Spacer(Modifier.height(3.dp))
@@ -377,7 +377,7 @@ private fun WrapperCatalogDetail(
     // gpuTargets chips.
     if (entry.gpuTargets.isNotEmpty()) {
         Spacer(Modifier.height(8.dp))
-        Text("GPU targets", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
+        Text("GPU 目标", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
         Spacer(Modifier.height(4.dp))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),

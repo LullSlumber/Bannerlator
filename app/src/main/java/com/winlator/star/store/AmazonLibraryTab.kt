@@ -71,7 +71,7 @@ fun rememberAmazonLibrary(onMessage: (String) -> Unit = {}): AmazonLibraryState 
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "Syncing library…"
+            status = "正在同步库…"
             scope.launch {
                 val result = AmazonLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false

@@ -326,7 +326,7 @@ public class EpicDownloadManager {
             final int selCount = selectedFiles.size();
             for (FileInfo f : selectedFiles) {
                 // Cancel: hashing an already-installed game can take minutes — honor cancel here too,
-                // not just in the chunk pool. This is the "Verifying…"/0% phase the UI shows.
+                // not just in the chunk pool. This is the "验证中…"/0% phase the UI shows.
                 if (cancelFlag != null && cancelFlag.get()) {
                     dbg.append("CANCELLED during verify (").append(checked).append("/")
                        .append(selCount).append(" files hashed)\n");
@@ -539,7 +539,7 @@ public class EpicDownloadManager {
             return true;
 
         } catch (Exception e) {
-            dbg.append("EXCEPTION: ").append(e).append("\n");
+            dbg.append("异常: ").append(e).append("\n");
             writeDebug(ctx, dbg);
             Log.e(TAG, "Epic install failed", e);
             return false;
@@ -673,7 +673,7 @@ public class EpicDownloadManager {
             try (FileOutputStream fos = new FileOutputStream(f)) {
                 fos.write(dbg.toString().getBytes("UTF-8"));
             }
-            Log.i(TAG, "Debug written to: " + f.getAbsolutePath());
+            Log.i(TAG, "调试信息写入: " + f.getAbsolutePath());
         } catch (Exception e) {
             Log.e(TAG, "writeDebug failed", e);
         }

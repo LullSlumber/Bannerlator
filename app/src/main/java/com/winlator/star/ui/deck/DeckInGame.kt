@@ -360,7 +360,7 @@ private fun DeckQuickMenu(modifier: Modifier, onExit: () -> Unit) {
 
 private fun quickTabTitle(t: QuickTab) = when (t) {
     QuickTab.QUICK -> "Quick menu"
-    QuickTab.TOOLS -> "Tools"
+    QuickTab.TOOLS -> "工具"
     QuickTab.FRIENDS -> "Friends"
     QuickTab.OPENERS -> "Opening this menu"
 }
@@ -478,7 +478,7 @@ private fun FrameLimitRow(state: XServerDrawerState, compactHint: Boolean = fals
     IgRow("Frame rate limit", hint = hint, scopes = listOf(igGameScope()), wideControl = true) {
         Column(horizontalAlignment = Alignment.End) {
             IgChips(
-                options = listOf(CAP_OFF to "Off") + presets.map { it to "$it" } + listOf(CAP_CUSTOM to "Custom…"),
+                options = listOf(CAP_OFF to "Off") + presets.map { it to "$it" } + listOf(CAP_CUSTOM to "自定义…"),
                 selected = selected,
                 isEnabled = { it != CAP_OFF || !nativeFgLocks },
             ) { v ->
@@ -517,7 +517,7 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     val note = "Starts off each launch; the level you pick is kept for this container."
     if (!fgEnabled || waylandBlocked) {
         IgRow(
-            "Frame generation",
+            "帧率",
             hint = if (waylandBlocked) "Not on Wayland in this build yet." else "Off for this container. Turn it on in the container's settings to use it here.",
             enabled = false,
         )
@@ -525,7 +525,7 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     }
     val options = if (engine == "bionic") listOf(0 to "Off", 2 to "On") else listOf(0 to "Off", 2 to "2×", 3 to "3×", 4 to "4×")
     IgRow(
-        "Frame generation",
+        "帧率",
         hint = if (unavailable.isNotEmpty()) unavailable else "Inserts extra frames for smoother motion. The game pauses for a moment while it restarts.",
         note = note,
         scopes = scopes,
@@ -595,7 +595,7 @@ private fun FitToScreenRow(state: XServerDrawerState) {
     val mode by state.fullscreenMode.collectAsState()
     IgRow("Fit to screen", hint = "How the game picture fills your display.", scopes = listOf(igGameScope()), wideControl = true) {
         IgSegmented(
-            listOf(0 to "Original", 1 to "Fit", 2 to "Stretch", 3 to "Fill (crop)", 4 to "Pixel-perfect"),
+            listOf(0 to "Original", 1 to "Fit", 2 to "适应（黑边）", 3 to "拉伸", 4 to "填充（裁剪）"),
             mode,
         ) { state.onSetFullscreenMode?.accept(it) }
     }
@@ -635,7 +635,7 @@ private fun BrightnessRow() {
         }
     }
     IgDivider()
-    IgRow("Brightness", hint = "Colour-grade brightness on top of the game.", scopes = listOf(SaveScope.SESSION), wideControl = true) {
+    IgRow("亮度", hint = "Colour-grade brightness on top of the game.", scopes = listOf(SaveScope.SESSION), wideControl = true) {
         IgSlider(
             value = value,
             range = -100f..100f,
@@ -691,7 +691,7 @@ private fun QuickTools(kind: InGameSessionKind) {
     var perfDialog by remember { mutableStateOf(false) }
     val compact = LocalIgCompact.current
     val closeThen: (Runnable?) -> Unit = { r -> DeckInGameState.close(); r?.run() }
-    IgSectionLabel("Tools")
+    IgSectionLabel("工具")
     val tools = buildList<Triple<String, ImageVector, () -> Unit>> {
         if (kind.isWine) add(Triple("Controller test & remap", Icons.Outlined.SportsEsports) { XServerDialogState.show(XServerDialogState.ActiveDialog.CONTROLLER_TEST) })
         add(Triple("Performance dashboard", Icons.Outlined.Speed) { perfDialog = true })
@@ -707,10 +707,10 @@ private fun QuickTools(kind: InGameSessionKind) {
         if (FeatureFlags.TV_OUTPUT_ENABLED && castSupported) add(Triple("Cast to a TV", Icons.Outlined.Cast) { state.onOpenCastPicker?.run() })
     }
     ToolTiles(tools, if (compact) 2 else 3)
-    IgSectionLabel("View")
+    IgSectionLabel("查看")
     ToolTiles(
         listOf(
-            Triple("Magnifier", Icons.Outlined.ZoomIn) { closeThen(state.onMagnifier) },
+            Triple("放大镜", Icons.Outlined.ZoomIn) { closeThen(state.onMagnifier) },
             Triple("Picture-in-picture", Icons.Outlined.PictureInPictureAlt) { closeThen(state.onPipMode) },
             Triple("Show keyboard", Icons.Outlined.Keyboard) { closeThen(state.onKeyboard) },
         ),
@@ -764,7 +764,7 @@ private fun OpenersPage() {
     IgCard {
         IgRow("Back button", hint = "Opens the full game menu. Press Back again, or B on a controller, to close.")
         IgDivider()
-        IgRow("Menu button", hint = "The button picked in Input Controls › Device › Menu button opens the quick menu, and closes it.")
+        IgRow("菜单按钮", hint = "The button picked in Input Controls › Device › Menu button opens the quick menu, and closes it.")
         IgDivider()
         IgRow("Tap with four fingers", hint = "Opens the full game menu from the touch screen.")
         IgDivider()
@@ -778,13 +778,13 @@ private fun menuTabTitle(t: MenuTab) = when (t) {
     MenuTab.SCREEN -> "Screen"
     MenuTab.PERFORMANCE -> "Performance"
     MenuTab.EFFECTS -> "Visual effects"
-    MenuTab.OVERLAY -> "Performance overlay"
+    MenuTab.OVERLAY -> "性能覆盖层"
     MenuTab.CONTROLS -> "Controls"
-    MenuTab.AUDIO -> "Audio"
+    MenuTab.AUDIO -> "音频"
     MenuTab.STEAM -> "Steam"
     MenuTab.TV -> "TV"
     MenuTab.FRIENDS -> "Friends"
-    MenuTab.TOOLS -> "Tools"
+    MenuTab.TOOLS -> "工具"
 }
 
 private fun menuTabDesc(t: MenuTab, kind: InGameSessionKind) = when (t) {
@@ -1025,7 +1025,7 @@ private fun ScreenPage(state: XServerDrawerState) {
         IgDivider()
         val alignment by state.screenAlignment.collectAsState()
         IgRow("Position on screen", hint = "Top or Bottom keeps the other half free for on-screen controls.", scopes = listOf(igGameScope()), wideControl = true) {
-            IgSegmented(listOf(0 to "Center", 1 to "Top", 2 to "Bottom"), alignment) { state.onSetScreenAlignment?.accept(it) }
+            IgSegmented(listOf(0 to "Center", 1 to "居中", 2 to "顶部"), alignment) { state.onSetScreenAlignment?.accept(it) }
         }
     }
 
@@ -1035,7 +1035,7 @@ private fun ScreenPage(state: XServerDrawerState) {
         IgCard { PresentModeRow(state) }
     }
 
-    IgSectionLabel("Refresh rate")
+    IgSectionLabel("屏幕")
     IgCard { RefreshRateRows(state) }
 }
 
@@ -1052,7 +1052,7 @@ private fun PresentModeRow(state: XServerDrawerState) {
         wideControl = true,
     ) {
         IgSegmented(
-            listOf("fifo" to "V-Sync", "mailbox" to "Smooth", "immediate" to "Fastest"),
+            listOf("fifo" to "V-Sync", "mailbox" to "流畅", "immediate" to "Fastest"),
             mode,
             isEnabled = { !locked || it == "mailbox" },
         ) { if (!locked) state.onPresentModeChange?.accept(it) }
@@ -1112,10 +1112,10 @@ private fun RefreshRateRows(state: XServerDrawerState) {
 // ── Performance ──
 @Composable
 private fun PerformancePage(state: XServerDrawerState) {
-    IgSectionLabel("Frame rate")
+    IgSectionLabel("帧率")
     IgCard { FrameLimitRow(state) }
 
-    IgSectionLabel("Frame generation")
+    IgSectionLabel("帧率")
     IgHostedCard {
         FrameGenSection(state)
         SaveNotes(
@@ -1244,7 +1244,7 @@ private fun AudioPage(state: XServerDrawerState) {
         com.winlator.star.ui.components.PRESET_CUSTOM -> "Custom"
         else -> cfg.preset
     }
-    IgSectionLabel("Sound")
+    IgSectionLabel("声音")
     IgCard {
         IgRow(
             "Audio profile",
@@ -1279,7 +1279,7 @@ private fun AudioPage(state: XServerDrawerState) {
 // ── Steam (Linux) ──
 @Composable
 private fun SteamPage(state: XServerDrawerState) {
-    IgSectionLabel("Steam client")
+    IgSectionLabel("Steam 客户端")
     IgHostedCard {
         LinuxSteamSection(state)
         SaveNotes("Touch mode and every switch here" to listOf(SaveScope.GAME))
@@ -1309,9 +1309,9 @@ private fun TvPage(state: XServerDrawerState) {
 private fun ToolsPage(state: XServerDrawerState, kind: InGameSessionKind) {
     val closeThen: (Runnable?) -> Unit = { r -> DeckInGameState.close(); r?.run() }
     var perfDialog by remember { mutableStateOf(false) }
-    IgSectionLabel("View")
+    IgSectionLabel("查看")
     IgCard {
-        IgRow("Magnifier", hint = "Zoom into part of the screen.") { IgButton("Magnifier", Icons.Outlined.ZoomIn, { closeThen(state.onMagnifier) }) }
+        IgRow("放大镜", hint = "Zoom into part of the screen.") { IgButton("放大镜", Icons.Outlined.ZoomIn, { closeThen(state.onMagnifier) }) }
         IgDivider()
         IgRow("Picture-in-picture", hint = "Shrink the game into a floating window.") { IgButton("Picture-in-picture", Icons.Outlined.PictureInPictureAlt, { closeThen(state.onPipMode) }) }
         IgDivider()

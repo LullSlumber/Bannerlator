@@ -30,7 +30,7 @@ import java.io.File;
  *       and never throws: every failure is a {@link Report} with {@code ok == false} and an {@code error}.</li>
  * </ul>
  * {@link WaylandAdapterSettings} reads the cached report to decide the Auto profile at launch; the editors'
- * "Wayland adapter settings" dialog shows it as the "Adapter report".
+ * "Wayland 适配器设置" dialog shows it as the "适配器报告".
  */
 public final class WaylandDriverProbe {
     private WaylandDriverProbe() {}
@@ -158,7 +158,7 @@ public final class WaylandDriverProbe {
         }
     }
 
-    /** Drop the cached report (the dialog's "Re-check"). */
+    /** Drop the cached report (the dialog's "重新检查"). */
     public static void forget(Context context, String driverId) {
         if (driverId == null || driverId.isEmpty()) return;
         try { FileUtils.delete(cacheFile(context, driverId)); } catch (Exception ignored) {}
@@ -222,7 +222,7 @@ public final class WaylandDriverProbe {
         if (t.isAlive()) {
             // The native thread is abandoned (it cannot be killed); it is daemon and bounded on its own side.
             Log.w(TAG, "probe of " + driverId + " did not answer within " + WATCHDOG_MS + " ms");
-            r = failed(driverId, "the driver did not answer within 5 seconds");
+            r = failed(driverId, "驱动程序未在 5 秒内响应");
         } else if (err[0] != null) {
             Log.e(TAG, "probe of " + driverId + " threw", err[0]);
             r = failed(driverId, "the probe failed: " + err[0].getClass().getSimpleName());

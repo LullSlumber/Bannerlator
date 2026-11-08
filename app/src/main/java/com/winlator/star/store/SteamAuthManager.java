@@ -181,7 +181,7 @@ public final class SteamAuthManager {
     private void startCredentialLoginRust(String username, String password, AuthListener listener) {
         BlSteamSession session = BlSteamEngine.INSTANCE.session();
         if (session == null || !BlSteamEngine.INSTANCE.isConnected()) {
-            mainHandler.post(() -> listener.onFailure("Not connected to Steam"));
+            mainHandler.post(() -> listener.onFailure("未连接到Steam"));
             return;
         }
         rustAuthActive = true;

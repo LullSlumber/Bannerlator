@@ -55,11 +55,11 @@ object StoreDownloadTier {
     fun label(tier: Int): String {
         val window = DownloadSpeedConfig(tier).maxNetworkWindow
         val name = when (tier) {
-            DownloadSpeedConfig.TIER_SLOW -> "Slow"
-            DownloadSpeedConfig.TIER_MEDIUM -> "Medium"
-            DownloadSpeedConfig.TIER_FAST -> "Fast"
-            DownloadSpeedConfig.TIER_BLAZING -> "Blazing"
-            else -> "Fast"
+            DownloadSpeedConfig.TIER_SLOW -> "慢速"
+            DownloadSpeedConfig.TIER_MEDIUM -> "中等"
+            DownloadSpeedConfig.TIER_FAST -> "快速"
+            DownloadSpeedConfig.TIER_BLAZING -> "极速"
+            else -> "快速"
         }
         return "$name ($window in flight)"
     }

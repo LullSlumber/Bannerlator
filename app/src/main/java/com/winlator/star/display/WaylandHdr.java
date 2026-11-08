@@ -36,7 +36,7 @@ public final class WaylandHdr {
     /** The extra's key on the container and on a shortcut. */
     public static final String EXTRA = "waylandHdr";
 
-    public static final String TITLE = "HDR output (HDR10)";
+    public static final String TITLE = "HDR 输出 (HDR10)";
 
     /** The setting's help text (every editor shows the same words). */
     public static final String HELP_TEXT =
@@ -53,7 +53,7 @@ public final class WaylandHdr {
 
     /** One line for XMB, whose subtitles are a single line. */
     public static final String HELP_SHORT =
-            "Offer real HDR10 from the next launch (switch HDR on in the game too).";
+            "从下次启动开始提供真正的HDR10 (在游戏中也打开HDR).";
 
     /** The screen a game started from an editor will run on: the device's built-in display. */
     public static Display targetDisplay(Context context) {
@@ -71,7 +71,7 @@ public final class WaylandHdr {
         if (d.supportsHdr10) return null;
         if ("unknown".equals(d.formats)) return "This screen does not report its HDR capability, so HDR output stays off.";
         if ("none".equals(d.formats)) return "This screen does not support HDR (it reports no HDR types), so HDR output stays off.";
-        return "This screen does not support HDR10 (it reports " + d.formats + "), so HDR output stays off.";
+        return "此屏幕不支持 HDR10（它报告 " + d.formats + "），因此 HDR 输出保持关闭。";
     }
 
     /** {@link #unavailableReason(Display)} for the device's built-in screen. */

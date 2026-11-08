@@ -527,7 +527,7 @@ public final class VegasKeyCatalog {
         }
 
         private IllegalArgumentException error(String msg) {
-            return new IllegalArgumentException("vegas_key_catalog JSON: " + msg + " at " + i);
+            return new IllegalArgumentException("vegas_key_catalog JSON: " + msg + " 于 " + i);
         }
     }
 }

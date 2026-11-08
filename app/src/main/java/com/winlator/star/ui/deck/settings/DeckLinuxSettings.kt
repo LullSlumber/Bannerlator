@@ -73,7 +73,7 @@ internal object LinuxRuntimeRows {
 
     fun defs(): List<SettingDef> = listOf(
         cores(
-            "linux.clientCores", "linuxClientCpuList", "Steam client cores",
+            "linux.clientCores", "linuxClientCpuList", "Steam 客户端核心",
             "The client and the compositor drawing its interface. Never the games it launches.",
             "Which CPU cores the Steam client and the compositor drawing its interface may run on. It reaches the client and its menus only, " +
                 "never the games it launches: those have the list below. Steam holds its own interface renderer to a subset of the cores by default, " +
@@ -91,7 +91,7 @@ internal object LinuxRuntimeRows {
 
     /** A core list of the entry. Unset means every core, as the launch reads it (cpuListOrEmpty). */
     private fun cores(id: String, extra: String, label: String, hint: String, help: String) = SettingDef(
-        id = id, category = "linux", group = "CPU cores", label = label, hint = hint, help = help, tech = extra,
+        id = id, category = "linux", group = "Windows 后台服务", label = label, hint = hint, help = help, tech = extra,
         level = SettingLevel.ADVANCED,
         control = { _, _ -> Control.Cores },
         game = GameBinding(
@@ -301,13 +301,13 @@ internal class DeckLinuxSection(
     private fun bottomItems(): List<PageExtra> = folderItems() + componentItems()
 
     private fun folderItems(): List<PageExtra> = buildList {
-        add(PageExtra("linux-folders-label") { GroupLabel("Games folders") })
+        add(PageExtra("linux-folders-label") { GroupLabel("游戏文件夹") })
         val list = folders()
         list.forEachIndexed { i, f ->
             add(PageExtra("linux-folder:$f") {
                 GroupCard(first = i == 0, last = false, highlight = false) {
                     DeckLine(File(f).name.ifEmpty { f }, f, icon = Icons.Filled.Folder) {
-                        DeckSmallButton("Remove", Icons.Filled.Delete) { removeFolder(f) }
+                        DeckSmallButton("移除", Icons.Filled.Delete) { removeFolder(f) }
                     }
                 }
             })
@@ -324,7 +324,7 @@ internal class DeckLinuxSection(
         val snap = snapshot
         val views = snap?.protons.orEmpty()
         val view = currentView()
-        add(PageExtra("linux-comp-label") { GroupLabel("Proton components") })
+        add(PageExtra("linux-comp-label") { GroupLabel("Proton 组件") })
         add(PageExtra("linux-comp-about") {
             LaunchedEffect(Unit) { ensureLoaded() }
             GroupCard(first = true, last = false, highlight = false) {
@@ -346,7 +346,7 @@ internal class DeckLinuxSection(
         when {
             snap == null -> add(PageExtra("linux-comp-reading") {
                 GroupCard(first = false, last = true, highlight = false) {
-                    DeckLine("Reading the Protons…") { CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(20.dp)) }
+                    DeckLine("正在读取 Proton…") { CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(20.dp)) }
                 }
             })
             view == null -> add(PageExtra("linux-comp-none") {
@@ -360,9 +360,9 @@ internal class DeckLinuxSection(
             else -> {
                 val p = view.proton
                 val status = listOfNotNull(
-                    if (p.valve) "Valve's own Proton, replaced when Steam updates it; its originals are kept per build" else "Installed in compatibilitytools.d",
-                    "a game is running on it".takeIf { view.inUseByGame },
-                    view.reappliedAt.takeIf { it > 0 }?.let { "re-applied at launch " + time(it) },
+                    if (p.valve) "Valve 自带的 Proton，Steam 更新它时会被替换；其原始文件按构建保留" else "已安装于 compatibilitytools.d",
+                    "有游戏正在其上运行".takeIf { view.inUseByGame },
+                    view.reappliedAt.takeIf { it > 0 }?.let { "启动时重新应用 " + time(it) },
                 ).joinToString(" · ")
                 add(PageExtra("linux-comp-proton") {
                     GroupCard(first = false, last = false, highlight = false) {
@@ -433,7 +433,7 @@ internal class DeckLinuxSection(
         val olderOriginals = view.originals.filter { it.protonVersion != build }
         val packages = snapshot?.packages.orEmpty()
         val context = env.context
-        add(PageExtra("linux-stored-label") { GroupLabel("Stored") })
+        add(PageExtra("linux-stored-label") { GroupLabel("已存储") })
         if (olderOriginals.isEmpty() && packages.isEmpty()) {
             add(PageExtra("linux-stored-none") {
                 GroupCard(first = true, last = false, highlight = false) {
@@ -446,7 +446,7 @@ internal class DeckLinuxSection(
             add(PageExtra("linux-stored-orig:${o.comp}:${o.protonVersion}") {
                 GroupCard(first = i == 0, last = false, highlight = false) {
                     DeckLine("$name · Original · ${o.protonVersion}", "Earlier build of ${p.name} · ${mb(o.size)}") {
-                        DeckSmallButton("Delete", Icons.Filled.Delete, enabled = busy == null) {
+                        DeckSmallButton("删除", Icons.Filled.Delete, enabled = busy == null) {
                             ask = LinuxAsk("Delete this original?", "The ${o.protonVersion} original of $name belongs to an earlier build of ${p.name}. The installed build's original is always kept.") {
                                 action("Deleting") { LinuxComponents.deleteOriginal(context, p.id, o.comp, o.protonVersion) }
                             }
@@ -461,10 +461,10 @@ internal class DeckLinuxSection(
                 GroupCard(first = i == 0 && olderOriginals.isEmpty(), last = false, highlight = false) {
                     DeckLine(
                         "${LinuxComponents.LABEL[s.comp] ?: s.comp} · ${s.version}",
-                        mb(s.size) + if (inUseBy.isNotEmpty()) " · in use by " + inUseBy.joinToString(", ") else "",
+                        mb(s.size) + if (inUseBy.isNotEmpty()) " · 使用过 " + inUseBy.joinToString(", ") else "",
                     ) {
                         // A package a Proton runs can't go: restore that Proton's original first.
-                        DeckSmallButton("Delete", Icons.Filled.Delete, enabled = busy == null && inUseBy.isEmpty()) {
+                        DeckSmallButton("删除", Icons.Filled.Delete, enabled = busy == null && inUseBy.isEmpty()) {
                             ask = LinuxAsk("Delete ${s.version}?", "Its package file is removed from the app. You can download it again any time.") {
                                 action("Deleting") { LinuxComponents.deletePackage(context, s.file) }
                             }
@@ -483,12 +483,12 @@ internal class DeckLinuxSection(
     private fun nightlyItems(): List<PageExtra> = buildList {
         val storedNames = snapshot?.packages.orEmpty().map { it.file }.toSet()
         val available = catalog.filter { LinuxComponents.safeName(it.file) !in storedNames }
-        add(PageExtra("linux-nightlies-label") { GroupLabel("On the Nightlies") })
+        add(PageExtra("linux-nightlies-label") { GroupLabel("在 Nightlies 上") })
         add(PageExtra("linux-nightlies-check") {
             GroupCard(first = true, last = available.isEmpty(), highlight = false) {
                 DeckActionRow(DeckAction(
                     "check", Icons.Filled.Refresh,
-                    if (checking) "Checking…" else "Check the Nightlies",
+                    if (checking) "检查中…" else "检查 Nightlies",
                     when {
                         catalogAt > 0 && available.isEmpty() -> "Checked ${time(catalogAt)}. Nothing new since then."
                         catalogAt > 0 -> "Checked ${time(catalogAt)}."
@@ -535,13 +535,13 @@ internal class DeckLinuxSection(
             pickFolder = false
             startPicker()
             // The built-in picker, not SAF: it returns a real path, so an SD card folder is /storage/<uuid>/...
-            folderPicker.launch(InAppFilePicker.buildDirIntent(context, "Select a games folder"))
+            folderPicker.launch(InAppFilePicker.buildDirIntent(context, "选择游戏文件夹"))
         }
         LaunchedEffect(pickWcp) {
             if (!pickWcp) return@LaunchedEffect
             pickWcp = false
             startPicker()
-            wcpPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("wcp"), "Choose a component package (-linux .wcp)"))
+            wcpPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("wcp"), "选择组件包 (-linux .wcp)"))
         }
         choosing?.let { comp ->
             currentView()?.let { view ->

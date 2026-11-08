@@ -47,7 +47,7 @@ class XboxCloudSettingsActivity : ComponentActivity() {
                 }
                 Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState())) {
                     StoreDetailHeader(onBack = { finish() }, storeBadge = { StoreBadge(Store.XBOX) })
-                    Text("Cloud gaming", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold,
+                    Text("云游戏", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(horizontal = 16.dp))
                     XboxCloudSettingsPanel(settings, regions, live = false) { changed ->
                         settings = changed

@@ -15,7 +15,7 @@ import java.util.UUID
  * and any number of extra "library locations" the user adds, like Steam's own "Steam Library Folders".
  *
  * ── Layout ────────────────────────────────────────────────────────────────────────────────────
- * The user picks an ordinary "Games" folder `<chosen>`; it becomes a regular Steam library: the
+ * The user picks an ordinary "游戏" folder `<chosen>`; it becomes a regular Steam library: the
  * `steamapps` folder is `<chosen>/steamapps` (or `<chosen>` itself when it is already named `steamapps`,
  * see [SteamInstallPaths.steamappsDirOf]) and games land in `<steamapps>/common/<installdir>` with an
  * `appmanifest_<appid>.acf` beside them ([SteamAppManifest]) — the folder every Steam client uses, so

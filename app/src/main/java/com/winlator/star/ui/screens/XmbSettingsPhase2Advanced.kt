@@ -149,7 +149,7 @@ internal fun xmbAdvancedMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 rows += XmbRow.Choice("fexVersion", ctx.getString(R.string.fexcore_version), Icons.Filled.Memory, fexOpts,
                     if (fex.isEmpty()) fexOpts.first() else fex) { v -> p2Put(xmb, shortcut, "fexcoreVersion", v) }
             }
-            rows += XmbRow.Link("fexDownload", "Download FEXCore versions", Icons.Filled.CloudDownload) {
+            rows += XmbRow.Link("fexDownload", "下载FEXCore版本", Icons.Filled.CloudDownload) {
                 p2ContentDownloadMenu(xmb, "FEXCore downloads", ContentProfile.ContentType.CONTENT_TYPE_FEXCORE) { p2LoadAdv(xmb, c, d) }
             }
             p2PresetRows(xmb, shortcut, d, PresetKind.FEXCORE, "FEXCore", rows)
@@ -160,7 +160,7 @@ internal fun xmbAdvancedMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         val profileLabels = p2Unique(listOf(ctx.getString(R.string.none)) + d.profiles.map { it.getName() ?: "Profile ${it.id}" })
         val cpId = shortcut.p2Ex("controlsProfile", "0").toIntOrNull() ?: 0
         val cpIdx = if (cpId == 0) 0 else d.profiles.indexOfFirst { it.id == cpId }.let { if (it >= 0) it + 1 else 0 }
-        rows += XmbRow.Choice("controlsProfile", "Controls profile", Icons.Filled.Gamepad, profileLabels, profileLabels[cpIdx]) { v ->
+        rows += XmbRow.Choice("controlsProfile", "控制配置", Icons.Filled.Gamepad, profileLabels, profileLabels[cpIdx]) { v ->
             val idx = profileLabels.indexOf(v).coerceAtLeast(0)
             val id = if (idx == 0) 0 else d.profiles.getOrNull(idx - 1)?.id ?: 0
             p2Put(xmb, shortcut, "controlsProfile", if (id > 0) id.toString() else null)
@@ -174,27 +174,27 @@ internal fun xmbAdvancedMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             }
             if (stIdx == Container.STARTUP_SELECTION_CUSTOM.toInt()) {
                 val on = WineUtils.parseStartupServicesCsv(shortcut.p2Ex("startupServices", c.startupServices)).size
-                rows += XmbRow.Link("services", "Custom services", Icons.Filled.Checklist, value = "$on on",
-                    subtitle = "Pick which Wine services start") { p2ServicesMenu(xmb, shortcut) }
+                rows += XmbRow.Link("services", "自定义服务", Icons.Filled.Checklist, value = "$on on",
+                    subtitle = "选择启动哪些Wine服务") { p2ServicesMenu(xmb, shortcut) }
             }
         }
         val cores = Runtime.getRuntime().availableProcessors()
         val checkedCores = p2CpuChecked(shortcut, cores).size
         rows += XmbRow.Link("cpu", ctx.getString(R.string.processor_affinity), Icons.Filled.Memory,
-            value = "$checkedCores of $cores cores", subtitle = "CPU cores the game may run on") { p2CpuMenu(xmb, shortcut) }
+            value = "$checkedCores of $cores cores", subtitle = "游戏可运行的CPU核心") { p2CpuMenu(xmb, shortcut) }
 
         // Sharpness (VKBasalt)
-        rows += XmbRow.Header("hSharpness", "Sharpness (VKBasalt)")
+        rows += XmbRow.Header("hSharpness", "锐化度 (VKBasalt)")
         if (sharpEntries.isNotEmpty()) {
             val fxStored = shortcut.p2Ex("sharpnessEffect", "None")
-            rows += XmbRow.Choice("sharpEffect", "Effect", Icons.Filled.Image, sharpEntries,
+            rows += XmbRow.Choice("sharpEffect", "滤镜效果", Icons.Filled.Image, sharpEntries,
                 sharpEntries.firstOrNull { it == fxStored } ?: sharpEntries.first()) { v -> p2Put(xmb, shortcut, "sharpnessEffect", v) }
         }
         val level = (shortcut.p2Ex("sharpnessLevel", "100").toIntOrNull() ?: 100).coerceIn(0, 100)
         val denoise = (shortcut.p2Ex("sharpnessDenoise", "100").toIntOrNull() ?: 100).coerceIn(0, 100)
         rows += XmbRow.Slider("sharpLevel", "Level", Icons.Filled.Tune, level.toFloat(), 0f, 100f, 1f,
             format = { "${it.toInt()}%" }) { v -> p2Put(xmb, shortcut, "sharpnessLevel", v.toInt().toString()) }
-        rows += XmbRow.Slider("sharpDenoise", "Denoise", Icons.Filled.Tune, denoise.toFloat(), 0f, 100f, 1f,
+        rows += XmbRow.Slider("sharpDenoise", "级别", Icons.Filled.Tune, denoise.toFloat(), 0f, 100f, 1f,
             format = { "${it.toInt()}%" }) { v -> p2Put(xmb, shortcut, "sharpnessDenoise", v.toInt().toString()) }
 
         // ReShade
@@ -205,9 +205,9 @@ internal fun xmbAdvancedMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 shortcut.p2Ex("reshadeEffect", c.getReshadeEffect()),
             ).size
         }.getOrDefault(0)
-        rows += XmbRow.Link("reshade", "ReShade loadout", Icons.Filled.Layers,
+        rows += XmbRow.Link("reshade", "ReShade 滤镜配置", Icons.Filled.Layers,
             value = if (count == 0) "None" else "$count effect${if (count == 1) "" else "s"}",
-            subtitle = if (reshade.supported()) "Effects, mode and parameters" else "Only applies to DXVK/VKD3D (Vulkan) games") { reshade.loadoutMenu() }
+            subtitle = if (reshade.supported()) "效果、模式和参数" else "仅适用于DXVK/VKD3D（Vulkan）游戏") { reshade.loadoutMenu() }
         rows
     }
 }
@@ -228,16 +228,16 @@ private fun p2PresetRows(xmb: XmbScope, s: Shortcut, d: P2AdvData, kind: PresetK
     val customised = runCatching { PresetOverrides.isCustomised(ctx, isFex, selId, PresetScope.SHORTCUT, c, s) }.getOrDefault(false)
     val label = if (isFex) ctx.getString(R.string.fexcore_preset) else "$emu preset"
     rows += XmbRow.Choice(if (isFex) "fexPreset" else "b64Preset", label, Icons.Filled.Tune, names, names[idx],
-        subtitle = if (customised) "Customised for this game" else null) { v ->
+        subtitle = if (customised) "已为此游戏自定义" else null) { v ->
         val i = names.indexOf(v)
         if (i >= 0) p2Put(xmb, s, key, ids[i])
     }
-    rows += XmbRow.Link(if (isFex) "fexPresetEdit" else "b64PresetEdit", "Edit preset for this game", Icons.Filled.Edit,
-        value = if (customised) "Customised" else null, subtitle = "Only this game changes") {
+    rows += XmbRow.Link(if (isFex) "fexPresetEdit" else "b64PresetEdit", "编辑此游戏的预设", Icons.Filled.Edit,
+        value = if (customised) "Customised" else null, subtitle = "仅此游戏更改") {
         p2PresetValuesMenu(xmb, s, kind, selId, names[idx])
     }
     rows += XmbRow.Link(if (isFex) "fexPresetManage" else "b64PresetManage", "Manage $emu presets", Icons.Filled.ListAlt,
-        subtitle = "New, duplicate, delete, export, import") {
+        subtitle = "新建、复制、删除、导出、导入") {
         p2PresetManageMenu(xmb, s, d, kind)
     }
 }
@@ -305,8 +305,8 @@ private fun p2PresetValuesMenu(xmb: XmbScope, s: Shortcut, kind: PresetKind, pre
         val rows = mutableListOf<XmbRow>()
         val customised = runCatching { PresetOverrides.isCustomised(ctx, isFex, presetId, PresetScope.SHORTCUT, c, s) }.getOrDefault(false)
         rows += XmbRow.Info("scope",
-            if (customised) "Customised for this game. Reset makes it follow its container again."
-            else "Saved for this game only — no other game or container changes.", Icons.Filled.Info)
+            if (customised) "已为此游戏自定义。重置后它将再次遵循其容器。"
+            else "仅为此游戏保存 — 没有其他游戏或容器更改。", Icons.Filled.Info)
         if (specs.isEmpty()) rows += XmbRow.Info("noSpecs", "This preset has no editable variables", Icons.Filled.Info)
         val vals = current()
         specs.forEach { spec ->
@@ -331,7 +331,7 @@ private fun p2PresetValuesMenu(xmb: XmbScope, s: Shortcut, kind: PresetKind, pre
             }
         }
         if (customised) {
-            rows += XmbRow.Action("reset", "Reset", Icons.Filled.RestartAlt, subtitle = "Follow the container's values again", danger = true) {
+            rows += XmbRow.Action("reset", "重置", Icons.Filled.RestartAlt, subtitle = "Follow the container's values again", danger = true) {
                 PresetOverrides.clearLocal(isFex, PresetScope.SHORTCUT, c, s)
                 xmb.saved()
                 xmb.refresh()
@@ -363,8 +363,8 @@ private fun p2PresetManageMenu(xmb: XmbScope, s: Shortcut, d: P2AdvData, kind: P
         val rows = mutableListOf<XmbRow>()
         val sel = selectedId()
         val custom = sel.startsWith(if (isFex) FEXCorePreset.CUSTOM else Box64Preset.CUSTOM)
-        rows += XmbRow.Text("new", "New preset", Icons.Filled.Add, "", subtitle = "Default values; becomes this game's preset",
-            placeholder = "Preset name") { name ->
+        rows += XmbRow.Text("new", "新预设", Icons.Filled.Add, "", subtitle = "默认值；成为此游戏的预设",
+            placeholder = "预设名称") { name ->
             val clean = name.trim().replace(Regex("[,|]+"), "")
             if (clean.isEmpty()) xmb.toast("Enter a name")
             else {
@@ -378,16 +378,16 @@ private fun p2PresetManageMenu(xmb: XmbScope, s: Shortcut, d: P2AdvData, kind: P
                 xmb.toast("Created “$clean”")
             }
         }
-        rows += XmbRow.Action("duplicate", "Duplicate selected preset", Icons.Filled.ContentCopy) {
-            xmb.confirm(XmbConfirm("Duplicate preset", ctx.getString(R.string.do_you_want_to_duplicate_this_preset), "Duplicate")) {
+        rows += XmbRow.Action("duplicate", "复制所选预设", Icons.Filled.ContentCopy) {
+            xmb.confirm(XmbConfirm("Duplicate preset", ctx.getString(R.string.do_you_want_to_duplicate_this_preset), "复制")) {
                 if (isFex) FEXCorePresetManager.duplicatePreset(ctx, sel)
                 else Box64PresetManager.duplicatePreset(prefix, ctx, sel)
                 reloadLists()
             }
         }
-        rows += XmbRow.Action("delete", "Delete selected preset", Icons.Filled.Delete, danger = true,
+        rows += XmbRow.Action("delete", "删除所选预设", Icons.Filled.Delete, danger = true,
             disabledReason = if (custom) null else ctx.getString(R.string.you_cannot_remove_this_preset)) {
-            xmb.confirm(XmbConfirm("Delete preset", ctx.getString(R.string.do_you_want_to_remove_this_preset), "Delete", danger = true)) {
+            xmb.confirm(XmbConfirm("Delete preset", ctx.getString(R.string.do_you_want_to_remove_this_preset), "删除", danger = true)) {
                 if (isFex) FEXCorePresetManager.removePreset(ctx, sel)
                 else Box64PresetManager.removePreset(prefix, ctx, sel)
                 reloadLists()
@@ -395,21 +395,21 @@ private fun p2PresetManageMenu(xmb: XmbScope, s: Shortcut, d: P2AdvData, kind: P
                 ids().firstOrNull()?.let { p2Put(xmb, s, key, it) }
             }
         }
-        rows += XmbRow.Action("export", "Export selected preset", Icons.Filled.FileUpload,
-            disabledReason = if (custom) null else "Cannot export this preset") {
+        rows += XmbRow.Action("export", "导出所选预设", Icons.Filled.FileUpload,
+            disabledReason = if (custom) null else "无法导出此预设") {
             if (isFex) FEXCorePresetManager.exportPreset(ctx, sel)
             else Box64PresetManager.exportPreset(prefix, ctx, sel)
         }
-        rows += XmbRow.Link("import", "Import preset", Icons.Filled.FileDownload, subtitle = "From a .wbp file") {
+        rows += XmbRow.Link("import", "导入预设", Icons.Filled.FileDownload, subtitle = "从.wbp文件") {
             val ext = Environment.getExternalStorageDirectory()
-            val presetsDir = File(SettingsFragment.DEFAULT_WINLATOR_PATH, "Presets")
+            val presetsDir = File(SettingsFragment.DEFAULT_WINLATOR_PATH, "预设")
             val roots = listOf(
-                "Presets" to presetsDir,
+                "预设" to presetsDir,
                 "Download" to File(ext, "Download"),
                 "Internal storage" to ext,
             ).filter { it.second.isDirectory }
             val start = if (presetsDir.isDirectory) presetsDir else ext
-            xmbFileBrowserMenu(xmb, "Import preset", start, roots, { true }) { f ->
+            xmbFileBrowserMenu(xmb, "导入预设", start, roots, { true }) { f ->
                 val ok = runCatching {
                     FileInputStream(f).use { input ->
                         if (isFex) FEXCorePresetManager.importPreset(ctx, input)
@@ -428,7 +428,7 @@ private fun p2PresetManageMenu(xmb: XmbScope, s: Shortcut, d: P2AdvData, kind: P
 // ── Startup services / CPU cores ────────────────────────────────────────────────────────────────────
 
 /** StartupServicesToggleList: the Custom selection's per-service enabled set ("startupServices" CSV). */
-private fun p2ServicesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("Custom services", Icons.Filled.Checklist) {
+private fun p2ServicesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("自定义服务", Icons.Filled.Checklist) {
     val c = s.container
     val enabled: Set<String> = WineUtils.parseStartupServicesCsv(s.p2Ex("startupServices", c.startupServices)).toSet()
     val rows = mutableListOf<XmbRow>()
@@ -521,14 +521,14 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
 
     fun loadoutMenu(): XmbMenu {
         ensureLoaded()
-        return XmbMenu("ReShade loadout", Icons.Filled.Layers) body@{
+        return XmbMenu("ReShade 滤镜配置", Icons.Filled.Layers) body@{
             val rows = mutableListOf<XmbRow>()
             if (!loaded) {
                 rows += XmbRow.Info("loading", "Scanning effects…", Icons.Filled.Info)
                 return@body rows
             }
             if (!supported() && st.order.isNotEmpty()) {
-                rows += XmbRow.Info("unsupported", "ReShade only applies to DXVK/VKD3D (Vulkan) games; it has no effect with this DX wrapper.", Icons.Filled.Warning)
+                rows += XmbRow.Info("unsupported", "ReShade仅适用于DXVK/VKD3D（Vulkan）游戏；对此DXwrapper无效。", Icons.Filled.Warning)
             }
             rows += XmbRow.Link("browse", "Browse / download effects", Icons.Filled.CloudDownload,
                 value = "${st.order.size} in loadout", subtitle = "Pick installed effects or fetch new ones") { catalogMenu() }
@@ -549,8 +549,8 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
                 rows += XmbRow.Link("fx:$name", name, Icons.Filled.Layers,
                     value = if (on) (if (solo) "Active" else "On") else "Off") { effectMenu(name) }
             }
-            rows += XmbRow.Action("clear", "Clear loadout", Icons.Filled.Delete, danger = true) {
-                xmb.confirm(XmbConfirm("Clear loadout", "Remove every effect from this game's ReShade loadout?", "Clear", danger = true)) {
+            rows += XmbRow.Action("clear", "清除配置", Icons.Filled.Delete, danger = true) {
+                xmb.confirm(XmbConfirm("清除配置", "从此游戏的ReShade配置中移除所有效果？", "清除", danger = true)) {
                     st.order.toList().forEach { st.remove(it) }
                     persist()
                 }
@@ -562,7 +562,7 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
     fun effectMenu(name: String): XmbMenu = XmbMenu(name, Icons.Filled.Layers) body@{
         val rows = mutableListOf<XmbRow>()
         if (!st.contains(name)) {
-            rows += XmbRow.Info("gone", "Not in the loadout any more", Icons.Filled.Info)
+            rows += XmbRow.Info("gone", "不再在配置中", Icons.Filled.Info)
             return@body rows
         }
         val solo = st.mode == ReshadeLoadout.MODE_SOLO
@@ -573,11 +573,11 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
         }
         val params: List<ReshadeManager.ReshadeParam> = effects.firstOrNull { it.name == name }?.params?.toList() ?: emptyList()
         if (params.isEmpty()) {
-            rows += XmbRow.Info("noParams", "No tunable parameters.", Icons.Filled.Info)
+            rows += XmbRow.Info("noParams", "无可调参数。", Icons.Filled.Info)
         } else {
             rows += XmbRow.Header("hParams", "Parameters")
             params.forEach { p -> p2ReshadeParamRows(this@P2Reshade, name, p, rows) }
-            rows += XmbRow.Action("resetParams", "Reset parameters", Icons.Filled.RestartAlt, subtitle = "Back to the effect's defaults") {
+            rows += XmbRow.Action("resetParams", "重置参数", Icons.Filled.RestartAlt, subtitle = "恢复效果的默认值") {
                 params.forEach { p ->
                     val tmp = HashMap<String, Float>()
                     ReshadeManager.seedValues(p, null, tmp)
@@ -586,7 +586,7 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
                 persist()
             }
         }
-        rows += XmbRow.Action("remove", "Remove from loadout", Icons.Filled.Delete, danger = true) {
+        rows += XmbRow.Action("remove", "从配置中移除", Icons.Filled.Delete, danger = true) {
             st.remove(name)
             persist()
             xmb.pop()
@@ -635,17 +635,17 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
                 } else xmb.toast("Failed to download ${entry.name}.")
             }
         }
-        return XmbMenu("ReShade effects", Icons.Filled.CloudDownload) body@{
+        return XmbMenu("ReShade效果", Icons.Filled.CloudDownload) body@{
             val rows = mutableListOf<XmbRow>()
             if (catLoading) {
-                rows += XmbRow.Info("loading", "Loading the effect catalog…", Icons.Filled.CloudDownload)
+                rows += XmbRow.Info("loading", "正在加载效果目录…", Icons.Filled.CloudDownload)
                 return@body rows
             }
             val offline = source != ReshadeCatalog.Source.NETWORK
             if (offline) {
                 rows += XmbRow.Info("offline",
                     if (source == ReshadeCatalog.Source.CACHE) "Offline — showing a cached list. Connect to download new effects."
-                    else "Offline — showing installed effects only.", Icons.Filled.Warning)
+                    else "离线 — 仅显示已安装的效果。", Icons.Filled.Warning)
             }
             val selectedLc = st.order.map { it.lowercase() }.toSet()
             val catIds = catalog.map { it.id }.toSet()
@@ -667,13 +667,13 @@ private class P2Reshade(val xmb: XmbScope, val shortcut: Shortcut) {
                     subtitle = e.description.ifBlank { null } ?: listOf(e.author, e.category).filter { it.isNotBlank() }.joinToString(" · ").ifEmpty { null },
                     value = if (busy) "$phase ${(prog * 100).toInt()}%" else null,
                     disabledReason = when {
-                        offline -> "Connect to the internet to download effects."
+                        offline -> "连接到互联网以下载效果。"
                         downloadingId != null && !busy -> "Another download is running"
                         busy -> "Downloading…"
                         else -> null
                     }) { download(e) }
             }
-            if (inst.isEmpty() && avail.isEmpty()) rows += XmbRow.Info("none", "No effects available.", Icons.Filled.Info)
+            if (inst.isEmpty() && avail.isEmpty()) rows += XmbRow.Info("none", "没有可用的效果。", Icons.Filled.Info)
             rows
         }
     }

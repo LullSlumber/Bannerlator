@@ -67,7 +67,7 @@ object XServerDrawerState {
     // compositor at once AND written to the effective env (shortcut override else container) as the
     // next launch's default. `active` = the compositor's live state. `frames` = its zero-copy frames
     // in the last completed 10 s window. `live` = a zero-copy frame reached the display layer in the
-    // last ~1.5 s, which is what separates "switching..." from "running" right after a flip (the
+    // last ~1.5 s, which is what separates "switching..." 来自 "running" right after a flip (the
     // 10 s counter is far too slow for that).
     private val _waylandZeroCopyRequested = MutableStateFlow(false)
     val waylandZeroCopyRequested: StateFlow<Boolean> = _waylandZeroCopyRequested
@@ -82,7 +82,7 @@ object XServerDrawerState {
     // when the guest's GL driver starts - so the row is a saved preference, not a live switch.
     private val _waylandGlSafeMode        = MutableStateFlow(true)
     val waylandGlSafeMode: StateFlow<Boolean> = _waylandGlSafeMode
-    // Steam (Linux) session: the drawer's "Steam client" section. `linuxSteamSession` shows it; the
+    // Steam (Linux) session: the drawer's "Steam 客户端" section. `linuxSteamSession` shows it; the
     // options are keyed by their LinuxTuning extra names and mirror the entry's Steam (Linux)
     // settings - a flip here is saved to the entry as well as applied (live where it can be).
     private val _linuxSteamSession        = MutableStateFlow(false)

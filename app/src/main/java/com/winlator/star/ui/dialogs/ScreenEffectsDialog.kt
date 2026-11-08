@@ -93,7 +93,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text("Screen Effects", style = MaterialTheme.typography.titleMedium)
+                Text("屏幕滤镜效果", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(12.dp))
 
                 // Profile selector
@@ -105,7 +105,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                         value = profileItems.getOrElse(profileIndex) { "-- Default --" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Profile") },
+                        label = { Text("配置") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = profileDropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -130,13 +130,13 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                     OutlinedButton(
                         onClick = { showAddProfileDialog = true },
                         modifier = Modifier.weight(1f)
-                    ) { Text("Add") }
+                    ) { Text("添加") }
                     Spacer(Modifier.width(8.dp))
                     OutlinedButton(
                         onClick = { if (profileIndex > 0) showRemoveConfirm = true },
                         modifier = Modifier.weight(1f),
                         enabled = profileIndex > 0
-                    ) { Text("Remove") }
+                    ) { Text("移除") }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -163,7 +163,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
 
                 // Action buttons
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    TextButton(onClick = { resetToDefault() }) { Text("Reset") }
+                    TextButton(onClick = { resetToDefault() }) { Text("重置") }
                     Spacer(Modifier.weight(1f))
                     TextButton(onClick = { state.dismiss() }) { Text("Cancel") }
                     TextButton(onClick = {
@@ -186,7 +186,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                 OutlinedTextField(
                     value = newProfileName,
                     onValueChange = { newProfileName = it },
-                    label = { Text("Profile name") },
+                    label = { Text("配置名称") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -198,7 +198,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                         newProfileName = ""
                     }
                     showAddProfileDialog = false
-                }) { Text("Add") }
+                }) { Text("添加") }
             },
             dismissButton = {
                 TextButton(onClick = { showAddProfileDialog = false; newProfileName = "" }) {
@@ -212,7 +212,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
     if (showRemoveConfirm) {
         OutlinedAlertDialog(
             onDismissRequest = { showRemoveConfirm = false },
-            title = { Text("Remove Profile") },
+            title = { Text("移除配置") },
             text = { Text("Remove '${profileItems.getOrElse(profileIndex) { "" }}'?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -220,7 +220,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                     state.onSeRemoveProfile?.invoke(name)
                     profileIndex = 0
                     showRemoveConfirm = false
-                }) { Text("Remove") }
+                }) { Text("移除") }
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveConfirm = false }) { Text("Cancel") }

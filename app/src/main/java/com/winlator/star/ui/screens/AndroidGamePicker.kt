@@ -91,25 +91,25 @@ internal fun AndroidGamePickerDialog(
         modifier = Modifier.fillMaxWidth(0.94f),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = { if (!adding) onDismiss() },
-        title = { Text("Add Android game") },
+        title = { Text("添加 Android 游戏") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
-                    label = { Text("Search installed apps") },
+                    label = { Text("搜索已安装的应用") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = gamesOnly, onClick = { gamesOnly = true }, label = { Text("Games") })
-                    FilterChip(selected = !gamesOnly, onClick = { gamesOnly = false }, label = { Text("All apps") })
+                    FilterChip(selected = gamesOnly, onClick = { gamesOnly = true }, label = { Text("游戏") })
+                    FilterChip(selected = !gamesOnly, onClick = { gamesOnly = false }, label = { Text("所有应用") })
                 }
                 if (apps == null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(10.dp))
-                        Text("Reading installed apps…", color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        Text("正在读取已安装的应用…", color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                 } else {
                     val n = shown.size
@@ -121,7 +121,7 @@ internal fun AndroidGamePickerDialog(
                     )
                     if (shown.isEmpty() && gamesOnly && query.isBlank()) {
                         Text(
-                            "Some games don't tell Android they are games — try All apps.",
+                            "有些游戏不会告诉 Android 它们是游戏 — 请尝试所有应用。",
                             color = OnSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
                         )
@@ -148,8 +148,8 @@ internal fun AndroidGamePickerDialog(
             TextButton(enabled = chosen.isNotEmpty() && !adding, onClick = { onAdd(chosen) }) {
                 Text(
                     when {
-                        adding -> "Adding…"
-                        chosen.isEmpty() -> "Add"
+                        adding -> "正在添加…"
+                        chosen.isEmpty() -> "添加"
                         else -> "Add ${chosen.size}"
                     }
                 )

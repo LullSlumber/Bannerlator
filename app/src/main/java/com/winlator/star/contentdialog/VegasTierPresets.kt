@@ -27,11 +27,11 @@ object VegasTierPresets {
     )
 
     val TIERS = listOf(
-        Tier(1, "Tier 1", "Entry — 5xx / 6xx entry (506–620) · GTX 1050 Ti-class",
+        Tier(1, "等级1", "入门 — 5xx / 6xx 入门级 (506–620) · GTX 1050 Ti级别",
             listOf("506", "508", "509", "512", "610", "615", "616", "618", "619", "620")),
-        Tier(2, "Tier 2", "Mid — 6xx mid (630–690, 642L) · GTX 1070-class",
+        Tier(2, "等级2", "中端 — 6xx 中端 (630–690, 642L) · GTX 1070级别",
             listOf("630", "640", "642", "650", "660", "680", "690")),
-        Tier(3, "Tier 3", "High — 7xx / 8xx (830, 840) · RTX 3060-class",
+        Tier(3, "等级3", "高端 — 7xx / 8xx (830, 840) · RTX 3060级别",
             listOf("730", "740", "750", "830", "840"))
     )
 
@@ -94,7 +94,7 @@ object VegasTierPresets {
     }
 
     /**
-     * Bundled "What's new" seed per build — the offline fallback for the release-notes
+     * Bundled "新特性" seed per build — the offline fallback for the release-notes
      * chip when the GitHub feed is unreachable. Verbatim user-supplied notes describing
      * each build; the live release body always wins when it can be fetched.
      */

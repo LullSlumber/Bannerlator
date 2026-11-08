@@ -261,7 +261,7 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     }
 
                     // Power profile
-                    SectionHead("Power profile")
+                    SectionHead("电源配置")
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -327,32 +327,32 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                     RootStrip(granted, rootState) { showGrantGate = true }
 
                     // Quick toggles (no root)
-                    SectionHead("Quick controls · no root")
+                    SectionHead("快速控制 · 无需root")
                     PerfCard {
                         ToggleRowLocal(
-                            "Sustained Performance Mode",
+                            "持续性能模式",
                             "Holds a stable clock to avoid thermal throttling.",
                             checked = sustained, enabled = true,
                             overridden = "sustainedPerfMode" in overridden,
-                            onInfo = { info = "Sustained Performance Mode" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
+                            onInfo = { info = "持续性能模式" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
                             onReset = { state.onResetPerfKey?.accept("sustainedPerfMode") },
                         ) { setSustained(it) }
                         Divider()
                         ToggleRowLocal(
-                            "Thread Priority Boost",
+                            "线程优先级提升",
                             "Raises emulator thread priority so the scheduler favours the game.",
                             checked = priority, enabled = true,
                             overridden = "perfPriorityBoost" in overridden,
-                            onInfo = { info = "Thread Priority Boost" to "Raises the emulator's thread priority so the CPU scheduler favours the game over background work." },
+                            onInfo = { info = "线程优先级提升" to "Raises the emulator's thread priority so the CPU scheduler favours the game over background work." },
                             onReset = { state.onResetPerfKey?.accept("perfPriorityBoost") },
                         ) { setPriority(it) }
                         Divider()
                         ToggleRowLocal(
-                            "Prefer Big Cores",
+                            "优先使用大核",
                             "Routes emulator threads onto the big / prime cluster.",
                             checked = bigCores, enabled = true,
                             overridden = "preferBigCores" in overridden,
-                            onInfo = { info = "Prefer Big Cores" to "Pins the emulator's hot threads onto the big / prime CPU cluster instead of the efficiency cores." },
+                            onInfo = { info = "优先使用大核" to "Pins the emulator's hot threads onto the big / prime CPU cluster instead of the efficiency cores." },
                             onReset = { state.onResetPerfKey?.accept("preferBigCores") },
                         ) { setBig(it) }
                         Divider()
@@ -360,18 +360,18 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                         val gpuKey = PerfRootApplier.KEY_GPU_CLOCK_LOCK
                         val gpuEnabled = granted || PerfGpuTurbo.isSupported
                         ToggleRowLocal(
-                            "Lock GPU to max clock",
+                            "锁定 GPU 最高频率",
                             if (gpuEnabled) "Adreno: pinned via /dev/kgsl-3d0 — works without root."
                             else "Needs an Adreno GPU, or root on other GPUs.",
                             checked = toggles[gpuKey] ?: false, enabled = gpuEnabled,
                             overridden = gpuKey in overridden,
-                            onInfo = { info = "Lock GPU to max clock" to "Pins the GPU to its top power level. On Adreno this uses the app-owned KGSL turbo property (no root); other GPUs use the root sysfs pin." },
+                            onInfo = { info = "锁定 GPU 最高频率" to "Pins the GPU to its top power level. On Adreno this uses the app-owned KGSL turbo property (no root); other GPUs use the root sysfs pin." },
                             onReset = { state.onResetPerfKey?.accept(gpuKey) },
                         ) { setRoot(gpuKey, it) }
                     }
 
                     // Root & danger
-                    SectionHead("Root & danger")
+                    SectionHead("Root与危险")
                     if (!granted) {
                         Text(
                             "🔒 " + when (rootState) {
@@ -383,21 +383,21 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                         )
                     }
                     PerfCard {
-                        RootToggle("CPU governor → performance", PerfRootApplier.KEY_CPU_GOVERNOR,
+                        RootToggle("CPU 调度器 → 性能模式", PerfRootApplier.KEY_CPU_GOVERNOR,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "CPU governor → performance" to "Forces every CPU cluster onto the performance governor for the session." },
+                            onInfo = { info = "CPU 调度器 → 性能模式" to "Forces every CPU cluster onto the performance governor for the session." },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_GOVERNOR) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
-                        RootToggle("Lock CPU frequency to max", PerfRootApplier.KEY_CPU_FREQ_LOCK,
+                        RootToggle("锁定 CPU 最高频率", PerfRootApplier.KEY_CPU_FREQ_LOCK,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "Lock CPU frequency to max" to "Sets scaling_min_freq = scaling_max_freq on every cluster." },
+                            onInfo = { info = "锁定 CPU 最高频率" to "Sets scaling_min_freq = scaling_max_freq on every cluster." },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_FREQ_LOCK) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
-                        RootToggle("Keep all cores online", PerfRootApplier.KEY_CORES_ONLINE,
+                        RootToggle("保持所有核心在线", PerfRootApplier.KEY_CORES_ONLINE,
                             toggles, overridden, granted, harnessProven,
-                            onInfo = { info = "Keep all cores online" to "Prevents the kernel from hot-plugging CPU cores offline." },
+                            onInfo = { info = "保持所有核心在线" to "Prevents the kernel from hot-plugging CPU cores offline." },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CORES_ONLINE) },
                             onEnableDanger = null, setRoot = { k, v -> setRoot(k, v) })
                         Divider()
@@ -409,12 +409,12 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
                             onEnableDanger = { pendingDanger = PendingDanger("Disable thermal throttling") { setRoot(PerfRootApplier.KEY_THERMAL_DISABLE, true) } },
                             setRoot = { k, v -> setRoot(k, v) })
                         Divider()
-                        RootToggle("Fan to maximum", PerfRootApplier.KEY_FAN_MAX,
+                        RootToggle("风扇最大转速", PerfRootApplier.KEY_FAN_MAX,
                             toggles, overridden, granted, harnessProven,
                             danger = true,
-                            onInfo = { info = "Fan to maximum" to "Forces active cooling to full speed for the session." },
+                            onInfo = { info = "风扇最大转速" to "Forces active cooling to full speed for the session." },
                             onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_FAN_MAX) },
-                            onEnableDanger = { pendingDanger = PendingDanger("Fan to maximum") { setRoot(PerfRootApplier.KEY_FAN_MAX, true) } },
+                            onEnableDanger = { pendingDanger = PendingDanger("风扇最大转速") { setRoot(PerfRootApplier.KEY_FAN_MAX, true) } },
                             setRoot = { k, v -> setRoot(k, v) })
                     }
                     if (granted && !harnessProven) {
@@ -427,12 +427,12 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
 
                     // Free memory
                     if (granted) {
-                        SectionHead("Free memory")
+                        SectionHead("释放内存")
                         PerfCard {
-                            ActionRowLocal("Drop file caches",
+                            ActionRowLocal("清除文件缓存",
                                 "Frees cached files. The system reclaims cache automatically.") { state.onFreeMemory?.run() }
                             Divider()
-                            ActionRowLocal("Deep clean (free app memory)",
+                            ActionRowLocal("深度清理（释放应用内存）",
                                 "Force-closes background apps. Won't touch your game or system.") { state.onDeepClean?.run() }
                         }
                     }
@@ -483,14 +483,14 @@ fun PerformanceDashboardDialog(state: XServerDrawerState, onDismiss: () -> Unit)
         PerfDisclaimerDialog(
             title = pd.label,
             body = PerfDisclaimerCopy.ROOT_RISK,
-            confirmLabel = "Enable",
+            confirmLabel = "启用",
             onConfirm = { pd.enable(); pendingDanger = null },
             onDismiss = { pendingDanger = null },
         )
     }
     if (showGrantGate) {
         PerfDisclaimerDialog(
-            title = "Power-user performance — read first",
+            title = "启用",
             body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = "Grant Root",
             onConfirm = { showGrantGate = false; scope.launch { RootManager.requestGrant() } },
@@ -734,7 +734,7 @@ private fun ActionRowLocal(label: String, sub: String, onClick: () -> Unit) {
         Box(
             Modifier.clip(RoundedCornerShape(9.dp)).background(cs.primary)
                 .padding(horizontal = 13.dp, vertical = 7.dp),
-        ) { Text("Run", color = cs.onPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+        ) { Text("运行", color = cs.onPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
     }
 }
 
@@ -864,7 +864,7 @@ fun PerformanceDashboardDialogPerGame(
                     }
 
                     // Power profile
-                    SectionHead("Power profile")
+                    SectionHead("电源配置")
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -877,49 +877,49 @@ fun PerformanceDashboardDialogPerGame(
                     RootStrip(granted, rootState) { showGrantGate = true }
 
                     // Quick controls (no root)
-                    SectionHead("Quick controls · no root")
+                    SectionHead("快速控制 · 无需root")
                     PerfCard {
-                        ToggleRowLocal("Sustained Performance Mode",
+                        ToggleRowLocal("持续性能模式",
                             "Holds a stable clock to avoid thermal throttling.",
                             checked = sustained, enabled = true, overridden = sustained != globalOf("sustainedPerfMode"),
-                            onInfo = { info = "Sustained Performance Mode" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
+                            onInfo = { info = "持续性能模式" to "Holds a stable clock so the SoC doesn't spike-and-throttle. No root required." },
                             onReset = { onSustained(globalOf("sustainedPerfMode")) }, onToggle = onSustained)
                         Divider()
-                        ToggleRowLocal("Thread Priority Boost",
+                        ToggleRowLocal("线程优先级提升",
                             "Raises emulator thread priority so the scheduler favours the game.",
                             checked = priority, enabled = true, overridden = priority != globalOf("perfPriorityBoost"),
-                            onInfo = { info = "Thread Priority Boost" to "Raises the emulator's thread priority so the CPU scheduler favours the game." },
+                            onInfo = { info = "线程优先级提升" to "Raises the emulator's thread priority so the CPU scheduler favours the game." },
                             onReset = { onPriority(globalOf("perfPriorityBoost")) }, onToggle = onPriority)
                         Divider()
-                        ToggleRowLocal("Prefer Big Cores",
+                        ToggleRowLocal("优先使用大核",
                             "Routes emulator threads onto the big / prime cluster.",
                             checked = bigCores, enabled = true, overridden = bigCores != globalOf("preferBigCores"),
-                            onInfo = { info = "Prefer Big Cores" to "Pins the emulator's hot threads onto the big / prime CPU cluster." },
+                            onInfo = { info = "优先使用大核" to "Pins the emulator's hot threads onto the big / prime CPU cluster." },
                             onReset = { onBigCores(globalOf("preferBigCores")) }, onToggle = onBigCores)
                         Divider()
                         val gk = PerfRootApplier.KEY_GPU_CLOCK_LOCK
-                        ToggleRowLocal("Lock GPU to max clock",
+                        ToggleRowLocal("锁定 GPU 最高频率",
                             "Adreno: no-root KGSL turbo; sysfs pin with root.",
                             checked = rootValue(gk), enabled = true, overridden = rootValue(gk) != globalOf(gk),
-                            onInfo = { info = "Lock GPU to max clock" to "Pins the GPU to its top power level (Adreno no-root; other GPUs need root)." },
+                            onInfo = { info = "锁定 GPU 最高频率" to "Pins the GPU to its top power level (Adreno no-root; other GPUs need root)." },
                             onReset = { onRoot(gk, globalOf(gk)) }, onToggle = { onRoot(gk, it) })
                     }
 
                     // Root & danger — settable as presets regardless of the current grant.
-                    SectionHead("Root & danger")
+                    SectionHead("Root与危险")
                     Text("Saved for this game · applied at launch when root is available.",
                         color = cs.onSurfaceVariant, fontSize = 11.sp,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp))
                     PerfCard {
-                        rootPresetRow("CPU governor → performance", PerfRootApplier.KEY_CPU_GOVERNOR,
+                        rootPresetRow("CPU 调度器 → 性能模式", PerfRootApplier.KEY_CPU_GOVERNOR,
                             "Forces every cluster to the performance governor.", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
-                        rootPresetRow("Lock CPU frequency to max", PerfRootApplier.KEY_CPU_FREQ_LOCK,
+                        rootPresetRow("锁定 CPU 最高频率", PerfRootApplier.KEY_CPU_FREQ_LOCK,
                             "scaling_min_freq = scaling_max_freq on every cluster.", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
-                        rootPresetRow("Keep all cores online", PerfRootApplier.KEY_CORES_ONLINE,
+                        rootPresetRow("保持所有核心在线", PerfRootApplier.KEY_CORES_ONLINE,
                             "Prevents the kernel from hot-plugging cores offline.", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = false, arm = null)
                         Divider()
@@ -928,10 +928,10 @@ fun PerformanceDashboardDialogPerGame(
                             setInfo = { info = it }, danger = true,
                             arm = { pendingDanger = PendingDanger("Disable thermal throttling") { onRoot(PerfRootApplier.KEY_THERMAL_DISABLE, true) } })
                         Divider()
-                        rootPresetRow("Fan to maximum", PerfRootApplier.KEY_FAN_MAX,
+                        rootPresetRow("风扇最大转速", PerfRootApplier.KEY_FAN_MAX,
                             "Forces active cooling to full at launch.", rootValue, onRoot, { k -> globalOf(k) },
                             setInfo = { info = it }, danger = true,
-                            arm = { pendingDanger = PendingDanger("Fan to maximum") { onRoot(PerfRootApplier.KEY_FAN_MAX, true) } })
+                            arm = { pendingDanger = PendingDanger("风扇最大转速") { onRoot(PerfRootApplier.KEY_FAN_MAX, true) } })
                     }
 
                     val anyOverride = sustained != globalOf("sustainedPerfMode") ||
@@ -950,11 +950,11 @@ fun PerformanceDashboardDialogPerGame(
     }
 
     pendingDanger?.let { pd ->
-        PerfDisclaimerDialog(title = pd.label, body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Enable",
+        PerfDisclaimerDialog(title = pd.label, body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "启用",
             onConfirm = { pd.enable(); pendingDanger = null }, onDismiss = { pendingDanger = null })
     }
     if (showGrantGate) {
-        PerfDisclaimerDialog(title = "Power-user performance — read first", body = PerfDisclaimerCopy.ROOT_RISK,
+        PerfDisclaimerDialog(title = "启用", body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = "Grant Root", onConfirm = { showGrantGate = false; scope.launch { RootManager.requestGrant() } },
             onDismiss = { showGrantGate = false })
     }

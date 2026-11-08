@@ -86,13 +86,13 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "The two main phone-GPU families. Adreno (Snapdragon) has the best support here. Mali (many MediaTek/Exynos phones) works, but needs extra help with compressed textures — that's what the BCn / wrapper settings are for."),
         GlossaryEntry("Turnip",
             "The open-source Vulkan driver for Adreno GPUs that Bannerlator uses for best performance and compatibility."),
-        GlossaryEntry("BCn emulation",
+        GlossaryEntry("BCn 模拟",
             "PC games store textures in a compressed format (BCn / DXT / S3TC) that Adreno reads natively but Mali cannot. BCn emulation converts them on the fly so they display correctly. If it's off or incomplete on a Mali device, you get black textures in some areas."),
         GlossaryEntry("ASTC / ETC2",
             "Compressed-texture formats that Mali GPUs CAN read natively. BCn emulation converts a game's textures into one of these so a Mali phone can display them."),
         GlossaryEntry("Adrenotools",
             "A loader that lets Bannerlator use a custom GPU driver (like Turnip) instead of your phone's built-in one — usually for better speed and compatibility on Adreno."),
-        GlossaryEntry("Vulkan version",
+        GlossaryEntry("Vulkan 版本",
             "The Vulkan level the driver reports to the DirectX translator (DXVK/VKD3D). A higher number can unlock features some games ask for, but it's automatically capped to what your driver really supports — so picking one above your driver does nothing."),
         GlossaryEntry("GPU spoofing (GPU Name)",
             "Reports a different graphics card to games than your real one. Some games unlock better graphics options, or simply run, when they recognise a specific GPU. Leave it on 'Device' to report your real GPU."),
@@ -100,7 +100,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "Limits how much video memory the driver tells games it has. Useful when a game tries to use more than your phone can spare — a fix for out-of-memory crashes or stutter. Leave on Default unless a game misbehaves."),
     )),
     GlossarySection("Turnip & driver tuning", listOf(
-        GlossaryEntry("GMEM (tiled rendering)",
+        GlossaryEntry("GMEM（分块渲染）",
             "How the GPU draws each frame. GMEM (tiled) rendering splits the screen into small tiles and draws them in ultra-fast on-chip memory — the efficient, mobile-native way. Auto turns it on only for Adreno 710/720/722 (which need it to avoid glitches); Force On applies it to any GPU; Force Off never does. Its opposite is 'sysmem'."),
         GlossaryEntry("sysmem",
             "Forces the GPU to draw straight to main memory instead of the fast on-chip tile memory — the opposite of GMEM. The most compatible option (and the default), but uses more memory bandwidth. Use it if forcing GMEM makes a game glitch."),
@@ -120,9 +120,9 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "The order of the red and blue colour channels. BGRA (the default) is correct for almost everything — only switch to RGBA if a game's colours look swapped (blue where red should be)."),
         GlossaryEntry("Render scale / supersampling",
             "Renders the game at a higher resolution and shrinks it for a sharper image (costs performance), or at a lower resolution for more FPS."),
-        GlossaryEntry("Frame generation",
+        GlossaryEntry("帧率",
             "Inserts extra in-between frames to make motion look smoother. Interpolation always adds about one frame of input delay, and can produce occasional artifacts, so it's optional. Two engines, both running inside Bannerlator itself so the extra frames reach the screen directly: Win-FG Native (built in, needs nothing) and LSFG Native (runs the Lossless Scaling shaders, and needs your own imported Lossless.dll). Needs the Vulkan renderer."),
-        GlossaryEntry("FPS limiter",
+        GlossaryEntry("FPS 限制器",
             "Caps how many frames the game renders per second. A cap cuts heat and battery use and can smooth out an unstable frame rate. Turning it on just loads the limiter — you set the actual cap live from the in-game FPS menu."),
         GlossaryEntry("Native rendering",
             "Sends the game's image straight to the screen instead of through Bannerlator's compositor — lower latency and a little faster, but it disables colour swapping (RGBA) and the present-mode control. Turn it off if a game shows wrong colours or won't display."),
@@ -130,7 +130,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "With frame generation on, two apps' FPS readings won't match — they count at different points. A counter that reads the game's raw output shows a clean 2x/3x/4x (impressive, but it counts frames your screen never actually displays). Bannerlator's HUD counts frames as they reach the display pipeline, so it shows the real gain — not a perfectly clean multiple, and always capped by your screen's refresh rate. Neither number is 'frames on glass'; your panel's refresh rate is the true ceiling."),
         GlossaryEntry("DXVK HUD / overlay",
             "An on-screen readout (FPS, frame times, GPU load, driver info) for diagnosing performance. Purely informational — it doesn't change the game."),
-        GlossaryEntry("Present mode",
+        GlossaryEntry("呈现模式",
             "How finished frames are handed to your screen — a trade-off between smoothness, input lag and battery. FIFO is the safe default; Mailbox is best with frame generation; Immediate chases the lowest lag but can tear."),
         GlossaryEntry("FIFO (present mode)",
             "The default 'vsync on': every frame waits its turn and is shown on the next screen refresh. Smooth, tear-free and the most battery-friendly — but it makes the game wait for the display, which can hold frame generation back."),
@@ -140,9 +140,9 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "'Vsync off': frames go to the screen the instant they're ready. Lowest input lag, but you can see tearing (parts of two frames at once). Usually not worth it on a high-refresh phone screen."),
         GlossaryEntry("SurfaceFlinger (renderer)",
             "An experimental renderer that hands frames straight to Android's display system. Sometimes faster, but it can misbehave (or even reboot) some devices — Vulkan is the safe default."),
-        GlossaryEntry("Fast OpenGL",
+        GlossaryEntry("快速 OpenGL",
             "Sends an OpenGL game's frames straight to the screen through Vulkan, the route DXVK games take, instead of copying every frame back first. Several times faster on X11, and it speeds up DirectDraw and older Direct3D games through WineD3D too. Always on with Wayland; on X11 it needs a Turnip driver and works with any Wine layer (Wine 11 arm64ec layers go through EGL, everything else, including x86-64 layers, through GLX). On by default — turn it off for a game that misbehaves. It doesn't change game speed: very old games tied to frame rate should use the FPS limiter."),
-        GlossaryEntry("Show OpenGL FPS",
+        GlossaryEntry("显示 OpenGL FPS",
             "Mesa's frames-per-second counter in the top-left corner of OpenGL games (GALLIUM_HUD=fps). Works on X11 and Wayland; DXVK games don't show it. Off by default."),
         GlossaryEntry("OpenGL vsync off",
             "Lets OpenGL games run above the screen's refresh rate instead of waiting for each refresh (vblank_mode=0). Can tear; very old games that tie speed to frame rate may run too fast, so use the FPS limiter with them. Off by default."),
@@ -152,7 +152,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
     GlossarySection("Under the hood", listOf(
         GlossaryEntry("glibc vs bionic",
             "Two different C libraries. Android uses 'bionic'; desktop Linux uses 'glibc'. Bannerlator's Wine and drivers are built for bionic — a glibc build simply won't load, no matter how good it looks."),
-        GlossaryEntry("Environment variables",
+        GlossaryEntry("环境变量",
             "Advanced per-container switches (like DXVK_FRAME_RATE=60 or BCN_TRANSCODE_TO_ASTC=1). Most people never need them, but they let power users fine-tune a game."),
         GlossaryEntry("Sync (esync / ntsync / fsync / wineserver)",
             "How a game's threads wait for each other ('wait until this is loaded', 'signal when the frame is ready'). Wine has several ways to handle that; the faster ones mean less stutter and CPU overhead. Pick one on the container's General tab (under the compatibility layer) or per game — a game follows its container unless you choose otherwise. Options the layer can't do are greyed out."),
@@ -189,7 +189,7 @@ fun ContainerGlossarySheet(onDismiss: () -> Unit, initialQuery: String = "") {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val cs = MaterialTheme.colorScheme
     // A per-field help icon opens the sheet pre-filtered to that term (initialQuery); the general
-    // "What is all this?" button opens it unfiltered (initialQuery == "").
+    // "这些是什么?" button opens it unfiltered (initialQuery == "").
     var query by remember { mutableStateOf(initialQuery) }
 
     // Flatten + filter. A section is shown only if it has any matching entries.
@@ -209,7 +209,7 @@ fun ContainerGlossarySheet(onDismiss: () -> Unit, initialQuery: String = "") {
         DeckDialogScaled {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Text(
-                    "What is all this?",
+                    "这些是什么?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )

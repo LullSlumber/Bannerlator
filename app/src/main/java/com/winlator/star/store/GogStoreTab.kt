@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
  * on), the browse rails on the right. Typing replaces either layout with a result list.
  *
  * Owned titles open the app's own GOG detail page; everything else opens the store-only detail
- * page ([StoreCatalogDetailActivity]). "Get for free" / "View on GOG.com" open the product page in
+ * page ([StoreCatalogDetailActivity]). "免费获取" / "View on GOG.com" open the product page in
  * the in-app WebView — GOG exposes no add-to-library API to third parties, so the claim is a web
  * checkout, exactly as Heroic does it.
  */
@@ -179,10 +179,10 @@ private fun GogStorePortrait(
                 )
             }
         }
-        catalogRail("Trending", "Popular right now", data.trending, "GOG", actionFor, onOpen, onAction)
-        catalogRail("Free Games", "Claim on GOG.com", data.free, "GOG", actionFor, onOpen, onAction)
-        catalogRail("New Releases", "Just landed", data.newReleases, "GOG", actionFor, onOpen, onAction)
-        catalogRail("Deals", "Biggest discounts", data.deals, "GOG", actionFor, onOpen, onAction)
+        catalogRail("趋势", "当前热门", data.trending, "GOG", actionFor, onOpen, onAction)
+        catalogRail("免费游戏", "在GOG.com领取", data.free, "GOG", actionFor, onOpen, onAction)
+        catalogRail("新发布", "刚刚上架", data.newReleases, "GOG", actionFor, onOpen, onAction)
+        catalogRail("优惠", "最大折扣", data.deals, "GOG", actionFor, onOpen, onAction)
     }
 }
 
@@ -213,7 +213,7 @@ private fun GogStoreLandscape(
                 }
             }
             if (data.free.isNotEmpty()) {
-                item(key = "free_hdr") { StoreSectionHeader("Free Games", "Claim on GOG.com") }
+                item(key = "free_hdr") { StoreSectionHeader("免费游戏", "在GOG.com领取") }
                 items(data.free.distinctBy { it.id }, key = { "free_${it.id}" }) { g ->
                     CatalogResultRow(
                         item = g,
@@ -230,9 +230,9 @@ private fun GogStoreLandscape(
             modifier = Modifier.weight(0.58f).fillMaxHeight().focusGroup(),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            catalogRail("Trending", "Popular right now", data.trending, "GOG", actionFor, onOpen, onAction)
-            catalogRail("New Releases", "Just landed", data.newReleases, "GOG", actionFor, onOpen, onAction)
-            catalogRail("Deals", "Biggest discounts", data.deals, "GOG", actionFor, onOpen, onAction)
+            catalogRail("趋势", "当前热门", data.trending, "GOG", actionFor, onOpen, onAction)
+            catalogRail("新发布", "刚刚上架", data.newReleases, "GOG", actionFor, onOpen, onAction)
+            catalogRail("优惠", "最大折扣", data.deals, "GOG", actionFor, onOpen, onAction)
             if (data.trending.isEmpty() && data.newReleases.isEmpty() && data.deals.isEmpty()) {
                 item(key = "browse_empty") {
                     StoreNotice(title = "Nothing to browse right now", body = "GOG's catalog feeds came back empty.")

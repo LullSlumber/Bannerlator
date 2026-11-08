@@ -33,7 +33,7 @@ internal class DeckTranslatorDownloads(
         return actionItems("perf-downloads", "Translator downloads", listOfNotNull(
             DeckAction("box64", Icons.Filled.CloudDownload, if (arm64ec) "Download WOWBox64 versions" else "Download Box64 versions",
                 "Installed ones appear under Box64 version.") { sheet = box64 },
-            if (arm64ec) DeckAction("fex", Icons.Filled.CloudDownload, "Download FEXCore versions",
+            if (arm64ec) DeckAction("fex", Icons.Filled.CloudDownload, "下载FEXCore版本",
                 "Installed ones appear under FEX version.") { sheet = ContentProfile.ContentType.CONTENT_TYPE_FEXCORE } else null,
             if (arm64ec) DeckAction("box64ec", Icons.Filled.CloudDownload, "Download Box64EC versions",
                 "Runs 64-bit games when the 64-bit translator is Box64EC.") { sheet = ContentProfile.ContentType.CONTENT_TYPE_BOX64EC } else null,

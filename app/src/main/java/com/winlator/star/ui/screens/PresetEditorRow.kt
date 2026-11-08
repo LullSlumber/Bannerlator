@@ -145,7 +145,7 @@ internal fun PresetEditorRow(
             if (isCustom) {
                 if (isFex) FEXCorePresetManager.exportPreset(context, selectedPresetId)
                 else Box64PresetManager.exportPreset(prefix, context, selectedPresetId)
-            } else AppUtils.showToast(context, "Cannot export this preset")
+            } else AppUtils.showToast(context, "无法导出此预设")
         }
         PresetImportAction(
             onInApp = {
@@ -257,12 +257,12 @@ private fun androidx.compose.foundation.layout.RowScope.PresetImportAction(
             modifier = Modifier.outlinedMenuCard(),
         ) {
             DropdownMenuItem(
-                text = { Text("Browse files") },
+                text = { Text("浏览文件") },
                 onClick = { expanded = false; onInApp() },
             )
             MenuItemDivider()
             DropdownMenuItem(
-                text = { Text("Pick via system…") },
+                text = { Text("从系统选取…") },
                 onClick = { expanded = false; onSystem() },
             )
         }

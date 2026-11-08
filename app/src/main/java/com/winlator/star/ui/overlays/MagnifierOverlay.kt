@@ -85,7 +85,7 @@ fun MagnifierOverlay(state: XServerDialogState) {
                 }
         ) {
             Text(
-                text = "Magnifier",
+                text = "放大镜",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

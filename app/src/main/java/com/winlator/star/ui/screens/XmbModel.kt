@@ -21,7 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 //    builder's closure) for async data, or call [XmbScope.refresh] after changing plain values such as
 //    shortcut extras.
 //  • Changes apply as you go (no OK/Cancel): a row's callback writes the value (e.g. putExtra +
-//    saveData) and then calls xmb.saved() so the "✓ Saved" flash shows.
+//    saveData) and then calls xmb.saved() so the "✓ 已保存" flash shows.
 //  • Row keys must be unique within a menu and stable across rebuilds (selection is tracked by key).
 //  • Anything blocking (disk, network) goes through xmb.scope + Dispatchers.IO; update state, not UI.
 // ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ internal interface XmbScope {
     /** Re-read rows after changing non-Compose values (shortcut extras). */
     fun refresh()
     fun toast(message: String)
-    /** Flash "✓ Saved" in the breadcrumb (call after writing a setting). */
+    /** Flash "✓ 已保存" in the breadcrumb (call after writing a setting). */
     fun saved()
     /** Push a confirm column (opens on Cancel); [onOk] runs after it closes. */
     fun confirm(confirm: XmbConfirm, onOk: () -> Unit)

@@ -63,7 +63,7 @@ fun CastDialog(state: XServerDialogState) {
             Column(modifier = Modifier.padding(16.dp)) {
                 // Title row: name + "?" help toggle + Refresh (Refresh hidden on the help screen).
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text(if (showHelp) "Casting — options & tips" else "Cast to a TV (wireless)",
+                    Text(if (showHelp) "投屏 — 选项与提示" else "投屏到电视TV （无线）",
                         style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                     if (!showHelp) {
                         if (scanning) CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -74,7 +74,7 @@ fun CastDialog(state: XServerDialogState) {
                             Text("?", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
                         Spacer(Modifier.size(4.dp))
-                        TextButton(onClick = { state.onCastRefresh?.run() }) { Text("Refresh") }
+                        TextButton(onClick = { state.onCastRefresh?.run() }) { Text("刷新") }
                     }
                 }
 
@@ -96,7 +96,7 @@ fun CastDialog(state: XServerDialogState) {
 
                 if (devices.isEmpty()) {
                     Text(
-                        text = if (scanning) "Searching…" else "No devices found. Make sure your TV is on the " +
+                        text = if (scanning) "正在搜索…" else "No devices found. Make sure your TV is on the " +
                             "same Wi-Fi, then tap Refresh.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
@@ -181,33 +181,33 @@ fun CastDialog(state: XServerDialogState) {
 private fun CastHelp() {
     Column(modifier = Modifier.heightIn(max = 340.dp).verticalScroll(rememberScrollState())) {
         HelpBlock(
-            title = "Cast — no app on the TV (this screen) · EXPERIMENTAL",
-            body = "Pick a Google TV or Chromecast from the list — nothing to install on the TV.",
-            pros = listOf("Nothing to set up on the TV", "Uses devices you already have"),
+            title = "投屏 — 电视TV上无应用（此屏幕）· 实验性",
+            body = "从列表中选择一个 Google TV 或 Chromecast投屏器 — TV上无需安装任何内容。",
+            pros = listOf("电视TV上无需设置任何内容", "使用您已有的设备"),
             cons = listOf(
-                "A few seconds of lag (video is buffered) — good for slower games, not fast ones",
-                "Video only for now — the game's sound stays on this device",
-                "Google TV / Chromecast only — Roku isn't listed here"
+                "几秒延迟（视频缓冲）— 适合慢速游戏，不适合快节奏游戏",
+                "目前仅支持视频 — 游戏声音保留在此设备上",
+                "仅支持 Google TV / Chromecast投屏器 — Roku 不在此列表中"
             )
         )
         HelpBlock(
-            title = "Cast — with a receiver app (coming later)",
-            body = "Install our small app on the Google TV once, then cast from this same list.",
-            pros = listOf("Crisp, low-lag — good for any game", "Phone stays free (blank phone, game on TV)"),
-            cons = listOf("Needs a one-time install on the Google TV", "Won't work on Roku (closed device)")
+            title = "投屏 — 使用接收端应用（即将推出）",
+            body = "在 Google TV 上安装一次我们的小应用，然后从此同一列表投屏。",
+            pros = listOf("清晰、低延迟 — 适合任何游戏", "手机保持空闲（手机黑屏，游戏在TV上）"),
+            cons = listOf("需要在 Google TV 上一次性安装", "不适用于 Roku（封闭设备）")
         )
         HelpBlock(
-            title = "Wired cable — lowest lag today",
-            body = "A USB-C→HDMI cable moves the game to the TV with almost no lag.",
-            pros = listOf("Best quality and responsiveness", "No Wi-Fi needed"),
-            cons = listOf("Needs a cable and an HDMI port")
+            title = "有线线缆 — 目前最低延迟",
+            body = "USB‑C→HDMI 线缆可将游戏移至电视TV，几乎无延迟。",
+            pros = listOf("最佳质量和响应性", "无需 Wi‑Fi"),
+            cons = listOf("需要线缆和 HDMI 端口")
         )
         HelpBlock(
-            title = "Roku TVs",
+            title = "Roku 电视TV",
             body = "Roku can't run our app and can't take our stream. Use Android's built-in Screen " +
                 "Mirroring (in Settings) with the Roku's Screen-mirroring turned on.",
-            pros = listOf("No app needed"),
-            cons = listOf("Uses Android's system screen, not this in-app list", "Depends on your phone's Miracast")
+            pros = listOf("无需应用"),
+            cons = listOf("使用 Android 的系统屏幕，而非此应用内列表", "取决于您手机的 Miracast")
         )
     }
 }

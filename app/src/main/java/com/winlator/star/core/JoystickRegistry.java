@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * What HKCU\Software\Wine\DirectInput\Joysticks should hold for a Controller identity and the
- * "DirectInput games can see the controller" switch. One builder for all three writers, so they can
+ * "DirectInput 游戏可以看到控制器" switch. One builder for all three writers, so they can
  * never disagree: the launch (WineUtils.setJoystickRegistryKeys, user.reg before Wine starts), the
  * in-game change (LiveWineRegistry, a .reg imported by regedit into the running registry) and the
  * reconnect that follows it.

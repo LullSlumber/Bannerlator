@@ -70,19 +70,19 @@ class EpicLoginActivity : ComponentActivity() {
             if (authCode.isNullOrEmpty()) {
                 Log.e(TAG, "authorizationCode not found in redirect page (len=${result.length})")
                 codeCaptured.set(false)
-                resultBarMsg = "Epic login failed, please try again"
+                resultBarMsg = "Epic登录失败，请重试"
                 view.loadUrl(AUTH_URL)
                 return@evaluateJavascript
             }
 
-            Log.d(TAG, "Epic auth code captured, exchanging for tokens...")
+            Log.d(TAG, "已捕获Epic授权码，正在交换令牌...")
             lifecycleScope.launch(Dispatchers.IO) {
                 val tokenResult = EpicAuthClient.exchangeCode(authCode)
                 if (tokenResult == null) {
                     Log.e(TAG, "Epic token exchange failed")
                     withContext(Dispatchers.Main) {
                         codeCaptured.set(false)
-                        resultBarMsg = "Epic login failed, please try again"
+                        resultBarMsg = "Epic登录失败，请重试"
                         view.loadUrl(AUTH_URL)
                     }
                     return@launch

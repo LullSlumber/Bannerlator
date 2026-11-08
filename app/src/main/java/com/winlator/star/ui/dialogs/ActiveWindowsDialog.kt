@@ -52,7 +52,7 @@ fun ActiveWindowsDialog(state: XServerDialogState) {
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Active Windows", style = MaterialTheme.typography.titleMedium)
+                Text("活动窗口", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(12.dp))
 
                 if (windows.isEmpty()) {

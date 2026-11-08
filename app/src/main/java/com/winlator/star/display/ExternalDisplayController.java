@@ -411,7 +411,7 @@ public class ExternalDisplayController {
             scrim.setBackgroundColor(0x99000000); // 60% black; frozen frame stays faintly visible
 
             TextView pill = new TextView(ctx);
-            pill.setText("▶  Paused");
+            pill.setText("▶  暂停");
             pill.setTextColor(0xFFFFFFFF);
             pill.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
             pill.setTypeface(pill.getTypeface(), Typeface.BOLD);

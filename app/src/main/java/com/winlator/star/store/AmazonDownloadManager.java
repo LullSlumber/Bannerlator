@@ -144,7 +144,7 @@ public class AmazonDownloadManager {
                     + manifest.totalInstallSize + " bytes total");
 
             if (progress != null) {
-                progress.onProgress(0, manifest.totalInstallSize, "Starting…");
+                progress.onProgress(0, manifest.totalInstallSize, "正在启动…");
             }
 
             // Step 4: Download all files — MAX_PARALLEL threads
@@ -186,7 +186,7 @@ public class AmazonDownloadManager {
                             downloaded, lastEmit, manifest.totalInstallSize,
                             lastSpeedMs, lastSpeedBytes, currentSpeedBps,
                             progress, cancel);
-                    if (!ok) fileLog.add("FAIL: " + file.unixPath());
+                    if (!ok) fileLog.add("失败: " + file.unixPath());
                     return ok;
                 }));
             }
@@ -195,9 +195,9 @@ public class AmazonDownloadManager {
                 for (Future<Boolean> f : futures) {
                     if (!f.get()) {
                         for (String line : fileLog) dbg.append(line).append("\n");
-                        dbg.append("ERROR: a file failed — aborting\n");
+                        dbg.append("错误：文件失败 — 正在中止\n");
                         writeDebug(ctx, dbg);
-                        log("A file failed — aborting download");
+                        log("文件失败 — 正在中止下载");
                         pool.shutdownNow();
                         deleteMarker(installDir, IN_PROGRESS_MARKER);
                         return false;
@@ -207,7 +207,7 @@ public class AmazonDownloadManager {
                 for (String line : fileLog) dbg.append(line).append("\n");
                 dbg.append("ERROR: pool exception=").append(e).append("\n");
                 writeDebug(ctx, dbg);
-                Log.e(TAG, "Download pool error", e);
+                Log.e(TAG, "下载池错误", e);
                 pool.shutdownNow();
                 deleteMarker(installDir, IN_PROGRESS_MARKER);
                 return false;
@@ -230,13 +230,13 @@ public class AmazonDownloadManager {
             dbg.append("INSTALL COMPLETE: ").append(game.title)
                .append(" → ").append(installDir.getAbsolutePath()).append("\n");
             writeDebug(ctx, dbg);
-            log("Install complete: " + game.title + " → " + installDir.getAbsolutePath());
+            log("安装完成: " + game.title + " → " + installDir.getAbsolutePath());
             return true;
 
         } catch (Exception e) {
-            dbg.append("EXCEPTION: ").append(e).append("\n");
+            dbg.append("异常: ").append(e).append("\n");
             writeDebug(ctx, dbg);
-            Log.e(TAG, "install failed for: " + game.title, e);
+            Log.e(TAG, "安装失败于: " + game.title, e);
             deleteMarker(installDir, IN_PROGRESS_MARKER);
             return false;
         }
@@ -250,7 +250,7 @@ public class AmazonDownloadManager {
             try (java.io.FileOutputStream fos = new java.io.FileOutputStream(f)) {
                 fos.write(dbg.toString().getBytes("UTF-8"));
             }
-            Log.i(TAG, "Debug written to: " + f.getAbsolutePath());
+            Log.i(TAG, "调试信息写入: " + f.getAbsolutePath());
         } catch (Exception e) {
             Log.e(TAG, "writeDebug failed", e);
         }
@@ -311,7 +311,7 @@ public class AmazonDownloadManager {
         if (plan.isEmpty()) {
             dbg.append("ERROR: rust plan build failed\n");
             writeDebug(ctx, dbg);
-            log("A file failed — aborting download");
+            log("文件失败 — 正在中止下载");
             return false;
         }
         String caPath;
@@ -375,16 +375,16 @@ public class AmazonDownloadManager {
         if (result.cancelled) {
             synchronized (dbg) { dbg.append("CANCELLED (rust engine)\n"); }
             writeDebug(ctx, dbg);
-            log("Download cancelled");
+            log("下载已取消");
             return false;
         }
         if (!result.success) {
             synchronized (dbg) {
-                dbg.append("FAIL: ").append(result.error).append("\n");
-                dbg.append("ERROR: a file failed — aborting\n");
+                dbg.append("失败: ").append(result.error).append("\n");
+                dbg.append("错误：文件失败 — 正在中止\n");
             }
             writeDebug(ctx, dbg);
-            log("A file failed — aborting download");
+            log("文件失败 — 正在中止下载");
             return false;
         }
         return true;
@@ -442,7 +442,7 @@ public class AmazonDownloadManager {
                     // Rename tmp → dest
                     if (destFile.exists()) destFile.delete();
                     if (!tmpFile.renameTo(destFile)) {
-                        Log.e(TAG, "Failed to rename tmp → " + destFile.getAbsolutePath());
+                        Log.e(TAG, "重命名tmp失败 → " + destFile.getAbsolutePath());
                         return false;
                     }
                     return true;
@@ -456,7 +456,7 @@ public class AmazonDownloadManager {
                 tmpFile.delete();
                 return false;
             } catch (Exception e) {
-                Log.e(TAG, "Attempt " + attempt + " failed for: " + file.unixPath(), e);
+                Log.e(TAG, "尝试 " + attempt + " 失败于: " + file.unixPath(), e);
                 tmpFile.delete();
                 if (attempt < MAX_RETRIES) {
                     try { Thread.sleep(1000L << (attempt - 1)); }

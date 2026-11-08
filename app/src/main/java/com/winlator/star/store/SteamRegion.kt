@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /**
- * "Steam connection region" — one user setting (Settings → Steam) consumed by all four Steam
+ * "Steam连接区域" — one user setting (Settings → Steam) consumed by all four Steam
  * network paths, engine-aware (Phase 2-C of docs/STEAM_RUST_ENGINE_PLAN.md; ships to everyone):
  *
  *  1. **Rust engine CM pick** — [pickEngineCmUrl]: the chosen datacenter's WebSocket CM (the

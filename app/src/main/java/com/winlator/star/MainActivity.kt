@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         const val OPEN_IMAGE_REQUEST_CODE: Byte = 5
 
         /** String extra: a Screen route to open (e.g. Screen.Games.route). Used by
-         *  the store activities' "Open Shortcuts" action to deep-link back here. */
+         *  the store activities' "打开快捷方式" action to deep-link back here. */
         const val EXTRA_OPEN_SCREEN = "open_screen"
         @JvmField val CONTAINER_PATTERN_COMPRESSION_LEVEL: Byte = 9
         @JvmField var PACKAGE_NAME: String = ""
@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity() {
 
         // Settings-side Controller Test: the Input Controls screen's test dialog arms/disarms the input
         // fork through this bus (so this Activity consumes gamepad events instead of navigating the UI),
-        // and asks us to natively rumble the live pad for "Identify".
+        // and asks us to natively rumble the live pad for "识别".
         // The gate itself is ControllerTestBus.active (read directly in dispatch). This callback only
         // clears the throwaway controller's stale state when the dialog opens, and drops the snapshot
         // when it closes.
@@ -603,7 +603,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    /** Native "Identify" — rumble the last pad the visualizer saw, via VibratorManager (independent
+    /** Native "识别" — rumble the last pad the visualizer saw, via VibratorManager (independent
      *  motors, API 31+) or the single vibrator otherwise. No game / WinHandler here. */
     private fun settingsControllerIdentify() {
         val id = controllerTestLastDeviceId
@@ -753,7 +753,7 @@ private fun ClassicAppShell(
         }
     }
 
-    // Navigate to a route requested by a relaunch intent (store "Open Shortcuts").
+    // Navigate to a route requested by a relaunch intent (store "打开快捷方式").
     LaunchedEffect(pendingRoute) {
         if (pendingRoute != null) {
             navController.navigate(pendingRoute) {
@@ -851,7 +851,7 @@ private fun ClassicAppShell(
                                 if (drawerState.isOpen) drawerState.close() else drawerState.open()
                             }
                         },
-                        // Steam connection status pill, right after the "Games" title (Games screen only).
+                        // Steam connection status pill, right after the "游戏" title (Games screen only).
                         // Self-gates to signed-in users; tap when offline to retry. See SteamConnectionPill.
                         titleTrailing = if (currentRoute == Screen.Games.route) {
                             { com.winlator.star.store.SteamConnectionPill() }
@@ -945,7 +945,7 @@ private fun ClassicAppShell(
 private fun AllFilesAccessDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("All Files Access Required") },
+        title = { Text("需要所有文件访问权限") },
         text = {
             Text(
                 "In order to grant access to additional storage devices such as USB storage, " +
@@ -991,7 +991,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = "Bannerlator Bionic",
+                        text = "Bannerlator Bionic\n由B站狂犬不语汉化",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
@@ -1012,7 +1012,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                                 containerColor = androidx.compose.ui.graphics.Color(0xFF4CAF50)
                             ),
                             modifier = androidx.compose.ui.Modifier.fillMaxWidth()
-                        ) { Text("Update now", color = androidx.compose.ui.graphics.Color.White) }
+                        ) { Text("立即更新", color = androidx.compose.ui.graphics.Color.White) }
                     }
 
                     Spacer(androidx.compose.ui.Modifier.height(4.dp))

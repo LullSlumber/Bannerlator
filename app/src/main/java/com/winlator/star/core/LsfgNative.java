@@ -120,7 +120,7 @@ public final class LsfgNative {
     public static String explain(int status) {
         switch (status) {
             case STATUS_OK:
-                return "Ready";
+                return "就绪";
             case STATUS_NOT_INSTALLED:
                 return "Import your own Lossless.dll in Settings first";
             case STATUS_UNREADABLE_FILE:

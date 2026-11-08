@@ -251,7 +251,7 @@ public final class HeadlessSteamLogCollector {
         while (po.find()) preloadOk++;
         if (!preloadFails.isEmpty())
             rows.add(fail("PRELOADS", preloadFails.size() + " of Valve's helper libraries failed to load: " + preloadFails.get(0)
-                    + (preloadFails.size() > 1 ? " (+" + (preloadFails.size() - 1) + " more)" : "")
+                    + (preloadFails.size() > 1 ? " (+" + (preloadFails.size() - 1) + " 更多)" : "")
                     + ". A 'cannot locate symbol' here means a library search-path clash, not a Valve bug."));
         else if (preloadOk > 0) rows.add(pass("PRELOADS", preloadOk + " helper libraries loaded"));
 

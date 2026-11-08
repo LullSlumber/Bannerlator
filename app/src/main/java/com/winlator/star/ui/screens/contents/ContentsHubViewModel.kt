@@ -30,7 +30,7 @@ sealed interface HubSource {
     val displayFormat: String
     val typePills: List<String>
     val driverOnly: Boolean
-    /** true → the remove action is "Hide default"; false → "Remove". */
+    /** true → the remove action is "Hide default"; false → "移除". */
     val removeIsHide: Boolean
     /** The built-in Official catalog (contents.json) — gets the green Official badge. */
     val isOfficial: Boolean
@@ -46,7 +46,7 @@ sealed interface HubSource {
 
     data class Driver(val source: RemoteDriverSource) : HubSource {
         override val name get() = source.name
-        override val displayFormat get() = "GPU driver source"
+        override val displayFormat get() = "GPU驱动程序来源"
         override val typePills get() = listOf(ContentsTypes.GPU_DRIVERS)
         override val driverOnly get() = true
         override val removeIsHide get() = source.builtIn
@@ -423,7 +423,7 @@ class ContentsHubViewModel(app: Application) : AndroidViewModel(app) {
         true
     }.getOrDefault(false)
 
-    /** Human browse URL for the source's "Open source page" menu action. */
+    /** Human browse URL for the source's "打开来源页面" menu action. */
     fun browseUrl(source: HubSource): String = when (source) {
         is HubSource.Component -> repo.getBrowseUrl(source.source)
         is HubSource.Driver -> when (val f = source.source.feeds.firstOrNull()) {

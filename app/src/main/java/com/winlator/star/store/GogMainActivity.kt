@@ -130,8 +130,8 @@ class GogMainActivity : ComponentActivity() {
 
 private val GOG_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
-    StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
+    StoreSectionTab("library", "库", Icons.Filled.VideoLibrary),
+    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -203,11 +203,11 @@ private fun GogStorefrontHost(
                 onClick = { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) },
                 modifier = Modifier.steamFocusRing(),
             ) {
-                Icon(Icons.Filled.ViewList, contentDescription = "Full library screen", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ViewList, contentDescription = "完整库界面", tint = MaterialTheme.colorScheme.primary)
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -217,7 +217,7 @@ private fun GogStorefrontHost(
             DownloadsButton()
             StoreRailOverflow(
                 items = listOf<Triple<String, ImageVector, () -> Unit>>(
-                    Triple("Full library screen", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) }),
+                    Triple("完整库界面", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) }),
                 ),
                 onSignOut = onSignOut,
             )
@@ -282,7 +282,7 @@ fun StoreRailOverflow(
             }
             if (items.isNotEmpty()) HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
             DropdownMenuItem(
-                text = { Text("Sign out", color = MaterialTheme.colorScheme.error) },
+                text = { Text("退出登录", color = MaterialTheme.colorScheme.error) },
                 leadingIcon = {
                     Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 },
@@ -312,7 +312,7 @@ private fun GogLoginScreen(onLoginClick: () -> Unit) {
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "Sign in to browse the GOG store, claim free games and download your library.",
+                "登录以浏览GOG商店、领取免费游戏并下载您的库。",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -322,7 +322,7 @@ private fun GogLoginScreen(onLoginClick: () -> Unit) {
                 onClick = onLoginClick,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("Login with GOG") }
+            ) { Text("使用GOG登录") }
         }
     }
 }

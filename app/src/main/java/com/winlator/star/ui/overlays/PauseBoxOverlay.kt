@@ -29,7 +29,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.winlator.star.ui.XServerDialogState
 
-// Compact centered "Paused — tap to resume" indicator, shown whenever the guest is frozen (the
+// Compact centered "已暂停 — 点击恢复" indicator, shown whenever the guest is frozen (the
 // ReShade freeze-frame preview pause OR a normal manual Pause). Tapping fires onRequestResume
 // (SIGCONT + clear paused).
 //
@@ -76,7 +76,7 @@ fun PauseBoxOverlay(state: XServerDialogState) {
  * ComposeView tied to the backgrounded activity would stop composing exactly when it's needed.
  */
 @Composable
-fun PauseBoxContent(onResume: () -> Unit, label: String = "Paused — tap to resume") {
+fun PauseBoxContent(onResume: () -> Unit, label: String = "已暂停 — 点击恢复") {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

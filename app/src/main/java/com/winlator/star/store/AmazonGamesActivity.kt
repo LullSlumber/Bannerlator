@@ -86,7 +86,7 @@ class AmazonGamesActivity : ComponentActivity() {
     private var allGames by mutableStateOf<List<AmazonGame>>(emptyList())
     private var searchQuery by mutableStateOf("")
     private var viewMode by mutableStateOf("list")
-    private var statusText by mutableStateOf("Loading Amazon library\u2026")
+    private var statusText by mutableStateOf("正在加载Amazon库…")
     private var gamesVisible by mutableStateOf(false)
     private var expandedProductId by mutableStateOf<String?>(null)
     // Themed auto-dismiss bar — system Toasts render as an unreadable black box on this ROM
@@ -224,7 +224,7 @@ class AmazonGamesActivity : ComponentActivity() {
 
     private fun startSync(showProgress: Boolean) {
         refreshEnabled = false
-        if (showProgress) setSync("Loading Amazon library\u2026", false)
+        if (showProgress) setSync("正在加载Amazon库…", false)
         lifecycleScope.launch(Dispatchers.IO) {
             syncLibrary(showProgress)
         }
@@ -232,7 +232,7 @@ class AmazonGamesActivity : ComponentActivity() {
 
     private suspend fun syncLibrary(showProgress: Boolean) {
         try {
-            if (showProgress) setSync("Checking credentials\u2026", false)
+            if (showProgress) setSync("正在检查凭据…", false)
             val creds = AmazonCredentialStore.load(this@AmazonGamesActivity)
             if (creds == null || creds.accessToken == null) {
                 setSync("Not logged in", true)
@@ -244,19 +244,19 @@ class AmazonGamesActivity : ComponentActivity() {
                 return
             }
 
-            if (showProgress) setSync("Refreshing token\u2026", false)
+            if (showProgress) setSync("正在刷新令牌…", false)
             val token = AmazonCredentialStore.getValidAccessToken(this@AmazonGamesActivity)
             if (token == null) {
-                setSync("Token refresh failed", true)
+                setSync("令牌刷新失败", true)
                 enableRefresh()
                 return
             }
 
-            if (showProgress) setSync("Fetching game list\u2026", false)
+            if (showProgress) setSync("正在获取游戏列表…", false)
             val allEntitlements = AmazonApiClient.getEntitlements(token, creds.deviceSerial)
 
             if (allEntitlements == null || allEntitlements.isEmpty()) {
-                setSync("No games found in Amazon library", true)
+                setSync("在Amazon库中未找到游戏", true)
                 enableRefresh()
                 return
             }
@@ -402,7 +402,7 @@ class AmazonGamesActivity : ComponentActivity() {
         if (visibleGames.isEmpty()) {
             val q = searchQuery.trim()
             setSync(
-                if (q.isEmpty()) "Your Amazon library is empty"
+                if (q.isEmpty()) "您的 Amazon 库为空"
                 else "No results for \"$q\"",
                 false,
             )
@@ -487,7 +487,7 @@ class AmazonGamesActivity : ComponentActivity() {
                 withContext(Dispatchers.Main) {
                     resultBarMsg = "Error: Download failed"
                 }
-                StoreDownloadHooks.markFailed(Store.AMAZON, game.productId, "Download failed")
+                StoreDownloadHooks.markFailed(Store.AMAZON, game.productId, "下载失败")
                 removeDownloadState(game.productId)
                 return@launch
             }
@@ -582,14 +582,14 @@ class AmazonGamesActivity : ComponentActivity() {
     private fun openExePicker(game: AmazonGame) {
         val installedDir = prefs!!.getString("amazon_dir_${game.productId}", null)
         if (installedDir == null) {
-            resultBarMsg = "Install directory not found"
+            resultBarMsg = "未找到安装目录"
             return
         }
         lifecycleScope.launch(Dispatchers.IO) {
             val dir = File(installedDir)
             if (!dir.isDirectory) {
                 withContext(Dispatchers.Main) {
-                    resultBarMsg = "Install directory not found"
+                    resultBarMsg = "未找到安装目录"
                 }
                 return@launch
             }
@@ -797,7 +797,7 @@ private fun AmazonGamesScreen(
             ) { Text("\u2190", color = MaterialTheme.colorScheme.onPrimary, fontSize = 16.sp) }
 
             Text(
-                text = "Amazon Games",
+                text = "Amazon 游戏",
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -840,7 +840,7 @@ private fun AmazonGamesScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchChange,
-            placeholder = { Text("Search games\u2026", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            placeholder = { Text("搜索游戏…", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth().padding(0.dp),
             textStyle = androidx.compose.ui.text.TextStyle(
@@ -1072,8 +1072,8 @@ private fun GameCard(
                 )
             }
 
-            val checkText = if (updateAvailable) "\u2713 Installed \u2014 Update Available"
-            else "\u2713 Installed"
+            val checkText = if (updateAvailable) "✓ 已安装 — 有更新可用"
+            else "✓ 已安装"
             // semantic: amber = update-available, installed-green = up to date
             val checkColor = if (updateAvailable) Color(0xFFFFAA00) else Color(0xFF4CAF50)
             if (isInstalled) {
@@ -1107,7 +1107,7 @@ private fun GameCard(
                 }
                 if (ds.isCancelling) {
                     Text(
-                        text = "Cancelling\u2026",
+                        text = "正在取消…",
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp),
@@ -1145,7 +1145,7 @@ private fun GameCard(
                 Text(
                     text = when {
                         ds != null && ds.isVisible -> "Cancel"
-                        isInstalled -> "Add to Launcher"
+                        isInstalled -> "添加到启动器"
                         else -> "Install"
                     },
                     color = if (isCancelBtn) MaterialTheme.colorScheme.onError
@@ -1309,7 +1309,7 @@ private fun GameGridTile(
                     Text(
                         text = when {
                             ds != null && ds.isVisible -> "Cancel"
-                            isInstalled -> "Add to Launcher"
+                            isInstalled -> "添加到启动器"
                             else -> "Install"
                         },
                         color = if (isCancelBtn) MaterialTheme.colorScheme.onError
@@ -1331,7 +1331,7 @@ private fun InstallConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-    var sizeLabel by remember { mutableStateOf("Game size:  Fetching\u2026") }
+    var sizeLabel by remember { mutableStateOf("游戏大小： 获取中…") }
     val context = LocalContext.current
 
     LaunchedEffect(game.productId) {
@@ -1430,7 +1430,7 @@ private fun GameDetailDialog(
                     Button(
                         onClick = onSetExe,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                    ) { Text("Set .exe\u2026", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    ) { Text("设置 .exe…", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 }
             }
         },
@@ -1453,7 +1453,7 @@ private fun ExePickerDialog(
 ) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select game executable") },
+        title = { Text("选择游戏可执行文件") },
         text = {
             Column(
                 modifier = Modifier

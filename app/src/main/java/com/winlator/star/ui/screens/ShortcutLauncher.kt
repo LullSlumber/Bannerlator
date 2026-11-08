@@ -84,12 +84,12 @@ class ShortcutLauncher internal constructor(
     internal var eaUnsupportedFor by mutableStateOf<Shortcut?>(null)
     internal var eaSetupBusy by mutableStateOf(false)
     // SteamLite launch pre-flight (session → network → cloud saves → update check, BEFORE the container opens):
-    // the RealSteam game whose "Getting Steam ready" dialog is up (null = none). Every RealSteam
+    // the RealSteam game whose "正在准备Steam" dialog is up (null = none). Every RealSteam
     // launch — the popup pick and a remembered pick — routes through it; Goldberg/Raw never do.
     internal var preflightFor by mutableStateOf<Shortcut?>(null)
     // Steam account check (see SteamAccountStore.launchAccountCheck): a SteamLite / Headless Steam launch
     // whose game belongs to a different saved account waits here, before its component download and
-    // pre-flight, until the user switches, picks "Launch anyway" or closes it; a game no saved account
+    // pre-flight, until the user switches, picks "仍要启动" or closes it; a game no saved account
     // owns is refused. Goldberg/Raw never use it.
     internal var accountWarning by mutableStateOf<AccountWarning?>(null)
     // Download-on-launch progress overlay: the game we're about to launch once its picked component
@@ -107,7 +107,7 @@ class ShortcutLauncher internal constructor(
     internal var steamUpdateLabel by mutableStateOf("")
     internal var steamUpdateTitle by mutableStateOf("")
     internal var steamUpdateHandle by mutableStateOf<SteamGameUpdater.UpdateHandle?>(null)
-    // "Check for updates" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
+    // "检查更新" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
     // first, and when it finds a delta (or can't tell from cached data) this holds the game + its status so
     // the confirm dialog below can offer to apply it. null = no offer pending.
     internal var steamUpdateOffer by mutableStateOf<Pair<Shortcut, SteamGameUpdater.UpdateStatus>?>(null)
@@ -117,7 +117,7 @@ class ShortcutLauncher internal constructor(
     // surfaces as a toast. Cancellable via steamUpdateHandle (the modal's Cancel button).
     internal fun runSteamMaintenance(s: Shortcut, verify: Boolean) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = if (verify) "Verifying game files" else "Updating game"
+        steamUpdateTitle = if (verify) "验证游戏文件" else "正在更新游戏"
         steamUpdateLabel = if (verify) "Verifying ${s.name}…" else "Checking ${s.name} for updates…"
         steamUpdateProgress = -1f
         steamUpdateFor = s
@@ -128,7 +128,7 @@ class ShortcutLauncher internal constructor(
             steamUpdateFor = null
             steamUpdateHandle = null
             // Every terminal result except a user cancel is worth a one-line toast (offline / failed /
-            // "Files verified" / "Updated" / "Already up to date"). A launch never follows.
+            // "Files verified" / "Updated" / "已是最新"). A launch never follows.
             if (result != SteamGameUpdater.Result.CANCELLED && msg.isNotBlank()) {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
@@ -138,14 +138,14 @@ class ShortcutLauncher internal constructor(
             else SteamGameUpdater.updateNow(context, appId, progress, done)
     }
 
-    // "Check for updates": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
-    // as the animated "Checking…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
+    // "检查更新": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
+    // as the animated "检查中…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
     // not-installed just inform via a toast; an available (or can't-tell-offline) result opens the confirm
     // dialog, whose [Update now] / [Check online] hands off to runSteamMaintenance (the authoritative
     // updateNow pass). The onResult lands on the main thread (see checkForUpdate's doc).
     internal fun checkForUpdatesThenOffer(s: Shortcut) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = "Checking for updates"
+        steamUpdateTitle = "正在检查更新"
         steamUpdateLabel = "Checking ${s.name}…"
         steamUpdateProgress = -1f   // opens in the animated indeterminate state, never a static 0%.
         steamUpdateFor = s
@@ -183,7 +183,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!GoldbergComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Steam Emulator (Goldberg)"
+            componentDownloadLabel = "Steam 模拟器 (Goldberg)"
             componentDownloadProgress = 0f
             GoldbergComponent.downloadAsync(
                 context,
@@ -233,7 +233,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!SteamHostComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Headless Steam (Valve Steam client)"
+            componentDownloadLabel = "无窗口Steam（Valve Steam客户端）"
             componentDownloadProgress = 0f
             SteamHostComponent.downloadAsync(
                 context,
@@ -369,10 +369,10 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                     val ok = onRemove(s)
                     Toast.makeText(
                         context,
-                        if (ok) "Shortcut removed." else "Failed to remove shortcut.",
+                        if (ok) "快捷方式已删除。" else "移除快捷方式失败。",
                         Toast.LENGTH_SHORT,
                     ).show()
-                }) { Text("Remove") }
+                }) { Text("移除") }
             },
             dismissButton = { TextButton(onClick = { launcher.androidMissingFor = null }) { Text("Keep") } },
         )
@@ -395,7 +395,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
     launcher.eaSetupFor?.let { s ->
         AlertDialog(
             onDismissRequest = { if (!launcher.eaSetupBusy) launcher.eaSetupFor = null },
-            title = { Text("Set up EA Desktop") },
+            title = { Text("设置EA Desktop") },
             text = {
                 Text(
                     "\"${s.name}\" is an EA title: it launches through EA Desktop, which isn't installed in this " +
@@ -446,7 +446,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                             launcher.eaSetupBusy = false
                             launcher.eaSetupFor = null
                         }
-                    }) { Text(if (launcher.eaSetupBusy) "Starting…" else "Set up") }
+                    }) { Text(if (launcher.eaSetupBusy) "正在启动…" else "设置") }
                 }
             },
             dismissButton = { TextButton(enabled = !launcher.eaSetupBusy, onClick = { launcher.eaSetupFor = null }) { Text("Cancel") } },
@@ -457,7 +457,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         LaunchMethodSheet(
             shortcut = s,
             onDismiss = { launcher.launchChoiceFor = null },
-            // Verify runs a full re-validate pass directly. "Check for updates" is check-THEN-offer: probe
+            // Verify runs a full re-validate pass directly. "检查更新" is check-THEN-offer: probe
             // first, then a confirm dialog lets the user choose to apply — it never auto-updates. Both
             // dismiss the sheet first (so no dialog is layered behind the ModalBottomSheet's window).
             onUpdateFiles = { launcher.launchChoiceFor = null; launcher.checkForUpdatesThenOffer(s) },
@@ -467,9 +467,9 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 // next time (contract literals: launchMode ∈ RealSteam/Goldberg/Raw, launchModeRemembered="1").
                 s.putExtra("launchMode", mode)
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
-                // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
+                // Per-game "记住我的选择" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
-                // Per-game "Steam Input" (SteamLite only; the agent configures the client's controller layer).
+                // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
                 // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
@@ -499,7 +499,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
 
     // ── Steam account check — before the SteamLite / Headless Steam launch goes on ──────────────────
     launcher.accountWarning?.let { w ->
-        // "Launch anyway" and "Switch account and launch" (once the switch succeeded) both go on with the
+        // "仍要启动" and "Switch account and launch" (once the switch succeeded) both go on with the
         // launch; the account was already checked.
         val proceed = {
             launcher.accountWarning = null
@@ -514,7 +514,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // ── SteamLite pre-flight ("Getting Steam ready") — runs BEFORE XServerDisplayActivity ──────────
+    // ── SteamLite pre-flight ("正在准备Steam") — runs BEFORE XServerDisplayActivity ──────────
     launcher.preflightFor?.let { s ->
         val appId = steamAppIdOf(s)
         val installDir = remember(s) {
@@ -527,7 +527,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 appId = appId,
                 installDir = installDir,
                 gameName = s.name,
-                pullCloudSaves = savePrefs.getBoolean("auto_download_steam_on_launch", true),
+                pullCloudSaves = savePrefs.getBoolean("Steam 游戏", true),
                 clientPackage = if (s.getExtra("launchMode", "") == "AppSteam") SteamSessionManager.ClientPackage.APP_STEAM
                                 else SteamSessionManager.ClientPackage.STEAMLITE,
             ),
@@ -614,7 +614,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // "Check for updates" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
+    // "检查更新" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
     // [Update now] / [Check online] runs the authoritative updateNow pass, [Later] / [Cancel] does nothing.
     launcher.steamUpdateOffer?.let { (s, status) ->
         val available = status.state == SteamGameUpdater.State.UPDATE_AVAILABLE
@@ -623,7 +623,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = {
                 Text(
-                    if (available) "Update available" else "Check online?",
+                    if (available) "有可用更新" else "Check online?",
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             },
@@ -643,12 +643,12 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             },
             confirmButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null; launcher.runSteamMaintenance(s, verify = false) }) {
-                    Text(if (available) "Update now" else "Check online", color = MaterialTheme.colorScheme.primary)
+                    Text(if (available) "立即更新" else "Check online", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null }) {
-                    Text(if (available) "Later" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(if (available) "等待" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
         )

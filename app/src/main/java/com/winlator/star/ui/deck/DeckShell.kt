@@ -157,14 +157,14 @@ private const val DECK_WIDE_TABS_DP = 1100
 internal enum class DeckTab(val label: String, val icon: ImageVector, val root: String) {
     HOME("Home", Icons.Filled.Home, DeckRoutes.HOME),
     STORES("Stores", Icons.Filled.Storefront, DeckRoutes.STORES),
-    CONTAINERS("Containers", Icons.Filled.Inventory2, Screen.Containers.route),
+    CONTAINERS("容器管理", Icons.Filled.Inventory2, Screen.Containers.route),
     COMPONENTS("Components", Icons.Filled.Extension, DeckRoutes.COMPONENTS),
     CONTROLS("Controls", Icons.Filled.SportsEsports, DeckRoutes.CONTROLS),
-    TOOLS("Tools", Icons.Filled.Build, DeckRoutes.TOOLS),
+    TOOLS("工具", Icons.Filled.Build, DeckRoutes.TOOLS),
     SETTINGS("Settings", Icons.Filled.Settings, DeckSettingsRoutes.APP),
 }
 
-/** Phone bottom bar: these five, and "More" for the rest. */
+/** Phone bottom bar: these five, and "更多" for the rest. */
 private val PORTRAIT_MAIN = listOf(DeckTab.HOME, DeckTab.STORES, DeckTab.CONTAINERS, DeckTab.TOOLS, DeckTab.SETTINGS)
 
 /** Which tab a route belongs to. Sub-pages (container editor, File Manager, ...) sit under their tab. */
@@ -302,7 +302,7 @@ private fun DeckShellContent(
         }
     }
     // A route requested by a relaunch intent or the component-install resume.
-    // "Games" means the Deck home unless the Games screen has work waiting: the component-install return reopening a game's settings, or a queued request such as the first-run's "Add a game".
+    // "游戏" means the Deck home unless the Games screen has work waiting: the component-install return reopening a game's settings, or a queued request such as the first-run's "添加游戏".
     LaunchedEffect(pendingRoute) {
         if (pendingRoute != null) {
             // The shell's own DeckGameActionsHost runs any queued request in place.
@@ -549,7 +549,7 @@ private fun DeckShellContent(
                                             DeckHome(
                                                 onOpenGame = { shortcut -> nav.open(DeckRoutes.game(shortcut.file.path)) },
                                                 onOpenContainer = { id -> nav.open(DeckSettingsRoutes.containerEditorFor(id) ?: "container_detail?id=$id") },
-                                                // "Add games" opens over Home (DeckGameActionsHost).
+                                                // "添加游戏" opens over Home (DeckGameActionsHost).
                                                 onAddGame = {
                                                     GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME)
                                                 },
@@ -826,7 +826,7 @@ private fun DeckSearchButton(onSearch: () -> Unit) {
             .clickable(onClick = onSearch)
             .size(40.dp),
     ) {
-        Icon(Icons.Filled.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(24.dp))
+        Icon(Icons.Filled.Search, contentDescription = "搜索", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(24.dp))
     }
 }
 
@@ -1310,7 +1310,7 @@ private fun DeckTitleLine(
             ) {
                 Icon(
                     Icons.Outlined.Info,
-                    contentDescription = if (infoOpen) "Hide description" else "About this page",
+                    contentDescription = if (infoOpen) "Hide description" else "关于此页面",
                     tint = if (infoOpen) cs.primary else cs.onSurfaceVariant,
                     modifier = Modifier.size(19.dp),
                 )
@@ -1431,7 +1431,7 @@ private fun DeckLegend(
         LegendItem(listOf("A" to GlyphKind.A), "Select", thin, null)
         if (!atHome) LegendItem(listOf("B" to GlyphKind.B), "Back", thin, onBack)
         if (optionsLabel != null) LegendItem(listOf("X" to GlyphKind.X), optionsLabel, thin, onOptions)
-        LegendItem(listOf("Y" to GlyphKind.Y), "Search", thin, onSearch)
+        LegendItem(listOf("Y" to GlyphKind.Y), "搜索", thin, onSearch)
     }
 }
 
@@ -1472,7 +1472,7 @@ private fun DeckBottomBar(current: DeckTab, onTab: (DeckTab) -> Unit) {
             BottomBarItem(t.icon, t.label, selected = t == current, modifier = Modifier.weight(1f)) { onTab(t) }
         }
         Box(modifier = Modifier.weight(1f)) {
-            BottomBarItem(Icons.Filled.GridView, "More", selected = current in moreTabs, modifier = Modifier.fillMaxWidth()) {
+            BottomBarItem(Icons.Filled.GridView, "更多", selected = current in moreTabs, modifier = Modifier.fillMaxWidth()) {
                 moreOpen = true
             }
             DropdownMenu(expanded = moreOpen, onDismissRequest = { moreOpen = false }) {

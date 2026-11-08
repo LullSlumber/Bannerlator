@@ -178,7 +178,7 @@ fun WrapperManagerBody(modifier: Modifier = Modifier) {
     // When non-null, the catalog browser is open in "replace this slot" mode (installs as an override).
     var catalogTargetSlot by remember { mutableStateOf<WrapperManager.WrapperSlot?>(null) }
     // #132: the live catalog entries (loaded once, off-main). Used to detect when a catalog-installed
-    // wrapper has a newer version than what's on device -> an "Update available" badge + one-tap update.
+    // wrapper has a newer version than what's on device -> an "有可用更新" badge + one-tap update.
     // Empty/offline/bad-JSON simply yields no badges (WrapperCatalog.loadCached never throws).
     var catalogEntries by remember { mutableStateOf<List<WrapperCatalogEntry>>(emptyList()) }
     // The imported wrapper currently being updated from the catalog (null = none) + its 0..100 progress.
@@ -463,7 +463,7 @@ fun WrapperManagerBody(modifier: Modifier = Modifier) {
                             context.getString(R.string.wrapper_select_title),
                         )
                     )
-                }) { Text("Browse files") }
+                }) { Text("浏览文件") }
             },
             dismissButton = {
                 Row {
@@ -474,7 +474,7 @@ fun WrapperManagerBody(modifier: Modifier = Modifier) {
                             type = "*/*"
                         }
                         filePicker.launch(intent)
-                    }) { Text("Pick via system…") }
+                    }) { Text("从系统选取…") }
                     TextButton(onClick = {
                         confirmInstallPrompt = false; pendingFileName = null; importMode = false
                     }) {
@@ -745,17 +745,17 @@ private data class GpuInfo(val isQualcomm: Boolean, val model: String)
 private fun capLabels(caps: WrapperManager.WrapperCaps): List<String> {
     val out = ArrayList<String>()
     if (caps.hasIcd) out.add("Vulkan ICD")
-    if (caps.hasBcnLayer) out.add("BCn layer")
+    if (caps.hasBcnLayer) out.add("BCn 层")
     if (caps.hasCompatLayer) out.add("DX12/compat layer")
     return out
 }
 
 /** One-line "what is this" summary for the inspection page (a valid import always carries an ICD). */
 private fun importDescription(caps: WrapperManager.WrapperCaps): String = when {
-    caps.hasIcd && (caps.hasBcnLayer || caps.hasCompatLayer) -> "Vulkan ICD wrapper with extra layers"
+    caps.hasIcd && (caps.hasBcnLayer || caps.hasCompatLayer) -> "带额外层的 Vulkan ICD wrapper"
     caps.hasIcd -> "Vulkan ICD wrapper"
-    caps.hasBcnLayer -> "BCn layer"
-    caps.hasCompatLayer -> "DX12 compat layer"
+    caps.hasBcnLayer -> "BCn 层"
+    caps.hasCompatLayer -> "DX12 兼容层"
     else -> "Wrapper"
 }
 
@@ -775,18 +775,18 @@ private fun importNeeds(caps: WrapperManager.WrapperCaps, gpu: GpuInfo, version:
     val out = ArrayList<String>()
     if (caps.hasBcnLayer) {
         out.add(
-            "Contains a BCn layer → the BCn Layer Settings become available; requires a Mali/non-Qualcomm GPU to take effect" +
-                if (gpu.isQualcomm) " (this device is Adreno — inert)." else "."
+            "包含 BCn 层 → BCn 层设置将可用；需要 Mali/非高通 GPU 才能生效" +
+                if (gpu.isQualcomm) "（此设备为 Adreno — 无效）。" else "."
         )
     }
     if (caps.hasCompatLayer) {
-        out.add("Contains a DX12/compat layer → compat options (Mali-branch feature).")
+        out.add("包含 DX12/兼容层 → 兼容选项（Mali 分支功能）。")
     }
     if (!caps.hasBcnLayer && !caps.hasCompatLayer) {
-        out.add("Plain Vulkan ICD wrapper — no extra layer settings.")
+        out.add("普通 Vulkan ICD wrapper — 无额外层设置。")
     }
     if (version == "Unknown") {
-        out.add("No version.txt — version will show Unknown.")
+        out.add("没有 version.txt — 版本将显示为 Unknown。")
     }
     return out
 }
@@ -840,7 +840,7 @@ private fun CapabilityChips(labels: List<String>) {
 
 /**
  * The shared per-wrapper detail box (Part 1) rendered inside an expanded card. Below the capability
- * chips it carries a NESTED, independently-expandable "Environment variables" section that lists the
+ * chips it carries a NESTED, independently-expandable "环境变量" section that lists the
  * full set of env-var names the wrapper references (issue #132) — read-only, informational.
  *
  * [manager] + [isImported] + [envSourceId] drive that env-var list: for an imported wrapper the keys
@@ -884,7 +884,7 @@ private fun WrapperDetailBox(
 }
 
 /**
- * A nested, independently-expandable "Environment variables" row inside [WrapperDetailBox]. Default
+ * A nested, independently-expandable "环境变量" row inside [WrapperDetailBox]. Default
  * collapsed; opening it triggers the (bounded, off-main) scan ONLY when the user asks. Each entry
  * shows the friendly dictionary label ([WrapperSettingsDictionary.defFor]) plus the raw env key in a
  * dim monospace face. Read-only.
@@ -925,7 +925,7 @@ private fun EnvVarSection(
             .padding(vertical = 4.dp),
     ) {
         Text(
-            text = keys?.let { "Environment variables (${it.size})" } ?: "Environment variables",
+            text = keys?.let { "Environment variables (${it.size})" } ?: "环境变量",
             style = MaterialTheme.typography.labelMedium,
             color = cs.onSurfaceVariant,
             modifier = Modifier.weight(1f),

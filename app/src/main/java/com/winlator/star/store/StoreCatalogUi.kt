@@ -102,7 +102,7 @@ data class CatalogItem(
     val finalPrice: String = "",
     val originalPrice: String = "",
     val discountPercent: Int = 0,
-    /** The web product page — where "Get for free" / "View on <store>" land. */
+    /** The web product page — where "免费获取" / "View on <store>" land. */
     val storeUrl: String = "",
     val developer: String = "",
     val releaseDate: String = "",
@@ -249,7 +249,7 @@ fun CatalogPriceRow(item: CatalogItem, modifier: Modifier = Modifier) {
  * - [CatalogAction.ClaimFree] → filled accent (the primary call to action).
  * - [CatalogAction.Open] → the raised container tier ("already yours"); Play when installed.
  * - [CatalogAction.ViewOnStore] → outlined but ENABLED: unlike Steam, GOG and Epic purchases go
- *   through the web page, so the honest thing is to open it rather than dead-end on "Not owned".
+ *   through the web page, so the honest thing is to open it rather than dead-end on "未拥有".
  */
 @Composable
 fun CatalogActionButton(
@@ -273,7 +273,7 @@ fun CatalogActionButton(
         ) {
             Icon(Icons.Filled.Redeem, contentDescription = null, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(4.dp))
-            Text("Get for free", style = style, maxLines = 1)
+            Text("免费获取", style = style, maxLines = 1)
         }
 
         CatalogAction.Working -> Button(
@@ -289,7 +289,7 @@ fun CatalogActionButton(
                 color = MaterialTheme.colorScheme.onPrimary,
             )
             Spacer(Modifier.width(6.dp))
-            Text("Working…", style = style, maxLines = 1)
+            Text("正在处理…", style = style, maxLines = 1)
         }
 
         is CatalogAction.Open -> Button(
@@ -308,7 +308,7 @@ fun CatalogActionButton(
                 modifier = Modifier.size(14.dp),
             )
             Spacer(Modifier.width(4.dp))
-            Text(if (action.installed) "Play" else "Download", style = style, maxLines = 1)
+            Text(if (action.installed) "游玩" else "Download", style = style, maxLines = 1)
         }
 
         CatalogAction.ViewOnStore -> OutlinedButton(
@@ -685,7 +685,7 @@ fun CatalogResults(
     val rows = remember(results) { results.distinctBy { it.id } }
     Column(modifier = modifier.fillMaxSize()) {
         StoreSectionHeader(
-            title = if (searching && rows.isEmpty()) "Searching…"
+            title = if (searching && rows.isEmpty()) "正在搜索…"
             else "${rows.size} result${if (rows.size == 1) "" else "s"}",
             sub = "“$query”",
         )

@@ -90,7 +90,7 @@ internal class XboxNativeProtocol(
                 gamepadChanged(0, true)
                 send(control, JSONObject().put("message", "videoKeyframeRequested").put("ifrRequested", true).toString())
             }
-            "TransactionStart", "Message" -> handleTransaction(data)
+            "TransactionStart", "消息" -> handleTransaction(data)
             else -> {}
         }
     }
@@ -117,7 +117,7 @@ internal class XboxNativeProtocol(
     }
 
     private fun sendConfig() {
-        fun msg(path: String, content: JSONObject) = JSONObject().put("type", "Message").put("content", content.toString())
+        fun msg(path: String, content: JSONObject) = JSONObject().put("type", "消息").put("content", content.toString())
             .put("id", UUID.randomUUID().toString()).put("target", path).put("cv", "").toString()
         send(message, msg("/streaming/systemUi/configuration", JSONObject().put("version", org.json.JSONArray(listOf(0, 2, 0))).put("systemUis", org.json.JSONArray())))
         send(message, msg("/streaming/properties/clientappinstallidchanged", JSONObject().put("clientAppInstallId", "c97d7ee0-73b2-4239-bf1d-9d805a338429")))

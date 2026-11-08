@@ -61,7 +61,7 @@ public class ContainerManager {
     }
 
     // One-shot: add VKD3D_SHADER_MODEL=6_6 (new in Container.DEFAULT_ENV_VARS, 3.1.6) to every
-    // container that doesn't mention the variable, and to any saved "New Container Defaults" profile,
+    // container that doesn't mention the variable, and to any saved "新建容器默认值" profile,
     // so an app update covers existing containers the way a fresh install covers new ones. Keyed on
     // "vkd3d_sm66_default_added" so it fires once per install: a user who deletes the variable
     // afterwards keeps it deleted. Containers that already carry ANY value for it are left alone.
@@ -279,7 +279,7 @@ public class ContainerManager {
                 return null;
             }
 
-            // "Run as administrator" toggle (default ON). Wine's wineboot leaves EnableLUA=1 for most
+            // "以管理员身份运行" toggle (default ON). Wine's wineboot leaves EnableLUA=1 for most
             // Wine versions (only some prefixPacks ship it off), which makes installers/tools that
             // query the elevation token refuse to run. When the toggle is ON we stamp EnableLUA=0 on
             // the freshly-extracted prefix so the container runs elevated (UAC off) regardless of the

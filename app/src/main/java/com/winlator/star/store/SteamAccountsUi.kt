@@ -324,7 +324,7 @@ fun SteamAccountLaunchDialog(
 /**
  * Shown before a launch when none of the saved accounts' owned-game lists has the game. Those lists can miss
  * games that are still playable (installed before accounts were tracked, family sharing, free licenses), so
- * "Launch anyway" goes on with the signed-in account; "Close" cancels.
+ * "仍要启动" goes on with the signed-in account; "Close" cancels.
  */
 @Composable
 private fun SteamNoOwnerDialog(onLaunchAnyway: () -> Unit, onClose: () -> Unit) {
@@ -361,7 +361,7 @@ private fun SteamNoOwnerDialog(onLaunchAnyway: () -> Unit, onClose: () -> Unit) 
  *    is active. A refusal or failure keeps this dialog open with the chooser's message and launches
  *    nothing; an expired saved sign-in opens the login screen pre-filled (as the chooser does) and
  *    closes this dialog without launching.
- *  - "Launch anyway" ([onLaunchAnyway]): this launch only, nothing is remembered.
+ *  - "仍要启动" ([onLaunchAnyway]): this launch only, nothing is remembered.
  *  - "Close" ([onClose]): cancels the launch; also the back / outside-tap result (not while switching).
  */
 @Composable

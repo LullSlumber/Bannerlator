@@ -25,7 +25,7 @@ object CopyGameToDriveC {
     private const val TAG = "CopyGameToDriveC"
 
     /** Sub-dir under drive_c that copied games land in: `C:\Games\<name>\…`. */
-    const val GAMES_SUBDIR = "Games"
+    const val GAMES_SUBDIR = "游戏"
 
     /** Headroom kept free on top of the copy size so the copy can't fill the data partition. */
     const val FREE_SPACE_MARGIN = 250L * 1024 * 1024 // 250 MB

@@ -64,7 +64,7 @@ object AccountManager {
 
     /**
      * One entry in the account's server-side upload registry (returned by {@code /account/login}). Carries
-     * everything the client needs to restore a "My uploads" row on a fresh device: [sha] the worker key,
+     * everything the client needs to restore a "我的上传" row on a fresh device: [sha] the worker key,
      * [game]/[filename] the identity, [token] the {@code upload_token} that minted it (so delete / edit-
      * description work again after recovery), and [ts] the UNIX-SECONDS upload time (0 when the worker
      * omitted it). Display-only provenance (soc/device) is parsed from [filename] by the caller.

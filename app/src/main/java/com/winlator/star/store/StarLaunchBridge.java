@@ -170,7 +170,7 @@ public final class StarLaunchBridge {
 
                 if (containers == null || containers.isEmpty()) {
                     h.post(() -> showToast(activity,
-                            "No Wine container found — create one first in the Containers screen."));
+                            "未找到Wine容器 — 请先在容器屏幕中创建一个。"));
                     return;
                 }
 
@@ -182,7 +182,7 @@ public final class StarLaunchBridge {
 
                 ArrayList<Container> finalContainers = containers;
                 h.post(() -> new AlertDialog.Builder(activity, R.style.StoreAlertDialogDark)
-                        .setTitle("Add \"" + gameName + "\" to…")
+                        .setTitle("添加 \"" + gameName + "到…")
                         .setItems(names, (dialog, which) -> {
                                 Container chosen = finalContainers.get(which);
                                 writeShortcut(activity, chosen, gameName, exePath, coverArtUrl, epic);
@@ -194,7 +194,7 @@ public final class StarLaunchBridge {
             } catch (Exception e) {
                 Log.e(TAG, "addToLauncher failed", e);
                 h.post(() -> showToast(activity,
-                        "Error loading containers: " + e.getMessage()));
+                        "加载容器错误: " + e.getMessage()));
             }
         }, "store-launcher-picker").start();
     }
@@ -219,7 +219,7 @@ public final class StarLaunchBridge {
                 ArrayList<Container> containers = manager.getContainers();
                 if (containers == null || containers.isEmpty()) {
                     h.post(() -> showToast(activity,
-                            "No Wine container found — create one first in the Containers screen."));
+                            "未找到Wine容器 — 请先在容器屏幕中创建一个。"));
                     return;
                 }
                 String[] names = new String[containers.size()];
@@ -229,7 +229,7 @@ public final class StarLaunchBridge {
                 }
                 ArrayList<Container> finalContainers = containers;
                 h.post(() -> new AlertDialog.Builder(activity, R.style.StoreAlertDialogDark)
-                        .setTitle("Add \"" + gameName + "\" to…")
+                        .setTitle("添加 \"" + gameName + "到…")
                         .setItems(names, (dialog, which) -> {
                             Container chosen = finalContainers.get(which);
                             writeShortcutAsync(activity, chosen, gameName, exePath, coverArtUrl, 0, null,
@@ -240,7 +240,7 @@ public final class StarLaunchBridge {
                         .show());
             } catch (Exception e) {
                 Log.e(TAG, "addToLauncher(store) failed", e);
-                h.post(() -> showToast(activity, "Error loading containers: " + e.getMessage()));
+                h.post(() -> showToast(activity, "加载容器错误: " + e.getMessage()));
             }
         }, "store-launcher-picker").start();
     }
@@ -271,7 +271,7 @@ public final class StarLaunchBridge {
     /**
      * As above, but tags the written shortcut with its store origin when a Steam
      * {@code steamAppId} is known (> 0): {@code storeSource=steam} + {@code steamAppId=<id>}
-     * in the [Extra Data] block. This makes the Games-tab "Cloud Saves" menu gate robust and
+     * in the [Extra Data] block. This makes the Games-tab "云端存档" menu gate robust and
      * hands the Save Manager the appId directly. A {@code steamAppId} of 0 leaves the shortcut
      * untagged (non-Steam stores).
      */
@@ -322,12 +322,12 @@ public final class StarLaunchBridge {
                 File desktopDir = container.getDesktopDir();
                 if (desktopDir == null) {
                     h.post(() -> cb.onResult(false,
-                            "Container desktop directory not found."));
+                            "未找到容器桌面目录。"));
                     return;
                 }
                 if (!desktopDir.exists() && !desktopDir.mkdirs()) {
                     h.post(() -> cb.onResult(false,
-                            "Could not create container desktop directory."));
+                            "无法创建容器桌面目录。"));
                     return;
                 }
 
@@ -422,7 +422,7 @@ public final class StarLaunchBridge {
                     fw.write(content);
                 }
 
-                Log.d(TAG, "Wrote shortcut: " + shortcutFile.getPath());
+                Log.d(TAG, "已写入快捷方式: " + shortcutFile.getPath());
 
                 // Steam install-recipe (local stages): a depot's installScript.vdf Registry + Copy Files
                 // (EA entitlement keys + Origin licence files) land in the chosen container now — the
@@ -449,7 +449,7 @@ public final class StarLaunchBridge {
                 } else {
                     artUrl = normalizeUrl(coverArtUrl);
                     if (artUrl == null || artUrl.isEmpty()) {
-                        Log.d(TAG, "No store cover art URL — trying SteamGridDB for: " + gameName);
+                        Log.d(TAG, "没有商店封面图URL — 正在尝试SteamGridDB: " + gameName);
                         artUrl = sgdbFetchCover(gameName);
                     }
                 }
@@ -465,9 +465,9 @@ public final class StarLaunchBridge {
                                 + "Open the side menu → Shortcuts to launch and configure it."));
 
             } catch (Exception e) {
-                Log.e(TAG, "writeShortcut failed for " + gameName, e);
+                Log.e(TAG, "写入快捷方式失败 " + gameName, e);
                 h.post(() -> cb.onResult(false,
-                        "Failed to add shortcut: " + e.getMessage()));
+                        "添加快捷方式失败: " + e.getMessage()));
             }
         }, "store-write-shortcut").start();
     }
@@ -557,7 +557,7 @@ public final class StarLaunchBridge {
 
         // If still nothing, try SteamGridDB by the (now proper) name as last resort.
         if (bmp == null) {
-            Log.w(TAG, "Store/appid cover art unavailable for " + safeName + ", trying SteamGridDB name search");
+            Log.w(TAG, "商店/应用ID封面图不可用 " + safeName + "，正在尝试SteamGridDB名称搜索");
             String sgdbUrl = sgdbFetchCover(safeName);
             if (sgdbUrl != null && !sgdbUrl.isEmpty()) {
                 bmp = downloadBitmap(sgdbUrl);
@@ -565,7 +565,7 @@ public final class StarLaunchBridge {
         }
 
         if (bmp == null) {
-            Log.w(TAG, "All cover art sources failed for " + safeName);
+            Log.w(TAG, "所有封面图源均失败 " + safeName);
             return;
         }
 
@@ -576,15 +576,15 @@ public final class StarLaunchBridge {
                 if (!iconsDir.exists()) iconsDir.mkdirs();
                 File iconFile = new File(iconsDir, safeName + ".png");
                 FileUtils.saveBitmapToFile(bmp, iconFile);
-                Log.d(TAG, "Saved icon to: " + iconFile.getPath());
+                Log.d(TAG, "已保存图标到: " + iconFile.getPath());
             }
 
             // Also register as customCoverArt so the shortcut detail view has it.
             Shortcut shortcut = new Shortcut(container, shortcutFile);
             shortcut.saveCustomCoverArt(bmp);
-            Log.d(TAG, "Cover art saved for " + safeName);
+            Log.d(TAG, "封面图已保存至 " + safeName);
         } catch (Exception e) {
-            Log.w(TAG, "Cover art save failed for " + safeName + ": " + e.getMessage());
+            Log.w(TAG, "封面图保存失败 " + safeName + ": " + e.getMessage());
         }
     }
 
@@ -599,14 +599,14 @@ public final class StarLaunchBridge {
     /** Downloads a URL and decodes it as a Bitmap. Returns null on any failure. */
     private static Bitmap downloadBitmap(String url) {
         try {
-            Log.d(TAG, "Downloading cover art: " + url);
+            Log.d(TAG, "正在下载封面图: " + url);
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setConnectTimeout(15_000);
             conn.setReadTimeout(20_000);
             conn.setRequestProperty("User-Agent", "Mozilla/5.0");
             int code = conn.getResponseCode();
             if (code < 200 || code >= 300) {
-                Log.w(TAG, "Cover art HTTP " + code + " for " + url);
+                Log.w(TAG, "封面图HTTP " + code + " for " + url);
                 conn.disconnect();
                 return null;
             }
@@ -644,7 +644,7 @@ public final class StarLaunchBridge {
             JSONArray grids = new JSONObject(gridsJson).optJSONArray("data");
             if (grids == null || grids.length() == 0) return "";
             String imgUrl = grids.getJSONObject(0).optString("url", "");
-            Log.d(TAG, "SteamGridDB cover for \"" + title + "\": " + imgUrl);
+            Log.d(TAG, "SteamGridDB封面图 \"" + title + "\": " + imgUrl);
             return imgUrl;
         } catch (Exception e) {
             Log.w(TAG, "sgdbFetchCover failed for \"" + title + "\": " + e.getMessage());
@@ -665,7 +665,7 @@ public final class StarLaunchBridge {
             JSONArray grids = new JSONObject(gridsJson).optJSONArray("data");
             if (grids == null || grids.length() == 0) return "";
             String imgUrl = grids.getJSONObject(0).optString("url", "");
-            Log.d(TAG, "SteamGridDB cover for steam appId " + appId + ": " + imgUrl);
+            Log.d(TAG, "SteamGridDB封面图 steam 应用ID " + appId + ": " + imgUrl);
             return imgUrl;
         } catch (Exception e) {
             Log.w(TAG, "sgdbFetchCoverBySteamAppId failed for " + appId + ": " + e.getMessage());
@@ -789,7 +789,7 @@ public final class StarLaunchBridge {
                 entry.put("url", g.optString("url", ""));
                 out.put(entry);
             }
-            Log.d(TAG, "SteamGridDB found " + out.length() + " covers for \"" + title + "\"");
+            Log.d(TAG, "SteamGridDB 找到 " + out.length() + " 个封面图 \"" + title + "\"");
             return out.toString();
         } catch (Exception e) {
             Log.w(TAG, "sgdbFetchGridsJson failed for \"" + title + "\": " + e.getMessage());

@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileInputStream
 
 /**
- * The "Fast OpenGL" setting: OpenGL (and WineD3D's DirectDraw / older Direct3D, which sit on it)
+ * The "快速 OpenGL" setting: OpenGL (and WineD3D's DirectDraw / older Direct3D, which sit on it)
  * through the bundled Mesa and Zink, presented by a Vulkan swapchain, instead of XMesa's
  * finish + readback + XPutImage per frame. See [X11Egl] for the X11 half and the measured numbers.
  *
@@ -31,17 +31,17 @@ object FastOpenGL {
     private const val TAG = "FastOpenGL"
 
     const val EXTRA = "fastOpenGL"
-    const val TITLE = "Fast OpenGL"
-    const val HINT = "Faster OpenGL games, and DirectDraw / older Direct3D games through WineD3D."
+    const val TITLE = "快速 OpenGL"
+    const val HINT = "更快的 OpenGL 游戏，以及通过 WineD3D 的 DirectDraw / 较旧 Direct3D 游戏。"
     const val WAYLAND_ALWAYS_ON = "Always on with Wayland"
     const val NEEDS_TURNIP = "Needs a Turnip driver"
     const val NOT_BUNDLED = "Not in this build"
 
     // Two plain OpenGL launch switches that sit with Fast OpenGL in the editors. Independent of it:
     // both reach Mesa on either path (GLX or EGL) and on Wayland, so they are never greyed.
-    /** "Show OpenGL FPS": GALLIUM_HUD=fps, Mesa's fps counter in the game's top-left corner. */
+    /** "显示 OpenGL FPS": GALLIUM_HUD=fps, Mesa's fps counter in the game's top-left corner. */
     @JvmField val FPS_HUD = GlLaunchSwitch(
-        "glFpsHud", "Show OpenGL FPS", "Mesa's fps counter in the corner of OpenGL games.",
+        "glFpsHud", "显示 OpenGL FPS", "Mesa 的 fps 计数器，位于 OpenGL 游戏的角落。",
         defaultOn = false, envName = "GALLIUM_HUD", envValue = "fps")
 
     /** "OpenGL vsync off": vblank_mode=0, so a GL game's SwapBuffers stops waiting for the refresh. */

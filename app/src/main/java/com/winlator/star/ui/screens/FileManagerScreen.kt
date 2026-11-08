@@ -359,7 +359,7 @@ fun FileManagerScreen(
     // full-featured File Manager nav destination unchanged.
     pickMode: Boolean = false,
     // Directory-pick mode (issue #70): only folders are listed, files are hidden, and a
-    // "Select this folder" action returns the current directory via [onPick]. Implies pickMode.
+    // "选择这个文件夹" action returns the current directory via [onPick]. Implies pickMode.
     pickDirMode: Boolean = false,
     pickExtensions: List<String> = emptyList(),
     initialDir: File? = null,
@@ -829,7 +829,7 @@ fun FileManagerScreen(
         var newName by remember(renameTarget) { mutableStateOf(renameTarget?.name ?: "") }
         OutlinedAlertDialog(
             onDismissRequest = { renameTarget = null },
-            title = { Text("Rename") },
+            title = { Text("重命名") },
             text = {
                 OutlinedTextField(
                     value = newName,
@@ -843,7 +843,7 @@ fun FileManagerScreen(
                     val file = renameTarget
                     renameTarget = null
                     if (file != null && newName.isNotBlank()) performRename(file, newName)
-                }) { Text("Rename") }
+                }) { Text("重命名") }
             },
             dismissButton = { TextButton(onClick = { renameTarget = null }) { Text("Cancel") } },
         )
@@ -869,7 +869,7 @@ fun FileManagerScreen(
                 TextButton(onClick = {
                     selectedEntry = null
                     performDelete(file)
-                }) { Text("Delete") }
+                }) { Text("删除") }
             },
             dismissButton = { TextButton(onClick = { selectedEntry = null }) { Text("Cancel") } },
         )
@@ -916,7 +916,7 @@ fun FileManagerScreen(
                             Toast.makeText(context, "$failed couldn't be deleted", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                }) { Text("删除", color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = { TextButton(onClick = { pendingBulkDelete = emptyList() }) { Text("Cancel") } },
         )
@@ -949,9 +949,9 @@ fun FileManagerScreen(
                     Spacer(Modifier.height(4.dp))
                     listOf(
                         (if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE) to
-                            (if (isDir) "Merge" else "Overwrite"),
+                            (if (isDir) "Merge" else "覆盖"),
                         ConflictChoice.KEEP_BOTH to "Keep both",
-                        ConflictChoice.SKIP to "Skip",
+                        ConflictChoice.SKIP to "跳过",
                     ).forEach { (choice, label) ->
                         TextButton(
                             modifier = Modifier.fillMaxWidth(),
@@ -1087,7 +1087,7 @@ fun FileManagerScreen(
             ) {
                 Icon(Icons.Filled.Folder, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Select this folder")
+                Text("选择这个文件夹")
             }
         }
         // ── Path bar ──
@@ -1248,7 +1248,7 @@ fun FileManagerScreen(
                     )
                 }
                 IconButton(onClick = { showSearch = !showSearch; if (!showSearch) searchQuery = "" }) {
-                    Icon(Icons.Filled.Search, "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Filled.Search, "搜索", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Box {
                     IconButton(onClick = { showSortMenu = true }) {
@@ -1382,7 +1382,7 @@ fun FileManagerScreen(
                         selectedPaths = emptySet()
                     },
                     contentPadding = selBarPadding,
-                ) { Text("Copy", fontSize = 12.sp) }
+                ) { Text("拷贝", fontSize = 12.sp) }
                 Spacer(Modifier.width(4.dp))
                 OutlinedButton(
                     enabled = selectedPaths.isNotEmpty(),
@@ -1400,7 +1400,7 @@ fun FileManagerScreen(
                     onClick = { pendingBulkDelete = entries.filter { it.absolutePath in selectedPaths } },
                     contentPadding = selBarPadding,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                ) { Text("Delete", color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
+                ) { Text("删除", color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
                 Spacer(Modifier.width(4.dp))
                 OutlinedButton(
                     onClick = { selectionMode = false; selectedPaths = emptySet() },
@@ -1513,7 +1513,7 @@ fun FileManagerScreen(
             }
         val quickItems = buildList {
             File("/storage/emulated/0/Download").takeIf { it.isDirectory }?.let { add(quickItem("Downloads", Icons.Filled.Download, it)) }
-            File("/storage/emulated/0/Winlator/Games").takeIf { it.isDirectory }?.let { add(quickItem("Games", Icons.Filled.SportsEsports, it)) }
+            File("/storage/emulated/0/Winlator/Games").takeIf { it.isDirectory }?.let { add(quickItem("游戏", Icons.Filled.SportsEsports, it)) }
             File("/storage/emulated/0/Pictures").takeIf { it.isDirectory }?.let { add(quickItem("Pictures", Icons.Filled.Image, it)) }
         }
         val favItems = remember(favTick) { FavoritesStore.list(context).map(::File).filter { it.exists() } }
@@ -1779,7 +1779,7 @@ private fun FileContextMenuItems(
     // Properties: basic info + Read-only / Hidden toggles, for ANY file or folder (handy for config
     // files like .txt/.cfg/.ini). Kept near the top since it's a common reason to open this menu.
     DropdownMenuItem(
-        text = { Text("Properties") },
+        text = { Text("属性") },
         leadingIcon = { Icon(Icons.Filled.Info, null, tint = MaterialTheme.colorScheme.primary) },
         onClick = { onDismissMenu(); onProperties() },
     )
@@ -1801,7 +1801,7 @@ private fun FileContextMenuItems(
     }
     if (canRun) {
         DropdownMenuItem(
-            text = { Text("Run") },
+            text = { Text("运行") },
             leadingIcon = { Icon(Icons.Filled.PlayArrow, null, tint = MaterialTheme.colorScheme.primary) },
             onClick = { onDismissMenu(); onRun() },
         )
@@ -1846,13 +1846,13 @@ private fun FileContextMenuItems(
         MenuItemDivider()
     }
     DropdownMenuItem(
-        text = { Text("Rename") },
+        text = { Text("重命名") },
         leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) },
         onClick = { onDismissMenu(); onRename() },
     )
     MenuItemDivider()
     DropdownMenuItem(
-        text = { Text("Copy") },
+        text = { Text("拷贝") },
         leadingIcon = { Icon(Icons.Filled.FileCopy, null, tint = MaterialTheme.colorScheme.primary) },
         onClick = { onDismissMenu(); onCopy() },
     )
@@ -1864,7 +1864,7 @@ private fun FileContextMenuItems(
     )
     MenuItemDivider()
     DropdownMenuItem(
-        text = { Text("Delete") },
+        text = { Text("删除") },
         leadingIcon = { Icon(Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary) },
         onClick = { onDismissMenu(); onDelete() },
     )
@@ -2166,7 +2166,7 @@ private fun FavoriteCard(
                     when {
                         loc.containerName != null -> Row {
                             Text(
-                                text = "Container: ",
+                                text = "容器: ",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 11.sp,
                             )
@@ -2373,7 +2373,7 @@ private fun FilePropertiesDialog(
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Properties") },
+        title = { Text("属性") },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 // ── Basic info ──
@@ -2424,7 +2424,7 @@ private fun FilePropertiesDialog(
                 // ── Hidden ── Wine's DOS hidden bit in the user.DOSATTRIB xattr.
                 val hiddenSupported = state?.hiddenSupported == true
                 AttributeToggleRow(
-                    label = "Hidden",
+                    label = "隐藏",
                     description = if (state != null && !hiddenSupported)
                         "This storage can't store the hidden flag."
                     else "Marks the file hidden in Windows (Wine's hidden attribute).",

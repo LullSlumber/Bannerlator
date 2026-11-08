@@ -46,12 +46,12 @@ fun InputControlsDialog(state: XServerDialogState) {
     var timeoutEnabled   by remember(initTimeout)      { mutableStateOf(initTimeout) }
     var hapticsEnabled   by remember(initHaptics)      { mutableStateOf(initHaptics) }
 
-    val allItems = listOf("-- Disabled --") + profiles
+    val allItems = listOf("-- 已禁用 --") + profiles
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     OutlinedAlertDialog(
         onDismissRequest = { state.dismiss() },
-        title = { Text("Input Controls") },
+        title = { Text("虚拟按键") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 // Profile dropdown
@@ -60,10 +60,10 @@ fun InputControlsDialog(state: XServerDialogState) {
                     onExpandedChange = { dropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = allItems.getOrElse(selectedIdx) { "-- Disabled --" },
+                        value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Profile") },
+                        label = { Text("配置") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -89,9 +89,9 @@ fun InputControlsDialog(state: XServerDialogState) {
 
                 Spacer(Modifier.height(8.dp))
 
-                CheckRow("Show Touchscreen Controls", showTouchscreen) { showTouchscreen = it }
-                CheckRow("Enable Timeout", timeoutEnabled) { timeoutEnabled = it }
-                CheckRow("Enable Haptics", hapticsEnabled) { hapticsEnabled = it }
+                CheckRow("显示触摸屏控件", showTouchscreen) { showTouchscreen = it }
+                CheckRow("启用延时", timeoutEnabled) { timeoutEnabled = it }
+                CheckRow("启用触觉反馈", hapticsEnabled) { hapticsEnabled = it }
 
                 Spacer(Modifier.height(8.dp))
 
@@ -105,7 +105,7 @@ fun InputControlsDialog(state: XServerDialogState) {
                     enabled = selectedIdx > 0,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Profile Settings…")
+                    Text("配置文件设置…")
                 }
             }
         },

@@ -46,7 +46,7 @@ object ConfigExporter {
         "reshadeMode", "reshadeParams", "reshadeEffect", "emulator", "box64Version", "box64Preset",
         "fexcorePreset", "cpuList", "startupSelection", "inputType", "exclusiveXInput", "disableXinput",
         // Controller identity (generic / xbox360 / ... ; core.ControllerIdentity) with the other controller keys.
-        // inputType + exclusiveXInput above carry "DirectInput games can see the controller"
+        // inputType + exclusiveXInput above carry "DirectInput 游戏可以看到控制器"
         // (core.DInputVisibility); configs from before that switch import through the same mapping.
         "controllerIdentity",
         "simTouchScreen", "numControllers", "controlsProfile", "wincomponents", "midiSoundFont",
@@ -85,7 +85,7 @@ object ConfigExporter {
         "sgsrEnabled", "sgsrSharpness", "glUpscaleSharpness", "debandEnabled", "debandStrength",
         // Force SSBS ("1" / "0"); only acted on for arm64ec Wine at launch, inert anywhere else.
         "forceSsbs",
-        // Direct XInput (BANNERIN) and its "Allow in-game switching" ("1" / "0"; core.BannerinXInput).
+        // Direct XInput (BANNERIN) and its "允许游戏内切换" ("1" / "0"; core.BannerinXInput).
         "bannerinXInput", "bannerinXInputSwitching",
     )
 

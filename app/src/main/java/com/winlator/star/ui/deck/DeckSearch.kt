@@ -91,25 +91,25 @@ private data class SearchDestination(
 
 /** Everything the search lists besides games. Keywords widen the match beyond the title. */
 private val DESTINATIONS = listOf(
-    SearchDestination("Home", "Library", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
+    SearchDestination("Home", "库", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
     SearchDestination("Stores", "Steam, Epic, GOG, Amazon, Xbox", Icons.Filled.Storefront, "store sign in library download", route = DeckRoutes.STORES),
     SearchDestination("Steam", "Stores › Steam", Icons.Filled.Storefront, "steam valve store friends", store = Screen.Steam),
-    SearchDestination("Epic Games", "Stores › Epic Games", Icons.Filled.Storefront, "epic store free games", store = Screen.Epic),
+    SearchDestination("Epic 游戏", "Stores › Epic Games", Icons.Filled.Storefront, "epic store free games", store = Screen.Epic),
     SearchDestination("GOG", "Stores › GOG", Icons.Filled.Storefront, "gog galaxy store", store = Screen.Gog),
-    SearchDestination("Amazon Games", "Stores › Amazon Games", Icons.Filled.Storefront, "amazon prime store", store = Screen.Amazon),
+    SearchDestination("Amazon 游戏", "Stores › Amazon Games", Icons.Filled.Storefront, "amazon prime store", store = Screen.Amazon),
     SearchDestination("Xbox", "Stores › Xbox", Icons.Filled.Storefront, "xbox microsoft store game pass pc", store = Screen.Xbox),
-    SearchDestination("Containers", "Wine prefixes and their settings", Icons.Filled.Inventory2, "container wine prefix drive c new container", route = Screen.Containers.route),
+    SearchDestination("容器管理", "Wine prefixes and their settings", Icons.Filled.Inventory2, "container wine prefix drive c new container", route = Screen.Containers.route),
     SearchDestination("Components", "Wine, Proton, DXVK, VKD3D, Box64, FEX, drivers", Icons.Filled.Extension, "components contents dxvk vkd3d proton wine box64 fex fexcore wowbox64 d7vk wcp driver turnip install", route = DeckRoutes.COMPONENTS),
     SearchDestination("Controls", "On-screen profiles, bindings, controller test", Icons.Filled.SportsEsports, "controls input controller gamepad bindings on-screen touch profile test", route = DeckRoutes.CONTROLS),
-    SearchDestination("Tools", "Files, saves, logs", Icons.Filled.Build, "tools", route = DeckRoutes.TOOLS),
-    SearchDestination("File Manager", "Tools › Files", Icons.Filled.FolderOpen, "files folders browse unpack archive 7z zip", route = Screen.FileManager.route),
-    SearchDestination("Save Manager", "Tools › Saves", Icons.Filled.Save, "saves backup restore cloud sync", route = Screen.SaveManager.route),
+    SearchDestination("工具", "Files, saves, logs", Icons.Filled.Build, "tools", route = DeckRoutes.TOOLS),
+    SearchDestination("文件管理器", "Tools › Files", Icons.Filled.FolderOpen, "files folders browse unpack archive 7z zip", route = Screen.FileManager.route),
+    SearchDestination("存档管理器", "Tools › Saves", Icons.Filled.Save, "saves backup restore cloud sync", route = Screen.SaveManager.route),
     SearchDestination("Wrappers", "Tools › Graphics wrappers", Icons.Filled.Layers, "wrapper vulkan graphics", route = Screen.Wrappers.route),
     SearchDestination("Adrenotools", "Tools › GPU drivers", Icons.Filled.Memory, "gpu driver adreno turnip mesa", route = Screen.AdrenoTools.route),
-    SearchDestination("Settings", "App settings", Icons.Filled.Settings, "settings preferences performance network storage logs advanced", route = DeckSettingsRoutes.APP),
+    SearchDestination("Settings", "应用设置", Icons.Filled.Settings, "settings preferences performance network storage logs advanced", route = DeckSettingsRoutes.APP),
     SearchDestination("Appearance", "Settings › Appearance", Icons.Filled.Palette, "appearance theme accent dark light interface style deck classic size font", route = Screen.Appearance.route),
-    SearchDestination("Logs", "Tools › Logs", Icons.Filled.Description, "logs log manager debug wine dxvk", route = DeckRoutes.TOOLS),
-    SearchDestination("About", "Version, updates and credits", Icons.Filled.Info, "about version update credits license", about = true),
+    SearchDestination("日志", "Tools › Logs", Icons.Filled.Description, "logs log manager debug wine dxvk", route = DeckRoutes.TOOLS),
+    SearchDestination("关于", "Version, updates and credits", Icons.Filled.Info, "about version update credits license", about = true),
 )
 
 /**
@@ -209,7 +209,7 @@ internal fun DeckSearchOverlay(
                     LazyColumn(modifier = Modifier.heightIn(max = 560.dp)) {
                         if (games.isNotEmpty()) {
                             item(key = "h-games") {
-                                DeckSectionLabel(if (q.isEmpty()) "Recently played" else "Games · ${games.size}")
+                                DeckSectionLabel(if (q.isEmpty()) "最近游玩" else "Games · ${games.size}")
                             }
                             items(games, key = { "g:" + it.file.path }) { s ->
                                 SearchResultRow(

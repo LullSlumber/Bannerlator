@@ -273,7 +273,7 @@ object XServerDialogState {
 
     // -------------------------------------------------------------------------
     // Paused / frozen state — single mirror of the activity's `isPaused`. Drives the centered
-    // "Paused — tap to resume" box in the dialog host (covers BOTH the ReShade freeze-frame preview
+    // "已暂停 — 点击恢复" box in the dialog host (covers BOTH the ReShade freeze-frame preview
     // and a normal manual Pause). The activity is the single source of truth; it writes this flow
     // whenever the guest is suspended/resumed. Tapping the box fires onRequestResume (full resume).
     // -------------------------------------------------------------------------
@@ -375,7 +375,7 @@ object XServerDialogState {
         val xinputAvailable: Boolean = false,
         /** XInput source wanted: true = Direct (BANNERIN), false = Wine's own. */
         val xinputDirect: Boolean = true,
-        /** The source can switch in-game ("Allow in-game switching" was on at launch). */
+        /** The source can switch in-game ("允许游戏内切换" was on at launch). */
         val xinputSwitchable: Boolean = false,
         val dinputVisible: Boolean = false,
         /** Non-null: why DirectInput visibility is fixed for this launch (passthrough, DirectInput pad). */
@@ -451,7 +451,7 @@ object XServerDialogState {
         val isOnScreen: Boolean,
         val isGameController: Boolean,
         // Whether the device currently owning this row's slot exposes a rumble motor — gates the
-        // controller-test "Identify" buzz button. Defaults false so it never claims rumble it can't do.
+        // controller-test "识别" buzz button. Defaults false so it never claims rumble it can't do.
         val hasVibrator: Boolean = false,
     )
 
@@ -465,7 +465,7 @@ object XServerDialogState {
     @JvmField var onPlayerSlotChanged: PlayerSlotCallback? = null
     /** Re-reads the device list from WinHandler (call when the sub-tab opens / after a change). */
     @JvmField var onPlayerSlotsRefresh: Runnable? = null
-    /** Manual "Reset Input" recovery — rebuilds the fake-input transport in place (no relaunch). */
+    /** Manual "重置输入" recovery — rebuilds the fake-input transport in place (no relaunch). */
     @JvmField var onResetInput: Runnable? = null
 
     // -------------------------------------------------------------------------
@@ -492,7 +492,7 @@ object XServerDialogState {
     @JvmField var onControllerTestActive: BooleanCallback? = null
 
     fun interface IntCallback { fun invoke(value: Int) }
-    /** "Identify" — buzz the pad currently owning the given 0-based slot (WinHandler.testRumble). */
+    /** "识别" — buzz the pad currently owning the given 0-based slot (WinHandler.testRumble). */
     @JvmField var onControllerIdentify: IntCallback? = null
 
     /** Id of the profile active in the running game (inputControlsView.getProfile()), so the in-game
@@ -620,8 +620,8 @@ object XServerDialogState {
             "reset"        -> "INPUT RESET" to "just now"
             "reconnected"  -> "CONTROLLER RECONNECTED" to (subOverride ?: "just now")
             "reassign"     ->
-                if (hasShare) "PLAYER ${sharedSlot + 1} · SHARED" to "updated"
-                else "INPUT UPDATED" to "updated"
+                if (hasShare) "PLAYER ${sharedSlot + 1} · SHARED" to "已更新"
+                else "INPUT UPDATED" to "已更新"
             else /* launch */ -> when {
                 hasMouseKb     -> "INPUT DETECTED"
                 rows.size == 1 -> "CONTROLLER DETECTED"

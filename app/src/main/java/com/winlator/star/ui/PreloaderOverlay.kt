@@ -386,7 +386,7 @@ private fun closingClock(since: Long): String {
             value = closingSeconds(since)
         }
     }
-    return String.format(java.util.Locale.US, "%d:%02d elapsed · still working", seconds / 60, seconds % 60)
+    return String.format(java.util.Locale.US, "%d:%02d 已过 · 仍在处理", seconds / 60, seconds % 60)
 }
 
 private fun closingSeconds(since: Long): Long = maxOf(0L, SystemClock.elapsedRealtime() - since) / 1000
@@ -452,7 +452,7 @@ private fun StatusReadout(
             )
         }
         // The clock: a first run is minutes of nothing on screen, and a number that keeps
-        // moving is what separates "still working" from "hung" for the person watching.
+        // moving is what separates "still working" 来自 "hung" for the person watching.
         AnimatedVisibility(visible = !elapsed.isNullOrEmpty()) {
             Text(
                 text = elapsed ?: "",

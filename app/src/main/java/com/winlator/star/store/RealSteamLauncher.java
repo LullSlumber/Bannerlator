@@ -106,7 +106,7 @@ public final class RealSteamLauncher {
      * @param appId               resolved Steam appId (from {@code resolveSteamAppRef})
      * @param displayName         the game's library display name (basis for the canonical folder name)
      * @param hostInstallDir      the game's real install dir on the host FS (from {@code SteamAppRef.installDir})
-     * @param controllerPassthrough  per-game "Controller passthrough" toggle: when {@code true}, make the
+     * @param controllerPassthrough  per-game "记住我的选择" toggle: when {@code true}, make the
      *                            genuine client get out of the pad's way for classic DInput games (levers
      *                            1 &amp; 2 below — Steam Input off in localconfig + overlay-renderer DLLs
      *                            removed). Lever 3 (force DInput on the launch) is applied by the caller
@@ -390,7 +390,7 @@ public final class RealSteamLauncher {
             Log.i(TAG, "prepare: staged appId=" + appId + " canonical=\"" + canonicalName
                     + "\" relExe=\"" + relExe + "\" (LaunchApp SECURE, vac=" + (vacSecure ? 1 : 0)
                     + ", steamInput=" + (steamInput ? 1 : 0)
-                    + " from " + vacSource + ")");
+                    + " 来自 " + vacSource + ")");
             return new Plan(env, STEAM_DIR_WIN, STEAM_EXE_NAME, specArgWin, canonicalName, appId, eaChain);
         } catch (Throwable t) {
             Log.w(TAG, "prepare: errored — fallback", t);

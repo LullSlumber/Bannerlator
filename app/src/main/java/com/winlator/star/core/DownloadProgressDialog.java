@@ -125,7 +125,7 @@ public class DownloadProgressDialog {
      * NEW METHOD (added in splash integration).
      *
      * Called when installation completes (via closeOnUiThread → Lambda0).
-     * Makes the "All Files Access Required" button visible and wires it to
+     * Makes the "需要所有文件访问权限" button visible and wires it to
      * Lambda2 → close() + MainActivity.doPermissionsFlow().
      */
     public void showPermissionsButton() {
@@ -135,7 +135,7 @@ public class DownloadProgressDialog {
         View llBottomBar = dialog.findViewById(R.id.LLBottomBar);
         if (llBottomBar != null) llBottomBar.setVisibility(View.VISIBLE);
 
-        // Wire the "All Files Access Required" button
+        // Wire the "需要所有文件访问权限" button
         View btnCancel = dialog.findViewById(R.id.BTCancel);
         if (btnCancel == null) return;
 

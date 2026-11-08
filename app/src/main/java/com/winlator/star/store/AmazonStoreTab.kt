@@ -207,9 +207,9 @@ private fun PrimeGamingCard(onOpenWeb: (url: String, title: String) -> Unit, mod
                 onClick = { onOpenWeb("https://gaming.amazon.com/home", "Prime Gaming") },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.weight(1f).steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("Claim free games", maxLines = 1) }
+            ) { Text("领取免费游戏", maxLines = 1) }
             OutlinedButton(
-                onClick = { onOpenWeb("https://gaming.amazon.com/home?filter=games", "Amazon Games") },
+                onClick = { onOpenWeb("https://gaming.amazon.com/home?filter=games", "Amazon 游戏") },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.weight(1f).steamFocusRing(RoundedCornerShape(8.dp)),
             ) { Text("Browse", maxLines = 1) }

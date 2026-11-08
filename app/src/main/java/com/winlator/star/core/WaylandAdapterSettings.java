@@ -69,20 +69,20 @@ public final class WaylandAdapterSettings {
 
     public static String profileLabel(String profile) {
         switch (normalizeProfile(profile)) {
-            case PROFILE_SMOOTH: return "Smooth";
-            case PROFILE_FAST: return "Fast";
-            case PROFILE_COMPAT: return "Compatibility";
-            default: return "Auto (recommended)";
+            case PROFILE_SMOOTH: return "流畅";
+            case PROFILE_FAST: return "快速";
+            case PROFILE_COMPAT: return "兼容性";
+            default: return "自动（推荐）";
         }
     }
 
     /** One line under each profile choice in the dialog. */
     public static String profileHelp(String profile) {
         switch (normalizeProfile(profile)) {
-            case PROFILE_SMOOTH: return "Even frame pacing: vsync (fifo), frames copied in the background, no zero-copy.";
-            case PROFILE_FAST: return "Lowest latency: mailbox, zero-copy with compressed buffers, client render fences.";
-            case PROFILE_COMPAT: return "Safest: vsync, every shortcut off, plain buffers, timing shim on. For games that flicker or hang.";
-            default: return "Picks from the adapter report of your driver; with no report it changes nothing.";
+            case PROFILE_SMOOTH: return "均匀帧节奏：垂直同步（fifo）、在后台复制帧、无零拷贝。";
+            case PROFILE_FAST: return "最低延迟：mailbox、带压缩缓冲区的零拷贝、客户端渲染栅栏。";
+            case PROFILE_COMPAT: return "最安全：垂直同步、所有捷径关闭、普通缓冲区、时序垫片开启。适用于闪烁或挂起的游戏。";
+            default: return "根据您驱动程序的适配器报告进行选择；没有报告时不做任何更改。";
         }
     }
 

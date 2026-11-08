@@ -96,7 +96,7 @@ object MoveGameToContainer {
         if (AndroidGames.isAndroidEntry(shortcut) || LinuxShortcuts.isLinuxEntry(shortcut)) {
             return "Only Windows games can change container."
         }
-        if (XboxCloudShortcuts.isNotInstalled(shortcut)) return "Finish downloading \"${shortcut.name}\" first."
+        if (XboxCloudShortcuts.isNotInstalled(shortcut)) return "Finish downloading \"${shortcut.name}\" 首先。"
         val info = CopyGameToDriveC.parse(shortcut)
         if (info.exeAndroid == null) return "Couldn't find where \"${shortcut.name}\" is installed."
         if (info.onDriveC && !options.gameFolder) {
@@ -164,7 +164,7 @@ object MoveGameToContainer {
                 try {
                     CopyGameToDriveC.copyTree(gf.folder, dest, gf.sizeBytes, { false }) { }
                 } catch (e: Exception) {
-                    return Result.Refused("Couldn't copy the game's files: ${e.message ?: "unknown error"}.")
+                    return Result.Refused("Couldn't copy the game's files: ${e.message ?: "未知错误"}.")
                 }
                 copiedFolder = dest
             } else {
@@ -238,7 +238,7 @@ object MoveGameToContainer {
             Log.e(TAG, "move of '${shortcut.name}' to container ${target.id} failed", e)
             written.forEach { it.delete() }
             undoFolder()
-            return Result.Refused("Couldn't ${if (keepCopy) "copy" else "move"} \"${shortcut.name}\": ${e.message ?: "unknown error"}.")
+            return Result.Refused("Couldn't ${if (keepCopy) "copy" else "move"} \"${shortcut.name}\": ${e.message ?: "未知错误"}.")
         }
         // Keeps its place in "Recently added".
         newFile.setLastModified(shortcut.file.lastModified())
@@ -262,12 +262,12 @@ object MoveGameToContainer {
                 emuConflicts = conflicts
             } catch (e: Exception) {
                 Log.e(TAG, "saves of '${shortcut.name}' not copied", e)
-                notes += "saves not copied (${e.message ?: "unknown error"})"
+                notes += "saves not copied (${e.message ?: "未知错误"})"
             }
         }
         plan?.extras.orEmpty().filter { it.name in options.extras }.forEach { extra ->
             onStage("Adding ${extra.label}…")
-            val error = runCatching { addExtra(context, source, target, extra) }.getOrElse { it.message ?: "unknown error" }
+            val error = runCatching { addExtra(context, source, target, extra) }.getOrElse { it.message ?: "未知错误" }
             notes += if (error == null) "${extra.label} added" else "${extra.label} not added ($error)"
         }
 
@@ -280,8 +280,8 @@ object MoveGameToContainer {
     fun message(result: Result, gameName: String, targetName: String, keepCopy: Boolean): String = when (result) {
         is Result.Refused -> result.reason
         is Result.Done -> buildString {
-            append(if (keepCopy) "Copied" else "Moved").append(" \"").append(gameName).append("\" to \"").append(targetName).append("\".")
-            result.addedDrive?.let { append(" Added drive ").append(it).append(" to \"").append(targetName).append("\" for it.") }
+            append(if (keepCopy) "Copied" else "Moved").append(" \"").append(gameName).append("\" 到 \"").append(targetName).append("\".")
+            result.addedDrive?.let { append(" Added drive ").append(it).append(" 到 \"").append(targetName).append("\" for it.") }
             if (result.notes.isNotEmpty()) append(" ").append(result.notes.joinToString("; ").replaceFirstChar { it.uppercase() }).append(".")
         }
     }

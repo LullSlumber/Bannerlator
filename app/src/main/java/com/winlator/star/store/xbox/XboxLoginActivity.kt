@@ -38,7 +38,7 @@ class XboxLoginActivity : ComponentActivity() {
         runCatching { WebView.setDataDirectorySuffix(WEBVIEW_SUFFIX) }
         super.onCreate(savedInstanceState)
         host = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(Color.BLACK) }
-        status = TextView(this).apply { setTextColor(Color.WHITE); text = "Preparing Microsoft sign-in…"; setPadding(24, 16, 24, 16) }
+        status = TextView(this).apply { setTextColor(Color.WHITE); text = "正在准备 Microsoft 登录…"; setPadding(24, 16, 24, 16) }
         host.addView(status)
         host.addView(Button(this).apply { text = "Close"; setOnClickListener { finish() } })
         setContentView(host)
@@ -85,7 +85,7 @@ class XboxLoginActivity : ComponentActivity() {
                             "close" -> {
                                 check(frame.getLong("session") == session)
                                 session = 0L
-                                runOnUiThread { disposeView(); status.text = "Completing Microsoft sign-in…" }
+                                runOnUiThread { disposeView(); status.text = "正在完成 Microsoft 登录…" }
                             }
                             "context" -> {
                                 check(frame.getLong("session") == session)
@@ -120,7 +120,7 @@ class XboxLoginActivity : ComponentActivity() {
             } catch (e: Exception) {
                 child = null
                 XboxDiag.log(applicationContext, "sign-in failed: ${e.javaClass.simpleName}")
-                if (!closed) runOnUiThread { disposeView(); status.text = "Microsoft sign-in did not complete. Close this window and try again." }
+                if (!closed) runOnUiThread { disposeView(); status.text = "Microsoft 登录未完成。请关闭此窗口并重试。" }
             }
         }, "xbox-login").start()
     }

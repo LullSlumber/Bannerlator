@@ -204,7 +204,7 @@ fun MediaTab(
                     Spacer(Modifier.height(14.dp))
                 }
                 if (media.screenshots.isNotEmpty()) {
-                    MediaRowTitle("Screenshots")
+                    MediaRowTitle("截图")
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),

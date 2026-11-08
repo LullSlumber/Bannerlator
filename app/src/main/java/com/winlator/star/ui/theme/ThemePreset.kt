@@ -109,14 +109,14 @@ data class ThemePreset(
 
 val themePresets: List<ThemePreset> = listOf(
     ThemePreset(
-        name          = "Classic Dark",
+        name          = "经典深色",
         background    = Color(0xFF1A1A1A),
         surface       = Color(0xFF2A2A2A),
         surfaceVariant= Color(0xFF333333),
         primary       = Color(0xFF0055FF),
     ),
     ThemePreset(
-        name          = "AMOLED",
+        name          = "深邃黑",
         background    = Color(0xFF000000),
         surface       = Color(0xFF000000),
         surfaceVariant= Color(0xFF050505),
@@ -132,35 +132,35 @@ val themePresets: List<ThemePreset> = listOf(
         surfaceContainerHighest = Color(0xFF38383F),
     ),
     ThemePreset(
-        name          = "Ocean",
+        name          = "海洋蓝",
         background    = Color(0xFF0D1B2A),
         surface       = Color(0xFF162435),
         surfaceVariant= Color(0xFF1E3045),
         primary       = Color(0xFF0EA5E9),
     ),
     ThemePreset(
-        name          = "Forest",
+        name          = "森系绿",
         background    = Color(0xFF0D1A12),
         surface       = Color(0xFF142010),
         surfaceVariant= Color(0xFF1C2E1A),
         primary       = Color(0xFF22C55E),
     ),
     ThemePreset(
-        name          = "Sunset",
+        name          = "落日橙",
         background    = Color(0xFF1A0D0D),
         surface       = Color(0xFF251515),
         surfaceVariant= Color(0xFF301C1C),
         primary       = Color(0xFFF97316),
     ),
     ThemePreset(
-        name          = "Rose",
+        name          = "玫瑰粉",
         background    = Color(0xFF1A0D14),
         surface       = Color(0xFF25151E),
         surfaceVariant= Color(0xFF301C28),
         primary       = Color(0xFFEC4899),
     ),
     ThemePreset(
-        name          = "Steel",
+        name          = "金属灰",
         background    = Color(0xFF131419),
         surface       = Color(0xFF1C1D25),
         surfaceVariant= Color(0xFF252630),
@@ -171,14 +171,14 @@ val themePresets: List<ThemePreset> = listOf(
     // accentDim derive automatically. onPrimary is forced dark on light/bright accents
     // (phosphor green, gold, frost cyan, near-white mono) so on-accent text/icons stay legible.
     ThemePreset(
-        name          = "Midnight Cobalt",
+        name          = "深夜钴蓝",
         background    = Color(0xFF0A0E1A),
         surface       = Color(0xFF111A2E),
         surfaceVariant= Color(0xFF18243F),
         primary       = Color(0xFF2D6BFF),
     ),
     ThemePreset(
-        name          = "Phosphor",
+        name          = "荧光绿",
         background    = Color(0xFF000000),
         surface       = Color(0xFF07120A),
         surfaceVariant= Color(0xFF0C1E14),
@@ -188,35 +188,35 @@ val themePresets: List<ThemePreset> = listOf(
         onPrimary     = Color(0xFF001505),
     ),
     ThemePreset(
-        name          = "Carbon & Ember",
+        name          = "炭烬色",
         background    = Color(0xFF121212),
         surface       = Color(0xFF1C1A18),
         surfaceVariant= Color(0xFF2A2522),
         primary       = Color(0xFFFF6A2C),
     ),
     ThemePreset(
-        name          = "Amethyst",
+        name          = "紫晶色",
         background    = Color(0xFF140D1F),
         surface       = Color(0xFF1E1430),
         surfaceVariant= Color(0xFF2A1C42),
         primary       = Color(0xFFA855F7),
     ),
     ThemePreset(
-        name          = "Crimson",
+        name          = "绯红",
         background    = Color(0xFF160A0C),
         surface       = Color(0xFF221012),
         surfaceVariant= Color(0xFF301619),
         primary       = Color(0xFFEF4444),
     ),
     ThemePreset(
-        name          = "Synthwave",
+        name          = "复古霓虹紫",
         background    = Color(0xFF14081E),
         surface       = Color(0xFF1E0F2E),
         surfaceVariant= Color(0xFF2A1640),
         primary       = Color(0xFFFF2D95),
     ),
     ThemePreset(
-        name          = "Royal Gold",
+        name          = "华贵鎏金",
         background    = Color(0xFF14110A),
         surface       = Color(0xFF1E1810),
         surfaceVariant= Color(0xFF2A2216),
@@ -224,7 +224,7 @@ val themePresets: List<ThemePreset> = listOf(
         onPrimary     = Color(0xFF1A1305),
     ),
     ThemePreset(
-        name          = "Frost",
+        name          = "冰霜浅蓝",
         background    = Color(0xFF11141A),
         surface       = Color(0xFF1A2029),
         surfaceVariant= Color(0xFF252E3B),
@@ -232,7 +232,7 @@ val themePresets: List<ThemePreset> = listOf(
         onPrimary     = Color(0xFF08141A),
     ),
     ThemePreset(
-        name          = "Monochrome",
+        name          = "极简单色",
         background    = Color(0xFF000000),
         surface       = Color(0xFF0D0D0D),
         surfaceVariant= Color(0xFF1A1A1A),

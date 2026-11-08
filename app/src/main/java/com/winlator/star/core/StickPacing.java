@@ -6,7 +6,7 @@ import com.winlator.star.container.Shortcut;
 import java.util.Locale;
 
 /**
- * "Stick updates": how often stick-only frames reach the game (BANNERIN's reader pacing).
+ * "摇杆更新": how often stick-only frames reach the game (BANNERIN's reader pacing).
  * <ul>
  *   <li>{@code auto:N}: one stick frame per frame the game presents, at most N per second (20..240;
  *       the default is auto:60, the cap that is device-proven)</li>
@@ -79,9 +79,9 @@ public final class StickPacing {
 
     public String describe() {
         switch (mode) {
-            case MODE_FIXED: return "Fixed " + hz + "/s";
+            case MODE_FIXED: return "固定 " + hz + "/s";
             case MODE_OFF: return "Unpaced";
-            default: return "Auto (up to " + hz + "/s)";
+            default: return "自动（最高 " + hz + "/s)";
         }
     }
 
@@ -90,7 +90,7 @@ public final class StickPacing {
         switch (mode) {
             case MODE_FIXED: return hz + " per second";
             case MODE_OFF: return "";
-            default: return "Up to " + hz + " per second";
+            default: return "最高 " + hz + " per second";
         }
     }
 

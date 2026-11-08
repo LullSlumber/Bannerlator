@@ -1045,13 +1045,13 @@ object SteamFriendsStore {
                 rustSession()?.let { rs ->
                     val ok = if (id64 != null && id64 > STEAMID64_BASE) rs.addFriend(id64) else rs.addFriend(0L, q)
                     _addFeedback.value = when {
-                        !ok -> "Not connected to Steam"
+                        !ok -> "未连接到Steam"
                         id64 != null && id64 > STEAMID64_BASE -> "Friend request sent"
                         else -> "Looking up “$q”…"
                     }
                     return@execute
                 }
-                val sf = repo.steamFriends ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
+                val sf = repo.steamFriends ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
                 if (id64 != null && id64 > STEAMID64_BASE) {
                     sf.addFriend(SteamID(id64)); _addFeedback.value = "Friend request sent"
                 } else {
@@ -1077,10 +1077,10 @@ object SteamFriendsStore {
         io.execute {
             try {
                 rustSession()?.let { rs ->
-                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "Not connected to Steam"
+                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "未连接到Steam"
                     return@execute
                 }
-                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
+                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
                 _addFeedback.value = "Friend request sent"
             } catch (t: Throwable) {
                 Log.w(TAG, "addFriendById failed", t)
@@ -1655,7 +1655,7 @@ object SteamFriendsStore {
      *    [ProfileInfoCallback] future — awaited directly, the same unified-future pattern as [mintWebToken],
      *    rather than a broadcast pump subscription that couldn't tell concurrent requests apart).
      *  - games count / total hours / recently-played ← Player.GetOwnedGames (include_appinfo +
-     *    include_played_free_games). "Recently played" is derived from that response (sorted by
+     *    include_played_free_games). "最近游玩" is derived from that response (sorted by
      *    rtime_last_played) because Player.GetRecentlyPlayedGames is NOT present in this fork.
      *  - level / featured badges / mutual friends are SKIPPED (left null): Player.GetSteamLevel,
      *    Player.GetBadges and a general per-friend GetMutualFriends RPC are not exposed here

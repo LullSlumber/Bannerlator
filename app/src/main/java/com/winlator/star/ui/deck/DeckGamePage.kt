@@ -274,18 +274,18 @@ internal fun DeckGamePage(
                 val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "Before tracking" else "Never"
                 if (!banner) FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val tile = Modifier.widthIn(min = 150.dp, max = 240.dp)
-                    DeckStat(playtimeShort(stats.ms), "Playtime", tile)
+                    DeckStat(playtimeShort(stats.ms), "游玩时间", tile)
                     DeckStat(lastPlayed, "Last played", tile)
                     achievements?.let { (got, total) ->
-                        DeckStat("$got / $total", "Achievements", tile, progress = got.toFloat() / total.coerceAtLeast(1))
+                        DeckStat("$got / $total", "成就", tile, progress = got.toFloat() / total.coerceAtLeast(1))
                     }
                     DeckStat(if (stats.count > 0) "${stats.count}" else "—", if (stats.count == 1) "Launch" else "Launches", tile)
                     if (!isAndroid) DeckStat(if (onSd) "SD card" else "Internal", "Storage", tile)
                 } else DeckStatStrip(
                     buildList {
-                        add(playtimeShort(stats.ms) to "Playtime")
+                        add(playtimeShort(stats.ms) to "游玩时间")
                         add(lastPlayed to "Last played")
-                        achievements?.let { (got, total) -> add("$got/$total" to "Achievements") }
+                        achievements?.let { (got, total) -> add("$got/$total" to "成就") }
                         add((if (stats.count > 0) "${stats.count}" else "—") to (if (stats.count == 1) "Launch" else "Launches"))
                         if (!isAndroid) add((if (onSd) "SD card" else "Internal") to "Storage")
                     },
@@ -296,8 +296,8 @@ internal fun DeckGamePage(
                     // Room for the focus glow, which a scroll container would otherwise clip.
                     modifier = Modifier.horizontalScroll(rememberScrollState()).padding(6.dp),
                 ) {
-                    DeckButton("Play", Icons.Filled.PlayArrow, { launcher.requestLaunch(s) }, primary = true, big = true, glyph = "A", modifier = Modifier.focusRequester(playRequester))
-                    if (!isAndroid) DeckButton("Game settings", Icons.Filled.Tune, { actions.perform(GameMenuAction.SETTINGS, s) }, big = true)
+                    DeckButton("游玩", Icons.Filled.PlayArrow, { launcher.requestLaunch(s) }, primary = true, big = true, glyph = "A", modifier = Modifier.focusRequester(playRequester))
+                    if (!isAndroid) DeckButton("游戏设置", Icons.Filled.Tune, { actions.perform(GameMenuAction.SETTINGS, s) }, big = true)
                     DeckButton("Options", Icons.Filled.MoreHoriz, { menuOpen = true }, big = true, glyph = "X")
                 }
                 remembered?.let { how ->
@@ -360,7 +360,7 @@ internal fun DeckGamePage(
                                 details.metacritic?.let { "Metacritic $it" },
                             ).joinToString(" · ")
                             DeckRow(
-                                title = if (facts.isNotEmpty()) facts else "Details",
+                                title = if (facts.isNotEmpty()) facts else "详情",
                                 subtitle = details.description,
                                 onClick = { actions.perform(GameMenuAction.GAME_DETAILS, s) },
                             )
@@ -468,7 +468,7 @@ private fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>>
     fun e(a: GameMenuAction, hint: String, danger: Boolean = false) =
         if (gameMenuOffers(a, s)) null as String? to GameMenuEntry(menuTitle(a), hint, a, danger) else null
     return listOf(
-        listOf(ENTRY_PLAY to GameMenuEntry("Play", when {
+        listOf(ENTRY_PLAY to GameMenuEntry("游玩", when {
             isAndroid -> "Opens the app, as Android's own launcher would."
             LinuxShortcuts.isLinuxEntry(s) -> "Starts the Steam client on the Linux runtime."
             else -> "Same launch path from every view: launch options, Steam pre-flight, Goldberg, cloud-save sync."
@@ -476,7 +476,7 @@ private fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>>
         listOfNotNull(
             e(GameMenuAction.SETTINGS, "Display, graphics, controls and more, for this game only."),
             // Android games and the Linux Steam entry have no Wine container to open.
-            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("Container settings", "Opens the container this game runs in.", null),
+            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("容器设置", "Opens the container this game runs in.", null),
         ),
         listOfNotNull(
             e(GameMenuAction.GAME_DETAILS, "Name, Steam link, genres, year, description."),
@@ -502,12 +502,12 @@ private fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>>
 }
 
 private fun menuTitle(a: GameMenuAction): String = when (a) {
-    GameMenuAction.SETTINGS -> "Game settings"
+    GameMenuAction.SETTINGS -> "游戏设置"
     GameMenuAction.GAME_DETAILS -> "Game details"
     GameMenuAction.SCRAPE_COVER -> "Cover art"
     GameMenuAction.COMMUNITY_CONFIGS -> "Community configs for this game"
-    GameMenuAction.CLOUD_SAVES -> "Cloud saves"
-    GameMenuAction.VIEW_LOGS -> "View logs"
+    GameMenuAction.CLOUD_SAVES -> "云存档"
+    GameMenuAction.VIEW_LOGS -> "查看日志"
     else -> a.label
 }
 

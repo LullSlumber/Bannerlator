@@ -321,7 +321,7 @@ public class EpicApiClient {
             conn.disconnect();
 
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "Epic GET HTTP " + code + " from " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
+                Log.e(TAG, "Epic GET HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
                 return null;
             }
             return sb.toString();

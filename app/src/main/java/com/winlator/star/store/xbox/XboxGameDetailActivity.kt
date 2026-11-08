@@ -176,7 +176,7 @@ class XboxGameDetailActivity : ComponentActivity() {
                     primary = primary,
                     secondary = secondary,
                     gear = gear,
-                    tabs = listOf("Details"),
+                    tabs = listOf("详情"),
                     selectedTab = tab,
                     onSelectTab = { tab = it },
                 ) {
@@ -188,7 +188,7 @@ class XboxGameDetailActivity : ComponentActivity() {
                             if (game.publisher.isNotBlank() && game.publisher != game.developer) InfoChip(game.publisher)
                             InfoChip("ID: ${game.id}")
                         }
-                        if (game.description.isNotBlank()) StoreSection(title = "About") {
+                        if (game.description.isNotBlank()) StoreSection(title = "关于") {
                             Text(game.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         StoreSection(title = "How it runs") {
@@ -265,7 +265,7 @@ class XboxGameDetailActivity : ComponentActivity() {
 
     private fun addToGames() {
         val inst = installed ?: return
-        // The shared Compose flow (as on the Steam pages): container picker, then "Added to Shortcuts" with Open Shortcuts.
+        // The shared Compose flow (as on the Steam pages): container picker, then "已添加到快捷方式" with Open Shortcuts.
         val exe = File(inst.folder, inst.exe).path
         StarLaunchBridge.loadContainers(this) { containers ->
             addToShortcuts = com.winlator.star.store.compose.AddToShortcutsRequest(game.title, exe, game.posterUrl ?: game.heroUrl, containers)

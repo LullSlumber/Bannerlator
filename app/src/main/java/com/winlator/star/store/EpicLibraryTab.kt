@@ -70,7 +70,7 @@ fun rememberEpicLibrary(onMessage: (String) -> Unit = {}): EpicLibraryState {
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "Syncing library…"
+            status = "正在同步库…"
             scope.launch {
                 val result = EpicLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false

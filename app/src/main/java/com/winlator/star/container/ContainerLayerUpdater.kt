@@ -166,7 +166,7 @@ class ContainerLayerUpdater(private val context: Context) {
 
     /**
      * Move [container] onto [targetEntry] ACROSS layer lines (11.0-2 -> 11.0-6, GE <-> plain, Wine <->
-     * Proton) — the "Set as default" path in the Contents hub. Same steps and the same snapshot as
+     * Proton) — the "设为默认" path in the Contents hub. Same steps and the same snapshot as
      * [update], so the container's Revert layer action puts it back; what [update] guards against
      * (registry defaults, DirectAudio support and game fixes differ between lines) is the caller's
      * explicit choice here. Only the architecture must match: an arm64ec prefix can't run on an

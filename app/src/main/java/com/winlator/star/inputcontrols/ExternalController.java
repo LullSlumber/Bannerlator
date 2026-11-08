@@ -105,7 +105,7 @@ public class ExternalController {
     }
 
     /** #333: replace this controller's bindings with a deep copy of another's. Used to seed a newly
-     *  added controller from the "Default / Any Controller" template and for the "copy bindings from…"
+     *  added controller from the "默认 / 任何控制器" template and for the "copy bindings from…"
      *  action, so a fresh controller is never blank. Clones each binding (keyCode + Binding) so the two
      *  controllers never share mutable binding objects. */
     public void copyBindingsFrom(ExternalController other) {

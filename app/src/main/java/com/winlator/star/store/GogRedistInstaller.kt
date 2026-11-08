@@ -368,7 +368,7 @@ object GogRedistInstaller {
     /** Pick the container to install into. */
     class Pick(val containers: List<Container>, val onSelected: (Container) -> Unit)
 
-    /** "Install prerequisites?" for [deps] into [containerName]. */
+    /** "安装必备组件？" for [deps] into [containerName]. */
     class Confirm(val deps: List<String>, val containerName: String, val onInstall: () -> Unit)
 
     enum class RowState { WAITING, ACTIVE, DONE, FAILED }

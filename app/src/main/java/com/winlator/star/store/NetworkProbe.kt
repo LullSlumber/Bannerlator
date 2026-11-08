@@ -64,16 +64,16 @@ object NetworkProbe {
 
         /** The pre-flight / Settings verdict line. */
         fun verdict(): String = when (nat) {
-            Nat.OPEN_CONE -> "Open NAT — online play should work" + (maskedIp?.let { " (IP $it)" } ?: "")
-            Nat.SYMMETRIC -> "Strict NAT (symmetric) — some games' online modes won't connect"
-            Nat.UDP_BLOCKED -> "UDP blocked — online play unlikely on this network"
-            Nat.UNKNOWN -> "Couldn't check"
+            Nat.OPEN_CONE -> "开放NAT — 在线游戏应可运行" + (maskedIp?.let { " (IP $it)" } ?: "")
+            Nat.SYMMETRIC -> "严格NAT（对称）— 某些游戏的在线模式将无法连接"
+            Nat.UDP_BLOCKED -> "UDP被阻止 — 此网络上在线游戏可能无法运行"
+            Nat.UNKNOWN -> "无法检查"
         }
 
         /** Strict / blocked = worth the user's attention (amber in the UI). */
         val isWarning: Boolean get() = nat == Nat.SYMMETRIC || nat == Nat.UDP_BLOCKED
 
-        /** The `steamlite.txt` header line (after "Network: "). Masked IP only. */
+        /** The `steamlite.txt` header line (after "网络: "). Masked IP only. */
         fun logLine(): String =
             "$nat public=${maskedIp ?: "-"} ipv6=${if (ipv6) "yes" else "no"} ($ms ms)" +
                 (if (detail.isNotEmpty()) " — $detail" else "")

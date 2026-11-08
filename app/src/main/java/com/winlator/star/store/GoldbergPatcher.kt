@@ -399,7 +399,7 @@ object GoldbergPatcher {
         val root = File(installDir)
         if (!root.isDirectory) {
             rep.warn("install dir is not a directory")
-            return Pair(false, "Install directory not found.")
+            return Pair(false, "未找到安装目录。")
         }
 
         val targets = analyze(root)
@@ -407,7 +407,7 @@ object GoldbergPatcher {
             targets.joinToString(prefix = " [", postfix = "]") { "${it.dll.path.removePrefix(root.path)} (${it.arch})" })
         if (targets.isEmpty()) {
             rep.warn("no steam_api(64).dll in the install — nothing to patch")
-            return Pair(false, "This game doesn't use the Steam API — Goldberg doesn't apply.")
+            return Pair(false, "此游戏不使用Steam API — Goldberg不适用。")
         }
 
         // A game update / Verify may have replaced the original dll since the backup was made: refresh it first.
@@ -851,7 +851,7 @@ object GoldbergPatcher {
     /**
      * Goldberg's steam_api dlls (gbe_fork and the original) read their config from a `steam_settings` folder
      * and carry their own name; a genuine Valve steam_api dll has none of these strings. Used to tell "this dll
-     * is the one we swapped in" from "this dll is the game's own (possibly newer) original".
+     * is the one we swapped in" 来自 "this dll is the game's own (possibly newer) original".
      */
     private fun looksLikeGoldbergDll(dll: File): Boolean {
         return try {

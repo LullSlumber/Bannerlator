@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Detects whether a wine/Proton layer can drive the embedded Wayland compositor (the per-container
- * "Display backend = Wayland" choice and the per-game "Force Wayland" override).
+ * "Display backend = Wayland" choice and the per-game "强制 Wayland" override).
  *
  * A layer is Wayland-capable iff its install dir contains BOTH
  *   - lib/wine/aarch64-unix/winewayland.so (x86_64 layers: lib/wine/x86_64-unix/winewayland.so), AND

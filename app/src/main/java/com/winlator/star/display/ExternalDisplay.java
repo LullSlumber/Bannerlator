@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * "Launch this game on the TV" — everything the game-shortcut editor, XMB game settings and the
+ * "在电视上启动此游戏" — everything the game-shortcut editor, XMB game settings and the
  * launch paths must agree on about a plugged-in external screen.
  *
  * <p><b>Why the session STARTS on the TV rather than being moved there.</b> The compositor's HDR gate
@@ -55,14 +55,14 @@ public final class ExternalDisplay {
 
     /** Shown under the switch in every editor (one line, XMB subtitles are single-line). */
     public static final String HELP_LAUNCH =
-            "The game opens on the TV instead of the handheld screen.";
+            "游戏在电视上打开，而不是在手持设备屏幕上。";
     public static final String HELP_MATCH_RES =
-            "Renders at the TV's resolution instead of this game's own. Off by default: more pixels costs frame rate.";
+            "以电视的分辨率渲染，而不是此游戏自身的分辨率。默认关闭：更多像素会消耗帧率。";
     /** The two things a first-time user has to be told before they pull a cable or reach for the screen. */
     public static final String NOTE_UNPLUG =
-            "Pull the cable and the game pauses, then comes back to the handheld screen. Resume it from the drawer.";
+            "拔出线缆，游戏会暂停，然后返回到手持设备屏幕。从抽屉中恢复它。";
     public static final String NOTE_TOUCH =
-            "Touch doesn't reach the TV. Use the controller or a mouse, including for the drawer and the HUD.";
+            "触摸无法到达电视。请使用控制器或鼠标，包括用于抽屉和 HUD。";
 
     // ── finding the display ──────────────────────────────────────────────────────────────────────────
 
@@ -278,7 +278,7 @@ public final class ExternalDisplay {
 
     /**
      * null when the game will get real HDR on this screen, else the reason it will not — the words the
-     * greyed "Use HDR on the TV" row shows. Deliberately the same shape of answer as
+     * greyed "在电视上使用 HDR" row shows. Deliberately the same shape of answer as
      * {@link WaylandHdr#unavailableReason(Display)}, which is what the launch path actually gates on.
      */
     public static String hdrUnavailableReason(Display display) {

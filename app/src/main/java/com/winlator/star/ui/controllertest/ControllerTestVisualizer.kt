@@ -331,7 +331,7 @@ fun ControllerTestPanel(
         val tr = snapshot?.let { pct(it.triggerL) + " · " + pct(it.triggerR) } ?: "0% · 0%"
         val readouts = listOf(
             "Last input" to lastInput,
-            "Left stick" to ls,
+            "右摇杆" to ls,
             "Right stick" to rs,
             "Triggers L·R" to tr,
         )
@@ -387,7 +387,7 @@ fun ControllerTestPanel(
                     enabled = identifyEnabled,
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = accent),
-                ) { Text("Identify", fontSize = 12.sp) }
+                ) { Text("识别", fontSize = 12.sp) }
             }
             if (onDone != null) {
                 Spacer(Modifier.width(8.dp))

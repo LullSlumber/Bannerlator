@@ -45,7 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// The X11 driver configuration's "Detected settings" for an IMPORTED graphics wrapper (#132): one line
+// The X11 driver configuration's "检测到的设置" for an IMPORTED graphics wrapper (#132): one line
 // per environment variable scanned out of the wrapper's binaries at import, minus what a curated row of
 // the Graphics page already edits (WrapperManager.HANDLED_ENV_KEYS), debug and driver-internal keys, and
 // the keys hidden for that wrapper in the wrapper manager's "Edit settings". The kind of control comes
@@ -149,7 +149,7 @@ internal class DeckWrapperDetectedSection(
         if (!env.graphics.isImported(driver)) return emptyList()
         val keys = keysByDriver[driver]
         val head = listOf(
-            PageExtra("wrapper-detected-label") { GroupLabel("Detected in this wrapper") },
+            PageExtra("wrapper-detected-label") { GroupLabel("在此包装器中检测到") },
         )
         if (keys.isNullOrEmpty()) {
             return head + PageExtra("wrapper-detected-none") {
@@ -167,7 +167,7 @@ internal class DeckWrapperDetectedSection(
             }
         } + PageExtra("wrapper-detected-note") {
             Text(
-                "Values are passed to the wrapper as they are; unknown ones are safe to leave blank.",
+                "值按原样传递给包装器；未知的值可以安全地留空。",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.5.sp,
                 modifier = Modifier.padding(start = 6.dp, top = 8.dp),
@@ -253,7 +253,7 @@ private fun DetectedLine(section: DeckWrapperDetectedSection, key: String) {
         WrapperSettingsDictionary.Type.TEXT -> DeckLine(
             label = def.label, hint = hint, enabled = enabled,
             onClick = { section.textFor = key },
-        ) { ValueText(value.ifEmpty { "Not set" }) }
+        ) { ValueText(value.ifEmpty { "未设置" }) }
     }
 }
 

@@ -104,7 +104,7 @@ object SteamStoreCatalog {
     }
 
     /**
-     * Below this, the "Top Free Games" rail is hidden rather than shipped as a one- or two-item row.
+     * Below this, the "热门免费游戏" rail is hidden rather than shipped as a one- or two-item row.
      * The device build shipped a single-item rail; a rail that thin reads as broken, and an honest
      * absence is better than a token one.
      */
@@ -265,7 +265,7 @@ object SteamStoreCatalog {
      * is the rail's real source. Undocumented like the rest, hence the same contract: empty list on
      * ANY failure, never an exception, and the Store tab stays usable without it.
      *
-     * `category1=998` is Steam's "Games" category (excludes DLC/software/soundtracks). The response
+     * `category1=998` is Steam's "游戏" category (excludes DLC/software/soundtracks). The response
      * items carry no explicit appId, but `logo` is always `…/apps/<appid>/<file>`, so the id comes
      * from there and doubles as proof of which CDN host serves that app's art.
      */

@@ -95,18 +95,18 @@ import com.winlator.star.ui.theme.AppThemeState
 /** The five storefronts, in the order the drawer lists them. [screen] is what MainActivity.launchStore takes. */
 private enum class DeckStore(val label: String, val screen: Screen, val owns: (Shortcut) -> Boolean) {
     STEAM("Steam", Screen.Steam, { s -> isSteamOriginShortcut(s) && !LinuxShortcuts.isLinuxEntry(s) }),
-    EPIC("Epic Games", Screen.Epic, { s -> s.getExtra("storeSource") == "epic" }),
+    EPIC("Epic 游戏", Screen.Epic, { s -> s.getExtra("storeSource") == "epic" }),
     GOG("GOG", Screen.Gog, { s -> isGogShortcut(s) }),
-    AMAZON("Amazon Games", Screen.Amazon, { s -> isAmazonShortcut(s) }),
+    AMAZON("Amazon 游戏", Screen.Amazon, { s -> isAmazonShortcut(s) }),
     XBOX("Xbox", Screen.Xbox, { s -> isXboxShortcut(s) }),
 }
 
 /** A store's second-level tabs. Friends is Steam-only. */
 private enum class StoreTab(val label: String, val icon: ImageVector) {
-    LIBRARY("Library", Icons.Filled.VideoLibrary),
+    LIBRARY("库", Icons.Filled.VideoLibrary),
     STORE("Store", Icons.Filled.ShoppingBag),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("Profile", Icons.Filled.AccountCircle),
+    PROFILE("配置", Icons.Filled.AccountCircle),
     DOWNLOADS("Downloads", Icons.Filled.Download),
 }
 
@@ -153,7 +153,7 @@ private fun playtimeText(context: Context, s: Shortcut): String {
     val ms = context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE).getLong("${s.name}_playtime", 0L)
     val minutes = ms / 60_000L
     return when {
-        ms <= 0L -> "Not played yet"
+        ms <= 0L -> "尚未游玩"
         minutes < 60L -> "${minutes.coerceAtLeast(1L)} min played"
         else -> "%.1f h played".format(ms / 3_600_000.0)
     }
@@ -244,7 +244,7 @@ internal fun DeckStoresPage(
         val storeButtons: @Composable () -> Unit = {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(4.dp)) {
                 DeckButton("Open ${store.label}", Icons.AutoMirrored.Filled.OpenInNew, { context.startActivity(storeIntent(context, store, tab)) })
-                DeckButton("More", Icons.Filled.MoreHoriz, { optionsOpen = true }, glyph = "X")
+                DeckButton("更多", Icons.Filled.MoreHoriz, { optionsOpen = true }, glyph = "X")
             }
         }
         if (compact) {

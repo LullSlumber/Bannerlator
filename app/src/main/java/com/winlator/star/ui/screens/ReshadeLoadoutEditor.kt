@@ -271,7 +271,7 @@ private fun ReshadeEffectEditorRow(
     }
     if (expanded) {
         if (params.isEmpty()) {
-            Text("No tunable parameters.", style = MaterialTheme.typography.bodySmall,
+            Text("无可调参数。", style = MaterialTheme.typography.bodySmall,
                 color = cs.onSurfaceVariant, modifier = Modifier.padding(start = 12.dp))
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -282,7 +282,7 @@ private fun ReshadeEffectEditorRow(
                         ReshadeManager.seedValues(p, null, tmp)
                         tmp.forEach { (k, v) -> state.setParam(name, k, v) }
                     }
-                }) { Text("Reset", color = cs.primary) }
+                }) { Text("重置", color = cs.primary) }
             }
             params.forEach { p -> ReshadeParamControl(state, name, p) }
         }

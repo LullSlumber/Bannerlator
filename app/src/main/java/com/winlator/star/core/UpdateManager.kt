@@ -428,14 +428,14 @@ object UpdateManager {
     fun downloadAndInstall(activity: Activity, info: UpdateInfo, onDone: (Boolean) -> Unit) {
         val url = info.apkUrl
         if (url == null) {
-            AppUtils.showToast(activity, "No download available for this build")
+            AppUtils.showToast(activity, "此版本没有可用的下载")
             // Fall back to the release page so the user can grab it manually.
             openReleasesPage(activity)
             onDone(false)
             return
         }
         if (!canInstallPackages(activity)) {
-            AppUtils.showToast(activity, "Allow installing apps from Bannerlator, then tap Update again")
+            AppUtils.showToast(activity, "请允许从 Bannerlator 安装应用，然后再次点击更新")
             requestInstallPermission(activity)
             onDone(false)
             return

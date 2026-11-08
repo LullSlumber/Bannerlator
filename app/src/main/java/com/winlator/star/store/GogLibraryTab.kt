@@ -75,7 +75,7 @@ fun rememberGogLibrary(onMessage: (String) -> Unit = {}): GogLibraryState {
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "Syncing library…"
+            status = "正在同步库…"
             scope.launch {
                 val result = GogLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false

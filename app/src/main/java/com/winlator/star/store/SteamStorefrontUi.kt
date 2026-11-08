@@ -469,14 +469,14 @@ fun StoreCapsule(
 // ── Price ─────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "Free to Play", or nothing when the endpoint gave us
+ * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "免费开玩", or nothing when the endpoint gave us
  * no price at all. The discount chip and the free label are the ONLY non-scheme colours here.
  */
 @Composable
 fun StorePriceRow(item: SteamStoreCatalog.StoreItem, modifier: Modifier = Modifier) {
     when {
         item.isFree -> Text(
-            text = "Free to Play",
+            text = "免费开玩",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = StoreFreeGreen,
@@ -568,7 +568,7 @@ fun StoreActionButton(
         ) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(4.dp))
-            Text("Add to Library", style = style, maxLines = 1)
+            Text("添加到库", style = style, maxLines = 1)
         }
 
         StoreAction.Working -> Button(
@@ -584,7 +584,7 @@ fun StoreActionButton(
                 color = MaterialTheme.colorScheme.onPrimary,
             )
             Spacer(Modifier.width(6.dp))
-            Text("Adding…", style = style, maxLines = 1)
+            Text("正在添加…", style = style, maxLines = 1)
         }
 
         StoreAction.Download -> Button(
@@ -610,7 +610,7 @@ fun StoreActionButton(
             contentPadding = pad,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
-            Text("Not owned", style = style, maxLines = 1)
+            Text("未拥有", style = style, maxLines = 1)
         }
     }
 }

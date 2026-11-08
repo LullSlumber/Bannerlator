@@ -27,7 +27,7 @@ public class EnvVars implements Iterable<String> {
             // with no '=', and substring(0, -1) then blows up — inside the launch path, so a single
             // typo in the environment box cost the whole launch rather than the one variable. index 0
             // is skipped for the same reason: "=value" has no name to bind to. Reachable from the
-            // editor's raw "Edit as text" mode (which stores what you type verbatim), a hand-edited
+            // editor's raw "以文本形式编辑" mode (which stores what you type verbatim), a hand-edited
             // .desktop, or an imported container config.
             if (index <= 0) continue;
             String name = part.substring(0, index);

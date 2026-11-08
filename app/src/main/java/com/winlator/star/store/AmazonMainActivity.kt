@@ -135,8 +135,8 @@ class AmazonMainActivity : ComponentActivity() {
 
 private val AMAZON_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
-    StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
+    StoreSectionTab("library", "库", Icons.Filled.VideoLibrary),
+    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -183,7 +183,7 @@ private fun AmazonStorefrontHost(
     }
 
     StoreSectionHost(
-        storeName = "Amazon Games",
+        storeName = "Amazon 游戏",
         tabs = AMAZON_TABS,
         selected = tab,
         onSelect = { tab = it },
@@ -208,11 +208,11 @@ private fun AmazonStorefrontHost(
                 onClick = { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) },
                 modifier = Modifier.steamFocusRing(),
             ) {
-                Icon(Icons.Filled.ViewList, contentDescription = "Full library screen", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ViewList, contentDescription = "完整库界面", tint = MaterialTheme.colorScheme.primary)
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -222,7 +222,7 @@ private fun AmazonStorefrontHost(
             DownloadsButton()
             StoreRailOverflow(
                 items = listOf<Triple<String, ImageVector, () -> Unit>>(
-                    Triple("Full library screen", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) }),
+                    Triple("完整库界面", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) }),
                 ),
                 onSignOut = onSignOut,
             )
@@ -275,14 +275,14 @@ private fun AmazonLoginScreen(onLoginClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                "Amazon Games",
+                "Amazon 游戏",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "Sign in to claim Prime Gaming titles and download your Amazon Games library.",
+                "登录以领取Prime Gaming游戏并下载您的Amazon Games库。",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -292,7 +292,7 @@ private fun AmazonLoginScreen(onLoginClick: () -> Unit) {
                 onClick = onLoginClick,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(48.dp).steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("Login with Amazon") }
+            ) { Text("使用Amazon登录") }
         }
     }
 }

@@ -18,7 +18,7 @@ import java.io.File
  * Single source of truth for turning a Windows executable on disk into a permanent
  * Games/Shortcuts entry (a `.desktop` in the container's desktop dir). Shared by the
  * Games-tab "+" importer ([ShortcutsViewModel.importExe]) and the File Manager's
- * "Add to shortcuts" action so the two never drift.
+ * "添加到快捷方式" action so the two never drift.
  */
 internal object ExeShortcutImporter {
     private const val TAG = "ExeShortcutImporter"

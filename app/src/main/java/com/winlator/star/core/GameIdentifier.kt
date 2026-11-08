@@ -118,7 +118,7 @@ object GameIdentifier {
         var dir = exe.absoluteFile.parentFile
         repeat(3) { if (dir != null && dir!!.name.lowercase() in BUILD_DIRS) dir = dir!!.parentFile }
         // An Unreal game: <Game>/<Project>/Binaries/Win64, with Engine/ beside the project folder.
-        if (isUnrealShipping(exe) && File(dir?.parentFile, "Engine").isDirectory) dir = dir?.parentFile
+        if (isUnrealShipping(exe) && File(dir?.parentFile, "引擎").isDirectory) dir = dir?.parentFile
         return dir
     }
 
@@ -344,7 +344,7 @@ object GameIdentifier {
         for (p in arrayOf("play", "launch", "start", "run")) {
             if (!lower.startsWith(p)) continue
             val rest = base.substring(p.length)
-            if (rest.isEmpty()) return true                         // exactly "Play"
+            if (rest.isEmpty()) return true                         // exactly "游玩"
             val c = rest[0]
             if (!c.isLetterOrDigit() || c.isUpperCase()) return true // "Play - GTA IV" / camelCase "PlayGTAV"
             // lowercase continuation ("Player…") → part of a longer word, not a launcher

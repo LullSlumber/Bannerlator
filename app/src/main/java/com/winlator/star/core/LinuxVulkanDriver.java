@@ -70,10 +70,10 @@ public final class LinuxVulkanDriver {
         LinuxVulkanDriverManager m = new LinuxVulkanDriverManager(context);
         String icd = m.getIcdPath(value);
         if (icd == null) {
-            Log.w(TAG, "imported Linux driver \"" + value + "\" is gone; using the runtime's own driver");
+            Log.w(TAG, "已导入的 Linux 驱动 \"" + value + "\" 已不存在；使用runtime自带的驱动程序");
             return null;
         }
-        Log.i(TAG, "Linux session draws with imported driver " + value + " (" + icd + ")");
+        Log.i(TAG, "Linux 会话使用已导入的驱动程序绘制 " + value + " (" + icd + ")");
         return icd;
     }
 }

@@ -109,7 +109,7 @@ fun AppDrawerContent(
 
         DrawerAccountHeader(account = account, onMyAccount = onMyAccount)
 
-        DrawerSectionHeader("Library")
+        DrawerSectionHeader("库")
         DrawerItem(Screen.Games,         currentRoute, onNavigate)
         DrawerItem(Screen.Containers,    currentRoute, onNavigate)
         DrawerItem(Screen.FileManager,   currentRoute, onNavigate)
@@ -137,7 +137,7 @@ fun AppDrawerContent(
         )
 
         DrawerIconItem(
-            label = "About",
+            label = "关于",
             icon = Icons.Filled.Info,
             onClick = onAbout,
         )
@@ -177,7 +177,7 @@ private fun DrawerAccountHeader(account: AccountManager.Account?, onMyAccount: (
                     maxLines = 1,
                 )
                 Text(
-                    text = "My account",
+                    text = "我的账户",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                 )

@@ -64,7 +64,7 @@ internal fun DeckComponentsPage() {
         tabs = tabs,
         selected = tab,
         onSelect = { tab = it },
-        tabLabel = "View",
+        tabLabel = "查看",
     ) {
         ContentsHubScreen(vm = vm, hostTab = tab)
     }
@@ -104,12 +104,12 @@ internal fun DeckToolsPage(
     val tabs = listOf(
         DeckTabItem("Files", Icons.Filled.FolderOpen),
         DeckTabItem("Saves", Icons.Filled.Save),
-        DeckTabItem("Logs", Icons.Filled.Description),
-        DeckTabItem("More", Icons.Filled.GridView),
+        DeckTabItem("日志", Icons.Filled.Description),
+        DeckTabItem("更多", Icons.Filled.GridView),
     )
     DeckHostedPage(
         icon = Icons.Filled.Build,
-        title = "Tools",
+        title = "工具",
         description = "Files, saves, logs and archive unpacking — everything that used to live in separate drawer entries.",
         tabs = tabs,
         selected = tab,

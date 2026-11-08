@@ -28,10 +28,10 @@ fun formatDownloadSize(bytes: Long): String = when {
 fun formatDownloadSpeed(bytesPerSec: Long): String =
     if (bytesPerSec <= 0L) "" else "${formatDownloadSize(bytesPerSec)}/s"
 
-/** Human ETA, e.g. "<1 min left", "~8 min left", "~1 h 20 m left". Negative → "" (unknown). */
+/** Human ETA, e.g. "<1分钟剩余", "~8 min left", "~1 h 20 m left". Negative → "" (unknown). */
 fun formatEta(seconds: Long): String = when {
     seconds < 0L    -> ""
-    seconds < 60L   -> "<1 min left"
+    seconds < 60L   -> "<1分钟剩余"
     seconds < 3600L -> "~${seconds / 60} min left"
     else            -> {
         val h = seconds / 3600L; val m = (seconds % 3600L) / 60L
@@ -104,7 +104,7 @@ data class DownloadEntry(
     val error: String? = null,
     /**
      * True when an INSTALLED game has a newer version available from its store. Store-agnostic
-     * so the Manager card can render one amber "Update available" marker for any store. Derived
+     * so the Manager card can render one amber "有可用更新" marker for any store. Derived
      * per store at seed/produce time (Amazon: cached versionId carries an "_UPDATE_AVAILABLE"
      * suffix; Steam leaves it false for now — no Steam update detection exists yet). Transient:
      * NOT persisted to the durable library (the library writer serializes only name/store/

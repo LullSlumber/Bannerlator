@@ -282,7 +282,7 @@ public final class SteamRepository {
                 }
                 if (realSteamSuspended) return;
                 // Connect-only (no saved sign-in): the channel is up for the login screens; the pill
-                // stays "Signed out" like a signed-out JavaSteam session would show nothing.
+                // stays "已登出" like a signed-out JavaSteam session would show nothing.
                 if (!isLoggedInPrefs()) setStatus(SteamStatus.SIGNED_OUT, "rust engine connected — no saved sign-in");
                 else setStatus(SteamStatus.CONNECTING, "rust engine state " + state);
             } else {
@@ -1043,7 +1043,7 @@ public final class SteamRepository {
             // Without this, if no server list is cached, getNextServerCandidate() returns null
             // and connect() immediately fires DisconnectedCallback without making any connection.
             b.withDirectoryFetch(true);
-            // "Steam connection region" (Settings → Steam): hands JavaSteam the chosen datacenter's
+            // "Steam连接区域" (Settings → Steam): hands JavaSteam the chosen datacenter's
             // TCP CMs on its first connect; returns nothing (→ the directory fetch above, exactly as
             // before) in Auto mode or when the directory lists no TCP CM for that datacenter.
             b.withServerListProvider(SteamRegion.INSTANCE.javaSteamServerListProvider(appContext));
@@ -1148,7 +1148,7 @@ public final class SteamRepository {
                 hasInternet = testUrl("http://connectivitycheck.gstatic.com/generate_204", 6000);
             }
             if (!hasInternet) {
-                Log.w(TAG, "No internet connectivity");
+                Log.w(TAG, "无网络连接");
                 emit("NoInternet");
                 return;
             }
@@ -1158,7 +1158,7 @@ public final class SteamRepository {
                 Log.i(TAG, "Steam API reachable");
                 emit("Reachable");
             } else {
-                Log.w(TAG, "Steam blocked on this network");
+                Log.w(TAG, "Steam 在此网络中被屏蔽");
                 emit("SteamBlocked");
             }
         }, "SteamReachCheck").start();
@@ -1322,7 +1322,7 @@ public final class SteamRepository {
         slog(prev + " -> " + s + "  (" + reason + ")");
         emit("SteamStatus:" + s.name());
         // Mirror the honest connection state into the foreground-service notification so the FGS is
-        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "Connecting…" string). Static
+        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "正在连接…" string). Static
         // no-op when the service isn't running; guarded so any class-load/order issue on this path
         // can never break the pill. (A live download temporarily overrides this with a "Downloading
         // … N%" line from SteamDepotDownloader, which reverts here via refreshFgsStatus() on finish.)
@@ -1333,11 +1333,11 @@ public final class SteamRepository {
     /** Notification text for each connection state — the FGS's honest one-liner. */
     private static String fgsTextFor(SteamStatus s) {
         switch (s) {
-            case ONLINE:              return "Steam: Online";
+            case ONLINE:              return "Steam：在线";
             case CONNECTING:          return "Connecting to Steam…";
-            case SIGNED_IN_ELSEWHERE: return "Signed in elsewhere";
-            case SIGNED_OUT:          return "Signed out";
-            case PAUSED_FOR_GAME:     return "Paused — game session active";
+            case SIGNED_IN_ELSEWHERE: return "已在别处登录";
+            case SIGNED_OUT:          return "已登出";
+            case PAUSED_FOR_GAME:     return "已暂停 — 游戏会话活动";
             case OFFLINE:
             default:                  return "Offline";
         }
@@ -1403,7 +1403,7 @@ public final class SteamRepository {
         rustSignedInElsewhere = false;
         rustReconnectAttempts = 0;
         if (!isLoggedInPrefs()) return;
-        setStatus(SteamStatus.CONNECTING, "user tapped reconnect");
+        setStatus(SteamStatus.CONNECTING, "用户点击了重新连接");
         if (rustEngine) { rustConnect("reconnectNow"); return; }
         if (!connected) {
             connect();                                              // onConnected auto-logs-in
@@ -1616,7 +1616,7 @@ public final class SteamRepository {
             if (pumpHandler != null) {
                 pumpHandler.postDelayed(() -> {
                     if (pumping.get() && !connected && !realSteamSuspended) {
-                        Log.i(TAG, "Auto-reconnect: calling connect()");
+                        Log.i(TAG, "自动重新连接: 正在调用 connect()");
                         steamClient.connect();
                     }
                 }, delayMs);
@@ -1653,7 +1653,7 @@ public final class SteamRepository {
         loggedIn = true;
         logoffRecoveryAttempts = 0;   // fresh session established — reset involuntary-logoff recovery budget
         lastSessionStatus = "LoggedIn";
-        setStatus(SteamStatus.ONLINE, "logged in");
+        setStatus(SteamStatus.ONLINE, "已登录");
         emit("LoggedIn:" + sid64);
         Log.i(TAG, SteamLogRedactor.redact("Logged in as " + pGet("username", "")));
     }
@@ -1672,9 +1672,9 @@ public final class SteamRepository {
         if (r == EResult.LogonSessionReplaced && !loggingOut
                 && (System.currentTimeMillis() - lastSelfLogonAt) < SELF_REPLACE_WINDOW_MS
                 && isLoggedInPrefs()) {
-            Log.i(TAG, "LogonSessionReplaced within self-logon window -> ignoring (our newer session is live)");
+            Log.i(TAG, "在自身登录窗口内 LogonSessionReplaced -> 忽略（我们的新会话处于活动状态）");
             loggingOn.set(false);
-            setStatus(SteamStatus.ONLINE, "self-replace ignored — newer session live");
+            setStatus(SteamStatus.ONLINE, "自身替换已忽略 — 新会话活动");
             return;   // leave loggedIn as-is; the newer session's LoggedOn owns it
         }
 
@@ -1693,10 +1693,10 @@ public final class SteamRepository {
         // (logged in elsewhere / session replaced by a DIFFERENT client) -> surface it, do NOT recover/loop.
         // We intentionally do NOT auto-reconnect here: a genuine different-client replacement means the
         // account is live elsewhere (e.g. desktop Steam), so relogging would start a logon tug-of-war.
-        // The pill shows "Signed in elsewhere" and the user taps to reconnect once they've signed out there.
+        // The pill shows "已在别处登录" and the user taps to reconnect once they've signed out there.
         if (loggingOut || r == EResult.LoggedInElsewhere || r == EResult.LogonSessionReplaced) {
             setStatus(loggingOut ? SteamStatus.SIGNED_OUT : SteamStatus.SIGNED_IN_ELSEWHERE,
-                    loggingOut ? "user sign-out" : "replaced by another client: " + r.name());
+                    loggingOut ? "用户登出" : "replaced by another client: " + r.name());
             emit("LoggedOut");
             return;
         }
@@ -1867,18 +1867,18 @@ public final class SteamRepository {
     private static String resolveGenreId(String id) {
         switch (id) {
             case "1":  return "Action";
-            case "2":  return "Strategy";
-            case "3":  return "RPG";
-            case "4":  return "Casual";
-            case "5":  return "Racing";
-            case "6":  return "Sports";
-            case "7":  return "Simulation";
-            case "8":  return "Adventure";
-            case "9":  return "Racing";
-            case "18": return "Massively Multiplayer";
-            case "23": return "Indie";
-            case "25": return "Shooter";
-            case "37": return "Free to Play";
+            case "2":  return "策略";
+            case "3":  return "角色扮演";
+            case "4":  return "休闲";
+            case "5":  return "竞速";
+            case "6":  return "体育";
+            case "7":  return "模拟";
+            case "8":  return "冒险";
+            case "9":  return "竞速";
+            case "18": return "大型多人在线";
+            case "23": return "独立";
+            case "25": return "射击";
+            case "37": return "免费开玩";
             default:   return "";  // unknown IDs are hidden rather than shown as numbers
         }
     }
@@ -2484,18 +2484,18 @@ public final class SteamRepository {
         // — is exactly what triggers LogonSessionReplaced and evicts us. Skip both. Only supersede
         // a STALLED logon (posted but no callback within LOGON_STALL_MS) so we can never lock out.
         if (loggedIn) {
-            Log.i(TAG, "loginWithToken skipped — already logged in");
+            Log.i(TAG, "loginWithToken 已跳过 — 已登录");
             return;
         }
         long now = System.currentTimeMillis();
         if (loggingOn.get() && (now - logonStartedAt) < LOGON_STALL_MS) {
-            Log.i(TAG, "loginWithToken skipped — logon already in flight");
+            Log.i(TAG, "loginWithToken 已跳过 — 登录正在进行中");
             return;
         }
         loggingOn.set(true);
         logonStartedAt = now;
         loggingOut = false;   // a fresh logon means we are no longer in a sign-out
-        setStatus(SteamStatus.CONNECTING, "logon posted");
+        setStatus(SteamStatus.CONNECTING, "登录请求已发出");
         Runnable work = () -> {
             LogOnDetails details = new LogOnDetails();
             details.setUsername(username);
@@ -2841,7 +2841,7 @@ public final class SteamRepository {
             try { SteamAccountStore.INSTANCE.registerSecrets(appContext); } catch (Throwable ignored) {}
         }
         setStatus(SteamStatus.SIGNED_OUT, "user logout");
-        Log.i(TAG, "Logged out");
+        Log.i(TAG, "已登出");
         emit("LoggedOut");
         if (rustEngine && !realSteamSuspended) {
             // JavaSteam keeps its CM channel up after logOff so the sign-in screens (which wait for

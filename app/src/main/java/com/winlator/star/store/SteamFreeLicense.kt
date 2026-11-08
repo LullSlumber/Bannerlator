@@ -8,7 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * "Add to Library" for free-to-play titles — the app-side half of the engine's
+ * "添加到库" for free-to-play titles — the app-side half of the engine's
  * `CMsgClientRequestFreeLicense` / `…Response` pair (**EMsg 5572 / 5573**).
  *
  * The engine takes a BATCH of appIds and answers with a status envelope; [request] is the
@@ -70,7 +70,7 @@ object SteamFreeLicense {
         val owned = try { repo.getCachedGameRows().any { it.appId == appId } } catch (_: Throwable) { false }
         if (owned) return@withContext Result.AlreadyOwned(appId)
 
-        val notConnected = "Not connected to Steam. Reconnect from the status pill and try again."
+        val notConnected = "未连接到Steam。请从状态按钮重新连接并重试。"
 
         val session = try { BlSteamEngine.session() } catch (_: Throwable) { null }
         if (session == null) {
@@ -164,7 +164,7 @@ object SteamFreeLicense {
                 "Steam rejected the request for this app.",
             )
 
-            else -> Result.Failed(appId, "Couldn't add this to your library. Try again.")
+            else -> Result.Failed(appId, "无法将此添加到您的库。请重试。")
         }
     }
 

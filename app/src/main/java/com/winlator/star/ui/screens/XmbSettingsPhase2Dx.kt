@@ -103,7 +103,7 @@ private fun p2WineD3DMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
     return XmbMenu("WineD3D ${ctx.getString(R.string.configuration)}", Icons.Filled.Tune) {
         val cur = sel()
         val rows = mutableListOf<XmbRow>()
-        rows += XmbRow.Choice("csmt", "CSMT", Icons.Filled.Speed, onOff, cur.csmt) { v -> write(sel().copy(csmt = v)) }
+        rows += XmbRow.Choice("csmt", "CSMT（命令流多线程）", Icons.Filled.Speed, onOff, cur.csmt) { v -> write(sel().copy(csmt = v)) }
         val names = withCur(gpuNames, cur.gpuName)
         if (names.isNotEmpty()) {
             rows += XmbRow.Choice("gpuName", ctx.getString(R.string.gpu_name), Icons.Filled.DeveloperBoard, p2Unique(names), cur.gpuName) { v ->
@@ -111,14 +111,14 @@ private fun p2WineD3DMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
             }
         } else rows += XmbRow.Info("gpuLoading", ctx.getString(R.string.gpu_name), Icons.Filled.DeveloperBoard, "Loading…")
         if (ddraEntries.isNotEmpty()) {
-            rows += XmbRow.Choice("ddraw", "DDraw Wrapper", Icons.Filled.Layers, ddraEntries, cur.ddra) { v -> write(sel().copy(ddra = v)) }
+            rows += XmbRow.Choice("ddraw", "DDraw Wrapper图形加速层", Icons.Filled.Layers, ddraEntries, cur.ddra) { v -> write(sel().copy(ddra = v)) }
         }
         if (videoMemEntries.isNotEmpty()) {
             rows += XmbRow.Choice("videoMem", ctx.getString(R.string.graphics_driver_max_device_memory), Icons.Filled.Memory,
                 videoMemEntries, cur.videoMem) { v -> write(sel().copy(videoMem = v)) }
         }
-        rows += XmbRow.Choice("ssm", "Strict Shader Math", Icons.Filled.Tune, onOff, cur.ssm) { v -> write(sel().copy(ssm = v)) }
-        rows += XmbRow.Choice("orm", "Offscreen Rendering Mode", Icons.Filled.Image, withCur(ormOptions, cur.orm), cur.orm) { v -> write(sel().copy(orm = v)) }
+        rows += XmbRow.Choice("ssm", "离屏渲染模式（Backbuffer可缓解黑屏）", Icons.Filled.Tune, onOff, cur.ssm) { v -> write(sel().copy(ssm = v)) }
+        rows += XmbRow.Choice("orm", "离屏渲染模式（Backbuffer可缓解黑屏）", Icons.Filled.Image, withCur(ormOptions, cur.orm), cur.orm) { v -> write(sel().copy(orm = v)) }
         rows += XmbRow.Choice("renderer", "Renderer", Icons.Filled.Layers, withCur(rendOptions, cur.renderer), cur.renderer) { v -> write(sel().copy(renderer = v)) }
         rows
     }
@@ -232,7 +232,7 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
                     val profile = (cm.getProfiles(ContentProfile.ContentType.CONTENT_TYPE_VEGAS) ?: emptyList<ContentProfile>())
                         .firstOrNull { p -> val n = p.verName ?: ""; n == "vegas-$ver" || n.removePrefix("vegas-") == ver || n == ver }
                     if (profile != null) { cm.removeContent(profile); cm.syncContents(); "VEGAS version deleted" }
-                    else "No installed VEGAS version to delete"
+                    else "没有已安装的VEGAS版本可删除"
                 }.getOrElse { "ERROR: Failed to delete — ${it.message}" }
             }
             busy = false
@@ -250,7 +250,7 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
     return XmbMenu(title, Icons.Filled.Tune) body@{
         val rows = mutableListOf<XmbRow>()
         if (!loaded) {
-            rows += XmbRow.Info("loading", "Loading versions…", Icons.Filled.Info)
+            rows += XmbRow.Info("loading", "正在加载版本…", Icons.Filled.Info)
             return@body rows
         }
         val cur = sel()
@@ -264,17 +264,17 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
 
         rows += XmbRow.Info("logNote", ctx.getString(R.string.vegas_config_loglevel_envvar_note), Icons.Filled.Warning)
         if (isVegas) {
-            rows += XmbRow.Header("hVegas", "VEGAS version")
+            rows += XmbRow.Header("hVegas", "VEGAS版本")
             if (filtered.isEmpty()) {
-                rows += XmbRow.Info("noVegas", "No VEGAS build installed — download one from the container's DX wrapper settings", Icons.Filled.Warning)
+                rows += XmbRow.Info("noVegas", "未安装VEGAS版本 — 从容器的DX wrapper设置中下载一个", Icons.Filled.Warning)
             } else {
-                rows += XmbRow.Choice("vegasVersion", "VEGAS version", Icons.Filled.Layers, dxvkOpts, cur.dxvk, disabledOptions = dxvkDisabled) { v ->
+                rows += XmbRow.Choice("vegasVersion", "VEGAS版本", Icons.Filled.Layers, dxvkOpts, cur.dxvk, disabledOptions = dxvkDisabled) { v ->
                     write(sel().copy(dxvk = v))
                 }
-                rows += XmbRow.Action("vegasDelete", "Delete this VEGAS build", Icons.Filled.Delete, danger = true,
-                    subtitle = cur.dxvk, disabledReason = if (busy) "Working…" else null) {
+                rows += XmbRow.Action("vegasDelete", "删除此VEGAS版本", Icons.Filled.Delete, danger = true,
+                    subtitle = cur.dxvk, disabledReason = if (busy) "正在处理…" else null) {
                     val ver = sel().dxvk
-                    xmb.confirm(XmbConfirm("Delete VEGAS build", "Remove the installed VEGAS $ver from this device?", "Delete", danger = true)) {
+                    xmb.confirm(XmbConfirm("删除VEGAS版本", "Remove the installed VEGAS $ver from this device?", "删除", danger = true)) {
                         deleteVegasBuild(ver)
                     }
                 }
@@ -282,24 +282,24 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
         }
         rows += XmbRow.Choice("vkd3d", ctx.getString(R.string.vkd3d_version), Icons.Filled.Layers,
             if (cur.vkd3d in vkd3dList) vkd3dList else vkd3dList + cur.vkd3d, cur.vkd3d) { v -> write(sel().copy(vkd3d = v)) }
-        rows += XmbRow.Link("vkd3dDownload", "Download VKD3D versions", Icons.Filled.CloudDownload) {
-            p2ContentDownloadMenu(xmb, "VKD3D downloads", ContentProfile.ContentType.CONTENT_TYPE_VKD3D) { load() }
+        rows += XmbRow.Link("vkd3dDownload", "下载 VEGAS 构建", Icons.Filled.CloudDownload) {
+            p2ContentDownloadMenu(xmb, "VKD3D下载", ContentProfile.ContentType.CONTENT_TYPE_VKD3D) { load() }
         }
         if (!isVegas) {
             if (dxvkOpts.isNotEmpty()) {
                 rows += XmbRow.Choice("dxvk", ctx.getString(R.string.dxvk_version), Icons.Filled.Layers, dxvkOpts, cur.dxvk,
-                    subtitle = if (dxvkDisabled.isNotEmpty()) "DXVK 1.x can't back VKD3D — pick a 2.x build" else null,
+                    subtitle = if (dxvkDisabled.isNotEmpty()) "DXVK 1.x无法支持VKD3D — 请选择2.x版本" else null,
                     disabledOptions = dxvkDisabled) { v -> write(sel().copy(dxvk = v)) }
             }
-            rows += XmbRow.Link("dxvkDownload", "Download DXVK versions", Icons.Filled.CloudDownload) {
-                p2ContentDownloadMenu(xmb, "DXVK downloads", ContentProfile.ContentType.CONTENT_TYPE_DXVK) { load() }
+            rows += XmbRow.Link("dxvkDownload", "下载DXVK版本", Icons.Filled.CloudDownload) {
+                p2ContentDownloadMenu(xmb, "DXVK下载", ContentProfile.ContentType.CONTENT_TYPE_DXVK) { load() }
             }
         }
         if (type != DXVKConfigDialog.DXVK_TYPE_NONE) {
-            rows += XmbRow.Toggle("async", "Async", Icons.Filled.Speed, cur.async) { on -> write(sel().copy(async = on)) }
+            rows += XmbRow.Toggle("async", "异步", Icons.Filled.Speed, cur.async) { on -> write(sel().copy(async = on)) }
         }
         if (type == DXVKConfigDialog.DXVK_TYPE_GPLASYNC) {
-            rows += XmbRow.Toggle("asyncCache", "Async Cache", Icons.Filled.Speed, cur.asyncCache) { on -> write(sel().copy(asyncCache = on)) }
+            rows += XmbRow.Toggle("asyncCache", "异步缓存", Icons.Filled.Speed, cur.asyncCache) { on -> write(sel().copy(asyncCache = on)) }
         }
         if (framerates.isNotEmpty()) {
             rows += XmbRow.Choice("framerate", ctx.getString(R.string.frame_rate), Icons.Filled.Speed, framerates, cur.framerate) { v ->
@@ -307,8 +307,8 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
             }
         }
 
-        rows += XmbRow.Header("hTexture", "Texture filtering")
-        val texNote = "DirectX 9-11 games only. Applies the next time the game starts."
+        rows += XmbRow.Header("hTexture", "纹理过滤")
+        val texNote = "仅限DirectX 9-11游戏。下次游戏启动时应用。"
         rows += XmbRow.Choice("aniso", "Anisotropic filtering", Icons.Filled.Image, P2_ANISO_LABELS,
             P2_ANISO_LABELS.getOrElse(cur.aniso) { P2_ANISO_LABELS[0] }, subtitle = texNote) { v ->
             write(sel().copy(aniso = P2_ANISO_LABELS.indexOf(v).coerceAtLeast(0)))
@@ -318,15 +318,15 @@ private fun p2DxvkMenu(xmb: XmbScope, s: Shortcut, isVegas: Boolean): XmbMenu {
             write(sel().copy(lod = P2_LOD_LABELS.indexOf(v).coerceAtLeast(0)))
         }
 
-        rows += XmbRow.Header("hApi", "API feature level")
+        rows += XmbRow.Header("hApi", "API功能级别")
         if (levels.isNotEmpty()) {
-            rows += XmbRow.Choice("level", "VKD3D feature level", Icons.Filled.Layers, levels, cur.level) { v -> write(sel().copy(level = v)) }
+            rows += XmbRow.Choice("level", "VKD3D功能级别", Icons.Filled.Layers, levels, cur.level) { v -> write(sel().copy(level = v)) }
         }
         if (ddraEntries.isNotEmpty()) {
-            rows += XmbRow.Choice("ddraw", "DDraw Wrapper", Icons.Filled.Layers, ddraEntries, cur.ddra) { v -> write(sel().copy(ddra = v)) }
+            rows += XmbRow.Choice("ddraw", "DDraw Wrapper图形加速层", Icons.Filled.Layers, ddraEntries, cur.ddra) { v -> write(sel().copy(ddra = v)) }
         }
         if (StringUtils.parseIdentifier(cur.ddra) == "d7vk") {
-            rows += XmbRow.Choice("d7vk", "D7VK Version", Icons.Filled.Layers,
+            rows += XmbRow.Choice("d7vk", "D7VK 版本", Icons.Filled.Layers,
                 if (cur.d7vk in d7vkList) d7vkList else d7vkList + cur.d7vk, cur.d7vk) { v -> write(sel().copy(d7vk = v)) }
             rows += XmbRow.Link("d7vkDownload", "Download D7VK versions", Icons.Filled.CloudDownload) {
                 p2ContentDownloadMenu(xmb, "D7VK downloads", ContentProfile.ContentType.CONTENT_TYPE_D7VK) { load() }
@@ -502,13 +502,13 @@ private class P2Vegas(
         val cfgRows = if (live != null && !missing) currentRows() else emptyList()
 
         // Performance tier (FAQ #11) → vegas.forceTier in the live file.
-        rows += XmbRow.Header("hTier", "Performance tier")
+        rows += XmbRow.Header("hTier", "性能等级")
         val applied = cfgRows.firstOrNull { it.key == "vegas.forceTier" }?.value?.toIntOrNull()
         val autoLabel = "Auto" + (detectedTier?.let { " · T$it" } ?: "")
         val tierLabels = listOf(autoLabel) + VegasTierPresets.TIERS.map { it.label }
         val tierSel = if (applied == null || applied == 0) autoLabel else VegasTierPresets.TIERS.firstOrNull { it.number == applied }?.label ?: autoLabel
         val model = gpuModel
-        rows += XmbRow.Choice("tier", "Performance tier", Icons.Filled.Speed, tierLabels, tierSel,
+        rows += XmbRow.Choice("tier", "性能等级", Icons.Filled.Speed, tierLabels, tierSel,
             subtitle = when {
                 model == null -> "GPU model unreadable — tier is manual"
                 detectedTier != null -> "$model · auto Tier $detectedTier"
@@ -524,16 +524,16 @@ private class P2Vegas(
                 Icons.Filled.Info))
         }
         if (model != null && !model.contains("adreno", ignoreCase = true)) {
-            rows += XmbRow.Info("mali", "Mali: pair the 'Wrapper + compat + bcn' driver with the relaxed DXVK list in the driver settings.", Icons.Filled.Warning)
+            rows += XmbRow.Info("mali", "Mali：将'Wrapper + compat + bcn'驱动程序与驱动程序设置中的宽松DXVK列表配对。", Icons.Filled.Warning)
         }
 
         // Config source: defaults / a stock config / a custom file.
-        rows += XmbRow.Header("hConfig", "Config file")
+        rows += XmbRow.Header("hConfig", "配置文件")
         val stored = pointer()
         val storedStock = stockOf(stored)
         val customs = customBase + (if (stored.isNotEmpty() && storedStock == null && stored !in customBase) listOf(stored) else emptyList())
         val kinds = ArrayList<Pair<String, String?>>() // label, pointer target (null = stock resolved at pick)
-        kinds += "Use defaults (no config file)" to ""
+        kinds += "使用默认（无配置文件）" to ""
         stock.forEach { kinds += "Stock · ${it.displayLabel()}" to null }
         customs.forEach { kinds += it to it }
         val labels = p2Unique(kinds.map { it.first })
@@ -542,8 +542,8 @@ private class P2Vegas(
             storedStock != null -> 1 + stock.indexOf(storedStock)
             else -> 1 + stock.size + customs.indexOf(stored).coerceAtLeast(0)
         }.coerceIn(0, labels.size - 1)
-        rows += XmbRow.Choice("configSource", "Config source", Icons.Filled.Description, labels, labels[selIdx],
-            subtitle = live?.absolutePath ?: "VEGAS built-in defaults") { v ->
+        rows += XmbRow.Choice("configSource", "配置源", Icons.Filled.Description, labels, labels[selIdx],
+            subtitle = live?.absolutePath ?: "VEGAS内置默认") { v ->
             val i = labels.indexOf(v)
             if (i >= 0) {
                 val target = when {
@@ -555,10 +555,10 @@ private class P2Vegas(
                 reloadText()
             }
         }
-        rows += XmbRow.Link("configBrowse", "Browse for a config file", Icons.Filled.FolderOpen, subtitle = "Any .conf — the built-in DXVK_CONFIG_FILE") {
+        rows += XmbRow.Link("configBrowse", "浏览配置文件", Icons.Filled.FolderOpen, subtitle = "任何.conf — 内置的DXVK_CONFIG_FILE") {
             val ext = Environment.getExternalStorageDirectory()
             val roots = listOf("Download" to File(ext, "Download"), "Internal storage" to ext).filter { it.second.isDirectory }
-            xmbFileBrowserMenu(xmb, "Select config file", ext, roots, { true }) { f ->
+            xmbFileBrowserMenu(xmb, "选择配置文件", ext, roots, { true }) { f ->
                 // The browser has already closed its columns: we're back on the DX config column.
                 if (f.absolutePath !in customBase) customBase = customBase + f.absolutePath
                 setPointer(f.absolutePath)
@@ -568,16 +568,16 @@ private class P2Vegas(
         if (live != null) {
             if (missing) {
                 rows += XmbRow.Info("missing", "Not found: ${live.absolutePath}", Icons.Filled.Warning)
-                rows += XmbRow.Action("useDefaults", "Use defaults instead", Icons.Filled.RestartAlt) { setPointer(""); reloadText() }
+                rows += XmbRow.Action("useDefaults", "改用默认值", Icons.Filled.RestartAlt) { setPointer(""); reloadText() }
             } else {
-                rows += XmbRow.Link("configKeys", "Config keys", Icons.Filled.Tune, value = "${cfgRows.size} keys",
+                rows += XmbRow.Link("configKeys", "配置键", Icons.Filled.Tune, value = "${cfgRows.size} keys",
                     subtitle = if (storedStock != null && !sidecarFor(storedStock).isFile) "Read-only until the first edit — changes create your own copy"
-                               else "Toggle, change, add or remove keys") { keysMenu() }
+                               else "切换、更改、添加或移除键") { keysMenu() }
             }
         }
     }
 
-    fun keysMenu(): XmbMenu = XmbMenu("Config keys", Icons.Filled.Tune) {
+    fun keysMenu(): XmbMenu = XmbMenu("配置键", Icons.Filled.Tune) {
         val rows = mutableListOf<XmbRow>()
         val live = liveFile()
         if (live == null || missing) {
@@ -587,11 +587,11 @@ private class P2Vegas(
             val cfgRows = currentRows()
             if (st != null) {
                 rows += XmbRow.Info("stockNote",
-                    if (sidecarFor(st).isFile) "Your edits live in your own copy — the stock version stays pristine."
-                    else "Read-only until the first edit — changes create your own copy.", Icons.Filled.Info)
+                    if (sidecarFor(st).isFile) "您的编辑保存在您自己的副本中 — 默认版本保持原始状态。"
+                    else "在首次编辑前为只读 — 更改会创建您自己的副本。", Icons.Filled.Info)
             }
             val pk = pendingKey
-            rows += XmbRow.Text("addKey", "Add key", Icons.Filled.Add, pk ?: "",
+            rows += XmbRow.Text("addKey", "添加键", Icons.Filled.Add, pk ?: "",
                 subtitle = if (pk != null) "Now set its value below" else "Key name first, then its value",
                 placeholder = "e.g. dxvk.maxFrameLatency") { k ->
                 val key = k.trim()
@@ -651,12 +651,12 @@ private class P2Vegas(
                     rows += XmbRow.Action("resetStock", "Reset to stock (${base.value})", Icons.Filled.RestartAlt,
                         disabledReason = gatedReason) { applyValue(key, base.value) }
                 }
-                rows += XmbRow.Text("custom", "Custom value", Icons.Filled.Edit, r.value, disabledReason = gatedReason) { v ->
+                rows += XmbRow.Text("custom", "自定义值", Icons.Filled.Edit, r.value, disabledReason = gatedReason) { v ->
                     if (v.isNotBlank()) applyValue(key, v.trim())
                 }
             }
             rows += XmbRow.Action("delete", "Remove key", Icons.Filled.Delete, danger = true, disabledReason = gatedReason) {
-                xmb.confirm(XmbConfirm("Remove key", "Remove '$key'? Add it back with Add key.", "Remove", danger = true)) {
+                xmb.confirm(XmbConfirm("Remove key", "Remove '$key'? Add it back with Add key.", "移除", danger = true)) {
                     applyDelete(key)
                     xmb.pop()
                 }

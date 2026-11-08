@@ -95,7 +95,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 private enum class GameSource { STEAM, EPIC, GOG, AMAZON, XBOX, CUSTOM }
 
 /**
- * The SteamLite package status shown under the SteamLite chip + the footer's "Update & Launch" gate.
+ * The SteamLite package status shown under the SteamLite chip + the footer's "更新并启动" gate.
  * Present only for Steam games with the package already installed (a missing package is fetched by
  * the launch itself). [check] null = the bounded catalog check is still running; [note] = the
  * one-line failure notice after a download that didn't make it.
@@ -207,7 +207,7 @@ private const val HELP_GOLDBERG_MODE =
  * both source-adaptive AND orientation-adaptive:
  *
  *  • **Source** — Steam gets all three methods (SteamLite / Goldberg / Raw), the Goldberg-mode selector,
- *    the SteamLite Controller-passthrough toggle, and a "Full details & achievements" link into
+ *    the SteamLite Controller-passthrough toggle, and a "完整详情和成就" link into
  *    [SteamGameDetailActivity]. Epic / GOG / Custom gray those out and offer only Raw.
  *  • **Orientation** — PORTRAIT is a compact vertical box (steamlite-launch-mockup.html); LANDSCAPE is a
  *    wide "cover-art hero" card with the art on the left and all controls on the right
@@ -220,8 +220,8 @@ private const val HELP_GOLDBERG_MODE =
  * its saved choice. `steamVacLaunch` ("" = follow the app-info VAC detection, "1"/"0" = user override)
  * feeds the RealSteam launch's WN_STEAM_VAC secure-launch policy (see [RealSteamLauncher.prepare]).
  *
- * [onVerifyFiles] / [onUpdateFiles] drive the slim Steam-only maintenance row (a "Verify files" +
- * "Check for updates" pair, [MaintenanceRow]) shown above the pinned Launch footer — a compact stand-in
+ * [onVerifyFiles] / [onUpdateFiles] drive the slim Steam-only maintenance row (a "验证文件" +
+ * "检查更新" pair, [MaintenanceRow]) shown above the pinned Launch footer — a compact stand-in
  * for real Steam's per-game "Verify integrity" / "Update". Non-null only for Steam shortcuts (the caller
  * wires them to [SteamGameUpdater.verifyFiles] / [SteamGameUpdater.updateNow]); the row is hidden for
  * Epic / GOG / Custom sources.
@@ -280,7 +280,7 @@ fun LaunchMethodSheet(
     }
     var rememberChoice by remember(shortcut) { mutableStateOf(shortcut.getExtra("launchModeRemembered", "") == "1") }
     var controllerPassthrough by remember(shortcut) { mutableStateOf(shortcut.getExtra("controllerPassthrough", "") == "1") }
-    // "Steam Input" (SteamLite only): the agent configures the client's controller layer for games that read the
+    // "Steam 输入" (SteamLite only): the agent configures the client's controller layer for games that read the
     // pad through the Steam Input API. The opposite of passthrough, so the two are mutually exclusive.
     var steamInput by remember(shortcut) { mutableStateOf(shortcut.getExtra("steamInput", "") == "1") }
     val onPassthroughToggle: (Boolean) -> Unit = { controllerPassthrough = it; if (it) steamInput = false }
@@ -323,7 +323,7 @@ fun LaunchMethodSheet(
         onDismiss()
     }
 
-    // SteamLite package check (the SteamLite chip's badge + the footer's "Update & Launch" gate).
+    // SteamLite package check (the SteamLite chip's badge + the footer's "更新并启动" gate).
     // Bounded ~5 s on a worker; a failed check just reads "couldn't check" and Launch stays plain.
     // Only for Steam games with the package on disk — a missing package is fetched by the launch.
     val steamLiteInstalled = remember(shortcut) { isSteam && SteamLiteComponent.isInstalled(context) }
@@ -337,7 +337,7 @@ fun LaunchMethodSheet(
     LaunchedEffect(shortcut) {
         if (steamLiteInstalled) SteamLiteComponent.checkUpdateAsync(context) { clientCheck = it }
     }
-    // "Update & Launch": download with progress on the chip, then the normal launch (the pre-flight
+    // "更新并启动": download with progress on the chip, then the normal launch (the pre-flight
     // that follows re-checks and reads "Up to date"). A failed download is one line + a toast and
     // the launch goes ahead on the installed package — never a block.
     val updateAndLaunch: () -> Unit = {
@@ -369,7 +369,7 @@ fun LaunchMethodSheet(
         SteamLiteClientUi(clientCheck, clientUpdating, clientProgress, clientNote, updateAndLaunch)
     } else null
 
-    // App Steam: Valve client set check (the App Steam chip's status line + "Update & Launch" gate).
+    // App Steam: Valve client set check (the App Steam chip's status line + "更新并启动" gate).
     // Bounded ~5 s against Valve's manifest; a failed check reads "couldn't check" and Launch stays plain.
     val appSteamInstalled = remember(shortcut) { isSteam && SteamHostComponent.isInstalled(context) }
     var hostCheck by remember(shortcut) { mutableStateOf<SteamHostComponent.UpdateCheck?>(null) }
@@ -515,7 +515,7 @@ private fun PortraitCard(
                 }
 
                 Column(Modifier.padding(start = 14.dp, end = 14.dp, bottom = 14.dp)) {
-                    MicroLabel("Launch with")
+                    MicroLabel("启动方式")
                     Spacer(Modifier.height(7.dp))
                     ChipsRow(method, enabledMethods, accent, compact = false, onMethod, toggleHelp, xbox = source == GameSource.XBOX, rawLabel = LocalRawLabel.current)
                     Spacer(Modifier.height(9.dp))
@@ -623,7 +623,7 @@ private fun LandscapeCard(
                         }
                         Spacer(Modifier.height(2.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            MicroLabel("Launch with")
+                            MicroLabel("启动方式")
                             Spacer(Modifier.width(6.dp))
                             HelpDot(accent, highlighted = false, onClick = { toggleHelp(HELP_LAUNCH_WITH) })
                         }
@@ -673,7 +673,7 @@ private fun LandscapeCard(
 
 // ── Shared content pieces ─────────────────────────────────────────────────────────────────────────
 
-/** The 4-chip "Launch with" segmented selector (SteamLite · App Steam · Goldberg · Raw). */
+/** The 4-chip "启动方式" segmented selector (SteamLite · App Steam · Goldberg · Raw). */
 @Composable
 private fun ChipsRow(
     method: LaunchMethod,
@@ -798,9 +798,9 @@ private fun ColumnScope.OptionsBlock(
 ) {
     if (hasDetails) {
         OptionRow(
-            title = "Full details & achievements",
+            title = "完整详情和成就",
             badge = null,
-            subtitle = if (compact) null else "Details, achievements, DLC and cloud saves.",
+            subtitle = if (compact) null else "详情、成就、DLC和云存档。",
             accent = accent,
             compact = compact,
             onHelp = { toggleHelp(HELP_DETAILS) },
@@ -812,18 +812,18 @@ private fun ColumnScope.OptionsBlock(
     }
     if (isSteam) {
         OptionRow(
-            title = "Controller passthrough",
+            title = "记住我的选择",
             badge = "NEW",
-            subtitle = if (compact) null else "Send the pad straight to the game. For classic games (HL2, CS:S).",
+            subtitle = if (compact) null else "将手柄直接发送给游戏。适用于经典游戏（HL2，CS:S）。",
             accent = accent,
             compact = compact,
             onHelp = { toggleHelp(HELP_PASS) },
             trailing = { PillSwitch(passthrough, accent, onPassthrough) },
         )
         OptionRow(
-            title = "Steam Input",
+            title = "Steam 输入",
             badge = "NEW",
-            subtitle = if (compact) null else "Only for games that see pads through Steam alone (No Man's Sky). Keep OFF for games that already use a pad.",
+            subtitle = if (compact) null else "仅适用于仅通过 Steam 看到手柄的游戏（无人深空）。对于已经使用手柄的游戏，请保持关闭。",
             accent = accent,
             compact = compact,
             onHelp = { toggleHelp(HELP_STEAMINPUT) },
@@ -913,8 +913,8 @@ private fun OptionRow(
 
 /**
  * What the footer's primary button says and does for the selected method: plain "Launch" unless the
- * SteamLite chip is selected and its package check gates the launch ("Update & Launch"; disabled
- * "Updating…" while the download runs). Goldberg / Raw are never gated.
+ * SteamLite chip is selected and its package check gates the launch ("更新并启动"; disabled
+ * "正在更新…" while the download runs). Goldberg / Raw are never gated.
  */
 private fun footerLaunch(
     method: LaunchMethod,
@@ -924,22 +924,22 @@ private fun footerLaunch(
 ): Pair<String, (() -> Unit)?> {
     if (method == LaunchMethod.APPSTEAM && appSteamClient != null) {
         return when {
-            appSteamClient.updating -> "Updating…" to null
-            appSteamClient.gated -> "Update & Launch" to appSteamClient.onUpdateAndLaunch
+            appSteamClient.updating -> "正在更新…" to null
+            appSteamClient.gated -> "更新并启动" to appSteamClient.onUpdateAndLaunch
             else -> "Launch" to doLaunch
         }
     }
     if (method != LaunchMethod.STEAMLITE || client == null) return "Launch" to doLaunch
     return when {
-        client.updating -> "Updating…" to null
-        client.gated -> "Update & Launch" to client.onUpdateAndLaunch
+        client.updating -> "正在更新…" to null
+        client.gated -> "更新并启动" to client.onUpdateAndLaunch
         else -> "Launch" to doLaunch
     }
 }
 
 /**
  * Under the App Steam chip: the Valve client set's status — not downloaded yet (fetched by the launch,
- * ~18 MB from Valve) / checking / couldn't check / installed build / "Update available" — with a "?"
+ * ~18 MB from Valve) / checking / couldn't check / installed build / "有可用更新" — with a "?"
  * bubble. Absent for the other methods.
  */
 @Composable
@@ -957,7 +957,7 @@ private fun AppSteamClientBlock(
         val installed = SteamHostComponent.versionLabel(check?.installed ?: "")
         when {
             ui == null -> Text(
-                "Valve's Steam client (~18 MB) downloads from Valve on first launch",
+                "Valve的Steam客户端（约18 MB）在首次启动时从Valve下载",
                 style = lineStyle, color = cs.onSurfaceVariant, modifier = Modifier.weight(1f),
             )
             ui.updating -> Text(
@@ -1044,10 +1044,10 @@ private fun FooterRow(
 
 /**
  * Under the SteamLite chip: the package's status line — checking / couldn't check / up to date /
- * "Update available (v3 → v4)" badge (error-tinted "Update required" below
+ * "Update available (v3 → v4)" badge (error-tinted "需要更新" below
  * [SteamLiteComponent.MIN_AGENT_VERSION]) / the download's progress — with a "?" bubble, and,
- * when the update is optional, a quieter "Launch with installed version" link (the footer's primary
- * is "Update & Launch" then). Absent for Goldberg / Raw.
+ * when the update is optional, a quieter "使用已安装版本启动" link (the footer's primary
+ * is "更新并启动" then). Absent for Goldberg / Raw.
  */
 @Composable
 private fun SteamLiteClientBlock(
@@ -1080,7 +1080,7 @@ private fun SteamLiteClientBlock(
                 val tint = if (check.required) cs.error else accent
                 val shape = RoundedCornerShape(999.dp)
                 Text(
-                    (if (check.required) "Update required" else "Update available") +
+                    (if (check.required) "需要更新" else "有可用更新") +
                         " ($installed → v${check.latestVersion})",
                     style = lineStyle, color = tint, fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -1105,9 +1105,9 @@ private fun SteamLiteClientBlock(
             trackColor = cs.surfaceContainerHigh,
         )
     } else if (ui.gated && check?.required == false) {
-        // Optional update: the quieter way past the "Update & Launch" footer.
+        // Optional update: the quieter way past the "更新并启动" footer.
         Text(
-            "Launch with installed version",
+            "使用已安装版本启动",
             style = lineStyle, color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .padding(top = 4.dp)
@@ -1118,8 +1118,8 @@ private fun SteamLiteClientBlock(
     }
 }
 
-/** Steam-only game-files maintenance: a slim single row of two compact buttons — "Verify files"
- *  (full integrity re-validate → [SteamGameUpdater.verifyFiles]) and "Check for updates" (delta update →
+/** Steam-only game-files maintenance: a slim single row of two compact buttons — "验证文件"
+ *  (full integrity re-validate → [SteamGameUpdater.verifyFiles]) and "检查更新" (delta update →
  *  [SteamGameUpdater.updateNow]). The two hand off to the caller's [onVerify] / [onUpdate] lambdas, which
  *  run the SAME shared maintenance path as the game-menu action. Deliberately compact (one short row, no
  *  status box) so it fits inside the scroll area above the pinned Launch footer in both orientations. */
@@ -1135,10 +1135,10 @@ private fun MaintenanceRow(
         horizontalArrangement = Arrangement.spacedBy(if (compact) 6.dp else 8.dp),
     ) {
         if (onVerify != null) {
-            MaintButton("Verify files", Icons.Filled.Refresh, accent, compact, Modifier.weight(1f), onVerify)
+            MaintButton("验证文件", Icons.Filled.Refresh, accent, compact, Modifier.weight(1f), onVerify)
         }
         if (onUpdate != null) {
-            MaintButton("Check for updates", Icons.Filled.Download, accent, compact, Modifier.weight(1f), onUpdate)
+            MaintButton("检查更新", Icons.Filled.Download, accent, compact, Modifier.weight(1f), onUpdate)
         }
     }
 }
@@ -1340,7 +1340,7 @@ private fun methodDescription(method: LaunchMethod, source: GameSource): String 
         GameSource.GOG -> "Run the DRM-free .exe directly — no launcher."
         GameSource.AMAZON -> "Run the game's .exe directly — no Amazon Games app."
         GameSource.XBOX -> "Each launch checks the license with Microsoft and starts the game's .exe; no Xbox app."
-        GameSource.CUSTOM -> "Run the .exe directly."
+        GameSource.CUSTOM -> "直接运行.exe。"
         GameSource.STEAM -> "Run the game's .exe directly — no Steam layer."
     }
     LaunchMethod.STREAM -> "Plays from Xbox Cloud Gaming — nothing runs here; picture, sound and controller go over the network."
@@ -1351,9 +1351,9 @@ private fun methodDescription(method: LaunchMethod, source: GameSource): String 
 private data class GbOption(val mode: GoldbergMode, val name: String, val sub: String)
 
 private val GOLDBERG_OPTIONS = listOf(
-    GbOption(GoldbergMode.REGULAR, "Regular", "Standard emulation — best compatibility"),
-    GbOption(GoldbergMode.EXPERIMENTAL, "Experimental", "Newer features — for games Regular can't run"),
-    GbOption(GoldbergMode.COLDCLIENT, "ColdClient", "Runs the game's own launcher — heaviest option"),
+    GbOption(GoldbergMode.REGULAR, "常规模式", "标准模拟 — 最佳兼容性"),
+    GbOption(GoldbergMode.EXPERIMENTAL, "实验性模式", "新功能 — 适用于常规模式无法运行的游戏"),
+    GbOption(GoldbergMode.COLDCLIENT, "ColdClient", "运行游戏自己的启动器 — 最重的选项"),
 )
 
 /** Portrait: label + "?" and a vertical dropdown using the shared outlined-menu card + gray dividers. */
@@ -1365,7 +1365,7 @@ private fun GoldbergDropdownPortrait(mode: GoldbergMode, accent: Color, onSelect
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            MicroLabel("Goldberg mode")
+            MicroLabel("Goldberg模式")
             Spacer(Modifier.width(7.dp))
             HelpDot(accent, highlighted = false, onClick = { toggleHelp(HELP_GOLDBERG_MODE) })
         }
@@ -1409,7 +1409,7 @@ private fun GoldbergSegmentedLandscape(mode: GoldbergMode, accent: Color, onSele
     val cs = MaterialTheme.colorScheme
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            MicroLabel("Goldberg mode")
+            MicroLabel("Goldberg模式")
             Spacer(Modifier.width(6.dp))
             HelpDot(accent, highlighted = false, onClick = { toggleHelp(HELP_GOLDBERG_MODE) })
         }

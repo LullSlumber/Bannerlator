@@ -257,7 +257,7 @@ internal fun PresetEditDialog(
                         ) {
                             Icon(
                                 Icons.Outlined.HelpOutline,
-                                contentDescription = "About this preset",
+                                contentDescription = "关于此预设",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -269,15 +269,15 @@ internal fun PresetEditDialog(
                 // editor says so at the moment of editing.
                 val scopeNote = when {
                     scope == PresetScope.SHORTCUT && modified ->
-                        "Customised for this game. Reset makes it follow its container again."
+                        "已为此游戏自定义。重置后它将再次遵循其容器。"
                     scope == PresetScope.SHORTCUT ->
-                        "Saved for this game only — no other game or container changes."
+                        "仅为此游戏保存 — 没有其他游戏或容器更改。"
                     scope == PresetScope.CONTAINER && modified ->
-                        "Customised for this container. Reset makes it follow the shared preset again."
+                        "已为此容器自定义。重置后它将再次遵循共享预设。"
                     scope == PresetScope.CONTAINER ->
-                        "Saved for this container only — the shared preset is left alone."
-                    isBuiltIn && modified -> "Built-in preset — edited. Reset restores the original."
-                    isBuiltIn -> "Built-in preset — edits are saved separately and can be reset."
+                        "仅为此容器保存 — 共享预设保持不变。"
+                    isBuiltIn && modified -> "内置预设 — 已编辑。重置将恢复原始设置。"
+                    isBuiltIn -> "内置预设 — 编辑内容单独保存，且可重置。"
                     else -> null
                 }
                 scopeNote?.let {
@@ -303,7 +303,7 @@ internal fun PresetEditDialog(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "Environment variables",
+                    "环境变量",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -404,7 +404,7 @@ internal fun PresetEditDialog(
                         }
                         modified = false
                         onSaved()
-                    }) { Text("Reset", color = MaterialTheme.colorScheme.error) }
+                    }) { Text("重置", color = MaterialTheme.colorScheme.error) }
                 }
                 TextButton(onClick = onDismiss) { Text("Cancel") }
             }

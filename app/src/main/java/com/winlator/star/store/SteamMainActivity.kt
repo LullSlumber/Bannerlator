@@ -217,9 +217,9 @@ class SteamMainActivity : ComponentActivity() {
 /** The four tabs, in order. [count] is filled at render time (library size / friends online). */
 enum class SteamTab(val label: String, val icon: ImageVector) {
     STORE("Store", Icons.Filled.Storefront),
-    LIBRARY("Library", Icons.Filled.VideoLibrary),
+    LIBRARY("库", Icons.Filled.VideoLibrary),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("Profile", Icons.Filled.AccountCircle),
+    PROFILE("配置", Icons.Filled.AccountCircle),
 }
 
 /** Pre-storefront spinner: shown for the frame or two before the login gate resolves. */
@@ -626,7 +626,7 @@ private val RAIL_WIDTH = 96.dp
  * Connection state for the rail: a colour dot over a SHORT word.
  *
  * A bare dot tested badly — at a glance it doesn't read as "Steam connection". The full
- * [SteamStatusPill] is the other extreme: its longest label ("Signed in elsewhere") wraps to three
+ * [SteamStatusPill] is the other extreme: its longest label ("已在别处登录") wraps to three
  * lines inside a 96dp rail, which is why the rail dropped it in the first place. So the label here
  * is a deliberately short synonym that fits on one line at [RAIL_WIDTH], while the untruncated
  * wording stays in the content description for accessibility and for the tap target's tooltip.
@@ -646,7 +646,7 @@ private fun RailStatusDot(status: SteamRepository.SteamStatus, onReconnect: () -
         SteamRepository.SteamStatus.OFFLINE ->
             RailStatus(MaterialTheme.colorScheme.error, "Offline", "Steam: offline — tap to reconnect", true)
         SteamRepository.SteamStatus.SIGNED_OUT ->
-            RailStatus(MaterialTheme.colorScheme.onSurfaceVariant, "Signed out", "Steam: signed out", false)
+            RailStatus(MaterialTheme.colorScheme.onSurfaceVariant, "已登出", "Steam: signed out", false)
     }
 
     val shape = RoundedCornerShape(10.dp)
@@ -740,7 +740,7 @@ private fun RailOverflow(
                 onClick = { expanded = false; showLibraryLocations = true },
             )
             DropdownMenuItem(
-                text = { Text("Save Manager") },
+                text = { Text("存档管理器") },
                 leadingIcon = {
                     Icon(Icons.Filled.CloudSync, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 },
@@ -750,7 +750,7 @@ private fun RailOverflow(
                 },
             )
             DropdownMenuItem(
-                text = { Text("Friends & chat settings") },
+                text = { Text("好友与聊天设置") },
                 leadingIcon = {
                     Icon(Icons.Filled.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 },
@@ -765,7 +765,7 @@ private fun RailOverflow(
             )
             HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
             DropdownMenuItem(
-                text = { Text("Sign out", color = MaterialTheme.colorScheme.error) },
+                text = { Text("退出登录", color = MaterialTheme.colorScheme.error) },
                 leadingIcon = {
                     Icon(
                         Icons.AutoMirrored.Filled.Logout,
@@ -847,14 +847,14 @@ private fun StorefrontActions(
             onClick = { runCatching { ctx.startActivity(Intent(ctx, SteamSaveManagerActivity::class.java)) } },
             modifier = Modifier.steamFocusRing(),
         ) {
-            Icon(Icons.Filled.CloudSync, contentDescription = "Save Manager", tint = accent)
+            Icon(Icons.Filled.CloudSync, contentDescription = "存档管理器", tint = accent)
         }
         DownloadsButton()
         IconButton(onClick = { showSocialSettings = true }, modifier = Modifier.steamFocusRing()) {
-            Icon(Icons.Filled.Settings, contentDescription = "Friends & chat settings", tint = accent)
+            Icon(Icons.Filled.Settings, contentDescription = "好友与聊天设置", tint = accent)
         }
         IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = accent)
+            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = accent)
         }
     }
 

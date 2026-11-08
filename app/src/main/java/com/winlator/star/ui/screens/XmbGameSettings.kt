@@ -149,7 +149,7 @@ internal fun xmbSettingsMenu(xmb: XmbScope, shortcut: Shortcut, host: XmbGameHos
         else -> xmbControllerMenu(xmb, p)
     }.also { it.siblings = XmbSiblings(n, SECTION_TITLES.size, ::section) { i -> "sec$i" } }
     val icons = listOf(Icons.Filled.Settings, Icons.Filled.Widgets, Icons.Filled.Extension, Icons.Filled.Tune, Icons.Filled.Gamepad)
-    val subs = listOf("Display, graphics, audio", "DirectX, VC++ runtimes…", "Environment variables", "Box64 / FEXCore, CPU cores, ReShade…", "Input, player slots, motion aim")
+    val subs = listOf("显示、图形、音频", "DirectX, VC++ runtimes…", "环境变量", "Box64 / FEXCore, CPU cores, ReShade…", "输入、玩家槽位、体感瞄准")
     return XmbMenu("Settings", Icons.Filled.Settings) {
         SECTION_TITLES.mapIndexed { n, t -> XmbRow.Link("sec$n", t, icons[n], subtitle = subs[n]) { section(n) } }
     }
@@ -176,33 +176,33 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     val c = p.c
     val rows = mutableListOf<XmbRow>()
     rows += XmbRow.Header("hGame", "Game")
-    rows += XmbRow.Text("name", p.str(R.string.name), Icons.Filled.ShortText, s.name, subtitle = "Renames the shortcut") { v ->
+    rows += XmbRow.Text("name", p.str(R.string.name), Icons.Filled.ShortText, s.name, subtitle = "重命名快捷方式") { v ->
         val newBase = v.replace(Regex("""[\\/:*?"<>|]"""), "_").trim()
         if (newBase.isNotEmpty() && newBase != s.name) renameAndReturn(xmb, s, newBase)
     }
-    rows += XmbRow.Text("execArgs", "Exec arguments", Icons.Filled.ShortText, p.ex("execArgs", ""), subtitle = "Extra command-line arguments") { v ->
+    rows += XmbRow.Text("execArgs", "执行参数", Icons.Filled.ShortText, p.ex("execArgs", ""), subtitle = "额外命令行参数") { v ->
         xmb.set(p, "execArgs", v.ifEmpty { null })
     }
     val onC = runCatching { WinePath.isOnRemovableStorage(c, s.path) }.getOrDefault(false)
     rows += XmbRow.Link("storage", "Storage", Icons.Filled.Folder,
-        value = if (onC) "SD card / USB storage" else "Current drive", subtitle = "Move to Drive C") { xmbCopyToDriveCMenu(xmb, s) }
+        value = if (onC) "SD card / USB storage" else "当前驱动器", subtitle = "移动到C盘") { xmbCopyToDriveCMenu(xmb, s) }
     rows += XmbRow.Link("exe", "Executable", Icons.Filled.SwapHoriz,
-        value = File(s.path ?: "").name.ifEmpty { "Unknown" }, subtitle = "Pick another .exe") { xmbChangeExeMenu(xmb, s) }
+        value = File(s.path ?: "").name.ifEmpty { "Unknown" }, subtitle = "选择另一个.exe") { xmbChangeExeMenu(xmb, s) }
     rows += XmbRow.Link("container", p.str(R.string.container), Icons.Filled.Widgets,
         value = c.name, subtitle = "Move this game to another container") { xmbMoveToContainerMenu(xmb, s, host) }
-    rows += XmbRow.Link("icon", "Icon", Icons.Filled.Image, subtitle = "Pick an image for this game") { iconPickerMenu(xmb, s) }
+    rows += XmbRow.Link("icon", "Icon", Icons.Filled.Image, subtitle = "为此游戏选择图像") { iconPickerMenu(xmb, s) }
 
     if (s.getExtra("storeSource") == "epic") {
         val eos = p.ex("epicEos", "1") != "0"
         rows += XmbRow.Header("hEpic", "Epic")
-        rows += XmbRow.Toggle("epicEos", "EOS sign-in", Icons.Filled.Layers, eos, subtitle = "Sign EOS games in with your Epic account") { xmb.set(p, "epicEos", if (it) "1" else "0") }
-        rows += XmbRow.Toggle("epicOvt", "Force Denuvo ownership token", Icons.Filled.Layers, p.ex("epicOvtForce", "0") == "1",
-            subtitle = "For Denuvo games we don't auto-detect", disabledReason = if (eos) null else "Needs EOS sign-in") { xmb.set(p, "epicOvtForce", if (it) "1" else "0") }
-        rows += XmbRow.Toggle("epicOffline", "Launch offline", Icons.Filled.Layers, p.ex("epicOffline", "0") == "1",
-            subtitle = "Skip Epic sign-in for this game", disabledReason = if (eos) null else "Needs EOS sign-in") { xmb.set(p, "epicOffline", if (it) "1" else "0") }
+        rows += XmbRow.Toggle("epicEos", "EOS登录", Icons.Filled.Layers, eos, subtitle = "使用您的Epic账户登录EOS游戏") { xmb.set(p, "epicEos", if (it) "1" else "0") }
+        rows += XmbRow.Toggle("epicOvt", "强制Denuvo所有权令牌", Icons.Filled.Layers, p.ex("epicOvtForce", "0") == "1",
+            subtitle = "对于我们不自动检测的Denuvo游戏", disabledReason = if (eos) null else "需要EOS登录") { xmb.set(p, "epicOvtForce", if (it) "1" else "0") }
+        rows += XmbRow.Toggle("epicOffline", "离线启动", Icons.Filled.Layers, p.ex("epicOffline", "0") == "1",
+            subtitle = "跳过此游戏的Epic登录", disabledReason = if (eos) null else "需要EOS登录") { xmb.set(p, "epicOffline", if (it) "1" else "0") }
         if (com.winlator.star.FeatureFlags.EPIC_OVERLAY_ENABLED) {
             rows += XmbRow.Toggle("epicOverlay", "Epic friends overlay", Icons.Filled.Layers, p.ex("epicOverlay", "0") == "1",
-                subtitle = "Experimental — Shift+F3 in game", disabledReason = if (eos) null else "Needs EOS sign-in") { xmb.set(p, "epicOverlay", if (it) "1" else "0") }
+                subtitle = "Experimental — Shift+F3 in game", disabledReason = if (eos) null else "需要EOS登录") { xmb.set(p, "epicOverlay", if (it) "1" else "0") }
         }
     }
 
@@ -215,7 +215,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     }
 
     // Sync (esync / ntsync / fsync / wineserver): same extra and rules as the pop-up editor —
-    // "Container default" clears the per-game override; greyed against the container's layer. The
+    // "容器默认" clears the per-game override; greyed against the container's layer. The
     // layer probe reads ntdll.so, so a first visit starts it off-main and refreshes when it lands.
     if (!com.winlator.star.linux.LinuxShortcuts.isLinuxEntry(s)) {
         val syncLayer = c.wineVersion ?: ""
@@ -247,29 +247,29 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             xmb.set(p, SyncMode.EXTRA, (if (v == syncLabels[0]) null else v)?.takeIf { it != cEff })
         }
         // The pop-up editors' "?" (help_sync_mode), as its own column.
-        rows += XmbRow.Link("syncHelp", "What is Sync?", Icons.Filled.HelpOutline, subtitle = "esync, ntsync, fsync and wineserver explained") {
+        rows += XmbRow.Link("syncHelp", "什么是Sync同步?", Icons.Filled.HelpOutline, subtitle = "esync、ntsync、fsync 和 wineserver 说明") {
             xmbHelpMenu(p.context, xmb.scope, "Sync", R.string.help_sync_mode)
         }
     }
 
     // Display
-    rows += XmbRow.Header("hDisplay", "Display")
+    rows += XmbRow.Header("hDisplay", "启动")
     // Display backend: "" inherits the container's, else force X11 / Wayland (same extra as the
     // pop-up editor). Wayland replaces the Renderer group with the embedded compositor.
     // Wayland needs the container's Proton layer to ship winewayland.so + its bundled Wayland Turnip
     // (WineWaylandSupport): otherwise "Wayland" is not pickable, a stored Wayland override displays
-    // as the effective backend (X11), and "Container default" resolves to the container's EFFECTIVE
+    // as the effective backend (X11), and "容器默认" resolves to the container's EFFECTIVE
     // backend (X11 when the container says wayland but its layer can't drive it).
     val waylandCapable = com.winlator.star.core.WineWaylandSupport.isWaylandCapable(p.context, c.wineVersion)
     val containerWaylandDefault = c.isWaylandBackend && waylandCapable
     val dbValues = listOf("", Container.DISPLAY_BACKEND_X11, Container.DISPLAY_BACKEND_WAYLAND)
     val dbLabels = listOf(
-        "Container default (" + (if (containerWaylandDefault) "Wayland" else "X11") + ")",
-        "X11", "Wayland (experimental)")
+        "容器默认 (" + (if (containerWaylandDefault) "Wayland" else "X11") + ")",
+        "X11", "Wayland（实验性）")
     val dbOverride = p.ex("displayBackend", "")
     val waylandStoredUnusable = dbOverride == Container.DISPLAY_BACKEND_WAYLAND && !waylandCapable
     val waylandGame = if (dbOverride.isEmpty()) containerWaylandDefault else dbOverride == Container.DISPLAY_BACKEND_WAYLAND && waylandCapable
-    rows += XmbRow.Choice("displayBackend", "Display backend", Icons.Filled.DesktopWindows, dbLabels,
+    rows += XmbRow.Choice("displayBackend", "显示后端", Icons.Filled.DesktopWindows, dbLabels,
         dbLabels[if (waylandStoredUnusable) 1 else dbValues.indexOf(dbOverride).coerceAtLeast(0)],
         // Same help text as the container editor's backend row.
         subtitle = when {
@@ -283,10 +283,10 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
                 "Wayland needs " + com.winlator.star.core.WineWaylandSupport.LAYER_HINT + "."
             !waylandCapable -> "Runs on the X11 server. Wayland needs " + com.winlator.star.core.WineWaylandSupport.LAYER_HINT +
                 ". The selected layer does not include winewayland and its Wayland Turnip."
-            else -> "Runs on the X11 server"
+            else -> "在X11服务器上运行"
         },
         disabledOptions = if (waylandCapable) emptySet() else setOf(dbLabels[2]),
-        confirm = { v -> if (v == dbLabels[2]) XmbConfirm("Wayland", "Wayland is experimental. Run this game on Wayland?", "Use Wayland") else null }) { v ->
+        confirm = { v -> if (v == dbLabels[2]) XmbConfirm("Wayland", "Wayland is experimental. Run this game on Wayland?", "使用Wayland") else null }) { v ->
         xmb.set(p, "displayBackend", dbValues[dbLabels.indexOf(v)].ifEmpty { null })
     }
     val sizes = p.arr(R.array.screen_size_entries)
@@ -307,15 +307,15 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             if (!ok) xmb.toast("Width and height must be even numbers")
             xmb.set(p, "screenSize", if (ok) "${nw}x$nh" else Container.DEFAULT_SCREEN_SIZE)
         }
-        rows += XmbRow.Text("customW", "Width", Icons.Filled.AspectRatio, w, subtitle = "Even numbers only", numeric = true) { setWH(it, h) }
-        rows += XmbRow.Text("customH", "Height", Icons.Filled.AspectRatio, h, subtitle = "Even numbers only", numeric = true) { setWH(w, it) }
+        rows += XmbRow.Text("customW", "Width", Icons.Filled.AspectRatio, w, subtitle = "仅偶数", numeric = true) { setWH(it, h) }
+        rows += XmbRow.Text("customH", "Height", Icons.Filled.AspectRatio, h, subtitle = "仅偶数", numeric = true) { setWH(w, it) }
     }
     val saValues = listOf("", "0", "1", "2")
     val saLabels = listOf(p.str(R.string.use_container_default), p.str(R.string.screen_alignment_center), p.str(R.string.screen_alignment_top), p.str(R.string.screen_alignment_bottom))
     val sa = p.ex("screenAlignment", "")
     // Alignment and fullscreen mode apply on X11 and Wayland alike (the compositor fits the desktop
     // with the same modes), so neither row is gated on the backend.
-    rows += XmbRow.Choice("screenAlignment", "Screen alignment", Icons.Filled.DesktopWindows, saLabels, saLabels[saValues.indexOf(sa).coerceAtLeast(0)]) { v ->
+    rows += XmbRow.Choice("screenAlignment", "屏幕对齐", Icons.Filled.DesktopWindows, saLabels, saLabels[saValues.indexOf(sa).coerceAtLeast(0)]) { v ->
         xmb.set(p, "screenAlignment", saValues[saLabels.indexOf(v)].ifEmpty { null })
     }
     val fsLabels = listOf(p.str(R.string.fullscreen_mode_default), p.str(R.string.fullscreen_mode_off), p.str(R.string.fullscreen_mode_fit),
@@ -327,7 +327,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         else -> -1
     }
     val fsIdx = if (fsOverride < 0) 0 else (fsOverride + 1).coerceIn(1, fsLabels.size - 1)
-    rows += XmbRow.Choice("fullscreen", "Fullscreen mode", Icons.Filled.DesktopWindows, fsLabels, fsLabels[fsIdx]) { v ->
+    rows += XmbRow.Choice("fullscreen", "全屏模式", Icons.Filled.DesktopWindows, fsLabels, fsLabels[fsIdx]) { v ->
         val idx = fsLabels.indexOf(v)
         s.putExtra("fullscreenStretched", null)
         xmb.set(p, "fullscreenMode", if (idx <= 0) null else (idx - 1).toString())
@@ -336,10 +336,10 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     val rsLabels = listOf("Off", "1.25x", "1.5x", "2x")
     val rs = p.ex("renderScale", c.getExtra("renderScale", "1.0") ?: "1.0")
     // Greyed on Wayland (the downscale lives in the X11 Vulkan renderer only) and then DISPLAYS
-    // "Not used on Wayland"; the stored value is left untouched.
-    val rsShown = if (waylandGame) "Not used on Wayland" else rsLabels[rsValues.indexOf(rs).coerceAtLeast(0)]
-    rows += XmbRow.Choice("renderScale", "Render scale", Icons.Filled.AspectRatio, if (waylandGame) listOf(rsShown) else rsLabels, rsShown, subtitle = "Supersampling",
-        disabledReason = if (waylandGame) "Not used on Wayland: the compositor has no supersampling downscale" else null) { v ->
+    // "在Wayland上不使用"; the stored value is left untouched.
+    val rsShown = if (waylandGame) "在Wayland上不使用" else rsLabels[rsValues.indexOf(rs).coerceAtLeast(0)]
+    rows += XmbRow.Choice("renderScale", "渲染比例", Icons.Filled.AspectRatio, if (waylandGame) listOf(rsShown) else rsLabels, rsShown, subtitle = "超采样",
+        disabledReason = if (waylandGame) "在Wayland上不使用：合成器没有超采样降分辨率" else null) { v ->
         val nv = rsValues[rsLabels.indexOf(v)]
         xmb.set(p, "renderScale", if (nv == "1.0") null else nv)
     }
@@ -354,7 +354,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             unlock == "0" -> "locked"
             else -> maxR.ifEmpty { "0" }
         }
-        rows += XmbRow.Choice("refresh", "In-game refresh rate", Icons.Filled.Speed, rrLabels, rrLabels[rrValues.indexOf(cur).coerceAtLeast(0)]) { v ->
+        rows += XmbRow.Choice("refresh", "渲染缩放（超采样）", Icons.Filled.Speed, rrLabels, rrLabels[rrValues.indexOf(cur).coerceAtLeast(0)]) { v ->
             when (val nv = rrValues[rrLabels.indexOf(v)]) {
                 "" -> { s.putExtra("unlockGameRefreshRate", null); xmb.set(p, "maxGameRefreshRate", null) }
                 "locked" -> { s.putExtra("unlockGameRefreshRate", "0"); xmb.set(p, "maxGameRefreshRate", "0") }
@@ -373,13 +373,13 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     if (tvDisplay != null || com.winlator.star.display.ExternalDisplay.launchOnTv(s)) {
         rows += XmbRow.Header("hTv", "TV")
         rows += XmbRow.Info("tvDisplay",
-            if (tvDisplay != null) com.winlator.star.display.ExternalDisplay.title(tvDisplay) else "No external display",
+            if (tvDisplay != null) com.winlator.star.display.ExternalDisplay.title(tvDisplay) else "无外部显示器",
             Icons.Filled.Tv,
             value = if (tvDisplay != null) com.winlator.star.display.ExternalDisplay.modeLabel(
                 com.winlator.star.display.ExternalDisplay.activeMode(tvDisplay)) else "",
             subtitle = if (tvDisplay != null) com.winlator.star.display.ExternalDisplay.summary(tvDisplay)
-                       else "Nothing is plugged in. This game is still set to launch on a TV.")
-        rows += XmbRow.Toggle("tvLaunch", "Launch this game on the TV", Icons.Filled.Tv,
+                       else "未插入任何设备。此游戏仍设置为在电视上启动。")
+        rows += XmbRow.Toggle("tvLaunch", "在电视上启动此游戏", Icons.Filled.Tv,
             com.winlator.star.display.ExternalDisplay.launchOnTv(s),
             subtitle = com.winlator.star.display.ExternalDisplay.HELP_LAUNCH) {
             xmb.set(p, com.winlator.star.display.ExternalDisplay.EXTRA_LAUNCH, if (it) "1" else "0")
@@ -388,40 +388,40 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         val tvModeId = com.winlator.star.display.ExternalDisplay.modeId(s)
         if (tvModes.size > 1) {
             val tvValues = listOf(0) + tvModes.map { it.modeId }
-            val tvLabels = listOf("Default (leave the TV as it is)") +
+            val tvLabels = listOf("默认（保持电视原样）") +
                 tvModes.map { com.winlator.star.display.ExternalDisplay.modeLabel(it) }
-            rows += XmbRow.Choice("tvModeId", "Output mode", Icons.Filled.DesktopWindows, tvLabels,
+            rows += XmbRow.Choice("tvModeId", "输出模式", Icons.Filled.DesktopWindows, tvLabels,
                 tvLabels[tvValues.indexOf(tvModeId).coerceAtLeast(0)],
                 subtitle = "What the TV is told to run at") { v ->
                 xmb.set(p, com.winlator.star.display.ExternalDisplay.EXTRA_MODE_ID,
                     tvValues[tvLabels.indexOf(v)].toString())
             }
         } else {
-            rows += XmbRow.Info("tvModeId", "Output mode", Icons.Filled.DesktopWindows,
+            rows += XmbRow.Info("tvModeId", "输出模式", Icons.Filled.DesktopWindows,
                 value = com.winlator.star.display.ExternalDisplay.modeLabel(tvModes.firstOrNull()).ifEmpty { "—" },
                 subtitle = if (tvDisplay != null) "This screen advertises one output mode"
                            else "Plug a screen in to choose an output mode")
         }
-        rows += XmbRow.Toggle("tvMatchRes", "Match the TV's resolution", Icons.Filled.AspectRatio,
+        rows += XmbRow.Toggle("tvMatchRes", "匹配电视的分辨率", Icons.Filled.AspectRatio,
             com.winlator.star.display.ExternalDisplay.matchResolution(s),
             subtitle = com.winlator.star.display.ExternalDisplay.HELP_MATCH_RES) {
             xmb.set(p, com.winlator.star.display.ExternalDisplay.EXTRA_MATCH_RES, if (it) "1" else "0")
         }
         val tvHdrReason = if (tvDisplay == null) null
                           else com.winlator.star.display.ExternalDisplay.hdrUnavailableReason(tvDisplay)
-        rows += XmbRow.Info("tvHdr", "Use HDR on the TV", Icons.Filled.HdrOn,
+        rows += XmbRow.Info("tvHdr", "在电视上使用 HDR", Icons.Filled.HdrOn,
             value = if (tvDisplay != null && tvHdrReason == null) "On" else "Off",
             subtitle = tvHdrReason ?: (
                 if (tvDisplay != null) "Automatic. This screen accepts HDR10, so HDR output switches on for this game."
-                else "Plug the screen in to see what it can do."))
-        rows += XmbRow.Info("tvNoteUnplug", "If the cable comes out", Icons.Filled.Info,
+                else "插入屏幕以查看它能做什么。"))
+        rows += XmbRow.Info("tvNoteUnplug", "如果线缆拔出", Icons.Filled.Info,
             subtitle = com.winlator.star.display.ExternalDisplay.NOTE_UNPLUG)
-        rows += XmbRow.Info("tvNoteTouch", "Touch on the TV", Icons.Filled.TouchApp,
+        rows += XmbRow.Info("tvNoteTouch", "电视上的触摸", Icons.Filled.TouchApp,
             subtitle = com.winlator.star.display.ExternalDisplay.NOTE_TOUCH)
     }
 
     // Graphics
-    rows += XmbRow.Header("hGfx", "Graphics")
+    rows += XmbRow.Header("hGfx", "显示设置")
     val gfxEntries = WrapperManager.driverEntries(p.context, p.res.getStringArray(R.array.graphics_driver_entries))
     val gfxId = p.ex("graphicsDriver", c.graphicsDriver)
     // Under Wayland the wrapper flavour is irrelevant: the compositor loads the installed Turnip named
@@ -450,8 +450,8 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             com.winlator.star.core.WaylandAdapter.isProprietaryBlob(p.context, compositorVersion) ->
                 "Qualcomm's own driver cannot put Wayland frames on screen: the screen uses a bundled Turnip automatically."
             com.winlator.star.core.WaylandGameDriver.adapterActive(p.context, wgdEffective, compositorVersion) ->
-                "Used for the game (through the Wayland adapter) and for putting its frames on screen."
-            else -> "Used by the Wayland compositor to put frames on screen; the game renders on the Wayland game driver below."
+                "用于游戏（通过Wayland适配器）以及将其帧放到屏幕上。"
+            else -> "由Wayland合成器用于将帧放到屏幕上；游戏在下面的Wayland游戏驱动程序上渲染。"
         }
         rows += XmbRow.Choice("gfxDriver", p.str(R.string.graphics_driver), Icons.Filled.Memory, turnips,
             compositorDriverLabel(compositorVersion, turnips, turnipsLoaded),
@@ -488,10 +488,10 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         val wgdInstalled = com.winlator.star.core.WaylandGameDriver.optionValues(p.context)
         val wgdValues = listOf("") + (if (wgdOverride.isEmpty() || wgdOverride in wgdInstalled) wgdInstalled else wgdInstalled + wgdOverride)
         val wgdLabels = wgdValues.map {
-            if (it.isEmpty()) "Container default (" + com.winlator.star.core.WaylandGameDriver.optionLabel(p.context, c.waylandGameDriver, wgdAuto) + ")"
+            if (it.isEmpty()) "容器默认 (" + com.winlator.star.core.WaylandGameDriver.optionLabel(p.context, c.waylandGameDriver, wgdAuto) + ")"
             else com.winlator.star.core.WaylandGameDriver.optionLabel(p.context, it, wgdAuto)
         }
-        rows += XmbRow.Choice("waylandGameDriver", "Wayland game driver (advanced)", Icons.Filled.Memory, wgdLabels,
+        rows += XmbRow.Choice("waylandGameDriver", "Wayland游戏驱动程序（高级）", Icons.Filled.Memory, wgdLabels,
             wgdLabels[wgdValues.indexOf(wgdOverride).coerceAtLeast(0)],
             subtitle = com.winlator.star.core.WaylandGameDriver.HELP_TEXT) { v ->
             xmb.set(p, "waylandGameDriver", wgdValues[wgdLabels.indexOf(v)].ifEmpty { null })
@@ -499,14 +499,14 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         // The pop-up editors' gear next to the Wayland game driver: GPU name spoof, memory cap, present
         // mode, UBWC hint, in the same graphicsDriverConfig keys as X11's driver configuration.
         val spoof = com.winlator.star.core.GpuSpoof.gpuNameOf(gdc)
-        rows += XmbRow.Link("waylandDriverCfg", "Wayland driver settings", Icons.Filled.Tune,
+        rows += XmbRow.Link("waylandDriverCfg", "Wayland 驱动程序设置", Icons.Filled.Tune,
             value = spoof.takeIf { com.winlator.star.core.GpuSpoof.isSpoofing(it) },
-            subtitle = "GPU name spoof, memory cap, present mode…") { xmbWaylandDriverConfigMenu(xmb, s) }
+            subtitle = "GPU 名称伪装、显存上限、呈现模式…") { xmbWaylandDriverConfigMenu(xmb, s) }
         // HDR output (per-game override of the container's waylandHdr; "" = container default, "1" on,
         // "0" off) — same options as the pop-up editor (WaylandHdr). Greyed with the reason on a screen
         // that doesn't report HDR10, still showing what is stored.
         val hdrValues = listOf("", "1", "0")
-        val hdrLabels = listOf("Container default (" + (if (c.isWaylandHdr()) "On" else "Off") + ")", "On", "Off")
+        val hdrLabels = listOf("容器默认 (" + (if (c.isWaylandHdr()) "On" else "Off") + ")", "On", "Off")
         rows += XmbRow.Choice(WaylandHdr.EXTRA, WaylandHdr.TITLE, Icons.Filled.HdrOn, hdrLabels,
             hdrLabels[hdrValues.indexOf(WaylandHdr.shortcutChoice(s)).coerceAtLeast(0)],
             subtitle = WaylandHdr.HELP_SHORT, disabledReason = p.hdrUnavailableReason) { v ->
@@ -529,7 +529,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
                 com.winlator.star.core.FastOpenGL.driverUsable(p.context, glDriver),
                 com.winlator.star.core.X11Egl.isBundled(p.context))
         val glValues = listOf("", "1", "0")
-        val glLabels = listOf("Container default (" + (if (c.isFastOpenGL()) "On" else "Off") + ")", "On", "Off")
+        val glLabels = listOf("容器默认 (" + (if (c.isFastOpenGL()) "On" else "Off") + ")", "On", "Off")
         val glOverride = com.winlator.star.core.FastOpenGL.normalize(p.ex(com.winlator.star.core.FastOpenGL.EXTRA, "")) ?: ""
         rows += XmbRow.Choice(com.winlator.star.core.FastOpenGL.EXTRA, com.winlator.star.core.FastOpenGL.TITLE, Icons.Filled.Speed,
             glLabels, glLabels[glValues.indexOf(glOverride).coerceAtLeast(0)],
@@ -539,7 +539,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         // Show OpenGL FPS / OpenGL vsync off: the same Container default / On / Off choice, on both
         // backends, never greyed (core.FastOpenGL.FPS_HUD / VSYNC_OFF).
         for (sw in listOf(com.winlator.star.core.FastOpenGL.FPS_HUD, com.winlator.star.core.FastOpenGL.VSYNC_OFF)) {
-            val labels = listOf("Container default (" + (if (sw.containerOn(c.getExtra(sw.extra))) "On" else "Off") + ")", "On", "Off")
+            val labels = listOf("容器默认 (" + (if (sw.containerOn(c.getExtra(sw.extra))) "On" else "Off") + ")", "On", "Off")
             val stored = com.winlator.star.core.FastOpenGL.normalize(p.ex(sw.extra, "")) ?: ""
             rows += XmbRow.Choice(sw.extra, sw.title, Icons.Filled.Speed, labels,
                 labels[glValues.indexOf(stored).coerceAtLeast(0)], subtitle = sw.hint) { v ->
@@ -547,17 +547,17 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             }
         }
         // The pop-up editors' one "?" for the OpenGL card (help_opengl_settings), as its own column.
-        rows += XmbRow.Link("openglHelp", "What are these?", Icons.Filled.HelpOutline,
-            subtitle = "Fast OpenGL, Show OpenGL FPS and OpenGL vsync off explained") {
+        rows += XmbRow.Link("openglHelp", "这些是什么?", Icons.Filled.HelpOutline,
+            subtitle = "快速 OpenGL、显示 OpenGL FPS 和OpenGL vsync off垂直同步关闭说明") {
             xmbHelpMenu(p.context, xmb.scope, "OpenGL", R.string.help_opengl_settings)
         }
     }
     // Driver configuration is X11 tuning; on Wayland its only live field (the Turnip version) is
     // covered by the Compositor driver row above, so the link is left out of the Wayland layout.
-    if (!waylandGame) rows += XmbRow.Link("gfxConfig", "Driver configuration", Icons.Filled.Tune,
-        subtitle = "Vulkan version, BCn, present modes…") { xmbDriverConfigMenu(xmb, s) }
+    if (!waylandGame) rows += XmbRow.Link("gfxConfig", "驱动程序配置", Icons.Filled.Tune,
+        subtitle = "Vulkan版本、BCn、呈现模式…") { xmbDriverConfigMenu(xmb, s) }
     // Wrappers are X11 game-driver shims; nothing on the Wayland path uses them.
-    if (!waylandGame) rows += XmbRow.External("wrappers", "Manage wrappers", Icons.Filled.Cloud, subtitle = "Import or remove wrapper drivers") { host.openWrapperManager() }
+    if (!waylandGame) rows += XmbRow.External("wrappers", "管理 wrappers", Icons.Filled.Cloud, subtitle = "导入或移除wrapper驱动程序") { host.openWrapperManager() }
     // Unreal Engine HDR (per-game override of the container's unrealHdr; "" = container default), both
     // backends — same options as the pop-up editors (core.UnrealHdr). DirectX 11 while no NVIDIA GPU
     // name spoof is set gets the optional hint row.
@@ -565,7 +565,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         val cMode = com.winlator.star.core.UnrealHdr.containerMode(c)
         val uValues = listOf("") + com.winlator.star.core.UnrealHdr.MODES
         val uLabels = uValues.map {
-            if (it.isEmpty()) "Container default (" + com.winlator.star.core.UnrealHdr.label(cMode) + ")"
+            if (it.isEmpty()) "容器默认 (" + com.winlator.star.core.UnrealHdr.label(cMode) + ")"
             else com.winlator.star.core.UnrealHdr.label(it)
         }
         val uOverride = com.winlator.star.core.UnrealHdr.shortcutChoice(s)
@@ -577,7 +577,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         val spoof = com.winlator.star.core.GpuSpoof.gpuNameOf(p.ex("graphicsDriverConfig", c.getGraphicsDriverConfig()))
         if (uOverride.ifEmpty { cMode } == com.winlator.star.core.UnrealHdr.DX11 &&
             !com.winlator.star.core.GpuSpoof.isNvidia(p.context, spoof)) {
-            rows += XmbRow.Info("unrealHdrNvidia", "No NVIDIA GPU is reported", Icons.Filled.Info,
+            rows += XmbRow.Info("unrealHdrNvidia", "未报告 NVIDIA GPU", Icons.Filled.Info,
                 subtitle = com.winlator.star.core.UnrealHdr.nvidiaHint(waylandGame))
         }
     }
@@ -592,8 +592,8 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
         }
         xmb.set(p, "dxwrapper", nid)
     }
-    rows += XmbRow.Link("dxConfig", "DX wrapper configuration", Icons.Filled.Tune,
-        subtitle = "Versions, frame rate, filtering…") { xmbDxConfigMenu(xmb, s) }
+    rows += XmbRow.Link("dxConfig", "DX wrapper配置", Icons.Filled.Tune,
+        subtitle = "版本、帧率、滤镜…") { xmbDxConfigMenu(xmb, s) }
 
     val rendId = p.ex("renderer", c.renderer).lowercase()
     val rend = when (rendId) { "vulkan" -> "Vulkan"; "surfaceflinger" -> "SurfaceFlinger"; else -> "OpenGL" }
@@ -601,41 +601,41 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     // X11 choice) is untouched and still drives the Vulkan/SurfaceFlinger sub-rows below.
     val rendShown = if (waylandGame) "Vulkan (Wayland compositor)" else rend
     rows += XmbRow.Choice("renderer", "Renderer", Icons.Filled.DesktopWindows, if (waylandGame) listOf(rendShown) else listOf("OpenGL", "Vulkan", "SurfaceFlinger"), rendShown,
-        disabledReason = if (waylandGame) "Wayland draws through its own compositor" else null,
+        disabledReason = if (waylandGame) "Wayland 通过其自身的合成器绘制" else null,
         confirm = { v -> if (v == "SurfaceFlinger") XmbConfirm("SurfaceFlinger renderer", "SurfaceFlinger renderer — experimental. Use it for this game?", "Use SurfaceFlinger") else null }) { v ->
         xmb.set(p, "renderer", v.lowercase())
     }
     // Renderer sub-options are X11-only; hidden on Wayland like the container/shortcut editors do
     // (their stored values are untouched and come back with the X11 backend).
     if (!waylandGame && rend == "SurfaceFlinger") {
-        rows += XmbRow.Toggle("sfCompat", "Correct SurfaceFlinger colours", Icons.Filled.Image,
+        rows += XmbRow.Toggle("sfCompat", "校正 SurfaceFlinger 颜色", Icons.Filled.Image,
             p.ex("sfCompatMode", if (c.getRendererSfCompatMode()) "1" else "0") == "1",
-            subtitle = "Fixes swapped red/blue (BGRA→RGBA)") { xmb.set(p, "sfCompatMode", if (it) "1" else "0") }
+            subtitle = "修复红/蓝通道互换（BGRA→RGBA）") { xmb.set(p, "sfCompatMode", if (it) "1" else "0") }
     }
     if (!waylandGame && rend == "Vulkan") {
         val native = p.ex("native", if (c.isRendererNative()) "true" else "false") == "true"
-        rows += XmbRow.Toggle("vkNative", "Native renderer", Icons.Filled.DesktopWindows, native) { xmb.set(p, "native", if (it) "true" else "false") }
+        rows += XmbRow.Toggle("vkNative", "原生渲染器", Icons.Filled.DesktopWindows, native) { xmb.set(p, "native", if (it) "true" else "false") }
         val swap = p.ex("swapRB", if (c.getRendererSwapRB()) "true" else "false") == "true"
-        rows += XmbRow.Choice("vkColors", "Colors", Icons.Filled.Image, listOf("BGRA", "RGBA"), if (swap) "RGBA" else "BGRA") { v ->
+        rows += XmbRow.Choice("vkColors", "颜色", Icons.Filled.Image, listOf("BGRA", "RGBA"), if (swap) "RGBA" else "BGRA") { v ->
             xmb.set(p, "swapRB", if (v == "RGBA") "true" else "false")
         }
         val pmValues = listOf("fifo", "mailbox", "immediate")
         val pmLabels = listOf(p.str(R.string.renderer_present_mode_fifo), p.str(R.string.renderer_present_mode_mailbox), p.str(R.string.renderer_present_mode_immediate))
         val pm = p.ex("presentMode", c.getRendererPresentMode())
-        rows += XmbRow.Choice("vkPresent", "Present mode", Icons.Filled.Speed, pmLabels, pmLabels[pmValues.indexOf(pm).coerceAtLeast(0)],
-            disabledReason = if (native) "Set by the native renderer" else null) { v -> xmb.set(p, "presentMode", pmValues[pmLabels.indexOf(v)]) }
+        rows += XmbRow.Choice("vkPresent", "呈现模式", Icons.Filled.Speed, pmLabels, pmLabels[pmValues.indexOf(pm).coerceAtLeast(0)],
+            disabledReason = if (native) "由原生渲染器设置" else null) { v -> xmb.set(p, "presentMode", pmValues[pmLabels.indexOf(v)]) }
         if (native) {
             val nbValues = listOf("auto", "asr", "flip")
             val nbLabels = listOf(p.str(R.string.renderer_native_backend_auto), p.str(R.string.renderer_native_backend_asr), p.str(R.string.renderer_native_backend_flip))
             val nb = p.ex("nativeBackend", c.getRendererNativeBackend())
-            rows += XmbRow.Choice("vkBackend", "Native backend", Icons.Filled.Layers, nbLabels, nbLabels[nbValues.indexOf(nb).coerceAtLeast(0)]) { v ->
+            rows += XmbRow.Choice("vkBackend", "原生后端", Icons.Filled.Layers, nbLabels, nbLabels[nbValues.indexOf(nb).coerceAtLeast(0)]) { v ->
                 xmb.set(p, "nativeBackend", nbValues[nbLabels.indexOf(v)])
             }
         }
         val drivers = (listOf("system") + runCatching { com.winlator.star.contents.AdrenotoolsManager(p.context).enumarateInstalledDrivers().toList() }.getOrDefault(emptyList())).distinct()
         val rd = p.ex("rendererDriverId", c.getRendererDriverId())
-        rows += XmbRow.Choice("vkDriver", "Renderer driver", Icons.Filled.Memory, drivers, if (rd in drivers) rd else "system",
-            subtitle = "The driver the compositor runs on") { v -> xmb.set(p, "rendererDriverId", v) }
+        rows += XmbRow.Choice("vkDriver", "渲染器驱动程序", Icons.Filled.Memory, drivers, if (rd in drivers) rd else "system",
+            subtitle = "合成器运行的驱动程序") { v -> xmb.set(p, "rendererDriverId", v) }
     }
     val fgEngines = listOf("off", "bionic", "lsfg-native")
     val fgLabels = listOf(p.str(R.string.frame_generation_off), p.str(R.string.frame_generation_bionic), p.str(R.string.frame_generation_lsfg_native))
@@ -644,19 +644,19 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     // On Wayland the X11 renderer gate does not apply: FG runs inside the compositor (always Vulkan)
     // and the in-game drawer arms the engine picked here.
     val fgShown = fgLabels[fgEngines.indexOf(fg).coerceAtLeast(0)]
-    rows += XmbRow.Choice("frameGen", "Frame generation", Icons.Filled.Speed, fgLabels, fgShown,
-        subtitle = if (!lsfgDll) "Import a Lossless.dll in Settings to enable LSFG" else null,
+    rows += XmbRow.Choice("frameGen", "帧率", Icons.Filled.Speed, fgLabels, fgShown,
+        subtitle = if (!lsfgDll) "在设置中导入Lossless.dll以启用LSFG" else null,
         disabledReason = when {
             !waylandGame && rend != "Vulkan" -> "Frame generation requires the Vulkan renderer"
             else -> null
         },
         disabledOptions = if (lsfgDll) emptySet() else setOf(fgLabels[2])) { v -> xmb.set(p, "frameGenEngine", fgEngines[fgLabels.indexOf(v)]) }
-    rows += XmbRow.Toggle("fpsLimiter", "FPS limiter", Icons.Filled.Speed,
+    rows += XmbRow.Toggle("fpsLimiter", "FPS 限制器", Icons.Filled.Speed,
         p.ex("fpsLimiterEnabled", if (c.isFpsLimiterEnabled) "1" else "0") == "1") { xmb.set(p, "fpsLimiterEnabled", if (it) "1" else "0") }
-    rows += XmbRow.Link("perf", "Performance", Icons.Filled.Speed, subtitle = "Sustained performance, priority, big cores") { xmbPerformanceMenu(xmb, s) }
+    rows += XmbRow.Link("perf", "Performance", Icons.Filled.Speed, subtitle = "持续性能、优先级、大核") { xmbPerformanceMenu(xmb, s) }
 
     // Audio & system
-    rows += XmbRow.Header("hAudio", "Audio & system")
+    rows += XmbRow.Header("hAudio", "音频与系统")
     val audioEntries = p.arr(R.array.audio_driver_entries)
     val daSupported = DirectAudioSupport.isSupported(c.wineVersion)
     var audioId = p.ex("audioDriver", c.audioDriver)
@@ -665,19 +665,19 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     rows += XmbRow.Choice("audio", p.str(R.string.audio_driver), Icons.Filled.VolumeUp, audioEntries, p.labelFor(audioEntries, audioId),
         subtitle = if (!daSupported && daEntry != null) DirectAudioSupport.UNSUPPORTED_NOTE else null,
         disabledOptions = if (!daSupported && daEntry != null) setOf(daEntry) else emptySet(),
-        confirm = { v -> if (StringUtils.parseIdentifier(v) == "directaudio") XmbConfirm("DirectAudio", "DirectAudio is experimental. Use it for this game?", "Use DirectAudio") else null }) { v ->
+        confirm = { v -> if (StringUtils.parseIdentifier(v) == "directaudio") XmbConfirm("DirectAudio", "DirectAudio is experimental. Use it for this game?", "DirectAudio 是实验性的") else null }) { v ->
         xmb.set(p, "audioDriver", StringUtils.parseIdentifier(v))
     }
     if (audioId == "pulseaudio" || audioId == "alsa" || audioId == "directaudio") {
-        rows += XmbRow.Link("audioSettings", "Audio settings", Icons.Filled.Tune, subtitle = "Latency presets and fine-tuning") { audioMenu(xmb, p, audioId) }
+        rows += XmbRow.Link("audioSettings", "音频设置", Icons.Filled.Tune, subtitle = "延迟预设与微调") { audioMenu(xmb, p, audioId) }
     }
     val micActive = audioId == "directaudio" && daSupported
     val env = p.ex("envVars", "")
-    rows += XmbRow.Toggle("mic", "Microphone", Icons.Filled.Mic, micActive && DirectAudioSupport.isMicEnabledInEnv(env),
-        subtitle = "Let games use the mic (DirectAudio captures input)",
-        disabledReason = if (micActive) null else "Available on the DirectAudio driver") { want ->
+    rows += XmbRow.Toggle("mic", "麦克风", Icons.Filled.Mic, micActive && DirectAudioSupport.isMicEnabledInEnv(env),
+        subtitle = "让游戏使用麦克风（DirectAudio捕获输入）",
+        disabledReason = if (micActive) null else "可在DirectAudio驱动程序上使用") { want ->
         if (want && ContextCompat.checkSelfPermission(p.context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(p.context, "Allow the microphone permission for Bannerlator first (Android settings).", Toast.LENGTH_LONG).show()
+            Toast.makeText(p.context, "请先允许Bannerlator的麦克风权限（Android设置）。", Toast.LENGTH_LONG).show()
         } else {
             xmb.set(p, "envVars", DirectAudioSupport.withMicEnabled(p.ex("envVars", ""), want).ifEmpty { null })
         }
@@ -685,7 +685,7 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
     val emuEntries = p.arr(R.array.emulator_entries)
     val emuId = p.ex("emulator", c.emulator)
     val arm = p.arm64ec
-    rows += XmbRow.Choice("emulator", "Emulator", Icons.Filled.Memory,
+    rows += XmbRow.Choice("emulator", "转译器", Icons.Filled.Memory,
         emuEntries.map { if (arm == true && StringUtils.parseIdentifier(it) == "box64") "WOWBox64" else it }.let { it },
         p.labelFor(emuEntries, emuId).let { if (arm == true && StringUtils.parseIdentifier(it) == "box64") "WOWBox64" else it },
         disabledReason = when (arm) { null -> "Checking the Wine build…"; false -> "Only arm64ec containers can switch"; else -> null }) { v ->
@@ -699,8 +699,8 @@ private fun generalRows(xmb: XmbScope, p: XmbPrefs, host: XmbGameHost): List<Xmb
             xmb.set(p, "midiSoundFont", if (v == midi.first()) null else v)
         }
     }
-    rows += XmbRow.Text("lcAll", "LC_ALL", Icons.Filled.ShortText, p.ex("lc_all", c.getLC_ALL()), subtitle = "Locale the game runs with") { xmb.set(p, "lc_all", it) }
-    rows += XmbRow.Toggle("autoClose", "Close when game exits", Icons.Filled.Close,
+    rows += XmbRow.Text("lcAll", "LC_ALL", Icons.Filled.ShortText, p.ex("lc_all", c.getLC_ALL()), subtitle = "游戏运行使用的区域设置") { xmb.set(p, "lc_all", it) }
+    rows += XmbRow.Toggle("autoClose", "游戏退出时关闭", Icons.Filled.Close,
         p.ex("autoCloseOnExit", c.getExtra("autoCloseOnExit", "1") ?: "1") == "1") { xmb.set(p, "autoCloseOnExit", if (it) "1" else "0") }
     return rows
 }
@@ -733,7 +733,7 @@ private fun iconPickerMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
         "Internal storage" to android.os.Environment.getExternalStorageDirectory(),
     ).filter { it.second.isDirectory }
     val imageExt = setOf("png", "jpg", "jpeg", "webp", "bmp")
-    return xmbFileBrowserMenu(xmb, "Select icon image", start, roots, { it.extension.lowercase() in imageExt }) { f ->
+    return xmbFileBrowserMenu(xmb, "选择图标图像", start, roots, { it.extension.lowercase() in imageExt }) { f ->
         xmb.scope.launch {
             val ok = withContext(Dispatchers.IO) { xmbApplyIconFile(s, f) }
             xmb.toast(if (ok) "Icon updated." else "Couldn't read that image.")
@@ -780,18 +780,18 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
         rows += XmbRow.Link(key, label, Icons.Filled.HelpOutline) { xmbHelpMenu(p.context, xmb.scope, title, res) }
     }
     if (!com.winlator.star.linux.LinuxShortcuts.isLinuxEntry(s)) {
-        rows += XmbRow.Header("hController", "Game controller")
+        rows += XmbRow.Header("hController", "游戏控制器")
         // DirectInput visibility (core.DInputVisibility): written to this game's inputType / exclusiveXInput
         // extras, the values older builds read.
         run {
             val labels = listOf(inherit(onOff(DInputVisibility.forContainer(c))), "On", "Off")
             val own = if (!DInputVisibility.gameOwns(s)) 0 else if (DInputVisibility.forGame(c, s)) 1 else 2
-            rows += XmbRow.Choice("dinputVisible", "DirectInput games can see the controller", Icons.Filled.Gamepad, labels, labels[own],
-                subtitle = "DirectInput games and the controller") { v ->
+            rows += XmbRow.Choice("dinputVisible", "DirectInput 游戏可以看到控制器", Icons.Filled.Gamepad, labels, labels[own],
+                subtitle = "DirectInput 游戏和控制器") { v ->
                 DInputVisibility.writeTo(s, when (labels.indexOf(v)) { 1 -> true; 2 -> false; else -> null })
                 xmb.saved(); s.saveData(); xmb.refresh()
             }
-            helpRow("inputHelp", "What does the DirectInput switch do?", "DirectInput", R.string.help_dinput_visible_game)
+            helpRow("inputHelp", "DirectInput 开关有什么作用？", "DirectInput（直接输入）", R.string.help_dinput_visible_game)
         }
         // DirectInput vibration (core.DInputVibration). BANNERIN_DINPUT_FF in the env vars decides
         // instead: the row shows its value and is greyed.
@@ -800,29 +800,29 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
             val values = listOf("", "1", "0")
             val env = DInputVibration.envOverride(c, s)
             val own = env?.let { if (it) "1" else "0" } ?: (DInputVibration.normalize(p.ex(DInputVibration.EXTRA, "")) ?: "")
-            rows += XmbRow.Choice("dinputVibration", "DirectInput vibration", Icons.Filled.Vibration, labels, labels[values.indexOf(own)],
-                subtitle = "DirectInput games can make the controller vibrate",
+            rows += XmbRow.Choice("dinputVibration", "DirectInput 震动", Icons.Filled.Vibration, labels, labels[values.indexOf(own)],
+                subtitle = "DirectInput 游戏可以使控制器震动",
                 disabledReason = DInputVibration.lockedReason(c, s)) { v ->
                 xmb.set(p, DInputVibration.EXTRA, values[labels.indexOf(v).coerceAtLeast(0)].ifEmpty { null })
             }
-            helpRow("dinputVibrationHelp", "What is DirectInput vibration?", "DirectInput vibration", R.string.help_dinput_vibration_game)
+            helpRow("dinputVibrationHelp", "什么是 DirectInput 震动？", "DirectInput 震动", R.string.help_dinput_vibration_game)
         }
-        onOffRow("bannerinXInput", BannerinXInput.EXTRA_KEY, "Direct XInput (BANNERIN)", c.isBannerinXInput(), "XInput games read the controller directly")
-        helpRow("bannerinXInputHelp", "What is Direct XInput?", "Direct XInput", R.string.help_bannerin_xinput_game)
-        onOffRow("bannerinXInputSwitching", BannerinXInput.EXTRA_SWITCHING, "Allow in-game switching", c.isBannerinXInputSwitching(),
-            "Switch Direct XInput in the in-game menu")
-        helpRow("bannerinXInputSwitchingHelp", "What is in-game switching?", "Allow in-game switching", R.string.help_bannerin_xinput_switching_game)
+        onOffRow("bannerinXInput", BannerinXInput.EXTRA_KEY, "Direct XInput (BANNERIN)", c.isBannerinXInput(), "XInput 游戏直接读取控制器")
+        helpRow("bannerinXInputHelp", "什么是 Direct XInput？", "Direct XInput", R.string.help_bannerin_xinput_game)
+        onOffRow("bannerinXInputSwitching", BannerinXInput.EXTRA_SWITCHING, "允许游戏内切换", c.isBannerinXInputSwitching(),
+            "在游戏内菜单中切换 Direct XInput")
+        helpRow("bannerinXInputSwitchingHelp", "什么是游戏内切换？", "允许游戏内切换", R.string.help_bannerin_xinput_switching_game)
         // Stick updates (core.StickPacing): the Deck's presets, plus this game's own value if it is another.
         run {
             val presets = listOf("auto:60", "auto:120", "auto:30", "fixed:60", "fixed:125", "fixed:250", "off")
             val own = StickPacing.parse(p.ex(StickPacing.EXTRA, ""))?.format() ?: ""
             val values = listOf("") + presets + (if (own.isNotEmpty() && own !in presets) listOf(own) else emptyList())
             val labels = values.map { v -> if (v.isEmpty()) inherit(StickPacing.forContainer(c).describe()) else StickPacing.parse(v)!!.describe() }
-            rows += XmbRow.Choice("stickPacing", "Stick updates", Icons.Filled.Gamepad, labels, labels[values.indexOf(own)],
-                subtitle = "How often stick movement reaches the game") { v ->
+            rows += XmbRow.Choice("stickPacing", "摇杆更新", Icons.Filled.Gamepad, labels, labels[values.indexOf(own)],
+                subtitle = "摇杆移动到达游戏的频率") { v ->
                 xmb.set(p, StickPacing.EXTRA, values[labels.indexOf(v).coerceAtLeast(0)].ifEmpty { null })
             }
-            helpRow("stickPacingHelp", "What are stick updates?", "Stick updates", R.string.help_stick_pacing_game)
+            helpRow("stickPacingHelp", "什么是摇杆更新？", "摇杆更新", R.string.help_stick_pacing_game)
         }
         // Controller identity: this game's own value, else the container's.
         run {
@@ -831,15 +831,15 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
             val choices = ControllerIdentity.wineChoices()
             val values = listOf("") + choices.map { it.value }
             val labels = listOf(inherit(ControllerIdentity.label(containerIdentity))) + choices.map { it.label }
-            rows += XmbRow.Choice("controllerIdentity", "Controller identity", Icons.Filled.Gamepad, labels,
-                labels[values.indexOf(own).coerceAtLeast(0)], subtitle = "Which controller the game sees") { v ->
+            rows += XmbRow.Choice("controllerIdentity", "控制器身份", Icons.Filled.Gamepad, labels,
+                labels[values.indexOf(own).coerceAtLeast(0)], subtitle = "游戏看到哪个控制器") { v ->
                 xmb.set(p, ControllerIdentity.EXTRA, values[labels.indexOf(v).coerceAtLeast(0)].ifEmpty { null })
             }
-            rows += XmbRow.Link("controllerIdentityHelp", "What is Controller identity?", Icons.Filled.HelpOutline, subtitle = "Generic, Xbox, DirectInput and the experimental ones") {
-                xmbHelpMenu(p.context, xmb.scope, "Controller identity", R.string.help_controller_identity_game)
+            rows += XmbRow.Link("controllerIdentityHelp", "什么是控制器身份？", Icons.Filled.HelpOutline, subtitle = "通用、Xbox、DirectInput 和实验性类型") {
+                xmbHelpMenu(p.context, xmb.scope, "控制器身份", R.string.help_controller_identity_game)
             }
         }
-        rows += XmbRow.Toggle("disableX", "Disable XInput", Icons.Filled.Gamepad, p.ex("disableXinput", "0") == "1") { xmb.set(p, "disableXinput", if (it) "1" else null) }
+        rows += XmbRow.Toggle("disableX", "禁用XInput", Icons.Filled.Gamepad, p.ex("disableXinput", "0") == "1") { xmb.set(p, "disableXinput", if (it) "1" else null) }
     }
 
     rows += XmbRow.Header("hVibration", p.str(R.string.vibration))
@@ -853,7 +853,7 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
             val idx = labels.indexOf(v)
             xmb.set(p, "vibrationMode", if (idx <= 0) null else (idx - 1).toString())
         }
-        helpRow("vibrationModeHelp", "What is Rumble target?", p.str(R.string.vibration_mode_label), R.string.help_vibration_mode_game)
+        helpRow("vibrationModeHelp", "什么是震动目标？", p.str(R.string.vibration_mode_label), R.string.help_vibration_mode_game)
         val mode = ownMode ?: c.getVibrationMode()
         if (mode != Container.VIBRATION_MODE_OFF) {
             val own = p.ex("vibrationIntensity", "").toIntOrNull()?.takeIf { it in 0..100 }
@@ -864,7 +864,7 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
                 labels[values.indexOf(own).coerceAtLeast(0)]) { v ->
                 xmb.set(p, "vibrationIntensity", values.getOrNull(labels.indexOf(v))?.toString())
             }
-            helpRow("vibrationIntensityHelp", "What is Intensity?", p.str(R.string.vibration_intensity_label), R.string.help_vibration_intensity_game)
+            helpRow("vibrationIntensityHelp", "什么是强度？", p.str(R.string.vibration_intensity_label), R.string.help_vibration_intensity_game)
         }
         // Rumble motors: only a controller has two motors (the phone's vibrator is one).
         if (mode == Container.VIBRATION_MODE_CONTROLLER || mode == Container.VIBRATION_MODE_BOTH) {
@@ -876,30 +876,30 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
                 val idx = labels.indexOf(v)
                 xmb.set(p, RumbleMotors.EXTRA, if (idx <= 0) null else (idx - 1).toString())
             }
-            helpRow("rumbleMotorsHelp", "What are Rumble motors?", p.str(R.string.rumble_motors_label), R.string.help_rumble_motors_game)
+            helpRow("rumbleMotorsHelp", "什么是震动马达？", p.str(R.string.rumble_motors_label), R.string.help_rumble_motors_game)
         }
     }
 
     rows += XmbRow.Header("hInput", "Input")
-    rows += XmbRow.Toggle("simTouch", "Touchscreen mode", Icons.Filled.TouchApp, p.ex("simTouchScreen", "0") == "1") { xmb.set(p, "simTouchScreen", if (it) "1" else "0") }
+    rows += XmbRow.Toggle("simTouch", "触摸屏模式", Icons.Filled.TouchApp, p.ex("simTouchScreen", "0") == "1") { xmb.set(p, "simTouchScreen", if (it) "1" else "0") }
     val nc = p.arr(R.array.num_controllers_entries)
     val ncIdx = ((p.ex("numControllers", "1").toIntOrNull() ?: 1).coerceIn(1, nc.size)) - 1
-    rows += XmbRow.Choice("numControllers", "Number of controllers", Icons.Filled.Gamepad, nc, nc.getOrElse(ncIdx) { nc.first() }) { v ->
+    rows += XmbRow.Choice("numControllers", "控制器数量", Icons.Filled.Gamepad, nc, nc.getOrElse(ncIdx) { nc.first() }) { v ->
         xmb.set(p, "numControllers", (nc.indexOf(v) + 1).coerceAtLeast(1).toString())
     }
     val ahValues = listOf("", "1", "0")
-    val ahLabels = listOf("Use container default", "On", "Off")
+    val ahLabels = listOf("使用容器默认", "On", "Off")
     val ah = p.ex("autoHideControlsOnPad", "")
-    rows += XmbRow.Choice("autoHide", "Hide on-screen controls with a pad", Icons.Filled.TouchApp, ahLabels, ahLabels[ahValues.indexOf(ah).coerceAtLeast(0)],
-        subtitle = "When a controller connects") { v -> xmb.set(p, "autoHideControlsOnPad", ahValues[ahLabels.indexOf(v)].ifEmpty { null }) }
-    rows += XmbRow.Link("playerSlots", "Player slots", Icons.Filled.Gamepad,
-        value = if ((s.getExtra("controllerSlotOverrides") ?: "").isEmpty()) "Container default" else "Custom",
-        subtitle = "Pin controllers to players") { xmbPlayerSlotsMenu(xmb, s) }
+    rows += XmbRow.Choice("autoHide", "使用手柄时隐藏屏幕控制", Icons.Filled.TouchApp, ahLabels, ahLabels[ahValues.indexOf(ah).coerceAtLeast(0)],
+        subtitle = "当控制器连接时") { v -> xmb.set(p, "autoHideControlsOnPad", ahValues[ahLabels.indexOf(v)].ifEmpty { null }) }
+    rows += XmbRow.Link("playerSlots", "玩家槽位", Icons.Filled.Gamepad,
+        value = if ((s.getExtra("controllerSlotOverrides") ?: "").isEmpty()) "容器默认" else "Custom",
+        subtitle = "两个在一个玩家上共享它。 ") { xmbPlayerSlotsMenu(xmb, s) }
 
     // Motion aim (all eight extras are independent overrides; no inherit state, as in the editor)
-    rows += XmbRow.Header("hGyro", "Motion aim")
+    rows += XmbRow.Header("hGyro", "体感瞄准")
     val gyroOn = p.ex("gyroEnabled", if (c.isGyroEnabled) "1" else "0") == "1"
-    rows += XmbRow.Toggle("gyro", "Enable motion aim", Icons.Filled.ScreenRotation, gyroOn) { xmb.set(p, "gyroEnabled", if (it) "1" else "0") }
+    rows += XmbRow.Toggle("gyro", "启用体感瞄准", Icons.Filled.ScreenRotation, gyroOn) { xmb.set(p, "gyroEnabled", if (it) "1" else "0") }
     if (gyroOn) {
         val modeL = listOf(p.str(R.string.gyro_mode_rate), p.str(R.string.gyro_mode_orientation))
         val targetL = listOf(p.str(R.string.gyro_target_right_stick), p.str(R.string.gyro_target_left_stick), p.str(R.string.gyro_target_mouse))
@@ -910,26 +910,26 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
         val target = gi("gyroTarget", c.gyroTarget, Container.GYRO_TARGET_DEFAULT)
         val act = gi("gyroActivator", c.gyroActivator, Container.GYRO_ACTIVATOR_DEFAULT)
         val actMode = gi("gyroActivationMode", c.gyroActivationMode, Container.GYRO_ACTIVATION_MODE_DEFAULT)
-        rows += XmbRow.Choice("gyroMode", "Motion mode", Icons.Filled.ScreenRotation, modeL, modeL.getOrElse(mode) { modeL[0] }) { v ->
+        rows += XmbRow.Choice("gyroMode", "体感模式", Icons.Filled.ScreenRotation, modeL, modeL.getOrElse(mode) { modeL[0] }) { v ->
             val nm = modeL.indexOf(v).coerceAtLeast(0)
             if (nm == Container.GYRO_MODE_ORIENTATION && target == Container.GYRO_TARGET_MOUSE) s.putExtra("gyroTarget", Container.GYRO_TARGET_RIGHT_STICK.toString())
             xmb.set(p, "gyroMode", nm.toString())
         }
-        rows += XmbRow.Choice("gyroTarget", "Motion target", Icons.Filled.ScreenRotation, targetL, targetL.getOrElse(target) { targetL[0] }) { v ->
+        rows += XmbRow.Choice("gyroTarget", "体感目标", Icons.Filled.ScreenRotation, targetL, targetL.getOrElse(target) { targetL[0] }) { v ->
             val nt = targetL.indexOf(v).coerceAtLeast(0)
             if (nt == Container.GYRO_TARGET_MOUSE) s.putExtra("gyroMode", Container.GYRO_MODE_RATE.toString())
             xmb.set(p, "gyroTarget", nt.toString())
         }
-        rows += XmbRow.Choice("gyroActivator", "Activator button", Icons.Filled.Gamepad, actL, actL.getOrElse(act) { actL[0] }) { v ->
+        rows += XmbRow.Choice("gyroActivator", "激活按钮", Icons.Filled.Gamepad, actL, actL.getOrElse(act) { actL[0] }) { v ->
             xmb.set(p, "gyroActivator", actL.indexOf(v).coerceAtLeast(0).toString())
         }
         if (act != Container.GYRO_ACTIVATOR_ALWAYS) {
-            rows += XmbRow.Choice("gyroActMode", "Activation", Icons.Filled.Gamepad, actModeL, actModeL.getOrElse(actMode) { actModeL[0] }) { v ->
+            rows += XmbRow.Choice("gyroActMode", "激活", Icons.Filled.Gamepad, actModeL, actModeL.getOrElse(actMode) { actModeL[0] }) { v ->
                 xmb.set(p, "gyroActivationMode", actModeL.indexOf(v).coerceAtLeast(0).toString())
             }
         }
         val sens = p.ex("gyroSensitivity", c.gyroSensitivity.toString()).toFloatOrNull() ?: Container.GYRO_SENSITIVITY_DEFAULT
-        rows += XmbRow.Slider("gyroSens", "Sensitivity", Icons.Filled.Tune, sens, 0.1f, 10f, 0.5f) { xmb.set(p, "gyroSensitivity", it.toString()) }
+        rows += XmbRow.Slider("gyroSens", "灵敏度", Icons.Filled.Tune, sens, 0.1f, 10f, 0.5f) { xmb.set(p, "gyroSensitivity", it.toString()) }
         rows += XmbRow.Toggle("gyroInvX", p.str(R.string.gyro_invert_x), Icons.Filled.ScreenRotation,
             p.ex("gyroInvertX", if (c.isGyroInvertX) "1" else "0") == "1") { xmb.set(p, "gyroInvertX", if (it) "1" else "0") }
         rows += XmbRow.Toggle("gyroInvY", p.str(R.string.gyro_invert_y), Icons.Filled.ScreenRotation,
@@ -940,7 +940,7 @@ private fun controllerRows(xmb: XmbScope, p: XmbPrefs): List<XmbRow> {
 
 // ── Audio settings (the editor's per-game AudioSettingsDialog, as XMB rows; stored in envVars) ──────
 
-private fun audioMenu(xmb: XmbScope, p: XmbPrefs, driverId: String): XmbMenu = XmbMenu("Audio settings", Icons.Filled.VolumeUp) {
+private fun audioMenu(xmb: XmbScope, p: XmbPrefs, driverId: String): XmbMenu = XmbMenu("音频设置", Icons.Filled.VolumeUp) {
     val env = p.ex("envVars", "")
     val cfg = audioConfigFromEnv(env, driverId)
     val direct = latencyIsDirectBuffer(driverId)
@@ -951,24 +951,24 @@ private fun audioMenu(xmb: XmbScope, p: XmbPrefs, driverId: String): XmbMenu = X
     val presetNames = AUDIO_PRESETS.map { it.name }
     val cur = AUDIO_PRESETS.firstOrNull { it.id == cfg.preset } ?: AUDIO_PRESETS.first()
     val rows = mutableListOf<XmbRow>()
-    rows += XmbRow.Choice("preset", "Preset", Icons.Filled.Tune, presetNames, cur.name, subtitle = cur.desc) { v ->
+    rows += XmbRow.Choice("preset", "预设", Icons.Filled.Tune, presetNames, cur.name, subtitle = cur.desc) { v ->
         val pr = AUDIO_PRESETS.first { it.name == v }
         write(if (direct) pr.cfg.copy(latencyMsec = cfg.latencyMsec) else pr.cfg)
     }
-    val lockReason = if (custom) null else "Pick the Custom preset to change this"
+    val lockReason = if (custom) null else "选择自定义预设以更改此设置"
     val perfOpts = if (driverId == "directaudio") listOf("None" to 0, "Low latency" to 1) else listOf("None" to 0, "Low latency" to 1, "Power saving" to 2)
-    rows += XmbRow.Choice("perf", "Output mode", Icons.Filled.Speed, perfOpts.map { it.first },
-        perfOpts.firstOrNull { it.second == cfg.perfMode }?.first ?: perfOpts.first().first, subtitle = "AAudio performance mode", disabledReason = lockReason) { v ->
+    rows += XmbRow.Choice("perf", "输出模式", Icons.Filled.Speed, perfOpts.map { it.first },
+        perfOpts.firstOrNull { it.second == cfg.perfMode }?.first ?: perfOpts.first().first, subtitle = "AAudio性能模式", disabledReason = lockReason) { v ->
         write(cfg.copy(perfMode = perfOpts.first { it.first == v }.second))
     }
-    rows += XmbRow.Toggle("adaptive", "Adaptive buffer", Icons.Filled.Tune, cfg.adaptive, subtitle = "Auto-grow only if it hears crackle", disabledReason = lockReason) { write(cfg.copy(adaptive = it)) }
-    rows += XmbRow.Slider("latency", if (direct) "Audio buffer" else "Guest buffer", Icons.Filled.Timer, cfg.latencyMsec.toFloat(),
+    rows += XmbRow.Toggle("adaptive", "自适应缓冲区", Icons.Filled.Tune, cfg.adaptive, subtitle = "仅在检测到爆音时自动增长", disabledReason = lockReason) { write(cfg.copy(adaptive = it)) }
+    rows += XmbRow.Slider("latency", if (direct) "音频缓冲区" else "客户缓冲区", Icons.Filled.Timer, cfg.latencyMsec.toFloat(),
         if (direct) 4f else 20f, if (direct) 120f else 200f, if (direct) 4f else 10f, format = { "${it.toInt()} ms" },
-        subtitle = if (!used) "Not used by ALSA — set the buffer rows below" else null,
-        disabledReason = lockReason ?: if (!used) "Not used by ALSA" else null) { write(cfg.copy(latencyMsec = it.toInt())) }
-    rows += XmbRow.Slider("bf", "Initial sink buffer", Icons.Filled.Tune, cfg.bufferFrames.toFloat(), 0f, 8192f, 256f,
+        subtitle = if (!used) "ALSA不使用 — 在下方设置缓冲区行数" else null,
+        disabledReason = lockReason ?: if (!used) "ALSA不使用" else null) { write(cfg.copy(latencyMsec = it.toInt())) }
+    rows += XmbRow.Slider("bf", "初始sink缓冲区", Icons.Filled.Tune, cfg.bufferFrames.toFloat(), 0f, 8192f, 256f,
         format = { if (it <= 0f) "auto" else "${it.toInt()} frames" }, disabledReason = lockReason) { write(cfg.copy(bufferFrames = it.toInt())) }
-    rows += XmbRow.Slider("mbf", "Max sink buffer", Icons.Filled.Tune, cfg.maxBufferFrames.toFloat(), 0f, 16384f, 256f,
+    rows += XmbRow.Slider("mbf", "最大sink缓冲区", Icons.Filled.Tune, cfg.maxBufferFrames.toFloat(), 0f, 16384f, 256f,
         format = { if (it <= 0f) "device" else "${it.toInt()} frames" }, disabledReason = lockReason) { write(cfg.copy(maxBufferFrames = it.toInt())) }
     rows
 }
@@ -980,28 +980,28 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
     var searching by mutableStateOf(false)
     fun details(): GameDetails = GameDetails.from(s)
     fun write(d: GameDetails) { runCatching { d.writeTo(s) }; xmb.saved(); xmb.refresh() }
-    // Opens on the name, not on "Unlink from Steam" (a stray A must not unlink).
-    return XmbMenu("Game Details", Icons.Filled.Edit, initialKey = "name") {
+    // Opens on the name, not on "从Steam解除关联" (a stray A must not unlink).
+    return XmbMenu("游戏详情", Icons.Filled.Edit, initialKey = "name") {
         val d = details()
         val rows = mutableListOf<XmbRow>()
         d.steamAppId?.takeIf { it > 0 }?.let { id ->
             rows += XmbRow.Info("app", "Steam App ID", Icons.Filled.Star, id.toString())
-            rows += XmbRow.Action("unlink", "Unlink from Steam", Icons.Filled.LinkOff) { write(d.copy(steamAppId = null)) }
+            rows += XmbRow.Action("unlink", "从Steam解除关联", Icons.Filled.LinkOff) { write(d.copy(steamAppId = null)) }
         }
-        rows += XmbRow.Text("name", "Game name", Icons.Filled.ShortText, s.name) { v ->
+        rows += XmbRow.Text("name", "游戏名称", Icons.Filled.ShortText, s.name) { v ->
             val nb = v.replace(Regex("""[\\/:*?"<>|]"""), "_").trim()
             if (nb.isNotEmpty() && nb != s.name) renameAndReturn(xmb, s, nb)
         }
-        rows += XmbRow.Link("search", "Search Steam", Icons.Filled.Search, subtitle = "Pick a result to fill every field") {
+        rows += XmbRow.Link("search", "搜索 Steam", Icons.Filled.Search, subtitle = "选择一个结果以填充所有字段") {
             results = emptyList(); searching = true
             val q = s.name
             xmb.scope.launch {
                 val r = withContext(Dispatchers.IO) { runCatching { SteamStoreSearch.searchByName(q) }.getOrDefault(emptyList()) }
                 results = r; searching = false
             }
-            XmbMenu("Search Steam", Icons.Filled.Search) {
+            XmbMenu("搜索 Steam", Icons.Filled.Search) {
                 when {
-                    searching -> listOf(XmbRow.Info("busy", "Searching Steam…", Icons.Filled.Search))
+                    searching -> listOf(XmbRow.Info("busy", "正在搜索Steam…", Icons.Filled.Search))
                     results.isEmpty() -> listOf(XmbRow.Info("none", "No results found for “$q”", Icons.Filled.Search))
                     else -> results.mapIndexed { i, r ->
                         XmbRow.Action("r$i", r.name, Icons.Filled.Search, subtitle = "App ID: ${r.appId}") {
@@ -1025,16 +1025,16 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
                 }
             }
         }
-        rows += XmbRow.Text("genres", "Genres", Icons.Filled.Label, d.genres.joinToString(", "), subtitle = "Comma-separated", placeholder = "e.g. Action, RPG, Strategy") { v ->
+        rows += XmbRow.Text("genres", "类型", Icons.Filled.Label, d.genres.joinToString(", "), subtitle = "用逗号分隔", placeholder = "例如：动作, 角色扮演, 策略") { v ->
             write(d.copy(genres = v.split(",").map { it.trim() }.filter { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("desc", "Description", Icons.Filled.Description, d.description ?: "", subtitle = "Shown on the launch screen") { v ->
+        rows += XmbRow.Text("desc", "Description", Icons.Filled.Description, d.description ?: "", subtitle = "显示在启动屏幕上") { v ->
             write(d.copy(description = v.trim().takeIf { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("year", "Release year", Icons.Filled.Event, d.releaseYear ?: "", numeric = true, placeholder = "e.g. 2023") { v ->
+        rows += XmbRow.Text("year", "发行年份", Icons.Filled.Event, d.releaseYear ?: "", numeric = true, placeholder = "例如 2023") { v ->
             write(d.copy(releaseYear = v.trim().take(4).takeIf { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("mc", "Metacritic", Icons.Filled.Star, d.metacritic?.toString() ?: "", subtitle = "1–100, leave blank to hide", numeric = true) { v ->
+        rows += XmbRow.Text("mc", "Metacritic评分", Icons.Filled.Star, d.metacritic?.toString() ?: "", subtitle = "1–100，留空则隐藏", numeric = true) { v ->
             write(d.copy(metacritic = v.trim().toIntOrNull()?.takeIf { it in 1..100 }))
         }
         rows
@@ -1043,8 +1043,8 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
 
 // ── Properties ──────────────────────────────────────────────────────────────────────────────────────
 
-// Opens on the play count, not on "Reset properties".
-internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("Properties", Icons.Filled.Info, initialKey = "plays") {
+// Opens on the play count, not on "重置属性".
+internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("属性", Icons.Filled.Info, initialKey = "plays") {
     val prefs = xmb.context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE)
     val tKey = "${s.name}_playtime"
     val cKey = "${s.name}_play_count"
@@ -1054,10 +1054,10 @@ internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("P
     val hr = (totalMs / 3600000) % 24
     val days = totalMs / 86400000
     listOf(
-        XmbRow.Info("plays", "Number of times played", Icons.Filled.Star, prefs.getInt(cKey, 0).toString()),
-        XmbRow.Info("time", "Playtime", Icons.Filled.Timer, String.format("%dd %02dh %02dm %02ds", days, hr, min, sec)),
-        XmbRow.Action("reset", "Reset properties", Icons.Filled.Refresh, danger = true) {
-            xmb.confirm(XmbConfirm("Reset properties", "Clear times played and playtime for “${s.name}”?", "Reset", danger = true)) {
+        XmbRow.Info("plays", "游玩次数", Icons.Filled.Star, prefs.getInt(cKey, 0).toString()),
+        XmbRow.Info("time", "游玩时间", Icons.Filled.Timer, String.format("%dd %02dh %02dm %02ds", days, hr, min, sec)),
+        XmbRow.Action("reset", "重置属性", Icons.Filled.Refresh, danger = true) {
+            xmb.confirm(XmbConfirm("重置属性", "Clear times played and playtime for “${s.name}”?", "重置", danger = true)) {
                 prefs.edit().remove(tKey).remove(cKey).apply()
                 xmb.saved(); xmb.refresh()
             }
@@ -1067,7 +1067,7 @@ internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("P
 
 // ── Clone / Remove ──────────────────────────────────────────────────────────────────────────────────
 
-internal fun xmbCloneMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu = XmbMenu("Select container", Icons.Filled.ContentCopy) {
+internal fun xmbCloneMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu = XmbMenu("选择容器", Icons.Filled.ContentCopy) {
     val others = host.containers().filter { it.id != s.container.id }
     if (others.isEmpty()) XmbTools.para("none", NO_OTHER_CONTAINER_XMB, Icons.Filled.Info, context)
     else others.mapIndexed { i, c ->
@@ -1115,7 +1115,7 @@ private fun xmbMoveChoiceMenu(xmb: XmbScope, s: Shortcut, c: Container): XmbMenu
             add(XmbRow.Toggle("saves", "Saves", Icons.Filled.Save, saves && p.saves != null, subtitle = p.saves?.label,
                 disabledReason = if (p.saves == null) "No save folders found for this game" else null) { saves = it })
             p.gameFolder?.let { gf ->
-                add(XmbRow.Toggle("folder", "Game files", Icons.Filled.Folder, folder && gf.problem == null,
+                add(XmbRow.Toggle("folder", "游戏文件", Icons.Filled.Folder, folder && gf.problem == null,
                     subtitle = "C:\\" + gf.relPath.replace('/', '\\'), disabledReason = gf.problem) { folder = it })
             }
             if (p.extras.isEmpty()) add(XmbRow.Info("noExtras", "Extras: nothing missing in \"${c.name}\"", Icons.Filled.Info))
@@ -1146,12 +1146,12 @@ private fun xmbMoveGame(
 }
 
 internal fun xmbRemoveMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu =
-    XmbMenu("Remove shortcut?", Icons.Filled.Delete, initialKey = "cancel") {
+    XmbMenu("移除快捷方式?", Icons.Filled.Delete, initialKey = "cancel") {
         listOf(
             XmbRow.Info("msg", "Remove “${s.name}”?", Icons.Filled.Info),
-            XmbRow.Action("remove", "Remove", Icons.Filled.Delete, danger = true) {
+            XmbRow.Action("remove", "移除", Icons.Filled.Delete, danger = true) {
                 val ok = host.remove(s)
-                xmb.toast(if (ok) "Shortcut removed." else "Failed to remove shortcut.")
+                xmb.toast(if (ok) "快捷方式已删除。" else "移除快捷方式失败。")
                 xmb.popToRoot()
                 xmb.reloadGames()
             },

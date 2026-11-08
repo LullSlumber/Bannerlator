@@ -280,7 +280,7 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
     return XmbMenu(ctx.getString(R.string.graphics_driver_configuration), Icons.Filled.Tune, onClose = { jobs.cancel() }) body@{
         val rows = mutableListOf<XmbRow>()
         if (!ready) {
-            rows += XmbRow.Info("loading", "Checking which drivers this GPU supports…", Icons.Filled.Info)
+            rows += XmbRow.Info("loading", "正在检查此 GPU 支持哪些驱动程序…", Icons.Filled.Info)
             return@body rows
         }
         val cfg = P2GfxCfg(rawCfg())
@@ -303,13 +303,13 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             rows += XmbRow.Info("noDrivers", "No compatible drivers found — turn on Show incompatible drivers", Icons.Filled.Warning)
         }
         rows += XmbRow.Toggle("showAll", ctx.getString(R.string.graphics_driver_show_incompatible), Icons.Filled.Visibility, showAllDrivers,
-            subtitle = "Lists drivers this GPU may not run") { on -> showAllDrivers = on; ready = false; loadDrivers() }
+            subtitle = "列出此GPU可能无法运行的驱动程序") { on -> showAllDrivers = on; ready = false; loadDrivers() }
         if (isCustomDriver) {
-            rows += XmbRow.Info("customDriver", "Custom Qualcomm (Adreno) driver — its extensions load when a game starts, so none are listed here.", Icons.Filled.Info)
+            rows += XmbRow.Info("customDriver", "自定义高通(Adreno)驱动程序 — 其扩展在游戏启动时加载，因此此处未列出任何扩展。", Icons.Filled.Info)
         } else if (allExtensions.isNotEmpty()) {
             val enabled = allExtensions.count { it !in cfg.blacklisted }
             rows += XmbRow.Link("extensions", ctx.getString(R.string.graphics_driver_available_extensions), Icons.Filled.Extension,
-                value = "$enabled/${allExtensions.size}", subtitle = "Hide extensions from games") { p2ExtensionsMenu(xmb, { allExtensions }, { rawCfg() }, { ch -> write(ch) }) }
+                value = "$enabled/${allExtensions.size}", subtitle = "对游戏隐藏扩展") { p2ExtensionsMenu(xmb, { allExtensions }, { rawCfg() }, { ch -> write(ch) }) }
         }
         rows += XmbRow.Choice("gpuName", ctx.getString(R.string.gpu_name), Icons.Filled.DeveloperBoard,
             uniq(gpuNames, cfg.gpuName), cfg.gpuName) { v -> write { it.gpuName = v } }
@@ -322,16 +322,16 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
         rows += XmbRow.Choice("resourceType", ctx.getString(R.string.graphics_driver_resource_type), Icons.Filled.Memory,
             uniq(resourceTypes, cfg.resourceType), cfg.resourceType) { v -> write { it.resourceType = v } }
 
-        rows += XmbRow.Header("hBcn", "BCn textures")
+        rows += XmbRow.Header("hBcn", "驱动程序调优")
         rows += XmbRow.Info("gpuNote", (if (gpuModel.isNotEmpty()) "GPU: $gpuModel — " else "") +
-            "BCn/compat layers apply to Mali and other non-Qualcomm GPUs", Icons.Filled.Info)
+            "BCn/兼容层适用于 Mali 及其他非高通 GPU", Icons.Filled.Info)
         rows += XmbRow.Choice("bcnEmulation", ctx.getString(R.string.graphics_driver_bcn_emulation), Icons.Filled.Layers,
             uniq(bcnEmulations, cfg.bcnEmulation), cfg.bcnEmulation) { v -> write { it.bcnEmulation = v } }
         rows += XmbRow.Choice("bcnType", ctx.getString(R.string.graphics_driver_bcn_emulation_type), Icons.Filled.Layers,
             uniq(bcnTypes, cfg.bcnEmulationType), cfg.bcnEmulationType) { v -> write { it.bcnEmulationType = v } }
         rows += XmbRow.Choice("bcnCache", ctx.getString(R.string.graphics_driver_bcn_emulation_cache), Icons.Filled.Layers,
             uniq(bcnCaches, cfg.bcnEmulationCache), cfg.bcnEmulationCache) { v -> write { it.bcnEmulationCache = v } }
-        val adrenoNote = if (isQualcomm) "No effect on Adreno (native BCn)" else null
+        val adrenoNote = if (isQualcomm) "对 Adreno（原生 BCn）无效果" else null
         if (isIntegratedBcn) {
             rows += XmbRow.Toggle("bcnAstc", ctx.getString(R.string.graphics_driver_bcn_emulation_astc), Icons.Filled.Layers,
                 cfg.bcnEmulationAstc, subtitle = adrenoNote) { on -> write { it.bcnEmulationAstc = on } }
@@ -347,30 +347,30 @@ internal fun xmbDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             }
         }
 
-        rows += XmbRow.Header("hPresent", "Presentation")
+        rows += XmbRow.Header("hPresent", "呈现模式")
         rows += XmbRow.Toggle("syncFrame", ctx.getString(R.string.graphics_driver_sync_frame), Icons.Filled.Speed, cfg.syncFrame) { on ->
             write { it.syncFrame = on }
         }
         rows += XmbRow.Toggle("presentWait", ctx.getString(R.string.graphics_driver_disable_present_wait), Icons.Filled.Speed, cfg.disablePresentWait) { on ->
             write { it.disablePresentWait = on }
         }
-        rows += XmbRow.Toggle("fdDev", "OneUI / HyperOS Fix", Icons.Filled.Tune, cfg.fdDevFeatures) { on -> write { it.fdDevFeatures = on } }
+        rows += XmbRow.Toggle("fdDev", "三星OneUI/小米HyperOS 修复", Icons.Filled.Tune, cfg.fdDevFeatures) { on -> write { it.fdDevFeatures = on } }
 
         rows += XmbRow.Header("hTurnip", "Turnip")
-        val gmemLabels = listOf("Auto (Adreno 710/720/722)", "Force On", "Force Off")
+        val gmemLabels = listOf("自动 (Adreno 710/720/722)", "强制开启", "强制关闭")
         val gmemValues = listOf("auto", "on", "off")
-        rows += XmbRow.Choice("gmem", "GMEM (tiled rendering)", Icons.Filled.Memory, gmemLabels,
+        rows += XmbRow.Choice("gmem", "GMEM（分块渲染）", Icons.Filled.Memory, gmemLabels,
             gmemLabels[gmemValues.indexOf(cfg.turnipGmem).coerceAtLeast(0)],
-            subtitle = "Auto uses TU_DEBUG=gmem only on Adreno 710/720/722") { v ->
+            subtitle = "自动仅在Adreno 710/720/722上使用TU_DEBUG=gmem") { v ->
             write { it.turnipGmem = gmemValues[gmemLabels.indexOf(v).coerceAtLeast(0)] }
         }
         rows += XmbRow.Link("turnipTokens", "Advanced Turnip (TU_DEBUG)", Icons.Filled.Science,
-            subtitle = "Expert-only debug tokens, off by default") { p2TurnipMenu(xmb, { rawCfg() }, { ch -> write(ch) }) }
+            subtitle = "仅限专家的调试令牌，默认关闭") { p2TurnipMenu(xmb, { rawCfg() }, { ch -> write(ch) }) }
 
         if (isImported) {
-            rows += XmbRow.Link("detected", "Detected settings (advanced)", Icons.Filled.Science,
+            rows += XmbRow.Link("detected", "检测到的设置（高级）", Icons.Filled.Science,
                 value = if (detectedKeys.isEmpty()) "None" else "${detectedKeys.size}",
-                subtitle = "From scanning this wrapper — passed to it as-is") { p2DetectedMenu(xmb, { detectedKeys }, { rawCfg() }, { ch -> write(ch) }) }
+                subtitle = "来自扫描此包装器 — 按原样传递给它") { p2DetectedMenu(xmb, { detectedKeys }, { rawCfg() }, { ch -> write(ch) }) }
         }
         rows
     }
@@ -391,7 +391,7 @@ internal fun xmbWaylandDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbM
     fun write(key: String, value: String) =
         p2Put(xmb, shortcut, "graphicsDriverConfig", withGraphicsDriverKeys(rawCfg(), mapOf(key to value)))
 
-    return XmbMenu("Wayland driver settings", Icons.Filled.Tune) {
+    return XmbMenu("Wayland 驱动程序设置", Icons.Filled.Tune) {
         val raw = rawCfg()
         val cfg = raw.split(";").associate { elem ->
             val parts = elem.split("=")
@@ -403,22 +403,22 @@ internal fun xmbWaylandDriverConfigMenu(xmb: XmbScope, shortcut: Shortcut): XmbM
         val presentValues = WAYLAND_PRESENT_MODES + (if (storedPresent in WAYLAND_PRESENT_MODES) emptyList() else listOf(storedPresent))
         val presentLabels = presentValues.map { if (it in WAYLAND_PRESENT_MODES) it else "$it (X11 only, not used here)" }
         val rows = mutableListOf<XmbRow>()
-        rows += XmbRow.Info("help", "For games that refuse or misbehave on Adreno", Icons.Filled.Info,
-            subtitle = "DirectX games (DXVK) see the GPU named here. Off by default (Device); same settings as X11's.")
+        rows += XmbRow.Info("help", "适用于在 Adreno 上拒绝运行或出现异常的游戏", Icons.Filled.Info,
+            subtitle = "DirectX 游戏（DXVK）看到此处命名的 GPU。默认关闭（Device）；与 X11 的设置相同。")
         rows += XmbRow.Choice("gpuName", ctx.getString(R.string.gpu_name) + " (spoof)", Icons.Filled.DeveloperBoard, names, gpuName,
             subtitle = com.winlator.star.core.GpuSpoof.vendorWarning(ctx, gpuName)
-                ?: "NVIDIA: games may try NVAPI, DLSS or Reflex. AMD: AMD AGS paths.") { v -> write("gpuName", v) }
+                ?: "NVIDIA：游戏可能尝试 NVAPI、DLSS 或 Reflex。AMD：AMD AGS 路径。") { v -> write("gpuName", v) }
         if (memEntries.isNotEmpty()) {
             rows += XmbRow.Choice("memory", ctx.getString(R.string.graphics_driver_max_device_memory), Icons.Filled.Memory,
                 memEntries, memLabel(cfg["maxDeviceMemory"] ?: "0"),
-                subtitle = "What DirectX games are told the GPU's memory is") { v -> write("maxDeviceMemory", StringUtils.parseNumber(v)) }
+                subtitle = "告诉 DirectX 游戏 GPU 的显存是") { v -> write("maxDeviceMemory", StringUtils.parseNumber(v)) }
         }
         rows += XmbRow.Choice("presentMode", ctx.getString(R.string.graphics_driver_present_modes), Icons.Filled.Speed,
             presentLabels, presentLabels[presentValues.indexOf(storedPresent)],
-            subtitle = "Wayland offers mailbox and fifo (immediate needs tearing)") { v ->
+            subtitle = "Wayland 提供 mailbox 和 fifo（immediate 需要撕裂）") { v ->
             write("presentMode", presentValues[presentLabels.indexOf(v)])
         }
-        rows += XmbRow.Toggle("fdDev", "OneUI / HyperOS Fix (UBWC flag hint)", Icons.Filled.Tune, cfg["fdDevFeatures"] == "1",
+        rows += XmbRow.Toggle("fdDev", "OneUI / HyperOS 修复（UBWC 标志提示）", Icons.Filled.Tune, cfg["fdDevFeatures"] == "1",
             subtitle = "FD_DEV_FEATURES=enable_tp_ubwc_flag_hint=1: corrupt textures on Samsung / Xiaomi") { on ->
             write("fdDevFeatures", if (on) "1" else "0")
         }
@@ -509,7 +509,7 @@ private fun p2ExtensionsMenu(
 ): XmbMenu = XmbMenu(xmb.context.getString(R.string.graphics_driver_available_extensions), Icons.Filled.Extension) {
     val cfg = P2GfxCfg(raw())
     val list = exts()
-    if (list.isEmpty()) listOf(XmbRow.Info("none", "No extensions available for this driver.", Icons.Filled.Info))
+    if (list.isEmpty()) listOf(XmbRow.Info("none", "此驱动无可用扩展。", Icons.Filled.Info))
     else list.map { ext ->
         XmbRow.Toggle("ext:$ext", ext, Icons.Filled.Extension, ext !in cfg.blacklisted) { on ->
             write { it.blacklisted = if (on) it.blacklisted - ext else it.blacklisted + ext }
@@ -523,12 +523,12 @@ private fun p2TurnipMenu(xmb: XmbScope, raw: () -> String, write: ((P2GfxCfg) ->
         val cfg = P2GfxCfg(raw())
         val sysmemBlocked = cfg.turnipGmem == "on"
         listOf(
-            XmbRow.Info("note", "Expert-only Turnip debug tokens, unioned with the GMEM setting into TU_DEBUG.", Icons.Filled.Warning),
-            XmbRow.Toggle("forcecb", "forcecb — force concurrent binning", Icons.Filled.Science, cfg.forceCb) { on -> write { it.forceCb = on } },
-            XmbRow.Toggle("nocb", "nocb — disable concurrent binning", Icons.Filled.Science, cfg.noCb) { on -> write { it.noCb = on } },
-            XmbRow.Toggle("sysmem", "sysmem — force sysmem (bypass GMEM)", Icons.Filled.Science, cfg.sysmem && !sysmemBlocked,
+            XmbRow.Info("note", "仅限专家的Turnip调试令牌，与GMEM设置合并到TU_DEBUG中。", Icons.Filled.Warning),
+            XmbRow.Toggle("forcecb", "forcecb — 强制并发分箱", Icons.Filled.Science, cfg.forceCb) { on -> write { it.forceCb = on } },
+            XmbRow.Toggle("nocb", "nocb — 禁用并发分箱", Icons.Filled.Science, cfg.noCb) { on -> write { it.noCb = on } },
+            XmbRow.Toggle("sysmem", "sysmem — 强制系统内存（绕过GMEM）", Icons.Filled.Science, cfg.sysmem && !sysmemBlocked,
                 disabledReason = if (sysmemBlocked) "Disabled — Turnip GMEM = Force On overrides sysmem." else null) { on -> write { it.sysmem = on } },
-            XmbRow.Toggle("deckEmu", "deck_emu — advertise as SteamDeck", Icons.Filled.Science, cfg.deckEmu,
+            XmbRow.Toggle("deckEmu", "deck_emu — 伪装为SteamDeck", Icons.Filled.Science, cfg.deckEmu,
                 subtitle = "Needs a Banners-Turnip driver (ignored on stock Turnip)") { on -> write { it.deckEmu = on } },
         )
     }
@@ -541,7 +541,7 @@ private fun p2BcnLayerMenu(
     return XmbMenu(ctx.getString(R.string.bcn_layer_section), Icons.Filled.Layers) {
         val cfg = P2GfxCfg(raw())
         val rows = mutableListOf<XmbRow>()
-        if (qualcomm()) rows += XmbRow.Info("adreno", "No effect on Adreno (native BCn) — these apply to Mali/non-Qualcomm GPUs", Icons.Filled.Info)
+        if (qualcomm()) rows += XmbRow.Info("adreno", "对 Adreno（原生 BCn）无效果 — 这些适用于 Mali/非高通 GPU", Icons.Filled.Info)
         rows += XmbRow.Toggle("forceDecode", ctx.getString(R.string.bcn_layer_force_decode), Icons.Filled.Layers, cfg.bcnLayerAuto,
             subtitle = ctx.getString(R.string.bcn_layer_force_decode_hint)) { on -> write { it.bcnLayerAuto = on } }
         rows += XmbRow.Toggle("etc2", ctx.getString(R.string.bcn_layer_transcode_etc2), Icons.Filled.Layers, cfg.bcnTranscodeEtc2,
@@ -565,10 +565,10 @@ private fun p2BcnLayerMenu(
 /** #132 Layer 1: one control per env key scanned from an imported wrapper, stored under the raw key. */
 private fun p2DetectedMenu(
     xmb: XmbScope, keys: () -> List<String>, raw: () -> String, write: ((P2GfxCfg) -> Unit) -> Unit,
-): XmbMenu = XmbMenu("Detected settings", Icons.Filled.Science) {
+): XmbMenu = XmbMenu("检测到的设置", Icons.Filled.Science) {
     val cfg = P2GfxCfg(raw())
     val rows = mutableListOf<XmbRow>()
-    rows += XmbRow.Info("note", "Values are passed to the wrapper as-is; unknown ones are safe to leave blank.", Icons.Filled.Info)
+    rows += XmbRow.Info("note", "值会按原样传递给wrapper；未知项可安全留空。", Icons.Filled.Info)
     val list = keys()
     if (list.isEmpty()) rows += XmbRow.Info("none", "No extra settings detected.", Icons.Filled.Info)
     list.forEach { key ->

@@ -141,9 +141,9 @@ internal object PerformanceRows {
                     "Adreno: no root needed (KGSL turbo). Other GPUs need root."),
                 rootRow(PerfRootApplier.KEY_CPU_GOVERNOR, "Root controls", "CPU governor: performance", EXPERT,
                     "Forces every CPU cluster to the performance governor."),
-                rootRow(PerfRootApplier.KEY_CPU_FREQ_LOCK, "Root controls", "Lock CPU frequency to max", EXPERT,
+                rootRow(PerfRootApplier.KEY_CPU_FREQ_LOCK, "Root controls", "锁定 CPU 最高频率", EXPERT,
                     "Sets every cluster's minimum frequency to its maximum."),
-                rootRow(PerfRootApplier.KEY_CORES_ONLINE, "Root controls", "Keep all cores online", EXPERT,
+                rootRow(PerfRootApplier.KEY_CORES_ONLINE, "Root controls", "保持所有核心在线", EXPERT,
                     "Stops the kernel taking cores offline."),
             ) +
             DANGER_KEYS.map { k -> hiddenDef(rootId(k), "performance", vm = null, game = appOverride(k), worlds = WINE_LINUX) } +
@@ -175,7 +175,7 @@ internal object PerformanceRows {
         val raw = WineUtils.startupServiceRawName(entry)
         val label = WineUtils.STARTUP_SERVICE_LABELS.getOrElse(i) { raw }
         return SettingDef(
-            id = "performance.service.$raw", category = "performance", group = "Custom services", level = ADVANCED,
+            id = "performance.service.$raw", category = "performance", group = "自定义服务", level = ADVANCED,
             label = label, tech = raw,
             hint = when {
                 i == 0 -> "Custom starts with every service off: turn on only what the game needs."
@@ -228,7 +228,7 @@ internal object PerformanceRows {
         worlds = WINE_LINUX,
         note = { _, _ ->
             if (runCatching { PerfRootApplier.isUsable(key) }.getOrDefault(true)) null
-            else "Saved for this game and applied at launch once root is granted."
+            else "为此游戏保存，并在授予 root 后于启动时应用。"
         },
     )
 }
@@ -382,7 +382,7 @@ internal class DeckPerformanceSection(
 
     fun duplicate(kind: PresetKind) {
         val id = selected(kind)
-        ask = Ask("Duplicate preset", context.getString(R.string.do_you_want_to_duplicate_this_preset), "Duplicate") {
+        ask = Ask("Duplicate preset", context.getString(R.string.do_you_want_to_duplicate_this_preset), "复制") {
             if (isFex(kind)) FEXCorePresetManager.duplicatePreset(context, id) else Box64PresetManager.duplicatePreset("box64", context, id)
             listChanged()
         }
@@ -394,7 +394,7 @@ internal class DeckPerformanceSection(
             AppUtils.showToast(context, R.string.you_cannot_remove_this_preset)
             return
         }
-        ask = Ask("Delete preset", context.getString(R.string.do_you_want_to_remove_this_preset), "Delete") {
+        ask = Ask("Delete preset", context.getString(R.string.do_you_want_to_remove_this_preset), "删除") {
             if (isFex(kind)) FEXCorePresetManager.removePreset(context, id) else Box64PresetManager.removePreset("box64", context, id)
             listChanged()
         }
@@ -471,7 +471,7 @@ internal class DeckPerformanceSection(
     private fun bottomItems(): List<PageExtra> = buildList {
         val kinds = kinds()
         if (kinds.isNotEmpty()) {
-            add(PageExtra("perf-presets-label") { GroupLabel("Translator preset values") })
+            add(PageExtra("perf-presets-label") { GroupLabel("翻译器预设值") })
             kinds.forEachIndexed { i, kind ->
                 add(PageExtra("perf-preset:${kind.name}") {
                     GroupCard(first = i == 0, last = i == kinds.lastIndex, highlight = false) { PresetLines(this@DeckPerformanceSection, kind) }
@@ -479,7 +479,7 @@ internal class DeckPerformanceSection(
             }
         }
         if (power) {
-            add(PageExtra("perf-power-label") { GroupLabel("Power profile and root") })
+            add(PageExtra("perf-power-label") { GroupLabel("电源配置和 root") })
             add(PageExtra("perf-power") {
                 GroupCard(first = true, last = true, highlight = false) { PowerLines(this@DeckPerformanceSection) }
             })
@@ -511,14 +511,14 @@ internal class DeckPerformanceSection(
                         importFor = null
                         startImport(kind)
                         inApp.launch(InAppFilePicker.buildIntent(context, emptyArray(), "Select preset"))
-                    }) { Text("Browse files") }
+                    }) { Text("浏览文件") }
                 },
                 dismissButton = {
                     TextButton(onClick = {
                         importFor = null
                         startImport(kind)
                         system.launch(arrayOf("*/*"))
-                    }) { Text("Pick via system…") }
+                    }) { Text("从系统选取…") }
                 },
                 title = { Text("Import a ${kindLabel(kind)} preset") },
                 text = { Text("A .wbp preset file. It joins the preset list every container and game picks from.") },
@@ -526,14 +526,14 @@ internal class DeckPerformanceSection(
         }
         dangerFor?.let { key ->
             PerfDisclaimerDialog(
-                title = dangerLabel(key), body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Enable",
+                title = dangerLabel(key), body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "启用",
                 onConfirm = { dangerFor = null; setDanger(key, true) },
                 onDismiss = { dangerFor = null },
             )
         }
         if (grantGate) {
             PerfDisclaimerDialog(
-                title = "Power-user performance — read first", body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Grant Root",
+                title = "启用", body = PerfDisclaimerCopy.ROOT_RISK, confirmLabel = "Grant Root",
                 onConfirm = { grantGate = false; requestRoot() },
                 onDismiss = { grantGate = false },
             )
@@ -541,7 +541,7 @@ internal class DeckPerformanceSection(
     }
 }
 
-private fun dangerLabel(key: String) = if (key == PerfRootApplier.KEY_THERMAL_DISABLE) "Disable thermal throttling" else "Fan to maximum"
+private fun dangerLabel(key: String) = if (key == PerfRootApplier.KEY_THERMAL_DISABLE) "Disable thermal throttling" else "风扇最大转速"
 
 // ── Preset lines ────────────────────────────────────────────────────────────────────────────────
 
@@ -553,8 +553,8 @@ private fun PresetLines(s: DeckPerformanceSection, kind: PresetKind) {
     val name = s.presetName(kind, id) ?: id.ifEmpty { "No preset" }
     val custom = s.customised(kind, id)
     val where = when (s.owner) {
-        DeckPerformanceSection.Owner.GAME -> if (custom) "Customised for this game" else "Follows the container"
-        DeckPerformanceSection.Owner.CONTAINER -> if (custom) "Customised for this container" else "Follows the shared preset"
+        DeckPerformanceSection.Owner.GAME -> if (custom) "已为此游戏自定义" else "遵循容器"
+        DeckPerformanceSection.Owner.CONTAINER -> if (custom) "已为此容器自定义" else "遵循共享预设"
         DeckPerformanceSection.Owner.SHARED -> if (custom) "Shared preset, edited" else "Shared preset"
     }
     DeckLine(
@@ -566,15 +566,15 @@ private fun PresetLines(s: DeckPerformanceSection, kind: PresetKind) {
     )
     Column(modifier = Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, bottom = 14.dp)) {
         Text(
-            "The preset list is shared by every container and game.",
+            "预设列表由每个容器和游戏共享。",
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp, modifier = Modifier.padding(bottom = 8.dp),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             DeckSmallButton("New", Icons.Filled.Add) { s.editing = DeckPerformanceSection.Edit(kind, null) }
-            DeckSmallButton("Duplicate", Icons.Filled.ContentCopy, enabled = id.isNotEmpty()) { s.duplicate(kind) }
-            DeckSmallButton("Delete", Icons.Filled.Delete, enabled = s.isCustomPreset(kind, id)) { s.delete(kind) }
-            DeckSmallButton("Export", Icons.Filled.FileUpload, enabled = s.isCustomPreset(kind, id)) { s.export(kind) }
-            DeckSmallButton("Import", Icons.Filled.FileDownload) { s.importFor = kind }
+            DeckSmallButton("复制", Icons.Filled.ContentCopy, enabled = id.isNotEmpty()) { s.duplicate(kind) }
+            DeckSmallButton("删除", Icons.Filled.Delete, enabled = s.isCustomPreset(kind, id)) { s.delete(kind) }
+            DeckSmallButton("导出", Icons.Filled.FileUpload, enabled = s.isCustomPreset(kind, id)) { s.export(kind) }
+            DeckSmallButton("导入", Icons.Filled.FileDownload) { s.importFor = kind }
         }
     }
 }
@@ -586,9 +586,9 @@ private fun PresetLines(s: DeckPerformanceSection, kind: PresetKind) {
 private fun PowerLines(s: DeckPerformanceSection) {
     val cs = MaterialTheme.colorScheme
     Column(modifier = Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 8.dp)) {
-        Text("Power profile", color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text("电源配置", color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         Text(
-            "Sets the power, GPU and root switches above for this game in one go. The profile itself isn't kept.",
+            "一次性为游戏设置上面的电源、GPU 和 root 开关。配置本身不会被保留。",
             color = cs.onSurfaceVariant, fontSize = 13.5.sp, modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -599,8 +599,8 @@ private fun PowerLines(s: DeckPerformanceSection) {
     val rootState by RootManager.state.collectAsState()
     val granted = rootState == RootManager.RootState.GRANTED
     DeckLine(
-        label = if (granted) "Root granted" else "No root",
-        hint = if (granted) "Full CPU and GPU control is unlocked." else "The root switches are saved for this game and applied at launch once root is granted.",
+        label = if (granted) "已授予root" else "无 root",
+        hint = if (granted) "完整的 CPU 和 GPU 控制已解锁。" else "root 开关会为此游戏保存，并在授予 root 后于启动时应用。",
         icon = Icons.Filled.Security,
         trailing = if (!granted && rootState != RootManager.RootState.UNAVAILABLE) ({ DeckSmallButton("Grant root") { s.grantGate = true } }) else null,
     )
@@ -609,8 +609,8 @@ private fun PowerLines(s: DeckPerformanceSection) {
         val on = s.dangerOn(key)
         DeckLine(
             label = dangerLabel(key),
-            hint = (if (key == PerfRootApplier.KEY_THERMAL_DISABLE) "Root. The temperature watchdog still guards." else "Root. Forces active cooling to full at launch.") +
-                if (s.dangerSetHere(key)) " Set for this game." else " App setting.",
+            hint = (if (key == PerfRootApplier.KEY_THERMAL_DISABLE) "Root. The temperature watchdog still guards." else "Root。在启动时强制主动散热全速。") +
+                if (s.dangerSetHere(key)) " 为此游戏设置。" else " 应用设置。",
             icon = Icons.Filled.Warning,
             error = on,
             trailing = {
@@ -627,7 +627,7 @@ private fun PowerLines(s: DeckPerformanceSection) {
     val count = s.powerOverrides()
     if (count > 0) {
         DeckLine(
-            label = "Reset power and root to the app's defaults",
+            label = "已为此游戏设置 1 个开关。",
             hint = if (count == 1) "1 switch is set for this game." else "$count switches are set for this game.",
             icon = Icons.Filled.Restore,
             onClick = { s.resetPower() },
@@ -741,7 +741,7 @@ private fun PresetValuesDialog(s: DeckPerformanceSection, edit: DeckPerformanceS
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    "Environment variables",
+                    "环境变量",
                     color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 12.5.sp,
                     modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
                 )
@@ -782,7 +782,7 @@ private fun PresetValuesDialog(s: DeckPerformanceSection, edit: DeckPerformanceS
                         s.resetValues(kind, presetId)
                         specs.forEach { values[it.name] = seed(it) }
                         modified = false
-                    }) { Text("Reset", color = cs.error) }
+                    }) { Text("重置", color = cs.error) }
                 }
                 TextButton(onClick = onDismiss) { Text("Cancel") }
             }

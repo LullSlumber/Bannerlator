@@ -195,7 +195,7 @@ fun BigPictureScreen(navController: NavController) {
     // phone UI for now, so the result dialog just surfaces the outcome message.
     val communityVm: ShortcutsViewModel = viewModel()
     var showCommunity by remember { mutableStateOf(false) }
-    // Per-game community sheet (Options → "Community configs"): scoped to the selected game, unlike the
+    // Per-game community sheet (Options → "社区配置"): scoped to the selected game, unlike the
     // top-rail globe which opens the all-games CommunityCatalogBrowser.
     var showGameCommunity by remember { mutableStateOf(false) }
     // The shortcut a config-import file picker will apply to (set when the picker is launched from the
@@ -236,7 +236,7 @@ fun BigPictureScreen(navController: NavController) {
         }
         if (!GoldbergComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Steam Emulator (Goldberg)"
+            componentDownloadLabel = "Steam 模拟器 (Goldberg)"
             componentDownloadProgress = 0f
             GoldbergComponent.downloadAsync(
                 context,
@@ -280,7 +280,7 @@ fun BigPictureScreen(navController: NavController) {
         }
         if (!SteamHostComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Headless Steam (Valve Steam client)"
+            componentDownloadLabel = "无窗口Steam（Valve Steam客户端）"
             componentDownloadProgress = 0f
             SteamHostComponent.downloadAsync(
                 context,
@@ -304,7 +304,7 @@ fun BigPictureScreen(navController: NavController) {
     var steamUpdateLabel by remember { mutableStateOf("") }
     var steamUpdateTitle by remember { mutableStateOf("") }
     var steamUpdateHandle by remember { mutableStateOf<SteamGameUpdater.UpdateHandle?>(null) }
-    // "Check for updates" is check-THEN-offer (never auto-applies): the cheap probe runs first, and a found
+    // "检查更新" is check-THEN-offer (never auto-applies): the cheap probe runs first, and a found
     // delta (or a can't-tell-offline result) parks the game + its status here so the couch confirm sheet
     // below can offer to apply it. null = no offer pending. Mirrors ShortcutsScreen.
     var steamUpdateOffer by remember { mutableStateOf<Pair<Shortcut, SteamGameUpdater.UpdateStatus>?>(null) }
@@ -313,7 +313,7 @@ fun BigPictureScreen(navController: NavController) {
     // Cancellable via steamUpdateHandle.
     fun runSteamMaintenance(s: Shortcut, verify: Boolean) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = if (verify) "Verifying game files" else "Updating game"
+        steamUpdateTitle = if (verify) "验证游戏文件" else "正在更新游戏"
         steamUpdateLabel = if (verify) "Verifying ${s.name}…" else "Checking ${s.name} for updates…"
         steamUpdateProgress = -1f
         steamUpdateFor = s
@@ -331,13 +331,13 @@ fun BigPictureScreen(navController: NavController) {
             if (verify) SteamGameUpdater.verifyFiles(context, appId, progress, done)
             else SteamGameUpdater.updateNow(context, appId, progress, done)
     }
-    // "Check for updates": a cheap, network-free probe (shown in the shared progress modal as the animated
-    // "Checking…" indeterminate phase), then BRANCH — never auto-apply. Up-to-date / not-installed inform
+    // "检查更新": a cheap, network-free probe (shown in the shared progress modal as the animated
+    // "检查中…" indeterminate phase), then BRANCH — never auto-apply. Up-to-date / not-installed inform
     // via a toast; an available (or can't-tell-offline) result opens the couch confirm sheet, whose
     // [Update now] / [Check online] hands off to runSteamMaintenance. onResult lands on the main thread.
     fun checkForUpdatesThenOffer(s: Shortcut) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = "Checking for updates"
+        steamUpdateTitle = "正在检查更新"
         steamUpdateLabel = "Checking ${s.name}…"
         steamUpdateProgress = -1f   // opens in the animated indeterminate state, never a static 0%.
         steamUpdateFor = s
@@ -361,7 +361,7 @@ fun BigPictureScreen(navController: NavController) {
     val coverCache = remember { mutableStateMapOf<String, ImageBitmap>() }
     val inFlight = remember { HashSet<String>() }
 
-    // Config-import picker for the per-game community sheet's "Import" action. Applies the picked `.json`
+    // Config-import picker for the per-game community sheet's "导入" action. Applies the picked `.json`
     // straight to the stashed target shortcut; the outcome surfaces through the shared apply-result dialog.
     val communityImportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -672,7 +672,7 @@ fun BigPictureScreen(navController: NavController) {
                 Spacer(Modifier.width(12.dp))
                 RailButton(
                     icon = Icons.Filled.Apps,
-                    label = "Tools",
+                    label = "工具",
                     focused = zone == BpZone.RAIL && railIndex == 2,
                     onClick = { zone = BpZone.RAIL; railIndex = 2; activeSheet = BpSheet.TOOLS },
                 )
@@ -692,7 +692,7 @@ fun BigPictureScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text("No games yet", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("尚无游戏", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = {
                         // The Deck shell adds games in place over Home; Classic adds them on the Games screen.
@@ -700,7 +700,7 @@ fun BigPictureScreen(navController: NavController) {
                             GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME)
                             navController.popBackStack()
                         } else navController.navigate(Screen.Games.route)
-                    }) { Text("Add games") }
+                    }) { Text("添加游戏") }
                 }
             } else {
                 // Hero — fills the band between the rail and the carousel (a weighted sibling, so its
@@ -785,7 +785,7 @@ fun BigPictureScreen(navController: NavController) {
                                 ) {
                                     Icon(Icons.Filled.PlayArrow, contentDescription = null)
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Play", fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                                    Text("游玩", fontSize = 17.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Spacer(Modifier.width(12.dp))
                                 OutlinedButton(
@@ -936,7 +936,7 @@ fun BigPictureScreen(navController: NavController) {
         )
     }
 
-    // Per-game community sheet (Options → "Community configs"). Applies a picked config to the SELECTED
+    // Per-game community sheet (Options → "社区配置"). Applies a picked config to the SELECTED
     // game via the same applyCommunityPick pipeline as the browser, so the missing-component / driver
     // install + re-apply flow (and the apply-result dialog) is shared. The sheet closes on apply so the
     // result dialog reads clearly over the couch UI.
@@ -1038,7 +1038,7 @@ fun BigPictureScreen(navController: NavController) {
         LaunchMethodSheet(
             shortcut = s,
             onDismiss = { launchChoiceFor = null },
-            // Verify runs a full re-validate pass directly. "Check for updates" is check-THEN-offer: probe
+            // Verify runs a full re-validate pass directly. "检查更新" is check-THEN-offer: probe
             // first, then a couch confirm sheet lets the user choose to apply — it never auto-updates. Both
             // dismiss the sheet first (so no dialog is layered behind the ModalBottomSheet's window).
             onUpdateFiles = { launchChoiceFor = null; checkForUpdatesThenOffer(s) },
@@ -1048,9 +1048,9 @@ fun BigPictureScreen(navController: NavController) {
                 // launchModeRemembered="1"), then stage the picked component and launch.
                 s.putExtra("launchMode", mode)
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
-                // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
+                // Per-game "记住我的选择" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
-                // Per-game "Steam Input" (SteamLite only; the agent configures the client's controller layer).
+                // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
                 // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
@@ -1079,7 +1079,7 @@ fun BigPictureScreen(navController: NavController) {
 
     // ── Steam account check — before the SteamLite / Headless Steam launch goes on ──────────────────
     accountWarning?.let { w ->
-        // "Launch anyway" and "Switch account and launch" (once the switch succeeded) both go on with the
+        // "仍要启动" and "Switch account and launch" (once the switch succeeded) both go on with the
         // launch; the account was already checked.
         val proceed = {
             accountWarning = null
@@ -1094,7 +1094,7 @@ fun BigPictureScreen(navController: NavController) {
         )
     }
 
-    // ── SteamLite pre-flight ("Getting Steam ready") — runs BEFORE XServerDisplayActivity ──────────
+    // ── SteamLite pre-flight ("正在准备Steam") — runs BEFORE XServerDisplayActivity ──────────
     preflightFor?.let { s ->
         val appId = steamAppIdOf(s)
         val installDir = remember(s) {
@@ -1107,7 +1107,7 @@ fun BigPictureScreen(navController: NavController) {
                 appId = appId,
                 installDir = installDir,
                 gameName = s.name,
-                pullCloudSaves = savePrefs.getBoolean("auto_download_steam_on_launch", true),
+                pullCloudSaves = savePrefs.getBoolean("Steam 游戏", true),
                 clientPackage = if (s.getExtra("launchMode", "") == "AppSteam") SteamSessionManager.ClientPackage.APP_STEAM
                                 else SteamSessionManager.ClientPackage.STEAMLITE,
             ),
@@ -1194,7 +1194,7 @@ fun BigPictureScreen(navController: NavController) {
         )
     }
 
-    // "Check for updates" outcome (couch UI): a delta is (or might be) due — offer to apply it. Reuses the
+    // "检查更新" outcome (couch UI): a delta is (or might be) due — offer to apply it. Reuses the
     // fully D-pad + touch navigable BpSheetScaffold (a focusable bottom sheet), NOT a bare touch dialog.
     // Never auto-updates; [Update now] / [Check online] runs the authoritative updateNow pass.
     steamUpdateOffer?.let { (s, status) ->
@@ -1209,11 +1209,11 @@ fun BigPictureScreen(navController: NavController) {
         BpSheetScaffold(
             title = title,
             rows = listOf(
-                BpRow(Icons.Filled.Download, if (available) "Update now" else "Check online") {
+                BpRow(Icons.Filled.Download, if (available) "立即更新" else "Check online") {
                     steamUpdateOffer = null
                     runSteamMaintenance(s, verify = false)
                 },
-                BpRow(Icons.Filled.Close, if (available) "Later" else "Cancel") {
+                BpRow(Icons.Filled.Close, if (available) "等待" else "Cancel") {
                     steamUpdateOffer = null
                 },
             ),
@@ -1332,8 +1332,8 @@ private fun GameOptionsSheet(
             add(BpRow(Icons.Filled.Edit, "Edit shortcut", onEditShortcut))
             // The Linux Steam entry has no Wine container or community configs: its own editor only.
             if (!com.winlator.star.linux.LinuxShortcuts.isLinuxEntry(shortcut)) {
-                add(BpRow(Icons.Filled.Tune, "Container settings", onContainerSettings))
-                add(BpRow(Icons.Filled.Public, "Community configs", onCommunityConfigs))
+                add(BpRow(Icons.Filled.Tune, "容器设置", onContainerSettings))
+                add(BpRow(Icons.Filled.Public, "社区配置", onCommunityConfigs))
             }
         }
         add(BpRow(Icons.Filled.Image, "Change cover art") {
@@ -1344,7 +1344,7 @@ private fun GameOptionsSheet(
             )
         })
         if (!shortcut.customCoverArtPath.isNullOrEmpty()) {
-            add(BpRow(Icons.Filled.Delete, "Remove cover art") { onRemoveCover(); onDismiss() })
+            add(BpRow(Icons.Filled.Delete, "移除封面图") { onRemoveCover(); onDismiss() })
         }
     }
     BpSheetScaffold(title = shortcut.name, rows = rows, onDismiss = onDismiss)
@@ -1358,10 +1358,10 @@ private fun ToolsSheet(
     onDownloads: () -> Unit,
 ) {
     BpSheetScaffold(
-        title = "Tools",
+        title = "工具",
         rows = listOf(
-            BpRow(Icons.Filled.FolderOpen, "File Manager", onFileManager),
-            BpRow(Icons.Filled.Layers, "Manage Wrappers", onWrappers),
+            BpRow(Icons.Filled.FolderOpen, "文件管理器", onFileManager),
+            BpRow(Icons.Filled.Layers, "管理 Wrappers", onWrappers),
             BpRow(Icons.Filled.Download, "Downloads", onDownloads),
         ),
         onDismiss = onDismiss,
@@ -1378,9 +1378,9 @@ private fun PowerSheet(
     BpSheetScaffold(
         title = "Power",
         rows = listOf(
-            BpRow(Icons.Filled.ExitToApp, "Exit Big Picture", onExit),
-            BpRow(Icons.Filled.PowerSettingsNew, "Turn off Big Picture mode", onTurnOff),
-            BpRow(Icons.Filled.Close, "Quit", onQuit),
+            BpRow(Icons.Filled.ExitToApp, "退出大屏幕模式", onExit),
+            BpRow(Icons.Filled.PowerSettingsNew, "关闭大屏幕模式", onTurnOff),
+            BpRow(Icons.Filled.Close, "退出", onQuit),
         ),
         onDismiss = onDismiss,
     )
@@ -1396,15 +1396,15 @@ private data class BpCommunityCard(
 )
 
 // Game-scoped community configs for Big Picture — the couch-mode counterpart of the phone Games screen's
-// per-shortcut "Community configs" dialog. Unlike the top-rail globe (which opens the ALL-GAMES
+// per-shortcut "社区配置" dialog. Unlike the top-rail globe (which opens the ALL-GAMES
 // CommunityCatalogBrowser), this is scoped to ONE shortcut: auto-matches the game, lists that game's
-// uploaded configs (device-ranked, with a "Matches my device" filter) and applies a picked one straight
+// uploaded configs (device-ranked, with a "匹配我的设备" filter) and applies a picked one straight
 // to this shortcut through [onApply] — which routes back to Big Picture's shared applyCommunityPick, so
 // the missing-component / driver install + re-apply flow still fires. Share + Upload reuse the same VM
 // one-shots the phone dialog uses; Import re-uses Big Picture's config-import launcher via [onImport].
 // Fully controller-navigable with the same single-focus, index-based model the rest of Big Picture uses.
 //
-// DEFERRED (couch-mode TODO): the "My uploads" manager isn't wired here — it needs the full uploads-list
+// DEFERRED (couch-mode TODO): the "我的上传" manager isn't wired here — it needs the full uploads-list
 // UI that only lives on the phone screen; it stays reachable from the top globe → My account entry point.
 @Composable
 private fun GameCommunitySheet(
@@ -1504,7 +1504,7 @@ private fun GameCommunitySheet(
                             putExtra(Intent.EXTRA_TEXT, "Bannerlator config for ${res.game}")
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
-                        context.startActivity(Intent.createChooser(send, "Share config"))
+                        context.startActivity(Intent.createChooser(send, "分享配置"))
                     } catch (e: Exception) {
                         Toast.makeText(context, "Couldn't share the config.", Toast.LENGTH_SHORT).show()
                     }
@@ -1600,7 +1600,7 @@ private fun GameCommunitySheet(
                         }
                     },
             ) {
-                SheetTitle("Community configs")
+                SheetTitle("社区配置")
                 Text(
                     shortcut.name,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1614,14 +1614,14 @@ private fun GameCommunitySheet(
                         OutlinedButton(onClick = shareConfig, modifier = Modifier.fillMaxWidth()) {
                             Icon(Icons.Filled.Share, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Share")
+                            Text("分享")
                         }
                     }
                     DpadHighlight(focused = focusRow == 0 && curCol == 1, modifier = Modifier.weight(1f)) {
                         OutlinedButton(onClick = onImport, modifier = Modifier.fillMaxWidth()) {
                             Icon(Icons.Filled.FileUpload, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Import")
+                            Text("导入")
                         }
                     }
                 }
@@ -1635,7 +1635,7 @@ private fun GameCommunitySheet(
                         } else {
                             Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Upload to community")
+                            Text("上传到社区")
                         }
                     }
                 }
@@ -1648,7 +1648,7 @@ private fun GameCommunitySheet(
                             if (q.trim().length >= 2) vm.searchCommunityGames(q) { searchResults = it }
                             else searchResults = emptyList()
                         },
-                        label = { Text("Search all games") },
+                        label = { Text("搜索所有游戏") },
                         leadingIcon = { Icon(Icons.Filled.Search, null) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -1701,7 +1701,7 @@ private fun GameCommunitySheet(
                         val tieOptions = match?.alternatives.orEmpty()
                         if (tieOptions.size > 1) {
                             Text(
-                                "Which game is this?",
+                                "这是哪个游戏?",
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1744,13 +1744,13 @@ private fun GameCommunitySheet(
                         FilterChip(
                             selected = matchesMine,
                             onClick = { matchesMine = !matchesMine },
-                            label = { Text("Matches my device") },
+                            label = { Text("匹配我的设备") },
                             enabled = hwEnabled,
                         )
                         Spacer(Modifier.height(8.dp))
                         if (cards.isEmpty()) {
                             Text(
-                                if (matchesMine) "No uploaded configs match your device." else "No configs listed.",
+                                if (matchesMine) "No uploaded configs match your device." else "没有列出的配置。",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         } else {
@@ -1799,9 +1799,9 @@ private fun GameCommunitySheet(
         }
         androidx.compose.material3.AlertDialog(
             onDismissRequest = dismissReplace,
-            title = { Text("Replace your shared config?") },
+            title = { Text("替换您的共享配置?") },
             text = { Text("You've already shared a config for \"${existing.game}\". Replace it with this one?") },
-            confirmButton = { DeckDialogBars(); TextButton(onClick = { replacePrompt = null; proceed() }) { Text("Replace") } },
+            confirmButton = { DeckDialogBars(); TextButton(onClick = { replacePrompt = null; proceed() }) { Text("替换") } },
             dismissButton = { TextButton(onClick = dismissReplace) { Text("Cancel") } },
         )
     }
@@ -1967,7 +1967,7 @@ internal fun launchShortcut(activity: Activity, shortcut: Shortcut, preflightDon
             putExtra("disableXinput", shortcut.getExtra("disableXinput", "0"))
             if (preflightDone) putExtra(SteamSessionManager.EXTRA_PREFLIGHT_DONE, true)
         }
-        // Same "Launch this game on the TV" as the shortcut list (shared helper, so the two launch
+        // Same "在电视上启动此游戏" as the shortcut list (shared helper, so the two launch
         // paths can't drift); false = no TV wanted, none connected, or the system refused it.
         if (!launchOnExternalDisplay(activity, shortcut, intent)) activity.startActivity(intent)
     } else {

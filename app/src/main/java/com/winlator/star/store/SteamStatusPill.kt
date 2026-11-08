@@ -47,15 +47,15 @@ fun SteamStatusPill(
         SteamRepository.SteamStatus.CONNECTING ->
             Triple(Color(0xFFE0A82E), "Connecting…", false)
         SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE ->
-            Triple(Color(0xFFE07B2E), "Signed in elsewhere", true)
+            Triple(Color(0xFFE07B2E), "已在别处登录", true)
         SteamRepository.SteamStatus.OFFLINE ->
             Triple(Color(0xFFCB4B4B), "Offline", true)
         SteamRepository.SteamStatus.SIGNED_OUT ->
-            Triple(Color(0xFF9AA0A6), "Signed out", true)
+            Triple(Color(0xFF9AA0A6), "已登出", true)
         // A real-Steam (SteamLite) game holds the account in-container; the app's own session is
         // deliberately down and comes back on game exit. Not an error, not tappable (a tap would tug).
         SteamRepository.SteamStatus.PAUSED_FOR_GAME ->
-            Triple(Color(0xFF5B8DEF), "Paused — game session active", false)
+            Triple(Color(0xFF5B8DEF), "已暂停 — 游戏会话活动", false)
     }
 
     val base = Modifier

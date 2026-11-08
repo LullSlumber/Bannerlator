@@ -1,7 +1,7 @@
 package com.winlator.star.container
 
 /**
- * Per-shortcut "Game Details" — the editorial metadata (linked Steam appId, genres, short
+ * Per-shortcut "游戏详情" — the editorial metadata (linked Steam appId, genres, short
  * description, release year, metacritic) shown on the Game Details editor and mirrored onto the
  * launch overlay. Persisted on the shortcut's `[Extra Data]` block (see [Shortcut.putExtra] /
  * [Shortcut.getExtra]) so it rides with the `.desktop` through renames — exactly like the existing

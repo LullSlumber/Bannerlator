@@ -126,7 +126,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Games wall — a landscape-locked, 10-foot "Big Picture" library. This is the presentation the app now
+// Games wall — a landscape-locked, 10-foot "容器管理" library. This is the presentation the app now
 // uses for the main library route (Screen.Games); it swaps the phone-grid ShortcutsScreen for a couch
 // launcher that mirrors the approved mockup: a rail header (brand + search + status), a left nav rail,
 // a centre-highlighted 2:3 cover wall (LazyRow), and a footer launch bar. Data + launch reuse the
@@ -411,7 +411,7 @@ fun GamesWallScreen(navController: NavController) {
                 // Games wall.
                 Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     Text(
-                        "LIBRARY · GAMES WALL",
+                        "库 · 游戏墙",
                         color = DIM,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
@@ -421,7 +421,7 @@ fun GamesWallScreen(navController: NavController) {
                     if (visible.isEmpty()) {
                         Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                             Text(
-                                if (query.isBlank()) "No games yet" else "No games match \"$query\"",
+                                if (query.isBlank()) "尚无游戏" else "No games match \"$query\"",
                                 color = TXT, fontSize = 22.sp, fontWeight = FontWeight.Bold,
                             )
                         }
@@ -601,7 +601,7 @@ private fun WallHeader(
             Icon(Icons.Filled.Search, contentDescription = null, tint = DIM, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(10.dp))
             Box(modifier = Modifier.weight(1f)) {
-                if (query.isEmpty()) Text("Search…", color = DIM, fontSize = 15.sp)
+                if (query.isEmpty()) Text("搜索…", color = DIM, fontSize = 15.sp)
                 BasicTextField(
                     value = query,
                     onValueChange = onQuery,
@@ -651,11 +651,11 @@ private fun WallRail(focusedIndex: Int, onClick: (Int) -> Unit) {
             Spacer(Modifier.height(6.dp))
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 8.dp).background(BRD))
             Spacer(Modifier.height(10.dp))
-            RailItem(Icons.Filled.VideoLibrary, "Library", isBack = false, selected = true, focused = focusedIndex == RAIL_LIBRARY) { onClick(RAIL_LIBRARY) }
+            RailItem(Icons.Filled.VideoLibrary, "库", isBack = false, selected = true, focused = focusedIndex == RAIL_LIBRARY) { onClick(RAIL_LIBRARY) }
             Spacer(Modifier.height(6.dp))
-            RailItem(Icons.Filled.Public, "Community catalog", isBack = false, selected = false, focused = focusedIndex == RAIL_COMMUNITY) { onClick(RAIL_COMMUNITY) }
+            RailItem(Icons.Filled.Public, "社区目录", isBack = false, selected = false, focused = focusedIndex == RAIL_COMMUNITY) { onClick(RAIL_COMMUNITY) }
             Spacer(Modifier.height(6.dp))
-            RailItem(Icons.Filled.Build, "Tools", isBack = false, selected = false, focused = focusedIndex == RAIL_TOOLS) { onClick(RAIL_TOOLS) }
+            RailItem(Icons.Filled.Build, "工具", isBack = false, selected = false, focused = focusedIndex == RAIL_TOOLS) { onClick(RAIL_TOOLS) }
             Spacer(Modifier.height(6.dp))
             RailItem(Icons.Filled.PowerSettingsNew, "Power", isBack = false, selected = false, focused = focusedIndex == RAIL_POWER) { onClick(RAIL_POWER) }
         }
@@ -818,7 +818,7 @@ private fun WallFooter(
         ) {
             Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
-            Text("LAUNCH", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
+            Text("启动", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
         }
         Spacer(Modifier.width(14.dp))
         OutlinedButton(
@@ -926,14 +926,14 @@ private fun WallSheetScaffold(title: String, rows: List<WallSheetRow>, onDismiss
 @Composable
 private fun WallToolsSheet(onDismiss: () -> Unit, onNavigate: (String) -> Unit, onDownloads: () -> Unit) {
     WallSheetScaffold(
-        title = "Tools",
+        title = "工具",
         rows = listOf(
-            WallSheetRow(Icons.Filled.FolderOpen, "File Manager") { onNavigate(Screen.FileManager.route) },
-            WallSheetRow(Icons.Filled.Layers, "Containers") { onNavigate(Screen.Containers.route) },
-            WallSheetRow(Icons.Filled.Inventory2, "Contents") { onNavigate(Screen.Contents.route) },
+            WallSheetRow(Icons.Filled.FolderOpen, "文件管理器") { onNavigate(Screen.FileManager.route) },
+            WallSheetRow(Icons.Filled.Layers, "容器管理") { onNavigate(Screen.Containers.route) },
+            WallSheetRow(Icons.Filled.Inventory2, "存档与云") { onNavigate(Screen.Contents.route) },
             WallSheetRow(Icons.Filled.Save, "Saves") { onNavigate(Screen.Saves.route) },
-            WallSheetRow(Icons.Filled.SportsEsports, "Input Controls") { onNavigate(Screen.InputControls.route) },
-            WallSheetRow(Icons.Filled.Layers, "Manage Wrappers") { onNavigate(Screen.Wrappers.route) },
+            WallSheetRow(Icons.Filled.SportsEsports, "虚拟按键") { onNavigate(Screen.InputControls.route) },
+            WallSheetRow(Icons.Filled.Layers, "管理 Wrappers") { onNavigate(Screen.Wrappers.route) },
             WallSheetRow(Icons.Filled.Download, "Downloads") { onDownloads() },
             WallSheetRow(Icons.Filled.Settings, "Settings") { onNavigate(Screen.Settings.route) },
         ),
@@ -946,8 +946,8 @@ private fun WallPowerSheet(onDismiss: () -> Unit, onSettings: () -> Unit, onQuit
     WallSheetScaffold(
         title = "Power",
         rows = listOf(
-            WallSheetRow(Icons.Filled.Settings, "App settings", onSettings),
-            WallSheetRow(Icons.Filled.PowerSettingsNew, "Quit", onQuit),
+            WallSheetRow(Icons.Filled.Settings, "应用设置", onSettings),
+            WallSheetRow(Icons.Filled.PowerSettingsNew, "退出", onQuit),
         ),
         onDismiss = onDismiss,
     )
@@ -968,12 +968,12 @@ private fun GameOptionsWallSheet(
             add(WallSheetRow(Icons.Filled.Edit, "Edit shortcut", onEditShortcut))
             // The Linux Steam entry has no Wine container or community configs: its own editor only.
             if (!com.winlator.star.linux.LinuxShortcuts.isLinuxEntry(shortcut)) {
-                add(WallSheetRow(Icons.Filled.Tune, "Container settings", onContainerSettings))
-                add(WallSheetRow(Icons.Filled.Public, "Community configs", onCommunityConfigs))
+                add(WallSheetRow(Icons.Filled.Tune, "容器设置", onContainerSettings))
+                add(WallSheetRow(Icons.Filled.Public, "社区配置", onCommunityConfigs))
             }
         }
         if (!shortcut.customCoverArtPath.isNullOrEmpty()) {
-            add(WallSheetRow(Icons.Filled.Image, "Remove cover art", onRemoveCover))
+            add(WallSheetRow(Icons.Filled.Image, "移除封面图", onRemoveCover))
         }
     }
     WallSheetScaffold(title = shortcut.name, rows = rows, onDismiss = onDismiss)

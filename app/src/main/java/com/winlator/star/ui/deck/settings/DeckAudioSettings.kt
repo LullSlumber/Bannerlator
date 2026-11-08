@@ -114,8 +114,8 @@ internal object AudioRows {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = ID_MIC, category = "audio", group = "Microphone", level = ADVANCED,
-            label = "Microphone", hint = "Lets games use the mic: DirectAudio captures the input. Android asks for the permission once.",
+            id = ID_MIC, category = "audio", group = "麦克风", level = ADVANCED,
+            label = "麦克风", hint = "Lets games use the mic: DirectAudio captures the input. Android asks for the permission once.",
             tech = DirectAudioSupport.MIC_ENV_KEY,
             control = { _, _ -> Control.Toggle },
             vm = VmBinding(
@@ -134,7 +134,7 @@ internal object AudioRows {
                     values(ID_DRIVER) != "directaudio" || !directAudioSupported(env) -> "Available on the DirectAudio sound system."
                     // The launch merges the env strings, so a game can't take away the container's flag.
                     env.scope == EditorScope.GAME && env.vm?.let { DirectAudioSupport.isMicEnabledInEnv(it.envVarsStr) } == true ->
-                        "On for the whole container: switch it off in the container."
+                        "对整个容器开启：在容器中将其关闭。"
                     else -> null
                 }
             },
@@ -216,9 +216,9 @@ internal class DeckAudioSection(
             AudioSettingsDialog(
                 initial = audioConfigFromEnv(AudioRows.effectiveEnv(source, driver), driver),
                 scopeLabel = when (env.scope) {
-                    EditorScope.GAME -> "this game"
-                    EditorScope.DEFAULTS -> "new containers"
-                    else -> "this container"
+                    EditorScope.GAME -> "此游戏"
+                    EditorScope.DEFAULTS -> "新容器"
+                    else -> "此容器"
                 },
                 latencyLive = true,
                 driverLabel = driverLabel(driver),

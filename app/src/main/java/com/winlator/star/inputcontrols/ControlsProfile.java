@@ -172,7 +172,7 @@ public class ControlsProfile implements Comparable<ControlsProfile> {
         return gamepadState;
     }
 
-    // #333: reserved id for the "Default / Any Controller" binding template — a bindings-only entry
+    // #333: reserved id for the "默认 / 任何控制器" binding template — a bindings-only entry
     // (not tied to a real device) whose mappings newly-added controllers inherit, so a fresh controller
     // is never blank (the reporter's issue: a new pad came up with 0 bindings).
     public static final String DEFAULT_CONTROLLER_ID = "__default__";
@@ -184,7 +184,7 @@ public class ControlsProfile implements Comparable<ControlsProfile> {
         if (c == null) {
             c = new ExternalController();
             c.setId(DEFAULT_CONTROLLER_ID);
-            c.setName("Default / Any Controller");
+            c.setName("默认 / 任何控制器");
             controllers.add(c);
             controllersLoaded = true;
         }

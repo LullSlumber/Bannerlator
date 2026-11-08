@@ -677,7 +677,7 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
             });
         }
         xServerView.queueEvent(this::updateScene);
-        final String msg = mode ? "Native Rendering+ Enabled" : "Native Rendering+ Disabled";
+        final String msg = mode ? "原生渲染+ 已启用" : "原生渲染+ 已禁用";
         // Use the app's styled toast (white text on a custom background); a raw Toast here would
         // inherit the dark app theme and render as a black box with invisible text.
         xServerView.post(() -> com.winlator.star.core.AppUtils.showToast(xServerView.getContext(), msg));

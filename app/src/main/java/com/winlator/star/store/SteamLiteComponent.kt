@@ -76,7 +76,7 @@ object SteamLiteComponent {
      * The lowest package version this build of the app fully works with: the agent channel (live
      * launch status, failure cards with Retry) and the in-game friends relay need the v4 agent. An
      * older package still launches — the agent is backwards compatible — those features just stay
-     * off, so the launch popup and pre-flight offer "Update & Launch" rather than refusing.
+     * off, so the launch popup and pre-flight offer "更新并启动" rather than refusing.
      *
      * Deliberately NOT bumped for v5 (agent p3b): v5 only changes agent-internal timing (friends relay
      * armed after the game is running; WN_STEAM_VAC=0 shortens the never-spawned fallback window)
@@ -244,14 +244,14 @@ object SteamLiteComponent {
         val archive = File(cacheDir, "steamlite.tzst")
         try {
             if (!Downloader.downloadFile(catalog.url, archive) { f -> progress(f.coerceIn(0f, 1f)) }) {
-                return false to "Download failed. Please try again."
+                return false to "下载失败。请重试。"
             }
             // Verify the UPPERCASE MD5 from the catalog before trusting the archive (blank = skip).
             if (catalog.checksum.isNotBlank()) {
                 val actual = md5Upper(archive)
                 if (!actual.equals(catalog.checksum, ignoreCase = true)) {
                     Log.w(TAG, "checksum mismatch: expected ${catalog.checksum} got $actual")
-                    return false to "Downloaded file was corrupt (checksum mismatch). Try again."
+                    return false to "下载的文件已损坏（校验和不匹配）。请重试。"
                 }
             }
             val dest = installDir(context)

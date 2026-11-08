@@ -153,7 +153,7 @@ private enum class LibrarySort(val label: String) {
     CONTAINER("Container"),
 }
 
-private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("Played"), NEVER("Never played") }
+private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("已玩"), NEVER("Never played") }
 
 private const val PREF_MODE = "deck_library_mode"
 private const val PREF_SORT = "deck_library_sort"
@@ -294,7 +294,7 @@ internal fun DeckHome(
     val playRequester = remember { FocusRequester() }
     val addRequester = remember { FocusRequester() }
     val hasGames = shortcuts.isNotEmpty()
-    // Initial focus: the hero's Play button (or "Add a game" when the library is empty), once it exists.
+    // Initial focus: the hero's Play button (or "添加游戏" when the library is empty), once it exists.
     DeckEntryFocus(hasGames, mode) {
         if (hasGames && mode == LibraryMode.SHELF) playRequester.requestFocus() else if (!hasGames) addRequester.requestFocus()
     }
@@ -369,8 +369,8 @@ internal fun DeckHome(
                     shortcut = s,
                     eyebrow = when {
                         continuePlaying.firstOrNull() == s && (st.lastPlayed > 0L || st.ms > 0L) -> "Continue playing"
-                        st.ms > 0L || st.lastPlayed > 0L -> "In your library"
-                        else -> "Ready to play"
+                        st.ms > 0L || st.lastPlayed > 0L -> "在您的库中"
+                        else -> "可游玩"
                     },
                     meta = buildList {
                         add(Icons.Filled.Storefront to storeLabelOf(s))
@@ -550,8 +550,8 @@ private fun LibraryToolbar(
         }
         Spacer(Modifier.width(8.dp))
         DeckButton(if (filterCount > 0) "Filters · $filterCount" else "Filter & sort", Icons.Filled.FilterList, onFilter)
-        DeckButton("Add games", Icons.Filled.Add, onAddGame)
-        IconTile(Icons.Filled.Public, "Community configs", onCommunity)
+        DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
+        IconTile(Icons.Filled.Public, "社区配置", onCommunity)
         // Steam friends and chat; renders only while signed in to Steam.
         Box(
             contentAlignment = Alignment.Center,
@@ -559,7 +559,7 @@ private fun LibraryToolbar(
         ) {
             SteamFriendsAction(tint = cs.onSurface)
         }
-        IconTile(Icons.Filled.Tv, "Big Picture", onBigPicture)
+        IconTile(Icons.Filled.Tv, "容器管理", onBigPicture)
     }
 }
 
@@ -614,7 +614,7 @@ private fun FilteredEmpty(onClear: () -> Unit, onAddGame: () -> Unit) {
         Text("Clear the filters to see your whole library.", color = cs.onSurfaceVariant, fontSize = 14.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             DeckButton("Clear filters", Icons.Filled.Close, onClear, primary = true)
-            DeckButton("Add games", Icons.Filled.Add, onAddGame)
+            DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
         }
     }
 }
@@ -674,7 +674,7 @@ private fun LibraryFilterDialog(
                         }
                     }
                 }
-                DeckSectionLabel("Played", Modifier.padding(top = 8.dp))
+                DeckSectionLabel("已玩", Modifier.padding(top = 8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     PlayedFilter.entries.forEach { p ->
                         DeckChoiceChip(p.label, selected = filter.played == p) { onChange(filter.copy(played = p)) }
@@ -797,7 +797,7 @@ private fun DeckHero(
                     // Room for the focus glow, which a scroll container would otherwise clip.
                     .padding(6.dp),
             ) {
-                DeckButton("Play", Icons.Filled.PlayArrow, onPlay, primary = true, big = true, modifier = Modifier.focusRequester(playRequester))
+                DeckButton("游玩", Icons.Filled.PlayArrow, onPlay, primary = true, big = true, modifier = Modifier.focusRequester(playRequester))
                 DeckButton("Game page", Icons.Filled.Info, onGamePage)
                 if (onSettings != null) DeckButton("Settings", Icons.Filled.Tune, onSettings)
                 DeckButton("Options", Icons.Filled.MoreHoriz, onOptions, glyph = "X")
@@ -980,9 +980,9 @@ private fun DeckListRow(
         }
         Spacer(Modifier.width(10.dp))
         if (compact) {
-            IconTile(Icons.Filled.PlayArrow, "Play", onPlay)
+            IconTile(Icons.Filled.PlayArrow, "游玩", onPlay)
         } else {
-            DeckButton("Play", Icons.Filled.PlayArrow, onPlay, primary = true)
+            DeckButton("游玩", Icons.Filled.PlayArrow, onPlay, primary = true)
         }
         Spacer(Modifier.width(6.dp))
         Box(
@@ -1022,7 +1022,7 @@ private fun DeckEmptyLibrary(modifier: Modifier, addRequester: FocusRequester, o
                 fontSize = 14.sp,
             )
             Spacer(Modifier.height(6.dp))
-            DeckButton("Add a game", Icons.Filled.Add, onAddGame, primary = true, big = true, modifier = Modifier.focusRequester(addRequester))
+            DeckButton("添加游戏", Icons.Filled.Add, onAddGame, primary = true, big = true, modifier = Modifier.focusRequester(addRequester))
         }
     }
 }

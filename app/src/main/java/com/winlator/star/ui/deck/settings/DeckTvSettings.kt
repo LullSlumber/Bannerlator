@@ -43,7 +43,7 @@ internal object TvRows {
     fun defs(): List<SettingDef> = listOf(
         SettingDef(
             id = ID_LAUNCH, category = "display", group = GROUP, level = SIMPLE,
-            label = "Launch this game on the TV", hint = ExternalDisplay.HELP_LAUNCH, tech = ExternalDisplay.EXTRA_LAUNCH,
+            label = "在电视上启动此游戏", hint = ExternalDisplay.HELP_LAUNCH, tech = ExternalDisplay.EXTRA_LAUNCH,
             help = ExternalDisplay.HELP_LAUNCH + "\n\n" + ExternalDisplay.NOTE_UNPLUG + "\n\n" + ExternalDisplay.NOTE_TOUCH,
             control = { _, _ -> Control.Toggle },
             game = onOff(ExternalDisplay.EXTRA_LAUNCH),
@@ -62,10 +62,10 @@ internal object TvRows {
         ),
         SettingDef(
             id = ID_MODE, category = "display", group = GROUP, level = ADVANCED,
-            label = "Output mode", hint = "What the TV is told to run at.", tech = ExternalDisplay.EXTRA_MODE_ID,
+            label = "输出模式", hint = "告诉电视以什么模式运行。", tech = ExternalDisplay.EXTRA_MODE_ID,
             control = { env, values ->
                 val modes = runCatching { ExternalDisplay.selectableModes(display(env)) }.getOrDefault(emptyList())
-                val opts = listOf(Opt("0", "Default (leave the TV as it is)")) +
+                val opts = listOf(Opt("0", "默认（保持电视原样）")) +
                     modes.map { Opt("${it.modeId}", ExternalDisplay.modeLabel(it)) }
                 val current = values(ID_MODE)
                 // A mode stored for a TV that isn't plugged in stays listed, so the field never reads blank.
@@ -92,7 +92,7 @@ internal object TvRows {
         ),
         SettingDef(
             id = ID_MATCH_RES, category = "display", group = GROUP, level = ADVANCED,
-            label = "Match the TV's resolution", hint = ExternalDisplay.HELP_MATCH_RES, tech = ExternalDisplay.EXTRA_MATCH_RES,
+            label = "匹配电视的分辨率", hint = ExternalDisplay.HELP_MATCH_RES, tech = ExternalDisplay.EXTRA_MATCH_RES,
             control = { _, _ -> Control.Toggle },
             game = onOff(ExternalDisplay.EXTRA_MATCH_RES),
             visible = { env, _ -> shown(env) },

@@ -97,7 +97,7 @@ internal object ReshadeRows {
     /** The four stored strings as one value, never shown: what the section reads and writes. */
     const val ID_LOADOUT = "visuals.reshade.loadout"
     const val ID_MODE = "visuals.reshade.mode"
-    const val GROUP = "ReShade effects"
+    const val GROUP = "ReShade效果"
 
     private const val K_LOADOUT = "reshadeLoadout"
     private const val K_MODE = "reshadeMode"
@@ -430,7 +430,7 @@ internal class DeckReshadeSection(
         pendingDelete?.let { entry ->
             OutlinedAlertDialog(
                 onDismissRequest = { pendingDelete = null },
-                confirmButton = { TextButton(onClick = { delete(entry) }) { Text("Delete", color = MaterialTheme.colorScheme.error) } },
+                confirmButton = { TextButton(onClick = { delete(entry) }) { Text("删除", color = MaterialTheme.colorScheme.error) } },
                 dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } },
                 title = { Text("Delete ${entry.name}?") },
                 text = { Text("This removes the downloaded effect from storage and takes it out of this loadout. You can download it again any time.") },
@@ -474,8 +474,8 @@ private fun LoadoutCard(sec: DeckReshadeSection, names: List<String>) {
     if (sec.setHere()) {
         DeckLine(
             label = if (sec.env.scope == EditorScope.GAME) "Set for this game" else "Set for this container",
-            hint = if (sec.env.scope == EditorScope.GAME) "Reset follows the container's effects again." else "Reset goes back to the All containers effects.",
-            trailing = { DeckSmallButton("Reset", Icons.Filled.Restore) { sec.resetToInherited() } },
+            hint = if (sec.env.scope == EditorScope.GAME) "Reset follows the container's effects again." else "重置后回到所有容器的效果。",
+            trailing = { DeckSmallButton("重置", Icons.Filled.Restore) { sec.resetToInherited() } },
         )
     }
 }
@@ -539,7 +539,7 @@ private fun CatalogDialog(sec: DeckReshadeSection) {
         when {
             isInstalled -> sec.toggle(entry.id, entry.id.lowercase() !in selected)
             sec.downloadingId != null -> {}
-            offline -> sec.error = "Connect to the internet to download effects."
+            offline -> sec.error = "连接到互联网以下载效果。"
             else -> sec.download(entry)
         }
     }
@@ -549,8 +549,8 @@ private fun CatalogDialog(sec: DeckReshadeSection) {
             Surface(shape = RoundedCornerShape(22.dp), color = cs.surface, modifier = Modifier.fillMaxWidth(0.94f).fillMaxHeight(0.92f)) {
                 Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("ReShade effects", color = cs.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, modifier = Modifier.weight(1f))
-                        if (selected.isNotEmpty()) DeckSmallButton("Clear all") { sec.clearAll() }
+                        Text("ReShade效果", color = cs.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, modifier = Modifier.weight(1f))
+                        if (selected.isNotEmpty()) DeckSmallButton("全部清除") { sec.clearAll() }
                         DeckSmallButton("Done", Icons.Filled.Check) { sec.catalogOpen = false }
                     }
                     if (offline && !sec.catalogLoading) {
@@ -565,7 +565,7 @@ private fun CatalogDialog(sec: DeckReshadeSection) {
                         value = query,
                         onValueChange = { query = it },
                         singleLine = true,
-                        placeholder = { Text("Search effects…") },
+                        placeholder = { Text("搜索滤镜效果…") },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth(),
@@ -596,7 +596,7 @@ private fun CatalogDialog(sec: DeckReshadeSection) {
                             }
                             if (installedRows.isEmpty() && availableRows.isEmpty()) item("empty") {
                                 Text(
-                                    if (query.isNotBlank()) "No effects match \"$query\"." else "No effects available. Connect to the internet to browse the catalog.",
+                                    if (query.isNotBlank()) "No effects match \"$query\"." else "无可用滤镜效果。请连接网络以浏览目录。",
                                     color = cs.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(24.dp),
                                 )
                             }
@@ -677,7 +677,7 @@ private fun TuneDialog(sec: DeckReshadeSection, effect: ReshadeManager.ReshadeEf
                 Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(effect.name, color = cs.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                        DeckSmallButton("Reset", Icons.Filled.Restore) { sec.resetParams(effect) }
+                        DeckSmallButton("重置", Icons.Filled.Restore) { sec.resetParams(effect) }
                         Box(modifier = Modifier.focusRequester(first)) {
                             DeckSmallButton("Done", Icons.Filled.Check) { sec.tuning = null }
                         }

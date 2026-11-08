@@ -67,10 +67,10 @@ public final class WaylandGameDriver {
             "the normal path and is used automatically when nothing else is chosen.";
 
     /** The editors' expander title for the fallback choices. */
-    public static final String FALLBACK_EXPANDER = "Advanced: use a layer-bundled or imported Wayland driver instead";
+    public static final String FALLBACK_EXPANDER = "高级：改用层捆绑或导入的 Wayland 驱动程序";
 
     /** Editor label of the adapter choice. */
-    public static final String ADAPTER_LABEL = "Adapter (uses your graphics driver)";
+    public static final String ADAPTER_LABEL = "适配器（使用您的图形驱动程序）";
 
     /** The launch-time decision. */
     public static final class Resolution {

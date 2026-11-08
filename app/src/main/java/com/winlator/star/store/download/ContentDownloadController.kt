@@ -165,7 +165,7 @@ fun startContentDownload(appContext: Context, profile: ContentProfile) {
             }
             if (uri == null) {
                 ContentDownloadRegistry.update(key) {
-                    it.copy(phase = ContentDownloadPhase.ERROR, error = "Download failed.")
+                    it.copy(phase = ContentDownloadPhase.ERROR, error = "下载失败。")
                 }
                 return@launch
             }
@@ -190,7 +190,7 @@ fun startContentDownload(appContext: Context, profile: ContentProfile) {
 
             ContentDownloadRegistry.update(key) {
                 if (installed) it.copy(phase = ContentDownloadPhase.DONE, fraction = 1f)
-                else it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                else it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
             }
         } catch (c: CancellationException) {
             // A user Cancel: requestCancel already set the cancelled-terminal state — keep it and let
@@ -199,7 +199,7 @@ fun startContentDownload(appContext: Context, profile: ContentProfile) {
         } catch (e: Exception) {
             Log.w(TAG, "Component download/install failed for $key", e)
             ContentDownloadRegistry.update(key) {
-                it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
             }
         } finally {
             // Drop the shade line (FGS self-stops when no downloads remain) for success,

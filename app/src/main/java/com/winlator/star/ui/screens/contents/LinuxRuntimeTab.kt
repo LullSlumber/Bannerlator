@@ -82,11 +82,11 @@ fun LinuxRuntimeTab() {
         if (!LinuxDeviceSupport.drawable(context)) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("This device cannot draw a Linux session",
+                    Text("此设备无法绘制 Linux 会话",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onErrorContainer)
                     Text(
-                        "The runtime draws with Turnip, an Adreno driver, and this device reports "
+                        "runtime使用 Turnip（一种 Adreno 驱动）绘制，而此设备报告 "
                             + "${LinuxDeviceSupport.gpuName(context)}. A session on it comes up as sound over a "
                             + "black screen. You can still download the runtime, but nothing will render — "
                             + "Mali, Xclipse and PowerVR are not supported yet.",
@@ -100,7 +100,7 @@ fun LinuxRuntimeTab() {
         if (ChildProcessRestrictions.active(context)) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Turn off child process restrictions first",
+                    Text("请先关闭子进程限制",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer)
                     Text(
@@ -119,12 +119,12 @@ fun LinuxRuntimeTab() {
                                     "About phone \u2192 tap Build number seven times, then " +
                                     "Developer options."
                             }
-                        }) { Text("Open Developer options") }
+                        }) { Text("打开开发者选项") }
                     } else {
                         // Before Android 14 the switch is not in the UI at all, so adb is the only way.
                         // The app cannot write the setting itself whatever the user grants it.
                         Text(
-                            "This Android version has no switch for it. From a computer:\n"
+                            "此 Android 版本没有对应的开关。从电脑上:\n"
                                 + ChildProcessRestrictions.adbCommand(),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -148,7 +148,7 @@ fun LinuxRuntimeTab() {
                 Text(
                     when {
                         installed != null -> "Installed: ${installed}"
-                        checking -> "Checking for a build…"
+                        checking -> "正在检查构建…"
                         release == null -> "No build available (could not reach the catalog)"
                         else -> "Not installed"
                     },
@@ -186,7 +186,7 @@ fun LinuxRuntimeTab() {
                             && (installed == null || installed != target.version),
                         onClick = {
                             val r = target ?: return@Button
-                            busy = true; message = null; stage = "Starting…"; percent = -1
+                            busy = true; message = null; stage = "正在启动…"; percent = -1
                             LinuxRuntimeUpdate.begin()
                             scope.launch {
                                 val ok = withContext(Dispatchers.IO) {
@@ -202,7 +202,7 @@ fun LinuxRuntimeTab() {
                                     installed = LinuxRuntimeInstaller.installedVersion(context)
                                     message = null
                                 } else {
-                                    message = "Install failed — the existing runtime was left alone."
+                                    message = "安装失败 — 现有runtime保持不变。"
                                 }
                                 busy = false
                                 LinuxRuntimeUpdate.finish(context)
@@ -223,7 +223,7 @@ fun LinuxRuntimeTab() {
                                 busy = false
                             }
                         }
-                    ) { Text("Remove") }
+                    ) { Text("移除") }
                 }
 
                 if (installed != null) {
@@ -281,7 +281,7 @@ private fun ProtonBuildsCard() {
 
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Proton builds", style = MaterialTheme.typography.titleMedium)
+            Text("Proton 构建", style = MaterialTheme.typography.titleMedium)
             Text(
                 "What the Steam client runs a Windows game with. Add one here and it appears in "
                     + "that game's Compatibility list, so you can pick a different one per game. "
@@ -306,9 +306,9 @@ private fun ProtonBuildsCard() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (loading) {
-                Text("Checking for builds…", style = MaterialTheme.typography.labelSmall)
+                Text("正在检查构建…", style = MaterialTheme.typography.labelSmall)
             } else if (builds.isEmpty()) {
-                Text("No builds available (could not reach the catalog)",
+                Text("没有可用的构建（无法访问目录）",
                     style = MaterialTheme.typography.labelSmall)
             }
             error?.let {
@@ -327,12 +327,12 @@ private fun ProtonBuildsCard() {
                 }
                 Text(
                     when (state) {
-                        LinuxProtons.State.INSTALLED -> "Added"
+                        LinuxProtons.State.INSTALLED -> "已添加"
                         LinuxProtons.State.PENDING ->
-                            if (build.isDepot) "Requested — the client fetches it next session"
-                            else "Ready — unpacked next time you open the Steam client"
+                            if (build.isDepot) "已请求 — 客户端将在下次会话中获取它"
+                            else "就绪 — 下次您打开 Steam 客户端时解压"
                         else ->
-                            if (build.isDepot) "Downloaded by the Steam client"
+                            if (build.isDepot) "由 Steam 客户端下载"
                             else "${build.size / (1024 * 1024)} MB download"
                     },
                     style = MaterialTheme.typography.labelSmall,
@@ -353,7 +353,7 @@ private fun ProtonBuildsCard() {
                         enabled = workingOn == null && state == LinuxProtons.State.ABSENT,
                         onClick = {
                             workingOn = build.name; error = null
-                            stage = "Starting…"; percent = -1
+                            stage = "正在启动…"; percent = -1
                             scope.launch {
                                 val failure = withContext(Dispatchers.IO) {
                                     LinuxProtons.install(context, build) { s, p ->
@@ -365,7 +365,7 @@ private fun ProtonBuildsCard() {
                                 workingOn = null
                             }
                         }
-                    ) { Text(if (build.isDepot) "Request" else "Download") }
+                    ) { Text(if (build.isDepot) "请求" else "Download") }
 
                     // Valve's depots belong to the client, which installs and removes them itself.
                     if (!build.isDepot) {
@@ -381,7 +381,7 @@ private fun ProtonBuildsCard() {
                                     workingOn = null
                                 }
                             }
-                        ) { Text("Remove") }
+                        ) { Text("移除") }
                     }
                 }
             }

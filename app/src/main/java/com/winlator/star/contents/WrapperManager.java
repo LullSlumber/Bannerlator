@@ -87,7 +87,7 @@ public class WrapperManager {
 
     /**
      * Env-var names ALREADY driven by the curated {@code GraphicsDriverConfigDialog} controls and the
-     * hardcoded XSDA graphics-driver emission. The auto-detect "Detected settings" section EXCLUDES
+     * hardcoded XSDA graphics-driver emission. The auto-detect "检测到的设置" section EXCLUDES
      * these (so it never duplicates an existing control), and generic emission SKIPS them (so it never
      * double-emits or fights the curated BCn / present-mode / GPU-spoof logic). Shared, single source of
      * truth, read from both the dialog (Kotlin) and XSDA (Java).
@@ -110,7 +110,7 @@ public class WrapperManager {
      * add noise (and risk). Matched as an UPPERCASE substring so vendor-prefixed variants
      * (MESA_VK_TRACE_TRIGGER, *_LOG_LEVEL, BCN_DUMP_*, *_PROFILE, *_WATERMARK, *_HEADLESS, …) are all
      * caught. Shared, single source of truth: called from the Kotlin config dialog AND the Java XSDA
-     * emission loop. NOTE: the read-only "Environment variables" list still shows these — only the
+     * emission loop. NOTE: the read-only "环境变量" list still shows these — only the
      * editable settings path filters. Never throws.
      */
     private static final String[] DEBUG_ENV_MARKERS = {
@@ -153,7 +153,7 @@ public class WrapperManager {
      * adrenotools, DRI, Turnip, RADV, Zink, the loader) rather than to the wrapper author. A wrapper that
      * ships a Mesa/turnip runtime references THOUSANDS of these as internal string constants (e.g.
      * {@code MESA_VK_MAX_SCISSORS}, {@code MESA_VK_COMMAND_BUFFER_STATE_*}, {@code ADRENOTOOLS_DRIVER_PATH}),
-     * many of which aren't even real env vars — so they must NOT appear as editable "Detected settings"
+     * many of which aren't even real env vars — so they must NOT appear as editable "检测到的设置"
      * nor be generically emitted (the app already manages the adrenotools/driver plumbing itself). The few
      * we intentionally curate ({@link #DRIVER_INTERNAL_ALLOW}) are allow-listed back. Shared source of
      * truth for the Kotlin dialogs AND the Java XSDA emission loop. Never throws.
@@ -547,7 +547,7 @@ public class WrapperManager {
 
     /** The on-device version installed for {@code catalogId} — from the matching import's
      *  {@code catalogVersion}, else the matching slot override's, else 0 (not installed). Lets a picker
-     *  compare against the live catalog entry to flag "Update available". Never throws. */
+     *  compare against the live catalog entry to flag "有可用更新". Never throws. */
     public int installedCatalogVersion(String catalogId) {
         if (catalogId == null || catalogId.isEmpty()) return 0;
         String impId = findImportByCatalogId(catalogId);

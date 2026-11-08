@@ -55,12 +55,12 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * "Recommended components" chip row — Pillar 2 / Phase 2.2. Detects the redistributables a game
+ * "推荐组件" chip row — Pillar 2 / Phase 2.2. Detects the redistributables a game
  * needs ([GameRecommendations]: its store, install script and exe, then its folder) and offers each
  * as a one-tap install into the shortcut's container prefix, reusing the EXACT install routing + installed-state tracking of [ComponentsSheet]
  * (SharedPreferences `"component_installs"`, keyed `"c<id>"`).
  *
- * Surfaced in two places: the "Confirm game" import dialog (pass [exeFile], the game's .exe) and the
+ * Surfaced in two places: the "确认游戏" import dialog (pass [exeFile], the game's .exe) and the
  * per-game shortcut settings' Win Components tab (pass [gameDir]). Detection runs off the main thread;
  * the whole section renders nothing until at least one catalog-backed recommendation is ready, and
  * hides itself on any detection/catalog failure (best-effort — never crashes the host dialog).
@@ -76,7 +76,7 @@ fun RecommendedComponentsSection(
     exeFile: File? = null,
     gameDir: File? = null,
     // The originating shortcut's base name, when this section is shown for a specific game (the
-    // "Confirm game" import dialog or a shortcut's Win Components tab). Persisted as a Tier-2 return
+    // "确认游戏" import dialog or a shortcut's Win Components tab). Persisted as a Tier-2 return
     // target so an installer-based component that restarts the app can bring the user back to THIS
     // shortcut's recommendations. null (container editor) → Tier-1 (Games) return only.
     shortcutBaseName: String? = null,
@@ -162,7 +162,7 @@ fun RecommendedComponentsSection(
         // The prefix must exist first — at import time it usually doesn't. Gate here rather than let
         // the installer return a failure, so the message is actionable.
         if (!File(container.rootDir, ".wine").isDirectory) {
-            message = "Launch the game once first, then install its components from the game's settings."
+            message = "请先启动游戏一次，然后从游戏设置中安装其组件。"
             return
         }
         // Prefer the file-drop `_dll` variant when the catalog carries one (e.g. vcredist2010_dll): it
@@ -277,7 +277,7 @@ fun RecommendedComponentsSection(
             CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Looking for recommended components…",
+                "正在查找推荐组件…",
                 style = MaterialTheme.typography.bodySmall,
                 color = cs.onSurfaceVariant,
             )
@@ -300,7 +300,7 @@ fun RecommendedComponentsSection(
         var gap = false
         if (recommended.isNotEmpty()) {
             RecommendedChipGroup(
-                title = "Recommended components",
+                title = "推荐组件",
                 subtitle = "What this game's store, install script or exe says it needs — tap to install into its container, or tap an installed one to remove it.",
                 recs = recommended, catalog = catalog, installed = installed, installing = installing ?: removing,
                 cs = cs, onChipTap = ::onChipTap,
@@ -310,8 +310,8 @@ fun RecommendedComponentsSection(
         if (optional.isNotEmpty()) {
             if (gap) Spacer(Modifier.height(12.dp))
             RecommendedChipGroup(
-                title = if (recommended.isEmpty()) "Optional components" else "Optional",
-                subtitle = "Ships with the game — install only if it misbehaves.",
+                title = if (recommended.isEmpty()) "可选组件" else "Optional",
+                subtitle = "游戏自带 — 仅在出现问题时安装。",
                 recs = optional, catalog = catalog, installed = installed, installing = installing ?: removing,
                 cs = cs, onChipTap = ::onChipTap,
             )

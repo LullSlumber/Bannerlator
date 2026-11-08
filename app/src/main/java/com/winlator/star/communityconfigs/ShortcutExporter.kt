@@ -47,7 +47,7 @@ object ShortcutExporter {
         put(effective, "audioDriver", orDefault(shortcut, "audioDriver", container?.getAudioDriver()))
         put(effective, "wineVersion", orDefault(shortcut, "wineVersion", container?.getWineVersion()))
         put(effective, "envVars", orDefault(shortcut, "envVars", container?.getEnvVars()))
-        // "DirectInput games can see the controller" travels as the inputType / exclusiveXInput pair older
+        // "DirectInput 游戏可以看到控制器" travels as the inputType / exclusiveXInput pair older
         // builds (and BannerHub's pc_ls_update_enable_xinput) read: the effective value (this game's,
         // else its container's, old combinations mapped by DInputVisibility), written the way the switch
         // stores it. An importer reads it back through the same mapping.
@@ -150,7 +150,7 @@ object ShortcutExporter {
         put(effective, "scalingMode", orDefault(shortcut, "scalingMode", container?.getExtra("scalingMode")))
         // Force SSBS — effective shortcut-or-container, resolved to 1/0 like the launcher does.
         put(effective, "forceSsbs", orDefault(shortcut, "forceSsbs", container?.let { if (it.isForceSsbs()) "1" else "0" }))
-        // Direct XInput (BANNERIN) + "Allow in-game switching" — effective shortcut-or-container, 1/0.
+        // Direct XInput (BANNERIN) + "允许游戏内切换" — effective shortcut-or-container, 1/0.
         put(effective, "bannerinXInput", orDefault(shortcut, "bannerinXInput", container?.let { if (it.isBannerinXInput()) "1" else "0" }))
         put(effective, "bannerinXInputSwitching", orDefault(shortcut, "bannerinXInputSwitching", container?.let { if (it.isBannerinXInputSwitching()) "1" else "0" }))
 

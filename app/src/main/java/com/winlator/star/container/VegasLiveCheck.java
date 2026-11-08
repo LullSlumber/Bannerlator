@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Live "Check for new builds" — build order item 8, report §6b (amended addendum).
+ * Live "检查新版本" — build order item 8, report §6b (amended addendum).
  *
  * Boundary (invariant): observation may be autonomous; mutation never is. This class
  * observes the release feed and REPORTS — it has no File imports, no write path, no

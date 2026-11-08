@@ -21,7 +21,7 @@ import com.winlator.star.ui.screens.withGraphicsDriverVersion
 import org.json.JSONObject
 
 /**
- * "Set as default…" for an installed driver or component (Contents › Installed): writes ONE setting
+ * "设为默认…" for an installed driver or component (Contents › Installed): writes ONE setting
  * for ONE architecture into any of three places —
  *  • New container defaults: the arch's profile when it has one, else its sparse picks
  *    (see [NewContainerDefaults]); the layer under its own per-arch key.
@@ -41,14 +41,14 @@ object SetAsDefault {
 
     /** What an item sets. [setting] reads in "sets the …" and "containers change their …". */
     enum class Kind(val setting: String) {
-        DRIVER("graphics driver"),
+        DRIVER("图形驱动程序"),
         DXVK("DX wrapper"),
         VEGAS("DX wrapper"),
-        VKD3D("VKD3D version"),
-        BOX64("Box64 version"),
-        WOWBOX64("WOWBox64 version"),
-        FEXCORE("FEXCore version"),
-        LAYER("compatibility layer"),
+        VKD3D("VKD3D 版本"),
+        BOX64("Box64 版本"),
+        WOWBOX64("WOWBox64 版本"),
+        FEXCORE("FEXCore 版本"),
+        LAYER("兼容层"),
     }
 
     /** An installed item that can be made a default. [value] is exactly what gets written. */

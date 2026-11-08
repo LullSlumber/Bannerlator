@@ -119,7 +119,7 @@ fun ComponentInstallResume(onNavigateToGames: () -> Unit = {}) {
                         null -> {}
                     }
                 }
-            }) { Text("Finish") }
+            }) { Text("完成") }
         },
         dismissButton = {
             TextButton(enabled = !busy, onClick = {
@@ -129,7 +129,7 @@ fun ComponentInstallResume(onNavigateToGames: () -> Unit = {}) {
                 // No success toast (nothing was installed); Tier 2 still re-opens the shortcut so they
                 // can retry from its recommendations.
                 consumeReturn(null)
-            }) { Text("Discard", color = Color(0xFFE57373)) } // intentional: destructive-action red
+            }) { Text("放弃", color = Color(0xFFE57373)) } // intentional: destructive-action red
         },
     )
 }

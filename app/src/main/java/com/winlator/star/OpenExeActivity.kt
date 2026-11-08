@@ -349,7 +349,7 @@ private fun prepare(context: ComponentActivity, uri: Uri?): OpenExeState {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
         return OpenExeState.Failed(
-            "Bannerlator needs All files access",
+            "Bannerlator 需要所有文件访问权限",
             "A game runs from its own folder, next to its DLLs and data, so Bannerlator has to be able to read that " +
                 "folder. Allow All files access for Bannerlator, then open the .exe again.",
             allFilesAccess = true,
@@ -357,7 +357,7 @@ private fun prepare(context: ComponentActivity, uri: Uri?): OpenExeState {
     }
 
     val info = ExternalExeResolver.uriInfo(context, uri)
-    val shownName = info.displayName ?: uri.lastPathSegment ?: "This file"
+    val shownName = info.displayName ?: uri.lastPathSegment ?: "此文件"
     // Read the header through the Uri first: a file that isn't a Windows program gets the right answer even
     // when its real path can't be found. null = the sender wouldn't let us read it (checked again on the path).
     val isPe = runCatching { context.contentResolver.openInputStream(uri)?.use { ExternalExeResolver.looksLikePe(it) } }.getOrNull()
@@ -365,7 +365,7 @@ private fun prepare(context: ComponentActivity, uri: Uri?): OpenExeState {
 
     val exe = ExternalExeResolver.resolve(context, uri)
         ?: return OpenExeState.Failed(
-            "Can't find the game's folder",
+            "找不到游戏文件夹",
             "A game runs from its own folder, next to its DLLs and data, so Bannerlator needs the real location " +
                 "of \"$shownName\" — and the app that shared it only passed a link that doesn't say where it is. " +
                 "Open the .exe from a file manager that shares real paths (MiXplorer, CX File Explorer, Material Files, " +
@@ -375,8 +375,8 @@ private fun prepare(context: ComponentActivity, uri: Uri?): OpenExeState {
 
     if (!ImageFs.find(context).isValid()) {
         return OpenExeState.Failed(
-            "Bannerlator isn't set up yet",
-            "Open Bannerlator once and let it finish setting up, then open the .exe again.",
+            "Bannerlator 尚未设置",
+            "请先打开 Bannerlator 一次并让其完成设置，然后再次打开 .exe。",
         )
     }
 
@@ -413,6 +413,6 @@ private fun prepare(context: ComponentActivity, uri: Uri?): OpenExeState {
 }
 
 private fun notWindowsProgram(name: String) = OpenExeState.Failed(
-    "Not a Windows program",
+    "不是 Windows 程序",
     "\"$name\" isn't a Windows program, so Bannerlator can't run it.",
 )

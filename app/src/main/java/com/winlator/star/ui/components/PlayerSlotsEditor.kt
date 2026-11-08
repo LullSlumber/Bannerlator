@@ -60,7 +60,7 @@ fun buildPlayerSlotEditorRows(savedJson: String): List<PlayerSlotEditorRow> {
     val seen = HashSet<String>()
 
     val oscOverride = overrides[WinHandler.OSC_DESCRIPTOR] ?: SLOT_AUTO
-    rows.add(PlayerSlotEditorRow(WinHandler.OSC_DESCRIPTOR, "On-screen controls", true, true, oscOverride))
+    rows.add(PlayerSlotEditorRow(WinHandler.OSC_DESCRIPTOR, "MIDI 音乐音色库", true, true, oscOverride))
     seen.add(WinHandler.OSC_DESCRIPTOR)
 
     for (controller in ExternalController.getControllers()) {
@@ -133,10 +133,10 @@ private fun PlayerSlotEditorRowItem(row: PlayerSlotEditorRow, onChange: (Int) ->
     val status = when {
         row.override == SLOT_IGNORE -> "Ignored"
         row.override >= 0 -> "Pinned to Player ${row.override + 1}"
-        else -> "Auto (assigned by launch order)"
+        else -> "自动（按启动顺序分配）"
     }
     val suffix = when {
-        row.isOnScreen -> " · on-screen controls"
+        row.isOnScreen -> " · 屏幕控制"
         !row.connected -> " · not connected (saved pin)"
         else -> ""
     }

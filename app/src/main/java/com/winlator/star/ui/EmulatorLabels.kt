@@ -1,7 +1,7 @@
 package com.winlator.star.ui
 
 /**
- * Display labels for the "Emulator" picker (the x86 -> ARM translator).
+ * Display labels for the "转译器" picker (the x86 -> ARM translator).
  *
  * The picker's stored identifiers stay "fexcore" / "box64" EVERYWHERE (Container.emulator, the
  * shortcut "emulator" extra, ShortcutConfig/ConfigExporter, GuestProgramLauncherComponent's

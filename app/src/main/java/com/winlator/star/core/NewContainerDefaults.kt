@@ -4,7 +4,7 @@ import android.content.Context
 import org.json.JSONObject
 
 /**
- * User-configurable "New Container Defaults" — the seed a brand-new container is built from.
+ * User-configurable "新建容器默认值" — the seed a brand-new container is built from.
  *
  * Stored as TWO INDEPENDENT profiles, one per architecture (x86-64 and arm64ec), because the
  * emulator/box64/wowbox64/FEXCore fields are arch-coupled (refreshWineDependent swaps the
@@ -46,7 +46,7 @@ object NewContainerDefaults {
     /** Whether a profile is set for [arch] (i.e. new containers of that arch should seed from it). */
     fun exists(context: Context, arch: String): Boolean = load(context, arch) != null
 
-    // ── "Set as default…" (Contents › Installed) ────────────────────────────────────────────────
+    // ── "设为默认…" (Contents › Installed) ────────────────────────────────────────────────
     // One setting at a time, per arch. When [arch] already has a profile the value is patched
     // straight into it, so the New Container Defaults screen shows it. Without a profile, writing a
     // whole one would freeze every OTHER field at Container's raw field values (renderer, screen size,

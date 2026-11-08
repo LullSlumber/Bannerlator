@@ -49,14 +49,14 @@ class ShortcutActions internal constructor(
     internal var restoreForName by mutableStateOf("")
     // Emulator account ids a restore held back because the container already runs a different one.
     internal var emuConflicts by mutableStateOf<List<GameSaveBackup.EmuIdConflict>>(emptyList())
-    // The shortcut whose "Back up saves" layout-choice dialog is open (Winlator vs GameHub).
+    // The shortcut whose "备份存档" layout-choice dialog is open (Winlator vs GameHub).
     internal var backupFormatShortcut by mutableStateOf<Shortcut?>(null)
     internal var settingsShortcut by mutableStateOf<Shortcut?>(null)
-    // "Copy to Drive C…" target — the game whose folder is being copied onto the container's C:
+    // "复制到C盘…" target — the game whose folder is being copied onto the container's C:
     // drive (and then repointed). Both entry points (the ⋮ menu item and the editor's Storage row)
     // set this; the shared CopyToDriveCCoordinator owns the whole confirm→copy→repoint flow.
     internal var copyToDriveCTarget by mutableStateOf<Shortcut?>(null)
-    // "Change executable…" target — the game being repointed at a different .exe/.lnk (launcher →
+    // "更改可执行文件…" target — the game being repointed at a different .exe/.lnk (launcher →
     // real exe, dx11 ↔ dx9, a config tool). Both entry points set it; ChangeExecutableCoordinator
     // owns the pick → args-choice → rewrite flow via the shared CopyGameToDriveC.setShortcutExe.
     internal var changeExeTarget by mutableStateOf<Shortcut?>(null)
@@ -102,8 +102,8 @@ class ShortcutActions internal constructor(
     // the expanded row's inline description editor shares uploadDescText / uploadDescLoading (reloaded on
     // expand). deleteUploadRow drives the delete-confirm sub-dialog.
     internal var showMyUploads by mutableStateOf(false)
-    // Phase 2 (optional accounts) — the "My account" sheet. Opened from the globe browser's person icon;
-    // hosts create/login/reset when logged out and profile + "My uploads" + "Log out" when signed in.
+    // Phase 2 (optional accounts) — the "我的账户" sheet. Opened from the globe browser's person icon;
+    // hosts create/login/reset when logged out and profile + "我的上传" + "退出登录" when signed in.
     internal var showMyAccount by mutableStateOf(false)
     internal var myUploads by mutableStateOf<List<MyUploadRow>?>(null)
     internal var deleteUploadRow by mutableStateOf<MyUploadRow?>(null)
@@ -143,7 +143,7 @@ class ShortcutActions internal constructor(
         }
     }
 
-    // Shared "Scrape cover" action so both grid tiles and list rows fire the same flow.
+    // Shared "获取封面" action so both grid tiles and list rows fire the same flow.
     fun scrapeCoverFor(shortcut: Shortcut) {
         scrapeTarget = shortcut
         scrapeCovers.clear()
@@ -175,7 +175,7 @@ class ShortcutActions internal constructor(
         }
     }
 
-    // Shared "Community configs" action — opens the sheet and kicks off the offline-first match.
+    // Shared "社区配置" action — opens the sheet and kicks off the offline-first match.
     fun communityConfigsFor(shortcut: Shortcut) {
         communityTarget = shortcut
         communityResult = null
@@ -186,7 +186,7 @@ class ShortcutActions internal constructor(
         }
     }
 
-    // "Back up saves" → first pick the archive layout (Winlator vs GameHub), mirroring the Containers
+    // "备份存档" → first pick the archive layout (Winlator vs GameHub), mirroring the Containers
     // backup menu; the chosen layout runs in runCustomBackup (ShortcutActionDialogs).
     fun startSaveBackup(shortcut: Shortcut) {
         backupFormatShortcut = shortcut

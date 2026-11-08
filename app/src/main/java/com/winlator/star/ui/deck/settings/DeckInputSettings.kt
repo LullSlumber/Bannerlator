@@ -43,9 +43,9 @@ internal object InputRows {
 
     // The classic XR section's labels, in Container.XrControllerMapping order.
     private val XR_LABELS = listOf(
-        "Button A", "Button B", "Button X", "Button Y",
-        "Grip", "Trigger",
-        "Thumbstick up", "Thumbstick down", "Thumbstick left", "Thumbstick right",
+        "按键 A", "Button B", "按键 X", "按键 Y",
+        "握把", "扳机",
+        "摇杆向上", "摇杆向下", "摇杆向左", "摇杆向右",
     )
 
     fun defs(): List<SettingDef> = listOf(
@@ -116,17 +116,17 @@ internal class DeckInputSection(val env: SettingsEnv, val source: SettingsSource
         val own = source.origin(def) == Origin.SET_HERE
         val game = env.scope == EditorScope.GAME
         val info = when {
-            game && !own -> "Following the container's pins. Changing one gives this game pins of its own."
-            game -> "This game has pins of its own."
+            game && !own -> "遵循容器的固定设置。更改一个会为此游戏提供自己的固定设置。"
+            game -> "此游戏有自己的固定设置。"
             own && env.scope == EditorScope.CONTAINER -> "This container's own pins, not All containers'."
-            else -> "Applied at launch. The in-game side menu still changes them live."
+            else -> "在启动时应用。游戏内侧边菜单仍可实时更改它们。"
         }
-        val items = mutableListOf(PageExtra("slots-label") { GroupLabel("Player slot pins") })
+        val items = mutableListOf(PageExtra("slots-label") { GroupLabel("玩家槽位固定") })
         items += PageExtra("slots-info") {
             GroupCard(first = true, last = false, highlight = false) {
-                DeckLine(label = "Pin controllers to players", hint = "Two on one player share it. $info") {
+                DeckLine(label = "两个在一个玩家上共享它。 ", hint = "Two on one player share it. $info") {
                     if (own && editable) {
-                        DeckSmallButton(if (game) "Use the container's" else "Use All containers'", Icons.Filled.Restore) { source.reset(def) }
+                        DeckSmallButton(if (game) "使用容器的" else "使用所有容器的", Icons.Filled.Restore) { source.reset(def) }
                     }
                     DeckSmallButton("", Icons.Filled.Refresh) { refresh++ }
                 }
@@ -138,10 +138,10 @@ internal class DeckInputSection(val env: SettingsEnv, val source: SettingsSource
                     val status = when {
                         row.override == WinHandler.SLOT_IGNORE -> "Ignored"
                         row.override >= 0 -> "Player ${row.override + 1}"
-                        else -> "Auto (by connection order)"
+                        else -> "自动（按连接顺序）"
                     }
                     val where = when {
-                        row.isOnScreen -> " · the on-screen controls"
+                        row.isOnScreen -> " · 屏幕控制"
                         !row.connected -> " · not connected (saved pin)"
                         else -> ""
                     }

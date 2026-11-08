@@ -70,7 +70,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var isSaving by mutableStateOf(false); private set
     private var initialized = false
 
-    // "New Container Defaults" mode: the SAME container form, but ✓ saves the field state as the
+    // "新建容器默认值" mode: the SAME container form, but ✓ saves the field state as the
     // user's new-container defaults profile (NewContainerDefaults) instead of creating a container.
     // Entered via the EDIT_DEFAULTS_ID sentinel (see init); container stays null (it's a template).
     var defaultsMode by mutableStateOf(false); private set
@@ -83,9 +83,9 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var defaultsArch by mutableStateOf(NewContainerDefaults.ARCH_ARM64EC); private set
 
     companion object {
-        // Sentinel containerId that opens the editor in "New Container Defaults" mode. Negative like
+        // Sentinel containerId that opens the editor in "新建容器默认值" mode. Negative like
         // the create sentinel (-1) so getContainerById is never consulted; distinct so init can tell
-        // "edit the defaults" from "create a new container".
+        // "edit the defaults" 来自 "create a new container".
         const val EDIT_DEFAULTS_ID = -2
     }
 
@@ -101,7 +101,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var selectedWineVersion by mutableStateOf("")
 
     // Whether the given wine/Proton layer has xrandr compiled in — i.e. can actually deliver the
-    // in-game refresh unlock. The editor uses this to warn under the "In-game refresh rate" control
+    // in-game refresh unlock. The editor uses this to warn under the "渲染缩放（超采样）" control
     // when the selected Proton can't. Cached per layer id in WineRandrSupport (cheap to recall).
     //
     // MUST be safe during early composition and in the create-new-container flow: contentsManager is a
@@ -349,7 +349,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     // in-game refresh dropdown. 0 = no cap. Separate axis from the two above (host panel rate).
     var maxGameRefreshRate by mutableStateOf(0)
     // Guest-side refresh: unlockGameRefreshRate (off = Locked 60) + maxGameRefreshRate (cap; 0 =
-    // Unlimited) together back the single "In-game refresh rate" dropdown. Default = unlock + no cap
+    // Unlimited) together back the single "渲染缩放（超采样）" dropdown. Default = unlock + no cap
     // (Unlimited). refreshWasExplicit tracks whether the loaded container had actually set the extra, so
     // an untouched default is NOT persisted (keeps it "default" → no compatible-layer nag at launch).
     var unlockGameRefreshRate by mutableStateOf(true)
@@ -375,17 +375,17 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var lcAll by mutableStateOf("")
     var lcAllEntries by mutableStateOf(emptyList<String>()); private set
 
-    // "DirectInput games can see the controller" (core.DInputVisibility): the one switch that replaced
+    // "DirectInput 游戏可以看到控制器" (core.DInputVisibility): the one switch that replaced
     // Enable XInput / Enable DInput / Exclusive Input. Saved into the same inputType/exclusiveXInput
     // fields older builds read; a new container starts off, as the old default did.
     var dinputVisible by mutableStateOf(false)
-    // "DirectInput vibration" (core.DInputVibration, extra "dinputVibration", stored only when off).
+    // "DirectInput 震动" (core.DInputVibration, extra "dinputVibration", stored only when off).
     var dinputVibration by mutableStateOf(true)
     // Direct XInput (BANNERIN): XInput games read the BANNERIN slot files directly (core/BannerinXInput).
     var bannerinXInput by mutableStateOf(true)
-    // "Allow in-game switching" of Direct XInput (core/BannerinXInput.switchingEffective).
+    // "允许游戏内切换" of Direct XInput (core/BannerinXInput.switchingEffective).
     var bannerinXInputSwitching by mutableStateOf(true)
-    // "Stick updates" (core.StickPacing format: auto:N / fixed:N / off).
+    // "摇杆更新" (core.StickPacing format: auto:N / fixed:N / off).
     var stickPacing by mutableStateOf(StickPacing.DEFAULT.format())
 
     // Controller vibration (PC-accurate dual-motor rumble), per-container. Mode: 0=Off 1=Controller
@@ -434,7 +434,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var gyroInvertX by mutableStateOf(Container.GYRO_INVERT_X_DEFAULT)
     var gyroInvertY by mutableStateOf(Container.GYRO_INVERT_Y_DEFAULT)
 
-    // "Run as administrator" (default ON): ON -> EnableLUA=0 (UAC off / full admin),
+    // "以管理员身份运行" (default ON): ON -> EnableLUA=0 (UAC off / full admin),
     // OFF -> EnableLUA=1. Stored in the container's .wine/system.reg (source of truth); on
     // create it's threaded through the createContainerAsync data flag, on edit it's read/written
     // here directly (mirrors saveMouseWarp, but against system.reg).
@@ -513,9 +513,9 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     val xrMappingLabels = listOf(
-        "Button A", "Button B", "Button X", "Button Y",
-        "Button Grip", "Button Trigger",
-        "Thumbstick Up", "Thumbstick Down", "Thumbstick Left", "Thumbstick Right"
+        "按键 A", "Button B", "按键 X", "按键 Y",
+        "肩键", "扳机键",
+        "摇杆上", "摇杆下", "摇杆左", "摇杆右"
     )
 
     // ── Tab selection ─────────────────────────────────────────────────────────
@@ -602,7 +602,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * A transient, in-memory template container built from the saved "New Container Defaults" profile,
+     * A transient, in-memory template container built from the saved "新建容器默认值" profile,
      * or null when no profile is set (or we're editing a real container). It is NEVER persisted — it
      * exists only so loadContainerData() can read the user's saved preferences back through the exact
      * same Container getters a real container uses (round-tripped via loadData, extras included).
@@ -693,7 +693,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
         autoCloseOnExit          = (seed?.getExtra("autoCloseOnExit", "1") ?: "1") == "1"
         selectedDXWrapper        = identifierToDisplay(seed?.getDXWrapper() ?: Container.DEFAULT_DXWRAPPER, dxWrapperEntries)
         dxWrapperConfig          = seed?.getDXWrapperConfig() ?: Container.DEFAULT_DXWRAPPERCONFIG
-        // No profile for this arch: lay its "Set as default" picks over the built-in defaults.
+        // No profile for this arch: lay its "设为默认" picks over the built-in defaults.
         if (seed == null) applyDefaultPicks(seedArch, archDependent = false)
 
         // Audio driver (load as display name). Emulator is arch-dependent → seedArchDependentDefaults.
@@ -1022,7 +1022,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * The sparse "Set as default" picks for [arch] (NewContainerDefaults.loadPicks), written onto the
+     * The sparse "设为默认" picks for [arch] (NewContainerDefaults.loadPicks), written onto the
      * form through the same writers the Contents hub uses for containers. Only used when [arch] has
      * no full profile (a profile carries the values itself). [archDependent] = the Box64/WOWBox64 and
      * FEXCore versions (seedArchDependentDefaults); otherwise the graphics driver and DX wrapper.
@@ -1298,7 +1298,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     /**
      * Write EVERY field this editor can set onto [c]. The ONE place the form becomes container
      * config: the edit path calls it on the real container, the create path on the throwaway
-     * container it serializes into createContainerAsync's payload, and the "New Container Defaults"
+     * container it serializes into createContainerAsync's payload, and the "新建容器默认值"
      * path on the profile template. A field added here therefore sticks in all three.
      *
      * It exists because those three used to be hand-maintained lists that drifted: create put a
@@ -1307,7 +1307,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
      * so a container created on Wayland was born on X11 — and the defaults profile could not hold a
      * Wayland default at all.
      *
-     * NOT here: mouse warp and "Run as administrator". Both live in the prefix's registry rather than
+     * NOT here: mouse warp and "以管理员身份运行". Both live in the prefix's registry rather than
      * the config, so they need a container that exists on disk — saveMouseWarp/saveRunAsAdmin on
      * edit, and on create the registry stamp ContainerManager applies from the runAsAdmin data flag.
      *
@@ -1544,7 +1544,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
             profile.remove("drives")
             profile.remove("wineVersion")
             NewContainerDefaults.save(context, defaultsArch, profile.toString())
-            // The form showed the arch's "Set as default" picks; they're in the profile now.
+            // The form showed the arch's "设为默认" picks; they're in the profile now.
             NewContainerDefaults.clearPicks(context, defaultsArch)
             AppUtils.showToast(context, R.string.new_container_defaults_saved)
         } catch (e: Exception) {
@@ -1556,7 +1556,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     /** Reset mode ✓: forget the CURRENT arch's profile and reload the form to its built-in defaults. */
     fun resetDefaults() {
         NewContainerDefaults.clear(context, defaultsArch)
-        // App defaults means app defaults: the arch's "Set as default" picks and layer go too.
+        // App defaults means app defaults: the arch's "设为默认" picks and layer go too.
         NewContainerDefaults.clearPicks(context, defaultsArch)
         NewContainerDefaults.clearLayer(context, defaultsArch)
         loadContainerData()   // template is now null → every field falls back to Container.DEFAULT_*

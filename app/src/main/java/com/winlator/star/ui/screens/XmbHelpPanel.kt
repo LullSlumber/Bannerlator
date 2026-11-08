@@ -59,7 +59,7 @@ private class XmbHelpPanel(
                 modifier = Modifier.fillMaxWidth().weight(1f).verticalScroll(scroll),
             )
             Spacer(Modifier.height(6.dp))
-            Text("▲▼ scroll · B back", color = Color(0xFF7A7A7A), fontSize = 10.5.sp)
+            Text("▲▼ 滚动 · B 返回", color = Color(0xFF7A7A7A), fontSize = 10.5.sp)
         }
     }
 

@@ -85,7 +85,7 @@ fun SyncModeSelector(
                 Text("Sync", fontSize = 14.sp, color = cs.onSurfaceVariant)
                 if (onHelp != null) {
                     IconButton(onClick = onHelp, modifier = Modifier.size(44.dp)) {
-                        Icon(Icons.Default.Help, contentDescription = "What is Sync?", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "什么是Sync同步?", modifier = Modifier.size(18.dp))
                     }
                 }
             }

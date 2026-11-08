@@ -157,7 +157,7 @@ public class EpicAuthClient {
             conn.disconnect();
 
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "Epic GET HTTP " + code + " from " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
+                Log.e(TAG, "Epic GET HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr) + " (error body suppressed)");
                 return null;
             }
             return resp;
@@ -183,7 +183,7 @@ public class EpicAuthClient {
 
             int code = conn.getResponseCode();
             if (code < 200 || code >= 300) {
-                Log.e(TAG, "Epic getBytes HTTP " + code + " from " + StoreLog.redactUrl(urlStr));
+                Log.e(TAG, "Epic getBytes HTTP " + code + " 来自 " + StoreLog.redactUrl(urlStr));
                 return null;
             }
             return conn.getInputStream().readAllBytes();
