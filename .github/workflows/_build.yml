@@ -92,6 +92,10 @@ jobs:
     - name: Build JavaSteam and copy JARs to app/libs/steam
       if: steps.cache-javasteam.outputs.cache-hit != 'true'
       run: |
+        if [ -s app/libs/steam/javasteam.jar ] && [ -f app/libs/steam/.prebuilt ]; then
+          echo "::notice::prebuilt JavaSteam JARs committed to repo - skipping source build"
+          exit 0
+        fi
         git clone --depth 1 -b gamenative-latest https://github.com/joshuatam/JavaSteam javasteam_src
         cd javasteam_src
         # Rewrite wrapper dist URL: github release-asset CDN 504s from runners; services.gradle.org is reliable
