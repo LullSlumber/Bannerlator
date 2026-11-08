@@ -1081,7 +1081,7 @@ class FusionHudView(
             ?: resources.displayMetrics.widthPixels
 
         val line = lineH(px)
-        contentW = parentW
+        contentW = parentW.toFloat()
         contentH = pad * 2 + line
         val baseline = pad - ascent(px)
         val clockStr = clockTimeString()
