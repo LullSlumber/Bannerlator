@@ -247,6 +247,7 @@ class FusionHudView(
         showSession = cfg.get("showSession", "1") == "1"
         tempDisplay = HudMetrics.TempDisplay.from(cfg)
         lockController.setLocked(cfg.get("hudLocked", "0") == "1")
+        lockController.setSnapEnabled(cfg.get("hudSnap", "1") != "0")   // DroidDeck #1937: snap-to-sides defaults ON
 
         colorIntensity = when (cfg.get("hudColor", "vivid")) {
             "soft" -> 0.72f; "mid" -> 0.88f; else -> 1.0f

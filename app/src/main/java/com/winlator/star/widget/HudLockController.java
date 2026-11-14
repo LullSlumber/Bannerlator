@@ -1,5 +1,8 @@
 package com.winlator.star.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,7 +12,9 @@ import android.graphics.RectF;
 import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -64,6 +69,13 @@ public class HudLockController {
     private float downRawX, downRawY, startX, startY;
     private boolean dragging = false;
 
+    // Snap to sides (ported from DroidDeck PR #1937): on drag release the HUD glides to the nearer
+    // screen side and keeps its height, like a picture-in-picture window. A fling carries it toward
+    // where it was thrown (velocity projected 0.18 s ahead, matching DroidDeck's FLING_REACH_S).
+    private boolean snapEnabled = false;
+    private float flingVx = 0f;
+    private ValueAnimator snapAnim;
+
     // Fade state
     private long fadeStart = 0;
     private long holdMs = HOLD_TOGGLE_MS;
@@ -88,12 +100,23 @@ public class HudLockController {
 
     public boolean isLocked() { return locked; }
 
-    /** Feed from the host view's onTouchEvent. Always consumes (mirrors the legacy manual handlers). */
+    /** Enable/disable snap-to-sides on drag release (hudSnap config; applies live). */
+    public void setSnapEnabled(boolean enabled) {
+        snapEnabled = enabled;
+        if (!enabled) stopSnapAnim();
+    }
+
     public boolean onTouchEvent(MotionEvent event) {
         detector.onTouchEvent(event);
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-            if (dragging && !locked) cb.onMoved(view.getX(), view.getY());
+            if (dragging && !locked) {
+                if (action == MotionEvent.ACTION_UP && snapEnabled) {
+                    snapToSide();
+                } else {
+                    cb.onMoved(view.getX(), view.getY());
+                }
+            }
             dragging = false;
         }
         return true;
@@ -107,6 +130,8 @@ public class HudLockController {
             startX = view.getX();
             startY = view.getY();
             dragging = false;
+            flingVx = 0f;
+            stopSnapAnim();
             return true;
         }
 
@@ -129,17 +154,78 @@ public class HudLockController {
         }
 
         @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (dragging && !locked) flingVx = velocityX;
+            return false;   // the drag already moved the view; only the velocity is recorded
+        }
+
+        @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             if (locked) {
                 if (!dragging) flash(true, HOLD_REFLASH_MS);
                 dragging = true;   // mark so the blocked drag doesn't fall through to a tap
                 return true;
             }
+            stopSnapAnim();
             view.setX(startX + (e2.getRawX() - downRawX));
             view.setY(startY + (e2.getRawY() - downRawY));
             dragging = true;
             return true;
         }
+    }
+
+    // ---- Snap to sides ----------------------------------------------------
+    private void stopSnapAnim() {
+        if (snapAnim != null) {
+            snapAnim.removeAllUpdateListeners();
+            snapAnim.removeAllListeners();
+            snapAnim.cancel();
+            snapAnim = null;
+        }
+    }
+
+    /**
+     * Glide the HUD to the nearer screen side (left/right) at its released height, then persist.
+     * A fling projects the landing side 0.18 s ahead. Full-width views (Strip) skip the horizontal
+     * glide — they span the parent and are parked on the top/bottom edges by plain dragging.
+     */
+    private void snapToSide() {
+        stopSnapAnim();
+        ViewGroup parent = view.getParent() instanceof ViewGroup ? (ViewGroup) view.getParent() : null;
+        if (parent == null || view.getWidth() <= 0) { cb.onMoved(view.getX(), view.getY()); return; }
+        int parentW = parent.getWidth();
+        if (view.getWidth() >= parentW - 1) { cb.onMoved(view.getX(), view.getY()); return; }
+
+        float projected = view.getX() + view.getWidth() / 2f + flingVx * 0.18f;
+        float targetX = projected < parentW / 2f ? 0f : parentW - view.getWidth();
+
+        float targetY = view.getY();
+        int parentH = parent.getHeight();
+        if (parentH > 0 && view.getHeight() > 0) {
+            targetY = Math.max(0f, Math.min(targetY, parentH - view.getHeight()));
+        }
+
+        final float fromX = view.getX(), fromY = view.getY(), toX = targetX, toY = targetY;
+        ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
+        anim.setDuration(260);
+        anim.setInterpolator(new DecelerateInterpolator(1.2f));
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator a) {
+                float t = (float) a.getAnimatedValue();
+                view.setX(fromX + (toX - fromX) * t);
+                view.setY(fromY + (toY - fromY) * t);
+            }
+        });
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator a) {
+                if (snapAnim == a) snapAnim = null;
+                cb.onMoved(view.getX(), view.getY());
+            }
+        });
+        snapAnim = anim;
+        anim.start();
     }
 
     // ---- Fade badge -------------------------------------------------------

@@ -3509,8 +3509,9 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     val gameNative = hudStyle == "gamenative"
     val fusion = hudStyle == "fusion"
     val rich = gameHub || gameNative || fusion   // opacity + FPS graph + GPU model + color/outline
-    // Fusion size mode (also live-cycled by tapping the Fusion HUD in-game).
-    val fusionSizes = listOf("full", "tiles", "pill", "minimal", "mega")
+    // Fusion size mode (also live-cycled by tapping the Fusion HUD in-game). Derived from the enum
+    // (single source of truth) so a new size can't drift out of this picker.
+    val fusionSizes = com.winlator.star.widget.fusionhud.FusionSize.values().map { it.token }
     var fusionSize by remember(cfg) { mutableStateOf(cfg.getOrDefault("hudSize", "pill")) }
     // Chips the selected Fusion size actually renders (single source of truth in FusionSize).
     val fusionChips = com.winlator.star.widget.fusionhud.FusionSize.from(fusionSize).supportedChips()
@@ -3538,6 +3539,8 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     var showLow001 by remember(cfg) { mutableStateOf(b("showLow001", "showLow001", "1")) }
     var fpsDecimal by remember(cfg) { mutableStateOf(b("fpsDecimal", "fpsDecimal", "1")) }
     var hudLocked by remember(cfg) { mutableStateOf(b("hudLocked", "hudLocked", "0")) }
+    // Snap-to-sides on drag release (DroidDeck #1937 port). Defaults ON, applies to every HUD style.
+    var hudSnap by remember(cfg) { mutableStateOf(b("hudSnap", "hudSnap", "1")) }
     // Fusion Mega-only metrics.
     var showPerCore by remember(cfg) { mutableStateOf(b("showPerCore", "showPerCore", "1")) }
     var showSwap by remember(cfg) { mutableStateOf(b("showSwap", "showSwap", "1")) }
@@ -3577,6 +3580,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
         "hudEnabled=${i(hudEnabled)}",
         "hudSize=$fusionSize",
         "hudLocked=${i(hudLocked)}",
+        "hudSnap=${i(hudSnap)}",
         "showVram=${i(showVram)}",
         "showLow001=${i(showLow001)}",
         "fpsDecimal=${i(fpsDecimal)}",
@@ -3761,7 +3765,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
                 modifier = Modifier.padding(start = 4.dp, top = 2.dp, bottom = 4.dp)
             )
             if (fusion) {
-                HudChipRow("Size", listOf("Full", "Tiles", "Pill", "Minimal", "Mega"), fusionSizes.indexOf(fusionSize).coerceAtLeast(0)) { fusionSize = fusionSizes[it]; apply() }
+                HudChipRow("Size", com.winlator.star.widget.fusionhud.FusionSize.values().map { it.label }, fusionSizes.indexOf(fusionSize).coerceAtLeast(0)) { fusionSize = fusionSizes[it]; apply() }
             }
         }
 
@@ -3803,6 +3807,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
             if (!fusion && gameHub) add(Triple("Dual battery", dualBattery) { dualBattery = !dualBattery; apply() })
             // Global appearance control, shown for every style/size.
             add(Triple("Lock in place", hudLocked) { hudLocked = !hudLocked; apply() })
+            add(Triple("Snap to sides", hudSnap) { hudSnap = !hudSnap; apply() })
         }
 
         CollapsibleSection("Metrics", lead = "${metricChips.count { it.second }} on") {
