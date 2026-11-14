@@ -74,6 +74,7 @@ public class HudLockController {
     // where it was thrown (velocity projected 0.18 s ahead, matching DroidDeck's FLING_REACH_S).
     private boolean snapEnabled = false;
     private float flingVx = 0f;
+    private float flingVy = 0f;
     private ValueAnimator snapAnim;
 
     // Fade state
@@ -131,6 +132,7 @@ public class HudLockController {
             startY = view.getY();
             dragging = false;
             flingVx = 0f;
+            flingVy = 0f;
             stopSnapAnim();
             return true;
         }
@@ -155,7 +157,10 @@ public class HudLockController {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (dragging && !locked) flingVx = velocityX;
+            if (dragging && !locked) {
+                flingVx = velocityX;
+                flingVy = velocityY;
+            }
             return false;   // the drag already moved the view; only the velocity is recorded
         }
 
@@ -185,27 +190,35 @@ public class HudLockController {
     }
 
     /**
-     * Glide the HUD to the nearer screen side (left/right) at its released height, then persist.
-     * A fling projects the landing side 0.18 s ahead. Full-width views (Strip) skip the horizontal
-     * glide — they span the parent and are parked on the top/bottom edges by plain dragging.
+     * Glide the HUD to the nearer screen edge at release, then persist. A fling projects the landing
+     * edge 0.18 s ahead (matching DroidDeck's FLING_REACH_S). Partial-width views snap horizontally
+     * to the nearer left/right side and keep their height (DroidDeck #1937); full-width views (Strip)
+     * snap vertically to the nearer top/bottom edge — flush against it, no leftover gap.
      */
     private void snapToSide() {
         stopSnapAnim();
         ViewGroup parent = view.getParent() instanceof ViewGroup ? (ViewGroup) view.getParent() : null;
         if (parent == null || view.getWidth() <= 0) { cb.onMoved(view.getX(), view.getY()); return; }
         int parentW = parent.getWidth();
-        if (view.getWidth() >= parentW - 1) { cb.onMoved(view.getX(), view.getY()); return; }
-
-        float projected = view.getX() + view.getWidth() / 2f + flingVx * 0.18f;
-        float targetX = projected < parentW / 2f ? 0f : parentW - view.getWidth();
-
-        float targetY = view.getY();
         int parentH = parent.getHeight();
-        if (parentH > 0 && view.getHeight() > 0) {
-            targetY = Math.max(0f, Math.min(targetY, parentH - view.getHeight()));
+
+        float toX, toY;
+        if (parentH > 0 && view.getHeight() > 0 && view.getWidth() >= parentW - 1) {
+            // Full-width (Strip): vertical snap to the nearer top/bottom edge.
+            float projectedY = view.getY() + view.getHeight() / 2f + flingVy * 0.18f;
+            toY = projectedY < parentH / 2f ? 0f : parentH - view.getHeight();
+            toX = view.getX();
+        } else if (parentH > 0 && view.getHeight() > 0) {
+            // Partial-width: horizontal snap to the nearer side, keep released height (clamped).
+            float projected = view.getX() + view.getWidth() / 2f + flingVx * 0.18f;
+            toX = projected < parentW / 2f ? 0f : parentW - view.getWidth();
+            toY = Math.max(0f, Math.min(view.getY(), parentH - view.getHeight()));
+        } else {
+            cb.onMoved(view.getX(), view.getY());
+            return;
         }
 
-        final float fromX = view.getX(), fromY = view.getY(), toX = targetX, toY = targetY;
+        final float fromX = view.getX(), fromY = view.getY();
         ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
         anim.setDuration(260);
         anim.setInterpolator(new DecelerateInterpolator(1.2f));
