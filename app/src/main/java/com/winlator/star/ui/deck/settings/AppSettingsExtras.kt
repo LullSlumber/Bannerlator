@@ -236,19 +236,19 @@ internal class AppSettingsExtras(
         lines += infoLine("status", "已安装: V " + UpdateManager.installedVersionName() + (latest?.let { "   ·   最新版本: V " + it.versionName } ?: ""), updateHint(latest))
         if (latest != null && latest.isNewer) {
             lines += actionLine(DeckAction("install", Icons.Filled.Download, L("下载并安装") + " V " + latest.versionName,
-                L("Downloads the new version and starts the installer."), enabled = activity != null) {
+                L("下载新版本并启动安装器。"), enabled = activity != null) {
                 activity?.let { UpdateManager.downloadAndInstall(it, latest) {} }
             })
         }
-        lines += actionLine(DeckAction("check", Icons.Filled.Refresh, if (checking) L("Checking...") else L("检查更新"),
-            L("Looks for a new version now."), enabled = !checking) { checkNow() })
+        lines += actionLine(DeckAction("check", Icons.Filled.Refresh, if (checking) L("检查中...") else L("检查更新"),
+            L("立即检查新版本。"), enabled = !checking) { checkNow() })
         val about = ArrayList<DeckAction>()
         about += DeckAction("about", Icons.Filled.Info, L("关于 Bannerlator"), L("版本、其驱动技术和鸣谢。")) { onAbout() }
-        about += DeckAction("help", Icons.Filled.HelpOutline, L("Help and support"), L("GitHub, issue tracker and Discord.")) { showHelp = true }
+        about += DeckAction("help", Icons.Filled.HelpOutline, L("帮助与支持"), L("GitHub、问题追踪和 Discord。")) { showHelp = true }
         if (onMyAccount != null) {
-            about += DeckAction("account", Icons.Filled.AccountCircle, L("我的账户"), L("Sign in to manage your shared configs.")) { onMyAccount.invoke() }
+            about += DeckAction("account", Icons.Filled.AccountCircle, L("我的账户"), L("登录以管理你的共享配置。")) { onMyAccount.invoke() }
         }
-        about += DeckAction("setup", Icons.Filled.RestartAlt, L("再次运行设置"), L("Walk through the first-run set-up: permissions, theme, stores.")) { DeckSetup.requestRerun() }
+        about += DeckAction("setup", Icons.Filled.RestartAlt, L("再次运行设置"), L("走一遍首次运行设置：权限、主题、商店。")) { DeckSetup.requestRerun() }
         return cardItems("version", L("Version"), lines) + actionItems("about", L("关于与帮助"), about)
     }
 
@@ -258,7 +258,7 @@ internal class AppSettingsExtras(
         cardItems("theme", L("主题"), listOf(AppLine("preset") { ThemePresetLine(onOpen = { showThemes = true }) }))
 
     private fun appearanceBottom(): List<PageExtra> = listOf(
-        PageExtra("accent-label") { GroupLabel(L("Custom accent colour")) },
+        PageExtra("accent-label") { GroupLabel(L("自定义强调色")) },
         PageExtra("accent-picker") { GroupCard(first = true, last = true, highlight = false) { AccentPicker() } },
     )
 
@@ -267,9 +267,9 @@ internal class AppSettingsExtras(
     private fun regionHint(): String {
         val reachable = regionProbe.entries.filter { it.value >= 0 }.sortedBy { it.value }
         return when {
-            regionProbing -> L("Pinging every Steam datacenter...")
-            regionProbe.isEmpty() -> L("Pings every Steam datacenter now. Auto remembers the fastest.")
-            reachable.isEmpty() -> L("No datacenter answered.")
+            regionProbing -> L("正在测试每个 Steam 数据中心的延迟...")
+            regionProbe.isEmpty() -> L("立即测试所有 Steam 数据中心延迟。自动模式会记住最快的。")
+            reachable.isEmpty() -> L("没有数据中心响应。")
             else -> reachable.take(4).joinToString(", ") { SteamRegion.nameOf(it.key) + " " + it.value + " ms" }
         }
     }
@@ -277,7 +277,7 @@ internal class AppSettingsExtras(
     private fun networkHint(): String {
         val net = netResult
         return when {
-            netProbing -> L("Checking how this network handles online game traffic...")
+            netProbing -> L("正在检查此网络对在线游戏流量的处理方式...")
             net == null -> L("Checks the NAT type and UDP for online games (the same check the SteamLite launch shows).")
             else -> "网络: " + net.verdict() +
                 (if (net.nat != NetworkProbe.Nat.OPEN_CONE && net.maskedIp != null) " (IP ${net.maskedIp})" else "") +
@@ -308,14 +308,14 @@ internal class AppSettingsExtras(
     }
 
     // The Steam library locations are the first item of the tab (above every row).
-    private fun libraryTop(): List<PageExtra> = actionItems("steam-lib", L("Steam library"), listOf(
+    private fun libraryTop(): List<PageExtra> = actionItems("steam-lib", L("Steam 游戏库"), listOf(
         DeckAction("libraries", Icons.Filled.Folder, context.getString(R.string.steam_lib_title), context.getString(R.string.steam_lib_settings_subtitle)) { showSteamLibraries = true },
     ))
 
     // The locations are in [libraryTop].
-    private fun libraryBottom(): List<PageExtra> = actionItems("steam-conn", L("Steam connection tests"), listOf(
-        DeckAction("regions", Icons.Filled.Refresh, if (regionProbing) L("Testing regions...") else L("测试区域"), regionHint(), enabled = !regionProbing) { testRegions() },
-        DeckAction("network", Icons.Filled.Speed, if (netProbing) L("Testing network...") else L("测试网络"), networkHint(), enabled = !netProbing) { testNetwork() },
+    private fun libraryBottom(): List<PageExtra> = actionItems("steam-conn", L("Steam 连接测试"), listOf(
+        DeckAction("regions", Icons.Filled.Refresh, if (regionProbing) L("正在测试区域...") else L("测试区域"), regionHint(), enabled = !regionProbing) { testRegions() },
+        DeckAction("network", Icons.Filled.Speed, if (netProbing) L("正在测试网络...") else L("测试网络"), networkHint(), enabled = !netProbing) { testNetwork() },
     ))
 
     // ── Performance ─────────────────────────────────────────────────────────────────────────────
@@ -323,12 +323,12 @@ internal class AppSettingsExtras(
     private fun lsfgReady() = lsfgDllFile.isFile && lsfgDllFile.length() > 0
 
     private fun lsfgStatusText(): String {
-        if (!lsfgReady()) return L("Not set: LSFG Native stays off")
+        if (!lsfgReady()) return L("未设置：LSFG Native 保持关闭")
         val mb = lsfgDllFile.length() / (1024 * 1024)
         return when (prefs.getString("lsfg_dll_source", null)) {
-            "store" -> L("Imported from the Steam store (Lossless Scaling)") + " · " + mb + " MB"
-            "manual" -> L("Imported manually") + " · " + mb + " MB"
-            else -> L("Imported") + " · " + mb + " MB"
+            "store" -> L("从 Steam 商店导入（Lossless Scaling）") + " · " + mb + " MB"
+            "manual" -> L("手动导入") + " · " + mb + " MB"
+            else -> L("已导入") + " · " + mb + " MB"
         }
     }
 
@@ -338,7 +338,7 @@ internal class AppSettingsExtras(
         if (!lsfgReady()) { lsfgShaderStatus = ""; return }
         if (!lsfgShaderBuilding.compareAndSet(false, true)) return
         val appCtx = context.applicationContext
-        lsfgShaderStatus = L("Preparing shaders for LSFG Native (one time, can take a minute)")
+        lsfgShaderStatus = L("正在为 LSFG Native 准备着色器（仅需一次，可能需要一分钟）")
         Thread({
             val started = System.currentTimeMillis()
             val status = try {
@@ -348,7 +348,7 @@ internal class AppSettingsExtras(
             val text = when (status) {
                 com.winlator.star.core.LsfgNative.STATUS_OK ->
                     if (took >= 2) L("着色器已为LSFG Native就绪") + " (" + took + " s)" else L("着色器已为LSFG Native就绪")
-                -1 -> L("Shader preparation failed; it is retried when a game launches")
+                -1 -> L("着色器准备失败；游戏启动时会重试")
                 else -> com.winlator.star.core.LsfgNative.explain(status)
             }
             onUi {
@@ -368,7 +368,7 @@ internal class AppSettingsExtras(
             lsfgStatus = lsfgStatusText()
             buildLsfgShaderCache()
         } catch (e: Exception) {
-            lsfgStatus = L("Import failed") + ": " + e.message
+            lsfgStatus = L("导入失败") + ": " + e.message
         }
     }
 
@@ -385,7 +385,7 @@ internal class AppSettingsExtras(
     private fun detectLosslessDll() {
         val src = findStoreLosslessDll()
         if (src == null) {
-            toast(L("No Steam-store Lossless Scaling found: download it from the store or import it manually."), long = true)
+            toast(L("未在 Steam 商店找到 Lossless Scaling：请从商店下载或手动导入。"), long = true)
             return
         }
         try {
@@ -396,8 +396,8 @@ internal class AppSettingsExtras(
             buildLsfgShaderCache()
             toast(L("Lossless.dll set from the Steam store install."))
         } catch (e: Exception) {
-            lsfgStatus = L("Detect failed") + ": " + e.message
-            toast(L("Detect failed") + ": " + e.message, long = true)
+            lsfgStatus = L("检测失败") + ": " + e.message
+            toast(L("检测失败") + ": " + e.message, long = true)
         }
     }
 
@@ -413,8 +413,8 @@ internal class AppSettingsExtras(
         val lines = ArrayList<AppLine>()
         val shaders = lsfgShaderStatus
         lines += infoLine("status", L("Lossless.dll"), lsfgStatus + (if (shaders.isNotEmpty()) "\n" + shaders else ""))
-        lines += actionLine(DeckAction("detect", Icons.Filled.Download, L("Detect from the Steam store"),
-            L("Download Lossless Scaling in the in-app Steam store first. The DLL is copied into the app and used by every container whose frame generation engine is LSFG Native.")) { detectLosslessDll() })
+        lines += actionLine(DeckAction("detect", Icons.Filled.Download, L("从 Steam 商店检测"),
+            L("先在应用内 Steam 商店下载 Lossless Scaling。DLL 会复制进应用，供所有帧生成引擎为 LSFG Native 的容器使用。")) { detectLosslessDll() })
         lines += actionLine(DeckAction("import", Icons.Filled.FileDownload, L("导入 Lossless.dll"),
             L("Pick a Lossless.dll yourself (in-app file picker).")) {
             startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("选择 Lossless.dll"))) { data ->
@@ -422,21 +422,21 @@ internal class AppSettingsExtras(
             }
         })
         lines += actionLine(DeckAction("import-system", Icons.Filled.FileDownload, L("Import Lossless.dll with the system picker"),
-            L("The same, with Android's own file picker.")) {
+            L("同上，但使用 Android 自带的文件选择器。")) {
             startDoc { uri -> importLosslessDll(uri) }
         })
         if (lsfgDllFile.isFile) {
             lines += actionLine(DeckAction("remove", Icons.Filled.Delete, L("Remove Lossless.dll"),
-                L("Deletes the copy and its shader cache; LSFG Native stays off.")) { removeLosslessDll() })
+                L("删除副本及其着色器缓存；LSFG Native 保持关闭。")) { removeLosslessDll() })
         }
         return lines
     }
 
     private fun performanceBottom(): List<PageExtra> =
-        actionItems("perf-root", L("Root and heat"), listOf(
-            DeckAction("root", Icons.Filled.Speed, L("Root controls and heat safety"),
-                L("CPU governor and frequency locks, free memory and the temperature watchdog.")) { showPerf = true },
-        )) + cardItems("lsfg", L("Frame generation: LSFG Native"), lsfgLines())
+        actionItems("perf-root", L("Root 与散热"), listOf(
+            DeckAction("root", Icons.Filled.Speed, L("Root 控制与散热保护"),
+                L("CPU 调频策略与频率锁定、可用内存和温度看门狗。")) { showPerf = true },
+        )) + cardItems("lsfg", L("帧生成：LSFG Native"), lsfgLines())
 
     // ── Storage & data ──────────────────────────────────────────────────────────────────────────
 
@@ -533,26 +533,26 @@ internal class AppSettingsExtras(
         for (name in soundBanks) {
             val builtIn = name == MidiManager.DEFAULT_SF2_FILE
             soundLines += AppLine("sf:$name") {
-                if (builtIn) DeckLine(label = L("Built-in General MIDI bank"), hint = L("Always available; it cannot be removed."))
+                if (builtIn) DeckLine(label = L("Built-in General MIDI bank"), hint = L("始终可用，无法移除。"))
                 else DeckLine(label = name, trailing = { DeckSmallButton(L("移除"), Icons.Filled.Delete) { removeSoundBank(name) } })
             }
         }
-        soundLines += actionLine(DeckAction("add", Icons.Filled.Add, L("Add a sound bank (.sf2)"),
-            L("Containers pick their MIDI sound bank under Audio. In-app file picker.")) {
+        soundLines += actionLine(DeckAction("add", Icons.Filled.Add, L("添加音色库（.sf2）"),
+            L("容器在「音频」下选择 MIDI 音色库。使用应用内文件选择器。")) {
             startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.SF2, L("Select SoundFont"))) { data ->
                 InAppFilePicker.pickedUri(data)?.let { installSoundBank(it) }
             }
         })
-        soundLines += actionLine(DeckAction("add-system", Icons.Filled.Add, L("Add a sound bank with the system picker"),
-            L("The same, with Android's own file picker.")) {
+        soundLines += actionLine(DeckAction("add-system", Icons.Filled.Add, L("用系统选择器添加音色库"),
+            L("同上，但使用 Android 自带的文件选择器。")) {
             startDoc { uri -> installSoundBank(uri) }
         })
 
         val folders = buildList<DeckAction> {
-            add(DeckAction("data", Icons.Filled.Folder, L("App data folder"), dataPath) { pickTree("winlator_path_uri") { dataPath = readTreePath("winlator_path_uri", SettingsFragment.DEFAULT_WINLATOR_PATH) } })
-            add(DeckAction("export", Icons.Filled.Folder, L("Shortcut export folder"), exportPath) { pickTree("shortcuts_export_path_uri") { exportPath = readTreePath("shortcuts_export_path_uri", SettingsFragment.DEFAULT_SHORTCUT_EXPORT_PATH) } })
-            add(DeckAction("imagefs", Icons.Filled.Storage, L("Reinstall the base system (ImageFS)"),
-                L("Restores the system files. Your containers are not changed.")) {
+            add(DeckAction("data", Icons.Filled.Folder, L("应用数据文件夹"), dataPath) { pickTree("winlator_path_uri") { dataPath = readTreePath("winlator_path_uri", SettingsFragment.DEFAULT_WINLATOR_PATH) } })
+            add(DeckAction("export", Icons.Filled.Folder, L("快捷方式导出文件夹"), exportPath) { pickTree("shortcuts_export_path_uri") { exportPath = readTreePath("shortcuts_export_path_uri", SettingsFragment.DEFAULT_SHORTCUT_EXPORT_PATH) } })
+            add(DeckAction("imagefs", Icons.Filled.Storage, L("重装基础系统（ImageFS）"),
+                L("恢复系统文件。你的容器不受影响。")) {
                 ContentDialog.confirm(context, R.string.do_you_want_to_reinstall_imagefs) {
                     (activity as? MainActivity)?.let { ImageFsInstaller.installFromAssets(it) }
                 }
@@ -560,26 +560,26 @@ internal class AppSettingsExtras(
         }
 
         val backup = listOf(
-            DeckAction("backup", Icons.Filled.FileUpload, L("Back up app data"),
+            DeckAction("backup", Icons.Filled.FileUpload, L("备份应用数据"),
                 L("Containers, settings and prefix in one file (app_data_backup.tar in your storage root).")) { showBackup = true },
-            DeckAction("restore", Icons.Filled.Archive, L("Restore app data"),
-                L("Pick a backup with the in-app file picker. The app restarts.")) {
+            DeckAction("restore", Icons.Filled.Archive, L("恢复应用数据"),
+                L("用应用内文件选择器选择一个备份。应用会重启。")) {
                 startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, L("Select backup"))) { data ->
                     InAppFilePicker.pickedUri(data)?.let { restoreUri = it }
                 }
             },
-            DeckAction("restore-system", Icons.Filled.Archive, L("Restore app data with the system picker"),
-                L("The same, with Android's own file picker.")) {
+            DeckAction("restore-system", Icons.Filled.Archive, L("用系统选择器恢复应用数据"),
+                L("同上，但使用 Android 自带的文件选择器。")) {
                 startDoc { uri -> restoreUri = uri }
             },
         )
 
         return listOf(
-            PageExtra("space-label") { GroupLabel(L("Space used")) },
+            PageExtra("space-label") { GroupLabel(L("已用空间")) },
             PageExtra("space") { Column { StorageWidget() } },
         ) + actionItems("folders", L("文件夹"), folders) +
-            cardItems("banks", L("Sound banks"), soundLines) +
-            actionItems("backup", L("Backup and restore"), backup)
+            cardItems("banks", L("音色库"), soundLines) +
+            actionItems("backup", L("备份与恢复"), backup)
     }
 
     // ── Advanced: frame-gen training capture ───────────────────────────────────────────────────
@@ -612,9 +612,9 @@ internal class AppSettingsExtras(
             if (f != null) {
                 diagRecording = true
                 diagLogPath = f.absolutePath
-                AppUtils.showToast(context, L("Recording diagnostic log: reproduce the freeze, then stop"))
+                AppUtils.showToast(context, L("正在录制诊断日志：复现冻结后停止"))
             } else {
-                AppUtils.showToast(context, L("Could not start the diagnostic log (storage permission?)"))
+                AppUtils.showToast(context, L("无法启动诊断日志（存储权限？）"))
             }
         }
     }
@@ -629,8 +629,8 @@ internal class AppSettingsExtras(
         lines += AppLine("capture") {
             DeckLine(
                 label = L("贡献帧生成训练采集"),
-                hint = if (captureEnabled) L("Recording is ON: files are saved to Download/win-fg. Only records while a game's frame generation engine is win-fg. It lowers FPS while recording.")
-                else L("Records raw in-game frames (no HUD, no personal data, no audio) to Download/win-fg for you to share. Turning it on asks you to confirm first."),
+                hint = if (captureEnabled) L("录制已开启：文件保存到 Download/win-fg。仅当游戏的帧生成引擎为 win-fg 时录制。录制时会降低帧率。")
+                else L("录制原始游戏画面（无 HUD、无个人数据、无音频）保存到 Download/win-fg 供你分享。开启前会先请求确认。"),
                 activate = { setCapture(!captureEnabled) },
                 trailing = { Switch(checked = captureEnabled, onCheckedChange = { setCapture(it) }) },
             )
@@ -638,7 +638,7 @@ internal class AppSettingsExtras(
         lines += AppLine("resolution") {
             DeckLine(
                 label = L("采集分辨率"),
-                hint = L("Match game records at your play resolution (best data); 720p / 1080p force a fixed size."),
+                hint = L("按游玩分辨率匹配游戏记录（数据最佳）；720p / 1080p 会强制固定尺寸。"),
                 trailing = {
                     resolutions.forEach { (value, label) ->
                         DeckSmallButton(label, if (captureRes == value) Icons.Filled.Check else null) {
@@ -652,18 +652,18 @@ internal class AppSettingsExtras(
         lines += AppLine("extra") {
             DeckLine(
                 label = L("额外win-fg日志（详细）"),
-                hint = L("For debugging a win-fg freeze: turn this and the diagnostic log on, reproduce the freeze, then share the saved log."),
+                hint = L("用于排查 win-fg 冻结：同时开启此项和诊断日志，复现冻结，然后分享保存的日志。"),
                 activate = { applyExtraLogging(!extraLogging) },
                 trailing = { Switch(checked = extraLogging, onCheckedChange = { applyExtraLogging(it) }) },
             )
         }
         lines += actionLine(DeckAction("diag", Icons.Filled.Description,
             if (diagRecording) L("停止诊断日志") else L("启动诊断日志"),
-            if (diagRecording) L("Recording: reproduce the freeze, then stop.")
+            if (diagRecording) L("录制中：复现冻结后停止。")
             else if (diagLogPath != null) L("Last saved to") + " " + diagLogPath
-            else L("Records this app's log to Download/win-fg-logs while you play. No root needed.")) { toggleDiagLog() })
+            else L("游玩时将本应用的日志记录到 Download/win-fg-logs。无需 root。")) { toggleDiagLog() })
         lines += actionLine(DeckAction("guide", Icons.Filled.HelpOutline, L("如何录制良好的训练数据"),
-            L("What to record, what to avoid and what is captured.")) { showCaptureHelp = true })
+            L("录制什么、避开什么以及捕获的内容。")) { showCaptureHelp = true })
         return cardItems("fg", L("帧生成训练捕获"), lines)
     }
 
@@ -734,11 +734,11 @@ internal class AppSettingsExtras(
         if (backingUp) {
             OutlinedAlertDialog(
                 onDismissRequest = {},
-                title = { Text(L("Backing up data")) },
+                title = { Text(L("正在备份数据")) },
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator()
-                        Text(L("This can take a while."), modifier = Modifier.padding(start = 16.dp))
+                        Text(L("这可能需要一段时间。"), modifier = Modifier.padding(start = 16.dp))
                     }
                 },
                 confirmButton = {},
@@ -826,7 +826,7 @@ private fun AccentPicker() {
     val accent by AppThemeState.customAccent.collectAsState()
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp)) {
         Text(
-            L("Selecting a colour below switches the theme to Custom."),
+            L("在下方选择一个颜色即切换到自定义主题。"),
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.5.sp,
         )
         Spacer(Modifier.height(8.dp))

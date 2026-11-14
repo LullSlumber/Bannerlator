@@ -56,7 +56,7 @@ internal fun preflightRows(
         row(PreflightRowId.SIGN_IN, "Sign in", Step.SESSION),
         row(PreflightRowId.NETWORK, "Network", Step.NETWORK),
         row(PreflightRowId.CLOUD, "云存档", Step.CLOUD),
-        row(PreflightRowId.UPDATE, "Update check", Step.UPDATE),
+        row(PreflightRowId.UPDATE, "检查更新", Step.UPDATE),
         row(PreflightRowId.CLIENT, if (appSteam) "Valve Steam 客户端" else "SteamLite 客户端", Step.CLIENT),
         PreflightRow(
             PreflightRowId.LAUNCH, "Launch",

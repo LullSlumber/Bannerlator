@@ -127,7 +127,7 @@ object XServerDrawerState {
     // HDR output (Wayland, HDR sessions only). `available` = the compositor opened HDR for this session
     // (the game/container setting was on AND this screen reports HDR10) - the row is shown only then.
     // `output` = the live switch: on = the game's HDR frames go to the display as HDR, off = the same
-    // frames tone-mapped to SDR. Per session, starts on; the saved "HDR output" setting in the editors
+    // frames tone-mapped to SDR. Per session, starts on; the saved "HDR 输出" setting in the editors
     // stays the next launch's choice. `onScreen` / `toneMapped` = what the compositor showed in the
     // last ~1.5 s (the row's status line), refreshed once a second by the activity.
     private val _waylandHdrAvailable      = MutableStateFlow(false)

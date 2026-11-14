@@ -496,7 +496,7 @@ internal fun FirstContainerStep(fc: FirstContainerSetup, scope: CoroutineScope) 
         DeckRowDivider()
         DeckRow(title = "Frame rate limit (60)", trailing = { Switch(checked = fc.fpsLimiter, onCheckedChange = { fc.fpsLimiter = it }, enabled = !locked) })
         DeckRowDivider()
-        DeckRow(title = "Show FPS", trailing = { Switch(checked = fc.showFps, onCheckedChange = { fc.showFps = it }, enabled = !locked) })
+        DeckRow(title = "显示 FPS", trailing = { Switch(checked = fc.showFps, onCheckedChange = { fc.showFps = it }, enabled = !locked) })
         DeckRowDivider()
         DeckRow(title = "麦克风", trailing = {
             Switch(checked = fc.microphone && fc.micPossible, onCheckedChange = { fc.microphone = it }, enabled = !locked && fc.micPossible)

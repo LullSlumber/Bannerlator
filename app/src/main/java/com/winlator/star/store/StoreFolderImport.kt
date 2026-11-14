@@ -104,7 +104,7 @@ object StoreFolderImport {
         val app = ctx.applicationContext
         SteamFolderAdopt.refuseReason(folder)?.let { return it }
         try { File(folder, SteamInstallPaths.ADOPTED_MARKER).writeText("${store.key}:${game.id}\n") } catch (t: Throwable) {
-            return "Bannerlator can't write to that folder."
+            return "Bannerlator 无法写入该文件夹。"
         }
         val s = when (store) {
             StoreInstallLocations.Store.EPIC -> Store.EPIC
@@ -125,7 +125,7 @@ object StoreFolderImport {
                     }
                 } catch (t: Throwable) {
                     Log.w(TAG, "import ${store.key}:${game.id} failed", t)
-                    StoreDownloadHooks.markFailed(s, game.id, t.message ?: "Import failed")
+                    StoreDownloadHooks.markFailed(s, game.id, t.message ?: "导入失败")
                 }
             }
         }
@@ -142,7 +142,7 @@ object StoreFolderImport {
     private fun runEpic(app: Context, game: Game, folder: File, cancelled: AtomicBoolean) {
         val p = prefs(app, "bh_epic_prefs")
         val eg = EpicLibraryRepo.cached(app).firstOrNull { it.appName == game.id }
-            ?: return StoreDownloadHooks.markFailed(Store.EPIC, game.id, "Not in your Epic library")
+            ?: return StoreDownloadHooks.markFailed(Store.EPIC, game.id, "不在你的 Epic 游戏库中")
         p.edit().putString("epic_dir_${game.id}", folder.absolutePath).apply()
         val token = EpicCredentialStore.getValidAccessToken(app)
             ?: return StoreDownloadHooks.markFailed(Store.EPIC, game.id, "Login required")
@@ -178,7 +178,7 @@ object StoreFolderImport {
     private fun runAmazon(app: Context, game: Game, folder: File, cancelled: AtomicBoolean) {
         val p = prefs(app, "bh_amazon_prefs")
         val ag = AmazonLibraryRepo.cached(app).firstOrNull { it.productId == game.id }
-            ?: return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "Not in your Amazon library")
+            ?: return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "不在你的 Amazon 游戏库中")
         p.edit().putString("amazon_dir_${game.id}", folder.absolutePath).apply()
         val token = AmazonCredentialStore.getValidAccessToken(app)
             ?: return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "Login required")
@@ -198,7 +198,7 @@ object StoreFolderImport {
 
     private suspend fun runGog(app: Context, game: Game, folder: File, cancelled: AtomicBoolean) {
         val gg = GogLibraryRepo.cached(app).firstOrNull { it.gameId == game.id }
-            ?: return StoreDownloadHooks.markFailed(Store.GOG, game.id, "Not in your GOG library")
+            ?: return StoreDownloadHooks.markFailed(Store.GOG, game.id, "不在你的 GOG 游戏库中")
         val p = prefs(app, "bh_gog_prefs")
         // GOG names the folder itself: the download goes to <parent>/<GOG's name> and only proceeds when that is
         // this folder (GogInstallPath.claimPendingBase refuses otherwise, see the engine).

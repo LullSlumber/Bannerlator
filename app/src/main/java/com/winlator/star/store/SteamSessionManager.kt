@@ -100,7 +100,7 @@ object SteamSessionManager {
                     lastStatus = st
                     progress(
                         when (st) {
-                            SteamRepository.SteamStatus.CONNECTING -> "Signing in to Steam…"
+                            SteamRepository.SteamStatus.CONNECTING -> "正在登录Steam…"
                             SteamRepository.SteamStatus.OFFLINE -> "正在等待Steam连接…"
                             SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE -> "账户已在别处登录…"
                             else -> "Connecting to Steam…"

@@ -389,7 +389,7 @@ private fun AudioContent(state: XServerDrawerState) {
         modifier = Modifier.padding(top = 4.dp)
     )
     Spacer(Modifier.height(12.dp))
-    AccentButton("Reset audio", Modifier.fillMaxWidth()) { state.onResetAudio?.run() }
+    AccentButton("重置音频", Modifier.fillMaxWidth()) { state.onResetAudio?.run() }
     Text(
         "修复切换应用后声音丢失的问题。",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -511,7 +511,7 @@ internal fun TvContent(state: XServerDrawerState) {
     Spacer(Modifier.height(12.dp))
 
     // Rebuild the audio route — sound can drop after backgrounding or an HDMI route change.
-    AccentButton("Reset audio", Modifier.fillMaxWidth()) {
+    AccentButton("重置音频", Modifier.fillMaxWidth()) {
         state.onResetAudio?.run()
     }
     Text(
@@ -631,7 +631,7 @@ internal fun TvContent(state: XServerDrawerState) {
     SectionHeader("Advanced")
 
     val renderRes by state.tvRenderRes.collectAsState()
-    ReshadeDropdown("TV渲染分辨率", listOf("Match TV", "Match handheld", "1080p", "1440p"), renderRes) { i ->
+    ReshadeDropdown("TV渲染分辨率", listOf("匹配TV", "匹配手持设备", "1080p", "1440p"), renderRes) { i ->
         state.setTvRenderRes(i)
         state.onTvRenderResChange?.accept(i)
     }
@@ -1129,14 +1129,14 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
             lookTouchedScaling()
             XServerDialogState.onGlUpscalerApply?.invoke(it)
         }
-        // "Sharpness" drives SGSR EdgeSharpness / FSR RCAS / CAS / NIS, for the sharpening modes.
+        // "锐化度" drives SGSR EdgeSharpness / FSR RCAS / CAS / NIS, for the sharpening modes.
         if (glUpscalerMode in 3..8) {
             val initGlUpscaleSharpness by XServerDialogState.glUpscaleSharpness.collectAsState()
             var glUpscaleSharpness by remember(initGlUpscaleSharpness) { mutableIntStateOf(initGlUpscaleSharpness) }
             Spacer(Modifier.height(4.dp))
             // Continuous for SGSR/FSR/NIS/SGSR HQ (3/4/5/7/8); snapped to 5 stops {0,25,50,75,100} for
             // Sharpen mode (6), where stop 0 = OFF (no CAS pass).
-            IntSlider("Sharpness", glUpscaleSharpness, 0..100,
+            IntSlider("锐化度", glUpscaleSharpness, 0..100,
                 onValueChange = { glUpscaleSharpness = it },
                 onValueChangeFinished = {
                     XServerDialogState.onGlUpscaleSharpnessApply?.invoke(glUpscaleSharpness)
@@ -1158,7 +1158,7 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
             // Standalone CAS sharpen: always snapped to 5 stops {0,25,50,75,100}, stop 0 = OFF.
             // (A Look may park it between stops — the effect is continuous; the snap only bites
             // when the user drags it.)
-            IntSlider("Sharpness", sgsrSharpness, 0..100,
+            IntSlider("锐化度", sgsrSharpness, 0..100,
                 onValueChange = { sgsrSharpness = it; lookTouched() },
                 onValueChangeFinished = {
                     XServerDialogState.setSgsrSharpness(sgsrSharpness)
@@ -1317,13 +1317,13 @@ internal fun GraphicsEffectsSection(state: XServerDrawerState) {
             XServerDialogState.onUpscalerApply?.invoke(it)
         }
 
-        // "Sharpness" controls the REAL upscaler sharpness (RCAS stops / SGSR EdgeSharpness /
+        // "锐化度" controls the REAL upscaler sharpness (RCAS stops / SGSR EdgeSharpness /
         // NIS sharpness) and only applies to the sharpening scaling modes (SGSR/FSR/FSR-Fit/Sharpen/NIS/SGSR HQ).
         if (upscalerMode in 3..8) {
             val initUpscaleSharpness by XServerDialogState.upscaleSharpness.collectAsState()
             var upscaleSharpness by remember(initUpscaleSharpness) { mutableIntStateOf(initUpscaleSharpness) }
             Spacer(Modifier.height(4.dp))
-            IntSlider("Sharpness", upscaleSharpness, 0..100, { upscaleSharpness = it }, {
+            IntSlider("锐化度", upscaleSharpness, 0..100, { upscaleSharpness = it }, {
                 XServerDialogState.onUpscaleSharpnessApply?.invoke(upscaleSharpness)
             }, enabled = vkEnabled)
         }
@@ -1474,7 +1474,7 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
             }
         }
     }
-    HelperText("Touchscreen: fingers reach Steam as real touches (Big Picture scrolls under one). Touchpad: a drag moves the pointer, a tap clicks. App setting follows the Touchscreen switch every container uses. In Touchpad, Touch: Direct (Controls > Mouse) puts the pointer under the finger instead. Applies now.")
+    HelperText("触摸屏：手指以真实触摸的方式作用于 Steam（大屏幕模式下可单指滚动）。触摸板：拖动移动指针，点按单击。应用设置跟随每个容器使用的「触摸屏」开关。触摸板模式下，「触摸：直接」（控制 > 鼠标）会把指针置于手指下方。立即生效。")
 
     Spacer(Modifier.height(6.dp))
     ToggleRow("屏幕上的 Steam 和快速访问按钮", on(LinuxTuning.EXTRA_STEAM_BUTTONS)) {
@@ -1625,7 +1625,7 @@ internal fun LinuxComponentsContent(state: XServerDrawerState) {
 }
 
 // ───── Wayland: HDR output (live, HDR sessions only) ─────
-// Shown only while the compositor has HDR open for this session (the game's or container's "HDR output"
+// Shown only while the compositor has HDR open for this session (the game's or container's "HDR 输出"
 // setting was on at launch AND this screen reports HDR10) - never on X11, never on an SDR screen. A live
 // switch: on = the game's HDR frames go to the display as real HDR; off = the SAME frames are shown as a
 // tone-mapped SDR picture. Nothing is relaunched and the game is not told (DXVK_HDR and the offer to the
@@ -1646,7 +1646,7 @@ private fun WaylandHdrOutputRow(state: XServerDrawerState) {
     var checked by remember(output) { mutableStateOf(output) }
 
     Spacer(Modifier.height(6.dp))
-    ToggleRow("HDR output", checked) {
+    ToggleRow("HDR 输出", checked) {
         checked = it
         state.setWaylandHdrOutput(it)
         state.onWaylandHdrOutputToggle?.accept(it)
@@ -3630,7 +3630,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
     fun apply() { state.onFpsConfigApply?.invoke(buildConfig()) }
 
     // ═══ Master toggle: hides every HUD group below when off (matches the approved prototype). ═══
-    ToggleRow("Show HUD", hudEnabled) { hudEnabled = it; apply() }
+    ToggleRow("显示 HUD", hudEnabled) { hudEnabled = it; apply() }
 
     // ── Performance group: always shown. The limiter + refresh live here regardless of the HUD. ──
     if (!embedded) HudGroupLabel("Performance")
@@ -4090,7 +4090,7 @@ internal fun ControlsContent(
     var showTouchscreen by remember(initTouchscreen) { mutableStateOf(initTouchscreen) }
     var timeoutEnabled by remember(initTimeout) { mutableStateOf(initTimeout) }
     var hapticsEnabled by remember(initHaptics) { mutableStateOf(initHaptics) }
-    val allItems = listOf("-- Disabled --") + profiles
+    val allItems = listOf("-- 已禁用 --") + profiles
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     when (if (subTabs.any { it.first == subTab }) subTab else subTabs.first().first) {
@@ -4102,7 +4102,7 @@ internal fun ControlsContent(
             val anchorFocus0 = remember { androidx.compose.ui.focus.FocusRequester() }
             ExposedDropdownMenuBox(expanded = dropdownExpanded, onExpandedChange = { dropdownExpanded = it }) {
                 OutlinedTextField(
-                    value = allItems.getOrElse(selectedIdx) { "-- Disabled --" },
+                    value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
                     onValueChange = {}, readOnly = true,
                     label = { Text("配置", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
@@ -4220,7 +4220,7 @@ internal fun ControlsContent(
                 perRow = 3
             )
             Spacer(Modifier.height(6.dp))
-            Text("Aim", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("瞄准", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(4.dp))
             ModeChipGrid(
                 listOf(
@@ -4239,7 +4239,7 @@ internal fun ControlsContent(
                     ToggleChipItem("禁用鼠标", isMouseDisabled) {
                         state.onDisableMouse?.run()
                     },
-                    ToggleChipItem("Auto-hide Cursor", cursorAutoHide) {
+                    ToggleChipItem("自动隐藏光标", cursorAutoHide) {
                         state.setCursorAutoHide(it); state.onCursorAutoHideChange?.run()
                     },
                 ),
@@ -4249,7 +4249,7 @@ internal fun ControlsContent(
             if (cursorAutoHide) {
                 val initHideMs by state.cursorAutoHideMs.collectAsState()
                 var hideMs by remember(initHideMs) { mutableIntStateOf(initHideMs) }
-                IntSlider("Hide After (ms)", hideMs, 500..10000,
+                IntSlider("隐藏延迟 (ms)", hideMs, 500..10000,
                     onValueChange = { hideMs = it },
                     onValueChangeFinished = {
                         state.setCursorAutoHideMs(hideMs); state.onCursorAutoHideChange?.run()
@@ -4618,7 +4618,7 @@ private fun PadSection() {
     // reads once: switching to or from it applies on the next launch.
     val choices = remember { ControllerIdentity.wineChoices() }
     val identityApply = if (pad.nextLaunchOnly.contains("identity")) PadApply.RESTART else PadApply.RECONNECT
-    PadRowHeader("Controller type", identityApply, R.string.help_controller_identity)
+    PadRowHeader("控制器类型", identityApply, R.string.help_controller_identity)
     var identityExpanded by remember { mutableStateOf(false) }
     val identityLocked = pad.identityLockedReason != null
     val anchorFocus2 = remember { androidx.compose.ui.focus.FocusRequester() }
@@ -4649,7 +4649,7 @@ private fun PadSection() {
     // in-game switching allowed (the forwarding copy is installed then).
     if (pad.xinputAvailable) {
         Spacer(Modifier.height(8.dp))
-        PadRowHeader("XInput source", if (pad.xinputSwitchable) PadApply.RECONNECT else PadApply.RESTART, R.string.help_bannerin_xinput)
+        PadRowHeader("XInput 源", if (pad.xinputSwitchable) PadApply.RECONNECT else PadApply.RESTART, R.string.help_bannerin_xinput)
         ModeChipGrid(
             listOf(
                 Triple<String, Boolean, () -> Unit>("Direct", pad.xinputDirect) { if (!pad.xinputDirect) XServerDialogState.onPadXInputDirect?.invoke(true) },
@@ -4688,7 +4688,7 @@ private fun PadSection() {
 
     // Stick updates: BANNERIN's pacing, live.
     Spacer(Modifier.height(8.dp))
-    PadRowHeader("Stick updates", PadApply.LIVE, R.string.help_stick_pacing)
+    PadRowHeader("摇杆更新", PadApply.LIVE, R.string.help_stick_pacing)
     val pacing = StickPacing.parse(pad.pacing) ?: StickPacing.DEFAULT
     val pacingLocked = pad.pacingLockedReason != null
     ModeChipGrid(
@@ -4768,7 +4768,7 @@ private fun PadSection() {
 private fun SaveScopeFooter() {
     val scope by XServerDialogState.controllerSaveScope.collectAsState()
     if (scope.gameName != null) {
-        Text("Save for", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("保存用于", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(4.dp))
         ModeChipGrid(
             listOf(

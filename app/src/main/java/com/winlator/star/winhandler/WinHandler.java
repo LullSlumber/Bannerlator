@@ -74,7 +74,7 @@ public class WinHandler {
     // Extra process-list listeners that sit beside the single owner above (the Task Manager, the
     // installer/game-exit watchers swap that one), e.g. LiveWineRegistry waiting for regedit to finish.
     private final CopyOnWriteArrayList<OnGetProcessInfoListener> extraProcessInfoListeners = new CopyOnWriteArrayList<>();
-    // Task Manager "Processor Affinity": the last mask the user applied per (guest) pid. The guest's
+    // Task Manager "核心关联": the last mask the user applied per (guest) pid. The guest's
     // GetProcessAffinityMask readback is unreliable under wow64/FEX (it keeps reporting the full mask
     // even after SetProcessAffinityMask has moved the live threads), so we remember what the user
     // actually chose and surface THAT in the dialog. Pruned to live pids each process-list refresh, so
@@ -2849,7 +2849,7 @@ public class WinHandler {
 
         Integer oscSlot = deviceToSlot.get(OSC_DEVICE_ID);
         Integer oscOverride = manualSlotOverrides.get(OSC_DESCRIPTOR);
-        out.add(new PlayerSlotInfo("On-screen controls", OSC_DESCRIPTOR,
+        out.add(new PlayerSlotInfo("屏幕控制", OSC_DESCRIPTOR,
                 oscSlot != null ? oscSlot : -1, false, true,
                 oscOverride != null ? oscOverride : -1));
 
@@ -3127,7 +3127,7 @@ public class WinHandler {
             }
         }
 
-        // Manual "Ignore" override: user marked this physical controller as not-a-player in the
+        // Manual "忽略" override: user marked this physical controller as not-a-player in the
         // in-game Players sub-tab — never auto-assign it a slot.
         String descriptor = descriptorOf(deviceId);
         if (descriptor != null) {

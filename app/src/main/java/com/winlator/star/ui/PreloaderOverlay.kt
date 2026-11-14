@@ -386,7 +386,7 @@ private fun closingClock(since: Long): String {
             value = closingSeconds(since)
         }
     }
-    return String.format(java.util.Locale.US, "%d:%02d elapsed · still working", seconds / 60, seconds % 60)
+    return String.format(java.util.Locale.US, "%d:%02d 已过 · 仍在处理", seconds / 60, seconds % 60)
 }
 
 private fun closingSeconds(since: Long): Long = maxOf(0L, SystemClock.elapsedRealtime() - since) / 1000

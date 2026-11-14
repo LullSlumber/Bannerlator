@@ -3403,7 +3403,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         if (windowsSteamSession) xServer.hideTransparentWindows = true;
         // Windows Steam: Wine copies the fullscreen page over Big Picture's menus every frame; lay them back on top.
         xServer.keepOverlayCopies = windowsSteamSession;
-        // "Start in Big Picture": Steam starts on its desktop window and is then asked to open Big Picture (see
+        // "以大屏幕模式启动": Steam starts on its desktop window and is then asked to open Big Picture (see
         // windowsSteamBigPictureWatch), so leaving Big Picture has the desktop window to go back to.
         windowsSteamBigPicturePending = windowsSteamSession && shortcut != null
                 && "1".equals(shortcut.getExtra(com.winlator.star.store.WindowsSteamClient.EXTRA_BIG_PICTURE));
@@ -4060,7 +4060,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     // Extra win-fg logging (global opt-in): verbose present-path logging for freeze debugging.
                     + WinFgDiag.confDebugLine(this);
             // Only stamp the capture target box while capture is armed; a normal (capture-off) rewrite
-            // leaves these keys out. "Match game" resolves to the session's actual render size (from the
+            // leaves these keys out. "匹配游戏" resolves to the session's actual render size (from the
             // X server screen info), else the fixed 720p/1080p box; falls back to 720p if unresolved.
             if (captureOn) {
                 int gw = (xServer != null) ? xServer.screenInfo.width : 0;
@@ -7878,7 +7878,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         // The PiP window was closed rather than expanded: the session has left the screen, freeze it now.
         if (pipSuspendDeferred) {
             pipSuspendDeferred = false;
-            Log.i("XServerDisplayActivity", "PiP: window closed — freezing the game");
+            Log.i("XServerDisplayActivity", "画中画：窗口已关闭 — 冻结游戏");
             suspendSessionForBackground(true);
         }
         // Belt-and-suspenders: also drop controller-test isolation on stop (see onPause).
@@ -8377,7 +8377,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 on = opwr == null || opwr.trim().isEmpty() || opwr.trim().equals("0");
             }
         } catch (Exception e) {
-            Log.w("XServerDisplayActivity", "Windows Steam: GPU drawing check", e);
+            Log.w("XServerDisplayActivity", "Windows Steam：GPU 绘制检查", e);
         }
         windowsSteamGpuDrawing = on;
         return on;
@@ -8393,7 +8393,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
         return name != null ? name : "";
     }
 
-    // Windows Steam, "Start in Big Picture": waiting for Steam's desktop window (title "Steam") to ask it to open
+    // Windows Steam, "以大屏幕模式启动": waiting for Steam's desktop window (title "Steam") to ask it to open
     // Big Picture. Started with -gamepadui instead, Steam never makes its desktop window, so leaving Big Picture
     // showed nothing.
     private boolean windowsSteamBigPicturePending;
@@ -8404,7 +8404,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             if (!windowsSteamBigPicturePending || isFinishing() || isDestroyed()) return;
             if (++windowsSteamBigPictureTries > 300) {
                 windowsSteamBigPicturePending = false;
-                Log.i("XServerDisplayActivity", "Steam (Windows): no desktop window in 5 min, Big Picture not opened");
+                Log.i("XServerDisplayActivity", "Steam（Windows）：5 分钟内无桌面窗口，未打开大屏幕模式");
                 return;
             }
             boolean shown = false;
@@ -8412,7 +8412,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 try (XLock lock = xServer.lock(XServer.Lockable.WINDOW_MANAGER)) {
                     shown = hasMappedWindowTitled(xServer.windowManager.rootWindow, "Steam", 0);
                 } catch (Exception e) {
-                    Log.w("XServerDisplayActivity", "Steam (Windows): desktop window check", e);
+                    Log.w("XServerDisplayActivity", "Steam（Windows）：桌面窗口检查", e);
                 }
             }
             if (!shown) {
@@ -8423,7 +8423,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             windowsSteamMenuHandler.postDelayed(() -> {
                 if (winHandler == null || shortcut == null || isFinishing()) return;
                 winHandler.exec("\"" + shortcut.path + "\" steam://open/bigpicture");
-                Log.i("XServerDisplayActivity", "Steam (Windows): desktop window up, asked Steam to open Big Picture");
+                Log.i("XServerDisplayActivity", "Steam（Windows）：桌面窗口出现，已请求 Steam 打开大屏幕模式");
             }, 1500);
         }
     };
@@ -8447,7 +8447,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             Window w = xServer != null ? xServer.windowManager.getFocusedWindow() : null;
             for (int i = 0; w != null && i < 8 && name.isEmpty(); i++, w = w.getParent()) name = windowTitle(w);
         } catch (Exception e) {
-            Log.w("XServerDisplayActivity", "Steam (Windows): focused window", e);
+            Log.w("XServerDisplayActivity", "Steam（Windows）：焦点窗口", e);
         }
         boolean bigPicture = name.toLowerCase(java.util.Locale.ROOT).contains("big picture");
         Log.i("XServerDisplayActivity", "Steam (Windows): focused window '" + name + "'" + (bigPicture ? " = Big Picture" : ""));
@@ -8474,10 +8474,10 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 xServer.injectKeyRelease(XKeycode.KEY_TAB);
                 xServer.injectKeyRelease(XKeycode.KEY_SHIFT_L);
             } catch (Throwable t) {
-                Log.w("XServerDisplayActivity", "Steam (Windows): Shift+Tab release", t);
+                Log.w("XServerDisplayActivity", "Steam（Windows）：Shift+Tab 释放", t);
             }
         }, 150);
-        Log.i("XServerDisplayActivity", "Steam (Windows): Menu button press sent Shift+Tab (Steam overlay)");
+        Log.i("XServerDisplayActivity", "Steam（Windows）：菜单键按下发送 Shift+Tab（Steam 覆盖层）");
     }
 
     private boolean menuButtonEvent(KeyEvent event) {
@@ -12090,7 +12090,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                     lastCommittedWinFgPreset = resolvedFrameGenPerfPreset();
                     // Crowdsourced training capture (global opt-in). Piggy-backs on the win-fg layer we
                     // just loaded: arms WIN_FG_CAPTURE + output dir (Download/win-fg) + the anonymous
-                    // consent record + the capture-resolution target box (native "Match game" uses the
+                    // consent record + the capture-resolution target box (native "匹配游戏" uses the
                     // resolved render size below). writeWinFgConfig above already stamped capture=on/off
                     // (and capture_width/height) into conf.toml. No-op when the toggle is off, so a
                     // normal launch is untouched.
@@ -14189,7 +14189,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 if (exe != null && exe.getParentFile() != null) gameDir = exe.getParentFile().getAbsolutePath();
             }
         } catch (Exception e) {
-            Log.w("XServerDisplayActivity", "Run a program: game folder", e);
+            Log.w("XServerDisplayActivity", "运行程序：游戏文件夹", e);
         }
         ds.runBrowserGameDir = gameDir;
         ds.onRunBrowserPick = path -> runPickedProgram(path, fillNewTask);
@@ -14210,8 +14210,8 @@ public class XServerDisplayActivity extends AppCompatActivity {
                 win = com.winlator.star.core.WinePath.INSTANCE.resolveWindowsPath(c, path);
                 linkMissingDrives(c);
             } catch (Exception e) {
-                Log.w("XServerDisplayActivity", "Run a program: no Windows path for " + path, e);
-                runOnUiThread(() -> Toast.makeText(this, "Can't reach " + new File(path).getName() + " from this container", Toast.LENGTH_LONG).show());
+                Log.w("XServerDisplayActivity", "运行程序：没有对应的 Windows 路径：" + path, e);
+                runOnUiThread(() -> Toast.makeText(this, "无法连接 " + new File(path).getName() + " from this container", Toast.LENGTH_LONG).show());
                 return;
             }
             final String windowsPath = win;
@@ -14225,7 +14225,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             }
             boolean sent = winHandler != null && winHandler.execInFolder(windowsPath, "");
             runOnUiThread(() -> Toast.makeText(this,
-                    (sent ? "Starting " : "Couldn't start ") + new File(path).getName(), Toast.LENGTH_SHORT).show());
+                    (sent ? "正在启动 " : "无法启动 ") + new File(path).getName(), Toast.LENGTH_SHORT).show());
         }, "RunProgram").start();
     }
 
@@ -14236,7 +14236,7 @@ public class XServerDisplayActivity extends AppCompatActivity {
             File link = new File(dosdevices, drive[0].toLowerCase(java.util.Locale.ENGLISH) + ":");
             if (link.exists() || FileUtils.isSymlink(link)) continue;
             FileUtils.symlink(new File(drive[1]).getAbsolutePath(), link.getPath());
-            Log.i("XServerDisplayActivity", "Run a program: linked drive " + drive[0] + ": -> " + drive[1]);
+            Log.i("XServerDisplayActivity", "运行程序：已关联的驱动器 " + drive[0] + ": -> " + drive[1]);
         }
     }
 
@@ -15997,7 +15997,7 @@ return true;
         if (yserverHosted && decision != null && decision.getOn()
                 && decision.route != com.winlator.star.core.FastOpenGL.Route.EGL) {
             decision = new com.winlator.star.core.FastOpenGL.X11Decision(null,
-                    "unsupported: yserver has no server-side GLX on Android (EGL route only)");
+                    "不支持：yserver 在 Android 上没有服务端 GLX（仅 EGL 路线）");
         }
         if (decision != null && decision.getOn()) {
             boolean egl = decision.route == com.winlator.star.core.FastOpenGL.Route.EGL;
@@ -18019,7 +18019,7 @@ return true;
             } else {
                 String cur = reg.getStringValue("Software\\Wine\\Drivers", "显示设置", "");
                 if ("wayland".equals(cur))
-                    reg.setStringValue("Software\\Wine\\Drivers", "Graphics", "x11");
+                    reg.setStringValue("Software\\Wine\\Drivers", "显示设置", "x11");
                 // Self-healing like Graphics: an X11 launch drops the Wayland desktop seeding so the
                 // X11 path stays exactly as it was (explorer /desktop=shell,WxH on the command line).
                 if ("shell".equals(reg.getStringValue("Software\\Wine\\Explorer", "Desktop", ""))) {

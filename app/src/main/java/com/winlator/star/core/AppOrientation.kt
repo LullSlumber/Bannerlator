@@ -7,7 +7,7 @@ import androidx.preference.PreferenceManager
 import com.winlator.star.ui.deck.isXmbHome
 
 /**
- * The user's "App orientation" preference — applied to the app's OWN UI activity only. The game's
+ * The user's "应用方向" preference — applied to the app's OWN UI activity only. The game's
  * [com.winlator.star.XServerDisplayActivity] sets its own orientation and is never touched here, so
  * launching a game always releases/ignores this app-side lock.
  *

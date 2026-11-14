@@ -107,7 +107,7 @@ internal fun DeckComponentsPage() {
     DeckHostedPage(
         icon = Icons.Filled.Extension,
         title = "Components",
-        description = if (xmb) "Wine and Proton builds, graphics translation layers, wrappers, drivers and x86 translators. Install once, use in any container."
+        description = if (xmb) "Wine 和 Proton 构建、图形转译层、包装层、驱动和 x86 翻译器。安装一次，任何容器都能用。"
         else "Wine and Proton builds, graphics translation layers, drivers and x86 translators. Install once, use in any container.",
         tabs = tabs,
         selected = tab,
@@ -155,7 +155,7 @@ internal object DeckToolsTabs {
  * Tools: Files / Saves / Logs (plus More in the plain Deck). Files, Saves and Logs are the File Manager, Save Manager and Log
  * Manager screens hosted in place. In the XMB interface they have no page header of their own (just the Files / Saves / Logs
  * rail or strip), there is no More tab (Wrappers / Adrenotools are Components tabs, the rest lives in Settings), Files uses its
- * slim one-row toolbar, and Logs carries every recording option (a collapsible "Recording options" section) with nothing about
+ * slim one-row toolbar, and Logs carries every recording option (a collapsible "录制选项" section) with nothing about
  * them in Settings. The plain Deck keeps the header, the full toolbar, the whole Logs screen and More, which holds the drawer's
  * leftovers and "再次运行设置" ([DeckMoreTools]); its three callbacks are the shell's. Unpacking an archive starts from a
  * file's menu in the File Manager, since it needs a picked archive.

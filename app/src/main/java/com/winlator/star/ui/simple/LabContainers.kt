@@ -74,7 +74,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
     var saveBusy by remember { mutableStateOf<String?>(null) }
     val busy by rememberUpdatedState(isLoading || layerBusy != null || layerDownload != null || saveBusy != null)
     fun guarded(label: String? = null, job: () -> Unit): () -> Unit = {
-        if (busy) toast(context, L("Wait until the current job is done"))
+        if (busy) toast(context, L("等待当前任务完成"))
         else { working = label; job() }
     }
 
@@ -132,15 +132,15 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
                     val oldLabel = ContainerLayerUpdater.layerLabel(c.wineVersion, target)
                     val body = listOfNotNull(
-                        L("%1\$s moves from %2\$s to %3\$s. Games, saves, shortcuts and settings are kept.", c.name, c.wineVersion, target),
-                        remote?.let { r -> r.sizeBytes?.let { L("The layer is downloaded first (%1\$s).", ContainerLayerUpdater.formatSize(it)) } ?: L("The layer is downloaded first.") },
-                        if (c.id in layerCurrentMissing) L("%1\$s is no longer installed, so this cannot be reverted.", oldLabel)
-                        else L("%1\$s stays installed, so you can revert.", oldLabel),
-                        L("Close anything running in it first."),
+                        L("%1\$s 从 %2\$s 升级到 %3\$s。游戏、存档、快捷方式和设置全部保留。", c.name, c.wineVersion, target),
+                        remote?.let { r -> r.sizeBytes?.let { L("先下载层（%1\$s）。", ContainerLayerUpdater.formatSize(it)) } ?: L("先下载层。") },
+                        if (c.id in layerCurrentMissing) L("%1\$s 已不再安装，因此无法回退。", oldLabel)
+                        else L("%1\$s 保持已安装，随时可以回退。", oldLabel),
+                        L("请先关闭其中正在运行的内容。"),
                     ).joinToString(" ")
                     add(
                         MenuAction(
-                            if (remote != null) L("Download and update layer to %1\$s", newLabel) else L("Update layer to %1\$s", newLabel),
+                            if (remote != null) L("Download and update layer to %1\$s", newLabel) else L("更新层到 %1\$s", newLabel),
                             guarded { if (remote != null) vm.downloadAndUpdateLayer(c, remote) else vm.updateLayer(c, target) },
                             confirm = body,
                         ),
@@ -150,21 +150,21 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     val oldLabel = ContainerLayerUpdater.layerLabel(snapshot.oldEntry, c.wineVersion)
                     add(
                         MenuAction(
-                            L("Revert layer to %1\$s", oldLabel),
+                            L("将层回退到 %1\$s", oldLabel),
                             guarded { vm.revertLayer(c, snapshot) },
                             confirm = L(
-                                "%1\$s goes back from %2\$s to %3\$s. The registry is restored from the backup taken before the update; games, saves, shortcuts and settings are kept. %4\$s must still be installed.",
+                                "%1\$s 从 %2\$s 回退到 %3\$s。注册表会恢复为更新前备份的内容；游戏、存档、快捷方式和设置全部保留。%4\$s 仍需保持已安装。",
                                 c.name, c.wineVersion, snapshot.oldEntry, oldLabel,
                             ),
                         ),
                     )
                 }
                 // The view model posts "Container duplicated" or "Couldn't duplicate container" itself.
-                add(MenuAction(L("复制"), guarded(L("Duplicating %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
-                add(MenuAction(L("Back up saves…"), guarded { saveFlow = SaveFlow.BackupScope(c) }))
-                add(MenuAction(L("Restore a save…"), guarded { saveFlow = SaveFlow.RestoreSource(c) }))
+                add(MenuAction(L("复制"), guarded(L("正在复制 %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
+                add(MenuAction(L("备份存档…"), guarded { saveFlow = SaveFlow.BackupScope(c) }))
+                add(MenuAction(L("恢复存档…"), guarded { saveFlow = SaveFlow.RestoreSource(c) }))
                 add(
-                    MenuAction(L("导出"), guarded(L("Exporting %1\$s…", c.name)) {
+                    MenuAction(L("导出"), guarded(L("正在导出 %1\$s…", c.name)) {
                         vm.exportContainer(c) { path ->
                             (context as? Activity)?.runOnUiThread {
                                 toast(context, when {
@@ -177,10 +177,10 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                         }
                     }),
                 )
-                add(MenuAction(L("Storage info"), { storageFor = c }))
+                add(MenuAction(L("存储信息"), { storageFor = c }))
                 add(
                     MenuAction(
-                        L("移除"), guarded(L("Removing %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
+                        L("移除"), guarded(L("正在移除 %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
                         danger = true, confirm = L("Remove %1\$s and everything in it? Its games' shortcuts go too.", c.name),
                     ),
                 )
@@ -208,7 +208,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                             MenuAction(
                                 L("Import this container"),
                                 // The view model calls back only when the import worked; a failure shows its message.
-                                guarded(L("Importing %1\$s…", f.name)) { vm.importContainer(f) { (context as? Activity)?.runOnUiThread { toast(context, L("Imported %1\$s", f.name)) } } },
+                                guarded(L("正在导入 %1\$s…", f.name)) { vm.importContainer(f) { (context as? Activity)?.runOnUiThread { toast(context, L("Imported %1\$s", f.name)) } } },
                                 confirm = L("Import %1\$s as a new container?", f.name),
                             ),
                         ),
@@ -230,10 +230,10 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
         null, is SaveFlow.Fork -> {}
         is SaveFlow.BackupScope -> SimpleActionSheet(
             title = L("备份存档"),
-            message = L("Some games keep saves elsewhere (the install folder, the registry, Steam Cloud). Check a backup before you delete anything."),
+            message = L("有些游戏把存档放在别处（安装文件夹、注册表、Steam 云）。删除任何东西前先检查备份。"),
             actions = listOf(
-                MenuAction(L("All game saves (whole profile)"), { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) }),
-                MenuAction(L("A specific game…"), { saveFlow = SaveFlow.GamePicker(flow.container) }),
+                MenuAction(L("全部游戏存档（整个配置）"), { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) }),
+                MenuAction(L("指定游戏…"), { saveFlow = SaveFlow.GamePicker(flow.container) }),
             ),
             onDismiss = { saveFlow = null },
         ) { it.run() }
@@ -245,7 +245,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             val list = shortcuts
             key(list?.size ?: -1) {
                 SimpleActionSheet(
-                    title = L("Pick a game"),
+                    title = L("选择一个游戏"),
                     actions = list.orEmpty().map { sc ->
                         MenuAction(sc.name, {
                             saveFlow = SaveFlow.GameSaves(
@@ -260,7 +260,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     },
                     message = when {
                         list == null -> L("Loading the list…")
-                        list.isEmpty() -> L("No games found in this container.")
+                        list.isEmpty() -> L("此容器中未找到游戏。")
                         else -> null
                     },
                     onDismiss = { saveFlow = null },
@@ -309,16 +309,16 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
         ) { it.run() }
         is SaveFlow.Confirm -> SimpleConfirm(
             title = L("恢复"),
-            body = L("Restore the backup of %1\$s into %2\$s? This may overwrite save data there.", flow.gameName, flow.container.name),
+            body = L("将 %1\$s 的备份恢复到 %2\$s？这可能覆盖那里的存档数据。", flow.gameName, flow.container.name),
             danger = false,
             onDismiss = { saveFlow = null },
         ) {
             val c = flow.container
             saveFlow = null
-            saveBusy = L("Restoring %1\$s…", flow.gameName)
+            saveBusy = L("正在恢复 %1\$s…", flow.gameName)
             GameSaveBackup.restore(context, flow.uri, c) { r ->
                 saveBusy = null
-                toast(context, if (r.ok) L("Restored %1\$s files to %2\$s", r.filesWritten, c.name) else L("Restore failed: %1\$s", r.error ?: L("unknown")))
+                toast(context, if (r.ok) L("已将 %1\$s 个文件恢复到 %2\$s", r.filesWritten, c.name) else L("恢复失败：%1\$s", r.error ?: L("unknown")))
                 emuConflicts = r.emuConflicts
             }
         }
@@ -331,6 +331,6 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
     storageFor?.let { c -> LabStorageDialog(container = c, onDismiss = { storageFor = null }) }
     EmuAccountConflictDialog(conflicts = emuConflicts) { applied, _ ->
         emuConflicts = emptyList()
-        if (applied > 0) toast(context, L("Emulator account switched to the backup's. Relaunch the game."))
+        if (applied > 0) toast(context, L("模拟器账号已切换为备份中的账号。请重新启动游戏。"))
     }
 }

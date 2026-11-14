@@ -352,7 +352,7 @@ private fun DeckOnScreenTab(s: InputControlsDeckState) {
             }
             DeckCard {
                 if (s.profiles.isEmpty()) {
-                    CtlNote("No profiles yet. Create one with New profile, or import one.")
+                    CtlNote("还没有配置。用「新建配置」创建一个，或导入一个。")
                 } else {
                     Spacer(Modifier.height(4.dp))
                     s.profiles.forEachIndexed { i, p ->
@@ -403,8 +403,8 @@ private fun ProfileRow(p: ControlsProfile, s: InputControlsDeckState) {
             val c = counts
             Text(
                 text = if (c == null) " " else listOf(
-                    if (c.first > 0) "${c.first} on-screen controls" else "No on-screen layout",
-                    if (c.second > 0) "${c.second} bindings" else "No bindings",
+                    if (c.first > 0) "${c.first} on-screen controls" else "无虚拟按键布局",
+                    if (c.second > 0) "${c.second} bindings" else "无按键映射",
                 ).joinToString(" · "),
                 color = cs.onSurfaceVariant,
                 fontSize = 12.sp,
@@ -423,7 +423,7 @@ private fun ProfileDetailCard(s: InputControlsDeckState) {
     val cs = MaterialTheme.colorScheme
     DeckCard {
         if (p == null) {
-            CtlNote("No profile selected. Pick one from the list, or create a new one.")
+            CtlNote("未选择配置。从列表中选择一个，或新建一个。")
         } else {
             var exportOpen by remember { mutableStateOf(false) }
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -447,7 +447,7 @@ private fun ProfileDetailCard(s: InputControlsDeckState) {
                     }
                 } else {
                     Text(
-                        "No on-screen layout yet. Edit layout adds one.",
+                        "还没有虚拟按键布局。「编辑布局」可添加一个。",
                         color = cs.onSurfaceVariant,
                         fontSize = 13.sp,
                     )
@@ -516,7 +516,7 @@ internal fun ctlPadOf(c: ExternalController): CtlPad {
 private fun ctlPadLine(pad: CtlPad, bindings: Int): String {
     val parts = ArrayList<String>()
     if (!pad.connected) parts.add("Not connected")
-    parts.add(if (bindings > 0) "$bindings bindings" else "No bindings")
+    parts.add(if (bindings > 0) "$bindings bindings" else "无按键映射")
     if (pad.battery >= 0) parts.add("battery ${pad.battery}%")
     return parts.joinToString(" · ")
 }
@@ -535,7 +535,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
 
     CtlPanes(
         left = {
-            DeckButton("Test and bind", Icons.Filled.Gamepad, s.testAndBind, primary = true)
+            DeckButton("测试并绑定", Icons.Filled.Gamepad, s.testAndBind, primary = true)
             DeckCard {
                 Spacer(Modifier.height(4.dp))
                 CtlChoiceRow(
@@ -551,7 +551,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                         Text("Default / Any controller", color = cs.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         val n = s.defaultTemplate?.getControllerBindingCount() ?: 0
                         Text(
-                            if (n > 0) "$n bindings · new pads start from these" else "No bindings · new pads start from these",
+                            if (n > 0) "$n bindings · new pads start from these" else "无按键映射 · 新手柄以此为基础",
                             color = cs.onSurfaceVariant,
                             fontSize = 12.sp,
                             maxLines = 1,
@@ -561,7 +561,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                 }
                 if (pads.isEmpty()) {
                     DeckRowDivider()
-                    CtlNote("No controller connected. Connect one to see and bind it here.")
+                    CtlNote("未连接手柄。连接一个即可在此查看并绑定。")
                 }
                 for (c in pads) {
                     DeckRowDivider()
@@ -581,7 +581,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
             DeckCard {
                 val cs = MaterialTheme.colorScheme
                 if (s.current == null) {
-                    CtlNote("No profile selected. Create one on the On-screen tab to set bindings.")
+                    CtlNote("未选择配置。请在「虚拟按键」标签创建一个以设置按键映射。")
                 } else {
                     val pad = if (target != null && !isDefault) ctlPadOf(target) else null
                     var copyOpen by remember(activeId) { mutableStateOf(false) }
@@ -607,14 +607,14 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            DeckButton("Edit bindings", Icons.Filled.Edit, { s.openBindings(activeId) }, primary = true)
+                            DeckButton("编辑按键映射", Icons.Filled.Edit, { s.openBindings(activeId) }, primary = true)
                             val dev = pad?.device
                             if (pad != null && dev != null && pad.vibrator) {
                                 DeckButton("震动", Icons.Filled.Vibration, { pulsePad(dev) })
                             }
                             if (target != null && !isDefault) {
                                 Box {
-                                    DeckButton("Copy from", Icons.Filled.ContentCopy, { copyOpen = true })
+                                    DeckButton("复制自", Icons.Filled.ContentCopy, { copyOpen = true })
                                     DropdownMenu(
                                         expanded = copyOpen,
                                         onDismissRequest = { copyOpen = false },
@@ -639,8 +639,8 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                         }
                         if (target == null || count == 0) {
                             Text(
-                                if (isDefault) "No default bindings yet. Edit bindings sets what new controllers start from."
-                                else "No bindings saved for this controller. Edit bindings maps its buttons, or copy them from another controller.",
+                                if (isDefault) "尚无默认按键映射。「编辑按键映射」设定新控制器的基础映射。"
+                                else "此手柄没有保存的按键映射。「编辑按键映射」可映射它的按键，或从其他手柄复制。",
                                 color = cs.onSurfaceVariant,
                                 fontSize = 13.sp,
                                 lineHeight = 18.sp,
@@ -677,8 +677,8 @@ private fun MappingTable(pad: ExternalController) {
     val columns = if (deckCompact()) 1 else 2
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (buttons.isNotEmpty()) MappingGroup("Buttons", buttons, columns)
-        if (sticks.isNotEmpty()) MappingGroup("Sticks and D-pad", sticks, columns)
-        if (triggers.isNotEmpty()) MappingGroup("Triggers", triggers, columns)
+        if (sticks.isNotEmpty()) MappingGroup("摇杆与十字键", sticks, columns)
+        if (triggers.isNotEmpty()) MappingGroup("扳机", triggers, columns)
     }
 }
 

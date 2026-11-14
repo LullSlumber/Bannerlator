@@ -411,7 +411,7 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
             title = vm.container?.name ?: vm.containerName,
             icon = Icons.Filled.Inventory2,
             chain = listOf(
-                ChainLink(if (xmb) L("New-container defaults") else L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+                ChainLink(if (xmb) L("新容器默认值") else L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
                 ChainLink(L("此容器"), Icons.Filled.Inventory2, null),
             ),
             meta = listOf(vm.selectedWineVersion, if (vm.isArm64EC) "arm64ec" else "x86_64").filter { it.isNotEmpty() }.joinToString(" · "),

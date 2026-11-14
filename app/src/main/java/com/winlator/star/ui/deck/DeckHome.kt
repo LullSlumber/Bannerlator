@@ -491,7 +491,7 @@ internal fun DeckHome(
                     DeckShelf(label, "store-$label", list, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { playtimeLabel(stats[it.file.path]?.ms ?: 0L) }
                 }
                 if (shortcuts.size > 1 && filter.activeCount == 0) {
-                    DeckShelf("Recently added", "recent", recentlyAdded, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { storeLabelOf(it) }
+                    DeckShelf("最近添加", "recent", recentlyAdded, onFocus = onFocus, onOpen = onOpenGame, onMenu = onMenu) { storeLabelOf(it) }
                 }
             }
             Spacer(Modifier.height(16.dp))

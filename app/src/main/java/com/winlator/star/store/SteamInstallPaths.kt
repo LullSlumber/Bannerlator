@@ -34,7 +34,7 @@ object SteamInstallPaths {
     const val OWNED_MARKER = ".bannerlator_owned"
 
     /**
-     * Written into a game folder the user brought ("+ Import game library", "Use a folder I already have"):
+     * Written into a game folder the user brought ("+ Import game library", "使用已有的文件夹"):
      * the folder is the user's, so no cancel, reset or uninstall may delete it — only the game's own files
      * are repaired by the install. Content: the app id.
      */

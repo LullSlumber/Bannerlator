@@ -95,7 +95,7 @@ class UiSoundPack(
             ZipInputStream(FileInputStream(zip).buffered()).use { z ->
                 var e = z.nextEntry
                 while (e != null) {
-                    if (++entries > MAX_ENTRIES) throw IOException("too many files in the zip")
+                    if (++entries > MAX_ENTRIES) throw IOException("zip 内文件过多")
                     val out = File(root, e.name).canonicalFile
                     val name = out.name
                     val skip = e.isDirectory || name.startsWith("._") || e.name.contains("__MACOSX") ||

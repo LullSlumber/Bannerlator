@@ -310,7 +310,7 @@ internal fun DeckSettingsEditor(
         if (saving) return
         // A new container needs a Wine or Proton version to be created at all.
         if (createMode && env.vm?.selectedWineVersion.isNullOrBlank()) {
-            Toast.makeText(context, "Install a Wine or Proton version first: use Get more next to Wine / Proton version.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "请先安装一个 Wine 或 Proton 版本：使用 Wine / Proton 版本旁的「获取更多」。", Toast.LENGTH_LONG).show()
             return
         }
         saving = true
@@ -871,7 +871,7 @@ private fun FloatingSaveButtons(saving: Boolean, create: Boolean, onDiscard: () 
                         .border(1.dp, deckLine(), CircleShape)
                         .clickable(enabled = !saving, onClick = onDiscard),
                 ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Discard changes", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Filled.Close, contentDescription = "放弃更改", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
         }
@@ -1611,7 +1611,7 @@ internal fun labelFor(control: Control, v: String): String = when (control) {
     is Control.Select -> control.options.firstOrNull { it.value == v }?.label ?: SettingsRegistry.prettyResolution(v)
     is Control.Slider -> v.toFloatOrNull()?.let(control.display) ?: v
     is Control.TextField -> v.ifEmpty { "empty" }
-    Control.Cores -> if (v.isEmpty()) "all cores" else "cores $v"
+    Control.Cores -> if (v.isEmpty()) "所有核心" else "cores $v"
     is Control.Checklist -> v.split(',').count { it.isNotEmpty() }.let { if (it == 0) "all on" else "$it off" }
 }
 
@@ -2263,7 +2263,7 @@ private fun UnsavedBar(saving: Boolean, compact: Boolean, create: Boolean = fals
         Box(Modifier.size(9.dp).clip(CircleShape).background(cs.primary))
         Spacer(Modifier.width(10.dp))
         Text(
-            text = if (create) "New container, not created yet" else "未保存的更改",
+            text = if (create) "新容器，尚未创建" else "未保存的更改",
             color = cs.onSurface,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,

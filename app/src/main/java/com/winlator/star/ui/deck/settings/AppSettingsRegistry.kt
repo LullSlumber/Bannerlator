@@ -56,7 +56,7 @@ internal object AppSettingsRegistry {
     val categories: List<SettingsCategory> = listOf(
         SettingsCategory("app.general", T("General"), T("启动屏幕和更新。"), Icons.Filled.Tune),
         SettingsCategory("app.appearance", T("外观"), T("主题、强调色、大小和方向。"), Icons.Filled.Palette),
-        SettingsCategory("app.sounds", T("Sounds"), T("Menu sounds and sound packs."), Icons.Filled.MusicNote),
+        SettingsCategory("app.sounds", T("音效"), T("菜单音效与音效包。"), Icons.Filled.MusicNote),
         SettingsCategory("app.library", T("游戏与库"), T("封面图和默认 MIDI 音色库。"), Icons.AutoMirrored.Filled.LibraryBooks),
         SettingsCategory("app.performance", T("Performance"), T("每个游戏的电源默认值和翻译器预设。"), Icons.Filled.Speed),
         SettingsCategory("app.network", T("下载与网络"), T("商店下载引擎、速度和 Steam 连接。"), Icons.Filled.CloudDownload),
@@ -134,12 +134,12 @@ internal object AppSettingsRegistry {
 
     private fun buildDefs(): List<SettingDef> = listOf(
         app(
-            "app.sounds.on", "app.sounds", T("Menu sounds"), T("Menu sounds"), SIMPLE, tech = UiSoundPacks.PREF_ON,
+            "app.sounds.on", "app.sounds", T("菜单音效"), T("菜单音效"), SIMPLE, tech = UiSoundPacks.PREF_ON,
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(UiSoundPacks.state.value.on) }, { c, v -> UiSoundPacks.setOn(c, v == "1") }),
         ),
         app(
-            "app.sounds.volume", "app.sounds", T("Menu sounds"), T("Volume"), SIMPLE, tech = UiSoundPacks.PREF_VOLUME,
+            "app.sounds.volume", "app.sounds", T("菜单音效"), T("Volume"), SIMPLE, tech = UiSoundPacks.PREF_VOLUME,
             control = { Control.Slider(0f, 100f, 5f, { "${it.toInt()}%" }, { it.toInt().toString() }) },
             binding = AppBinding(
                 { _ -> UiSoundPacks.state.value.volume.toString() },
@@ -147,7 +147,7 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.sounds.pack", "app.sounds", T("Menu sounds"), T("Sound pack"), SIMPLE, tech = UiSoundPacks.PREF_PACK,
+            "app.sounds.pack", "app.sounds", T("菜单音效"), T("Sound pack"), SIMPLE, tech = UiSoundPacks.PREF_PACK,
             control = { Control.Select(soundPackOptions()) },
             binding = AppBinding({ _ -> UiSoundPacks.state.value.selected }, { c, v -> UiSoundPacks.select(c, v) }),
         ),
@@ -261,7 +261,7 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.controllers.aim", "app.controllers", T("鼠标与键盘（Wine 游戏）"), T("Aim mode"), ADVANCED, tech = TouchAimSettings.PREF_AIM,
+            "app.controllers.aim", "app.controllers", T("鼠标与键盘（Wine 游戏）"), T("瞄准模式"), ADVANCED, tech = TouchAimSettings.PREF_AIM,
             control = { Control.Segmented(listOf(Opt(TouchAimSettings.AUTO, T("Auto")), Opt(TouchAimSettings.ON, T("On")), Opt(TouchAimSettings.OFF, T("Off")))) },
             binding = AppBinding(
                 get = { c -> TouchAimSettings.appAim(prefs(c)) },
@@ -345,7 +345,7 @@ internal object AppSettingsRegistry {
             },
         ),
         app(
-            "app.steam.offlinePresence", "app.steam", T("在线状态"), T("Show me as in-game for offline launches"), ADVANCED,
+            "app.steam.offlinePresence", "app.steam", T("在线状态"), T("对离线启动显示我在游戏中"), ADVANCED,
             hint = T("当 Steam 游戏使用 Goldberg 或 Raw .exe（Wine 游戏）启动时，告诉 Steam 您正在玩它，以便好友看到且游戏时间会计入。SteamLite 启动始终显示。"),
             tech = "steam_offline_presence",
             control = { Control.Toggle },
@@ -360,7 +360,7 @@ internal object AppSettingsRegistry {
             "auto_upload_steam_on_exit",
             T("您的Steam库游戏退出时自动云端上传将关闭。游戏关闭时存档不会推送到Steam云——您需要从游戏详情页的云存档部分自行上传。继续？")),
         saveToggle("app.saves.steamDownload", T("Steam 游戏"), T("启动时自动从 Steam 云下载"), T("最新优先：永远不会覆盖较新的本地存档。"),
-            "auto_download_steam_on_launch",
+            "Steam 游戏",
             T("您的Steam库游戏启动时自动云端下载将关闭。游戏启动前不会拉取最新云存档——您需要从游戏详情页的云存档部分自行下载。继续？")),
         // Not a saveToggle: that asks "Turn off auto-backup?", and this switch leaves local backups alone.
         SettingDef(
@@ -377,7 +377,7 @@ internal object AppSettingsRegistry {
             "auto_upload_gog_on_exit",
             T("您的GOG库游戏的退出时自动云上传将关闭。游戏关闭时不会将其存档推送到GOG云 — 您需要从GOG存档管理器选项卡或游戏详情页面自行上传。继续？")),
         saveToggle("app.saves.gogDownload", T("GOG 游戏"), T("启动时自动从 GOG 云下载"), T("最新优先：永远不会覆盖较新的本地存档。"),
-            "auto_download_gog_on_launch",
+            "GOG 游戏",
             T("您的GOG库游戏的启动时自动云下载将关闭。游戏启动前不会拉取最新的云存档 — 您需要从GOG存档管理器选项卡或游戏详情页面自行下载。继续？")),
         saveToggle("app.saves.customBackup", T("您自己的游戏"), T("退出时自动备份"), T("游戏退出时将自行导入的存档快照保存到本地保险库。"),
             "auto_backup_custom_on_exit",

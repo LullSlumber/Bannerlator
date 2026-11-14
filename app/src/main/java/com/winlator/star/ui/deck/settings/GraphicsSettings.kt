@@ -327,7 +327,7 @@ internal object GraphicsRows {
             note = { env, values ->
                 if (!env.graphics.loaded || env.graphics.vegas.isNotEmpty()) null
                 else if (!com.winlator.star.ui.theme.AppThemeState.deckXmbHome.value) L("No VEGAS build installed: download one below.")
-                else L("No VEGAS build installed: use Get more to download one.")
+                else L("未安装 VEGAS 构建：使用「获取更多」下载一个。")
             },
             getMore = "vegas",
         ),
@@ -697,18 +697,18 @@ internal object GraphicsRows {
                     (!bcnLayerDriver(values) && values(ID_BCN_TYPE) == "compute" && values(ID_BCN) in setOf("auto", "full"))
             },
             note = { env, _ -> adrenoNote(env) }),
-        gdcToggle("graphics.gdc.bcnLayerAuto", "bcnLayerAuto", L("BCn layer"), L("在每个 GPU 上强制解码"), EXPERT, default = true,
+        gdcToggle("graphics.gdc.bcnLayerAuto", "bcnLayerAuto", L("BCn 层"), L("在每个 GPU 上强制解码"), EXPERT, default = true,
             visible = { env, values -> bcnLayerSettings(env, values) }, note = { env, _ -> adrenoNote(env) }),
-        gdcToggle("graphics.gdc.bcnTranscodeEtc2", "bcnTranscodeEtc2", L("BCn layer"), L("将 BCn 转码为 ETC2"), EXPERT,
+        gdcToggle("graphics.gdc.bcnTranscodeEtc2", "bcnTranscodeEtc2", L("BCn 层"), L("将 BCn 转码为 ETC2"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.bcnImageView", "bcnImageView", L("BCn layer"), L("存储图像路径"), EXPERT, default = true,
+        gdcToggle("graphics.gdc.bcnImageView", "bcnImageView", L("BCn 层"), L("存储图像路径"), EXPERT, default = true,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.bcnDebugLog", "bcnDebugLog", L("BCn layer"), L("BCn 层调试日志"), EXPERT,
+        gdcToggle("graphics.gdc.bcnDebugLog", "bcnDebugLog", L("BCn 层"), L("BCn 层调试日志"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.compatUseGamenative", "compatUseGamenative", L("BCn layer"), L("使用 GameNative 引擎（DirectX 12）"), EXPERT,
+        gdcToggle("graphics.gdc.compatUseGamenative", "compatUseGamenative", L("BCn 层"), L("使用 GameNative 引擎（DirectX 12）"), EXPERT,
             hint = L("需要 Valhall Mali GPU。"),
             visible = { env, values -> bcnLayerSettings(env, values) && values(ID_GFX_DRIVER) == "wrapper-compat-bcn" }),
-        gdcToggle("graphics.gdc.bcnCompatSparse", "bcnCompatSparse", L("BCn layer"), L("模拟 DirectX 12 稀疏资源"), EXPERT,
+        gdcToggle("graphics.gdc.bcnCompatSparse", "bcnCompatSparse", L("BCn 层"), L("模拟 DirectX 12 稀疏资源"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) && values(ID_GFX_DRIVER) == "wrapper-compat-bcn" }),
 
         // Turnip (TU_DEBUG)

@@ -795,7 +795,7 @@ private data class GpuInfo(val isQualcomm: Boolean, val model: String)
 private fun capLabels(caps: WrapperManager.WrapperCaps): List<String> {
     val out = ArrayList<String>()
     if (caps.hasIcd) out.add("Vulkan ICD")
-    if (caps.hasBcnLayer) out.add("BCn layer")
+    if (caps.hasBcnLayer) out.add("BCn 层")
     if (caps.hasCompatLayer) out.add("DX12/compat layer")
     return out
 }
@@ -804,7 +804,7 @@ private fun capLabels(caps: WrapperManager.WrapperCaps): List<String> {
 private fun importDescription(caps: WrapperManager.WrapperCaps): String = when {
     caps.hasIcd && (caps.hasBcnLayer || caps.hasCompatLayer) -> "带额外层的 Vulkan ICD wrapper"
     caps.hasIcd -> "Vulkan ICD wrapper"
-    caps.hasBcnLayer -> "BCn layer"
+    caps.hasBcnLayer -> "BCn 层"
     caps.hasCompatLayer -> "DX12 兼容层"
     else -> "Wrapper"
 }

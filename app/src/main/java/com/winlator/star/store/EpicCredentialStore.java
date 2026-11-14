@@ -103,10 +103,10 @@ public class EpicCredentialStore {
                     Log.d(TAG, "Epic token refreshed OK");
                     return creds.accessToken;
                 }
-                Log.w(TAG, "Epic token refresh failed");
+                Log.w(TAG, "Epic 令牌刷新失败");
             }
             if (creds.expiresAt > now) return creds.accessToken;
-            Log.w(TAG, "Epic token expired and could not be refreshed: sign in again");
+            Log.w(TAG, "Epic 令牌已过期且无法刷新：请重新登录");
             return null;
         }
     }

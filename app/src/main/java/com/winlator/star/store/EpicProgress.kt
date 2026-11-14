@@ -77,7 +77,7 @@ fun epicProgressLabel(
     includeEta: Boolean = true,
 ): String {
     if (total <= 0L || done <= 0L) return "$lead $pct%"
-    if (done >= total) return "Writing files…"
+    if (done >= total) return "正在写入文件…"
     return listOf(
         "$lead $pct%",
         "${formatDownloadSize(done)} / ${formatDownloadSize(total)}",

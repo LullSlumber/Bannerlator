@@ -615,7 +615,7 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     val note = L("每次启动时默认关闭；您选择的级别会为此容器保留。")
     if (!fgEnabled || waylandBlocked) {
         IgRow(
-            L("Frame generation"),
+            L("帧率"),
             hint = if (waylandBlocked) L("此版本尚未在 Wayland 上支持。") else L("此容器已关闭。在此容器的设置中将其开启以在此使用。"),
             enabled = false,
         )
@@ -623,7 +623,7 @@ private fun FrameGenQuickRow(state: XServerDrawerState) {
     }
     val options = if (engine == "bionic") listOf(0 to L("Off"), 2 to L("On")) else listOf(0 to L("Off"), 2 to "2×", 3 to "3×", 4 to "4×")
     IgRow(
-        L("Frame generation"),
+        L("帧率"),
         hint = if (unavailable.isNotEmpty()) unavailable else L("插入额外帧以实现更流畅的运动。游戏在重启时会暂停片刻。"),
         note = note,
         scopes = scopes,
@@ -756,7 +756,7 @@ private fun MouseQuickRows(state: XServerDrawerState) {
         }
     }
     IgDivider()
-    IgRow(L("Aim mode"), scopes = listOf(igGameScope()), wideControl = true) {
+    IgRow(L("瞄准模式"), scopes = listOf(igGameScope()), wideControl = true) {
         IgSegmented(listOf("auto" to L("Auto"), "on" to L("On"), "off" to L("Off")), aim) {
             state.onAimMode?.accept(it)
         }
@@ -900,7 +900,7 @@ internal fun menuTabDesc(t: MenuTab, kind: InGameSessionKind) = when (t) {
     MenuTab.STEAM -> L("The Linux Steam client session.")
     MenuTab.TV -> L("Play on a TV or cast to one.")
     MenuTab.FRIENDS -> L("Steam friends and chat.")
-    MenuTab.MODS -> L("This game's mods and their menus.")
+    MenuTab.MODS -> L("此游戏的 Mods 及其菜单。")
     MenuTab.TOOLS -> if (kind.isWine) L("Magnifier, windows, logs and running programs.") else L("Magnifier, picture-in-picture, keyboard and performance.")
 }
 
@@ -1415,7 +1415,7 @@ internal fun PerformancePage(state: XServerDrawerState) {
     IgSectionLabel(L("帧率"))
     IgCard { FrameLimitRow(state) }
 
-    IgSectionLabel(L("Frame generation"))
+    IgSectionLabel(L("帧率"))
     IgHostedCard {
         FrameGenSection(state)
         SaveNotes(
@@ -1495,7 +1495,7 @@ internal fun OverlayPage(state: XServerDrawerState) {
 internal fun ControlsPage(state: XServerDrawerState, kind: InGameSessionKind) {
     val sub by state.controlsSubTab.collectAsState()
     val game = igGameScope()
-    // Pad and the rumble rows follow the drawer's "Save for" footer (ControllerSaveTarget).
+    // Pad and the rumble rows follow the drawer's "保存用于" footer (ControllerSaveTarget).
     val saveScope by XServerDialogState.controllerSaveScope.collectAsState()
     val padScope = if (saveScope.gameName != null && saveScope.toGame) SaveScope.GAME else SaveScope.CONTAINER
     IgHostedCard {
@@ -1509,8 +1509,8 @@ internal fun ControlsPage(state: XServerDrawerState, kind: InGameSessionKind) {
             )
             1 -> SaveNotes(
                 L("触摸") to listOf(game),
-                L("Aim mode") to listOf(game),
-                L("Touch gestures") to listOf(SaveScope.ALL),
+                L("瞄准模式") to listOf(game),
+                L("触摸手势") to listOf(SaveScope.ALL),
                 L("禁用鼠标") to listOf(SaveScope.SESSION),
             )
             2 -> SaveNotes(

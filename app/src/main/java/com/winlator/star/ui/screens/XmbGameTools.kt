@@ -645,7 +645,7 @@ internal fun xmbCopyToDriveCMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             val err = validationError
             val size = sourceSize
             val blocked = when {
-                copying -> "Copying…"
+                copying -> "正在复制…"
                 err != null -> err
                 size == null -> "Calculating size…"
                 else -> null
@@ -662,7 +662,7 @@ internal fun xmbCopyToDriveCMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                 add(
                     XmbRow.Link(
                         key = "change", label = "更改文件夹…", icon = Icons.Filled.FolderOpen,
-                        disabledReason = if (copying) "Copying…" else null,
+                        disabledReason = if (copying) "正在复制…" else null,
                     ) {
                         val roots = XmbTools.storageRoots(ctx, XmbTools.driveC(container))
                         xmbBrowserColumn(

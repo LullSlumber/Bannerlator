@@ -116,7 +116,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     // "添加 Android 游戏": the picker, and the write that follows its Add.
     var showAndroidPicker by remember { mutableStateOf(false) }
     var androidAddRunning by remember { mutableStateOf(false) }
-    // "Add Windows Steam client x64": the container it goes into (the storage is asked first, -1 = none), the
+    // "添加 Windows Steam 客户端 x64": the container it goes into (the storage is asked first, -1 = none), the
     // storages offered and the one picked, and the download's progress (null = not running).
     var windowsSteamConfirmIndex by remember { mutableStateOf(-1) }
     var windowsSteamPlaces by remember { mutableStateOf<List<WindowsSteamClient.Place>>(emptyList()) }
@@ -508,8 +508,8 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                     }
                     // Valve's 64-bit Windows Steam, downloaded from Valve onto the storage picked after the container.
                     MenuOptionCard(
-                        title = "Add Windows Steam client x64",
-                        subtitle = "Valve's 64-bit Steam for Windows, downloaded from Steam",
+                        title = "添加 Windows Steam 客户端 x64",
+                        subtitle = "Valve 的 64 位 Windows 版 Steam，从 Steam 下载",
                         icon = Icons.Filled.DesktopWindows,
                     ) {
                         showImportMethodPicker = false
@@ -594,7 +594,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                     }
                 } else {
                     Column {
-                        Text("Where should Steam go?", color = OnSurfaceVariant)
+                        Text("Steam 装到哪里？", color = OnSurfaceVariant)
                         Spacer(Modifier.height(8.dp))
                         windowsSteamPlaces.forEachIndexed { i, place ->
                             Row(
@@ -618,7 +618,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                                     )
                                     Text(
                                         when {
-                                            place.hasClient -> "Steam is already here"
+                                            place.hasClient -> "Steam 已存在于此"
                                             place.fits -> "${SteamSdInstall.fmtBytes(place.freeBytes)} free"
                                             else -> "Not enough space (${SteamSdInstall.fmtBytes(place.freeBytes)} free)"
                                         },
@@ -640,7 +640,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
         )
     }
 
-    // After a Windows Steam shortcut is removed (any layout): "Also uninstall Steam?".
+    // After a Windows Steam shortcut is removed (any layout): "同时卸载 Steam？".
     val steamUninstallOffers by WindowsSteamClient.uninstallOffers.collectAsState()
     steamUninstallOffers.firstOrNull()?.let { offer -> WindowsSteamUninstallDialog(offer) }
 
@@ -864,8 +864,8 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                 title = "选择容器",
                 subtitle = when (pendingImportKind) {
                     ImportKind.EXE -> "The game's .exe goes into this container"
-                    ImportKind.FOLDER -> "The games found in the folder go into this container"
-                    ImportKind.WINDOWS_STEAM -> "Steam for Windows goes into this container"
+                    ImportKind.FOLDER -> "文件夹中找到的游戏将进入此容器"
+                    ImportKind.WINDOWS_STEAM -> "Windows 版 Steam 将装入此容器"
                     null -> null
                 },
                 choices = containers.map { c ->
@@ -1223,7 +1223,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     }
 }
 
-/** "Also uninstall Steam?" for a removed Windows Steam shortcut whose client folder nothing else uses. */
+/** "同时卸载 Steam？" for a removed Windows Steam shortcut whose client folder nothing else uses. */
 @Composable
 private fun WindowsSteamUninstallDialog(offer: WindowsSteamClient.UninstallOffer) {
     val context = LocalContext.current
@@ -1253,14 +1253,14 @@ private fun WindowsSteamUninstallDialog(offer: WindowsSteamClient.UninstallOffer
     }
     OutlinedAlertDialog(
         onDismissRequest = { if (!running) keep() },
-        title = { Text("Also uninstall Steam?") },
+        title = { Text("同时卸载 Steam？") },
         text = {
             val p = plan
             if (running || p == null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                     Spacer(Modifier.width(12.dp))
-                    Text(if (running) "Uninstalling Steam…" else "Checking Steam's folder…", color = OnSurfaceVariant)
+                    Text(if (running) "正在卸载 Steam…" else "正在检查 Steam 文件夹…", color = OnSurfaceVariant)
                 }
             } else {
                 Column {
@@ -1303,7 +1303,7 @@ private fun WindowsSteamUninstallDialog(offer: WindowsSteamClient.UninstallOffer
             }) { Text("Uninstall") }
         },
         dismissButton = {
-            if (!running) TextButton(onClick = keep) { Text("Keep Steam") }
+            if (!running) TextButton(onClick = keep) { Text("保留 Steam") }
         },
     )
 }

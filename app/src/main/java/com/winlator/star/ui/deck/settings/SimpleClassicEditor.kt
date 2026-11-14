@@ -158,7 +158,7 @@ private fun graphicsItems(game: Boolean): List<CItem> = listOf(
     CPage(
         L("Vulkan settings"),
         listOf(
-            CRow("graphics.nativeRenderer", L("原生渲染器")), CRow("graphics.nativeBackend", L("Native backend")),
+            CRow("graphics.nativeRenderer", L("原生渲染器")), CRow("graphics.nativeBackend", L("原生后端")),
             CRow("graphics.presentMode", L("呈现模式")), CRow("graphics.rendererDriver", L("渲染器驱动程序")),
             CRow("graphics.swapColours", L("颜色")),
         ),
@@ -220,7 +220,7 @@ private fun containerLayout(): List<CTab> = listOf(
             CRow("performance.fpsLimiter", L("FPS限制器")),
             CRow("display.refreshAuto", L("自动（匹配帧率）")),
             CRow("display.refreshManual", L("手动刷新率")),
-            CRow("display.refreshInGame", L("In-game refresh rate")),
+            CRow("display.refreshInGame", L("游戏内刷新率")),
             CRow("hud.show", L("Show FPS Counter")),
             CPage(L("FPS counter settings"), listOf(CMatch(pre("hud.")), CExtra("hud", L("诊断")))),
         ) + audioItems(game = false) + listOf(
@@ -248,8 +248,8 @@ private fun containerLayout(): List<CTab> = listOf(
     CTab(
         L("Advanced"), Icons.Filled.Memory,
         listOf(
-            CHead(L("Display server")),
-            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("Display server")),
+            CHead(L("显示服务器")),
+            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("显示服务器")),
             CHead("Box64EC"),
             CRow("performance.box64ecVersion", L("Box64EC 版本")),
             CHead("Box64"),
@@ -282,11 +282,11 @@ private fun containerLayout(): List<CTab> = listOf(
 
 private fun controllerItems(game: Boolean): List<CItem> = listOf(
     CHead(L("Game Controller")),
-    CRow("input.dinputVisible", L("DirectInput games can see the controller")),
-    CRow("input.dinputVibration", L("DirectInput vibration")),
+    CRow("input.dinputVisible", L("DirectInput 游戏可以看到控制器")),
+    CRow("input.dinputVibration", L("DirectInput 震动")),
     CRow("input.bannerinXInput", L("Direct XInput (BANNERIN)")),
-    CRow("input.bannerinXInputSwitching", L("Allow in-game switching")),
-    CRow("input.stickPacing", L("Stick updates")),
+    CRow("input.bannerinXInputSwitching", L("允许游戏内切换")),
+    CRow("input.stickPacing", L("摇杆更新")),
     CRow("input.controllerIdentity", L("控制器身份")),
     CRow("input.disableXInput", L("禁用XInput")),
     CHead(L("震动")),
@@ -299,7 +299,7 @@ private fun controllerItems(game: Boolean): List<CItem> = listOf(
     CRow("input.hideOnController", L("当控制器连接时隐藏屏幕控制")),
     CPage(L("玩家槽位"), listOf(CExtra("input", L("Slots"), { it.startsWith("slots") }))),
     CRow("input.touchMode", L("触摸")),
-    CRow("input.aimMode", L("Aim mode")),
+    CRow("input.aimMode", L("瞄准模式")),
     CHead(L("Gyro (Motion Aim)")),
     CRow("input.gyro.enabled", L("启用体感瞄准")),
     CRow("input.gyro.mode", L("体感模式")),
@@ -330,7 +330,7 @@ private fun gameLayout(): List<CTab> = listOf(
             CRow("display.resolution", L("屏幕尺寸")),
             CRow("display.alignment", L("屏幕对齐")),
             CRow("display.fullscreenMode", L("全屏模式")),
-            CRow("display.refreshInGame", L("In-game refresh rate")),
+            CRow("display.refreshInGame", L("游戏内刷新率")),
             CRow(SettingsEnv.ID_BACKEND, L("显示后端")),
         ) + graphicsItems(game = true) + listOf(
             CRow("performance.frameGen", L("Frame Generation (AI)")),
@@ -356,8 +356,8 @@ private fun gameLayout(): List<CTab> = listOf(
     CTab(
         L("Advanced"), Icons.Filled.Memory,
         listOf(
-            CHead(L("Display server")),
-            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("Display server")),
+            CHead(L("显示服务器")),
+            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("显示服务器")),
             CHead("Box64"),
             CRow("performance.box64Version", L("Version")),
             CRow("performance.box64Preset", L("预设")),

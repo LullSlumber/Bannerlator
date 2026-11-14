@@ -213,7 +213,7 @@ internal object EpicDownloadControl {
             var transferStarted = false
             try {
                 if (ns.isEmpty() || cat.isEmpty()) {
-                    failParked(ctx, appName, installDir, title, cover, "Open this game's page in the Epic store once, then resume")
+                    failParked(ctx, appName, installDir, title, cover, "先在 Epic 商店打开一次此游戏页面，然后继续")
                     return@launch
                 }
                 val token = EpicCredentialStore.getValidAccessToken(ctx)

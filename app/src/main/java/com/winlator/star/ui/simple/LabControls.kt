@@ -89,7 +89,7 @@ internal fun LabCommunityProfilesDialog(items: List<String>?, manager: InputCont
         val files = items.orEmpty().filter { it in picked }
         if (files.isEmpty()) return
         onDismiss()
-        toast(context, if (files.size == 1) L("Downloading %1\$s…", profileTitle(files[0])) else L("Downloading %1\$s profiles…", files.size))
+        toast(context, if (files.size == 1) L("Downloading %1\$s…", profileTitle(files[0])) else L("正在下载 %1\$s 个配置…", files.size))
         val done = AtomicInteger()
         val failed = AtomicInteger()
         files.forEach { f ->
@@ -102,9 +102,9 @@ internal fun LabCommunityProfilesDialog(items: List<String>?, manager: InputCont
                     toast(
                         context,
                         when {
-                            bad > 0 -> L("%1\$s of %2\$s profiles could not be imported", bad, files.size)
+                            bad > 0 -> L("%2\$s 个配置中有 %1\$s 个无法导入", bad, files.size)
                             files.size == 1 -> L("Imported %1\$s", profileTitle(files[0]))
-                            else -> L("Imported %1\$s profiles", files.size)
+                            else -> L("已导入 %1\$s 个配置", files.size)
                         },
                     )
                 }
@@ -162,7 +162,7 @@ internal fun LabCommunityProfilesDialog(items: List<String>?, manager: InputCont
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
             ) {
                 if (!items.isNullOrEmpty()) {
-                    LabButton(if (picked.isEmpty()) L("Download") else L("Download (%1\$s)", picked.size), primary = picked.isNotEmpty(), onClick = { download() })
+                    LabButton(if (picked.isEmpty()) L("Download") else L("下载（%1\$s）", picked.size), primary = picked.isNotEmpty(), onClick = { download() })
                 }
                 LabButton(L("Close"), onClick = onDismiss)
                 Spacer(Modifier.weight(1f))
@@ -222,7 +222,7 @@ private fun LabCommunityPreview(file: String, cache: MutableMap<String, String>,
                     // Keeps touches off the overlay view underneath (it is only a picture here).
                     Box(Modifier.matchParentSize().pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent() } })
                 }
-                failed -> Text(L("Could not download it."), color = MaterialTheme.colorScheme.error, fontSize = 14.sp, modifier = Modifier.padding(8.dp))
+                failed -> Text(L("无法下载。"), color = MaterialTheme.colorScheme.error, fontSize = 14.sp, modifier = Modifier.padding(8.dp))
                 else -> Text(L("Loading…"), color = SimpleMuted, fontSize = 14.sp, modifier = Modifier.padding(8.dp))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {

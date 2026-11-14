@@ -59,7 +59,7 @@ internal fun SoundPackPicker(onDismiss: () -> Unit) {
     val installed = state.packs
     val fromStore = installed.mapNotNull { it.storeId }.toSet()
     val available = buildList {
-        if (!state.steamInstalled) add(AvailablePack(UiSoundPacks.STEAM_ID, L("Steam Big Picture"), "Valve"))
+        if (!state.steamInstalled) add(AvailablePack(UiSoundPacks.STEAM_ID, L("Steam 大屏幕模式"), "Valve"))
         state.store.filter { it.id !in fromStore }.forEach { add(AvailablePack("store-" + it.id, it.name, it.author)) }
     }
     var actionsFor by remember { mutableStateOf<UiSoundPacks.Installed?>(null) }
@@ -102,7 +102,7 @@ internal fun SoundPackPicker(onDismiss: () -> Unit) {
                     val busy = state.busy == a.id
                     PackLine(
                         name = a.name,
-                        sub = if (busy) L("Downloading %1\$s", "${(state.progress * 100).toInt()} %") else a.author,
+                        sub = if (busy) L("正在下载 %1\$s", "${(state.progress * 100).toInt()} %") else a.author,
                         current = false,
                         mark = if (busy) "…" else "↓",
                         accent = accent,
@@ -128,7 +128,7 @@ internal fun SoundPackPicker(onDismiss: () -> Unit) {
                     ) {
                         val zipBusy = state.busy?.startsWith("zip-") == true
                         Text(
-                            if (zipBusy) L("Installing the pack zip…") else L("+ Install a pack zip"),
+                            if (zipBusy) L("正在安装压缩包…") else L("+ Install a pack zip"),
                             color = accent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold,
                         )
                     }

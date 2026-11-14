@@ -134,7 +134,7 @@ fun TaskManagerDialog(state: XServerDialogState) {
                         state.onTmDismissed?.run()
                         state.dismiss()
                         state.onTmNewTask?.run()
-                    }) { Text("New Task…") }
+                    }) { Text("新的任务…") }
                     Spacer(Modifier.weight(1f))
                     TextButton(onClick = {
                         state.onTmDismissed?.run()

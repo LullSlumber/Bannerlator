@@ -490,7 +490,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                             showSpeedPicker = false
                             lastSpeedTier = tier
                             installBtnEnabled = false
-                            installBtnText = "Starting…"
+                            installBtnText = "正在启动…"
                             // installRoot = the chosen location's base: the SD card's steam_games folder, or
                             // a user library's <folder>/steamapps/common; null = internal default.
                             downloadHandle = SteamDepotDownloader.installApp(
@@ -527,7 +527,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                     val gName = game?.name?.takeIf { it.isNotBlank() } ?: "此游戏"
                     OutlinedAlertDialog(
                         onDismissRequest = { showLanguageAsk = false },
-                        title = { Text("Download language files?") },
+                        title = { Text("下载语言文件？") },
                         text = {
                             Text(
                                 "Downloads the ${SteamGameLanguage.label(askPack)} files for \"$gName\". " +
@@ -541,7 +541,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 languageRun?.let { run ->
                     OutlinedAlertDialog(
                         onDismissRequest = { },
-                        title = { Text("Language files") },
+                        title = { Text("语言文件") },
                         text = {
                             Column {
                                 Text(languageProgressText)
@@ -556,7 +556,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                                 }
                             }
                         },
-                        confirmButton = { TextButton(onClick = { run.cancel() }) { Text("Stop") } },
+                        confirmButton = { TextButton(onClick = { run.cancel() }) { Text("停止") } },
                     )
                 }
 
@@ -567,13 +567,13 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                     // An update / verify / language download of the INSTALLED game: stopping it keeps the files.
                     OutlinedAlertDialog(
                         onDismissRequest = { showCancelDeleteConfirm = false },
-                        title = { Text("Stop the download?") },
-                        text = { Text("The installed game and its files are kept.") },
+                        title = { Text("停止下载？") },
+                        text = { Text("已安装的游戏及其文件会保留。") },
                         confirmButton = {
                             TextButton(onClick = {
                                 showCancelDeleteConfirm = false
                                 performCancelDeleteReset()
-                            }) { Text("Stop") }
+                            }) { Text("停止") }
                         },
                         dismissButton = {
                             TextButton(onClick = { showCancelDeleteConfirm = false }) { Text("继续下载") }
@@ -1579,7 +1579,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
             pauseBtnEnabled = false
             pauseBtnText = "Resuming…"
             installBtnEnabled = false
-            installBtnText = "Starting…"
+            installBtnText = "正在启动…"
             downloadHandle = SteamDepotDownloader.resumeApp(appId, applicationContext, lastSpeedTier)
         }
     }
@@ -1701,8 +1701,8 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         val g = game ?: return
         cloudBusy = true
         cloudStatus = when (move) {
-            CloudMove.DOWNLOAD  -> "Preparing download…"
-            CloudMove.UPLOAD    -> "Preparing upload…"
+            CloudMove.DOWNLOAD  -> "正在准备下载…"
+            CloudMove.UPLOAD    -> "正在准备上传…"
             CloudMove.APPLY     -> "正在应用到容器…"
             CloudMove.COLLECT   -> "正在从容器收集…"
             CloudMove.SYNC_FROM -> "正在从云端同步…"
@@ -1925,7 +1925,7 @@ private fun SteamGameDetailScreen(
     var gearMenuExpanded by remember { mutableStateOf(false) }
     // Goldberg (Steam emulator) popup — opened from the gear menu (installed games only).
     var goldbergDialogOpen by remember { mutableStateOf(false) }
-    // Gear → "Use a folder I already have": the game's files from a PC copy, another app or a backup
+    // Gear → "使用已有的文件夹": the game's files from a PC copy, another app or a backup
     // (SteamFolderAdopt: installs into that folder, keeping what is already there).
     var adoptFolder by remember { mutableStateOf<File?>(null) }
     val adoptPick = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -1950,7 +1950,7 @@ private fun SteamGameDetailScreen(
             true -> LaunchedEffect(folder) { start() }
             false -> OutlinedAlertDialog(
                 onDismissRequest = { adoptFolder = null },
-                confirmButton = { TextButton(onClick = { start() }) { Text("Use it") } },
+                confirmButton = { TextButton(onClick = { start() }) { Text("使用它") } },
                 dismissButton = { TextButton(onClick = { adoptFolder = null }) { Text("Cancel") } },
                 title = { Text(nameText) },
                 text = { Text("\"${folder.name}\" doesn't look like this game's folder. Use it anyway? The game's files will be added there.") },
@@ -2178,7 +2178,7 @@ private fun SteamGameDetailScreen(
                     freeScope.launch {
                         when (val r = SteamFreeLicense.request(appId)) {
                             is SteamFreeLicense.Result.Failed -> freeMessage = r.message
-                            else -> { freeOwned = true; SteamFreeOffers.ids.remove(appId); freeMessage = "Added to your library" }
+                            else -> { freeOwned = true; SteamFreeOffers.ids.remove(appId); freeMessage = "已加入你的游戏库" }
                         }
                         freeBusy = false
                     }
@@ -2248,7 +2248,7 @@ private fun SteamGameDetailScreen(
                         onClick = { gearMenuExpanded = false; onDlcLineClick() })
                     if (installAction == InstallAction.INSTALL && !downloading) {
                         MenuItemDivider()
-                        GearMenuItem("📁", "Use a folder I already have",
+                        GearMenuItem("📁", "使用已有的文件夹",
                             onClick = {
                                 gearMenuExpanded = false
                                 adoptPick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(context, nameText))
@@ -2366,7 +2366,7 @@ private fun SteamGameDetailScreen(
                             onClick = onLanguageLineClick,
                             modifier = Modifier.padding(top = 6.dp).storeFocus(CircleShape, onLanguageLineClick),
                         ) {
-                            Text("Change language")
+                            Text("更改语言")
                         }
                         if (languageMissing != null) {
                             Text(
@@ -2379,7 +2379,7 @@ private fun SteamGameDetailScreen(
                                 onClick = onLanguageDownloadClick,
                                 modifier = Modifier.padding(top = 6.dp).storeFocus(CircleShape, onLanguageDownloadClick),
                             ) {
-                                Text("Download language files")
+                                Text("下载语言文件")
                             }
                         }
                     }
@@ -2634,7 +2634,7 @@ private fun SteamGameDetailScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Installed games ask before downloading new language files.",
+                    text = "已安装的游戏在下载新语言文件前会先询问。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
@@ -3847,7 +3847,7 @@ private fun DownloadSpeedPickerDialog(
     // Install location — the user's default (the internal one unless they set another), asked every
     // time. The chooser is only shown when there is more than the internal default (an SD card is
     // detected or library folders were added); with just the internal location nothing changes.
-    // Follows a default changed while the dialog is open (Manage locations → Make default, "Use as default").
+    // Follows a default changed while the dialog is open (Manage locations → Make default, "设为默认").
     var selectedLocationId by remember(defaultLocationId) { mutableStateOf(defaultLocationId) }
     var makeDefault by remember { mutableStateOf(false) }
     val ctx = LocalContext.current
@@ -3962,12 +3962,12 @@ private fun DownloadSpeedPickerDialog(
                                 }
                                 val hint = when (tier) {
                                     DownloadSpeedConfig.TIER_SLOW ->
-                                        "Gentlest on the device"
+                                        "对设备最温和"
                                     DownloadSpeedConfig.TIER_MEDIUM ->
                                         "Balanced"
                                     DownloadSpeedConfig.TIER_FAST ->
-                                        "Best for most devices"
-                                    else -> "Fastest, heaviest on RAM / CPU"
+                                        "适合大多数设备"
+                                    else -> "最快，内存/CPU 占用最高"
                                 }
                                 // One slim line per speed, the Lab menu's way: the selected one carries the line on its
                                 // left and a faint fill; a fading line separates the rows.
@@ -4316,7 +4316,7 @@ private fun ExePickerDialogGame(
 
 /**
  * Under the "Install to" list: "+ Custom folder…" (any folder, made a regular Steam library), one "+ <drive>" per
- * SD card / USB drive that has no location yet (a `Steam` folder on it becomes a library), and "Use as default".
+ * SD card / USB drive that has no location yet (a `Steam` folder on it becomes a library), and "设为默认".
  */
 @Composable
 private fun LocationExtras(
@@ -4354,7 +4354,7 @@ private fun LocationExtras(
     }
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { pick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(ctx, "Choose a download folder")) }) {
+            TextButton(onClick = { pick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(ctx, "选择下载文件夹")) }) {
                 Text("+ Custom folder…")
             }
             for (d in drives) {
@@ -4371,7 +4371,7 @@ private fun LocationExtras(
                 modifier = Modifier.clickable { onMakeDefault(!makeDefault) },
             ) {
                 androidx.compose.material3.Checkbox(checked = makeDefault, onCheckedChange = onMakeDefault)
-                Text("Use as default")
+                Text("设为默认")
             }
         }
     }

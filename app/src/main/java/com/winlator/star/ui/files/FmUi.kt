@@ -487,7 +487,7 @@ internal fun FmPasteFab(cut: Boolean, onPaste: (() -> Unit)?, onClear: () -> Uni
             contentAlignment = Alignment.Center,
             modifier = Modifier.size(40.dp).xmbStop(CircleShape).fmGlass(CircleShape).clickable(onClick = onClear),
         ) {
-            Icon(Icons.Filled.Close, "Clear the clipboard", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Icon(Icons.Filled.Close, "清空剪贴板", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
         }
         Box(
             contentAlignment = Alignment.Center,

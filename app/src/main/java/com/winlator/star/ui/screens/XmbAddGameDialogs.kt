@@ -82,12 +82,12 @@ internal fun XmbImportMethodDialog(
     val options = listOf(
         XmbMethod("添加游戏EXE", "选择一个游戏的.exe文件", Icons.Filled.InsertDriveFile, onExe),
         XmbMethod("添加游戏文件夹", "Scan a folder that holds all your games for their .exe files", Icons.Filled.Folder, onFolder),
-        XmbMethod("添加 Android 游戏", "Games installed on this phone, opened as normal Android apps", Icons.Filled.Android, onAndroid),
-        XmbMethod("Add Windows Steam client x64", "Valve's 64-bit Steam for Windows, downloaded from Steam", Icons.Filled.DesktopWindows, onWindowsSteam),
+        XmbMethod("添加 Android 游戏", "安装在这台手机上的游戏，作为普通 Android 应用打开", Icons.Filled.Android, onAndroid),
+        XmbMethod("添加 Windows Steam 客户端 x64", "Valve 的 64 位 Windows 版 Steam，从 Steam 下载", Icons.Filled.DesktopWindows, onWindowsSteam),
     )
     XmbDialogFrame(
         title = "添加游戏",
-        subtitle = "Choose what to add to your library",
+        subtitle = "选择要加入游戏库的内容",
         onDismiss = onDismiss,
         footer = { XmbDialogButton("Cancel", onDismiss) },
     ) {
@@ -149,7 +149,7 @@ internal fun XmbContainerPickerDialog(
             if (systemPickerChecked != null) {
                 Box(Modifier.padding(top = 6.dp)) {
                     XmbCheckRow(
-                        title = "Use the system file picker",
+                        title = "使用系统文件选择器",
                         checked = systemPickerChecked,
                         onToggle = { onSystemPickerChange(!systemPickerChecked) },
                     )
@@ -181,7 +181,7 @@ internal fun XmbConfirmGameDialog(
 ) {
     XmbDialogFrame(
         title = "确认游戏",
-        subtitle = "Check the name and link it to its Steam page for the cover art",
+        subtitle = "核对名称并关联到其 Steam 页面以获取封面图",
         onDismiss = onDismiss,
         wide = true,
         footer = {
@@ -220,7 +220,7 @@ internal fun XmbConfirmGameDialog(
                 )
             }
             if (results.isNotEmpty()) {
-                XmbDialogText("Tap a result to set the name and cover art", muted = true, small = true)
+                XmbDialogText("点按一个结果以设置名称和封面图", muted = true, small = true)
                 // The linked result first, so the match is the first thing seen.
                 results.sortedByDescending { it.appId == linkedAppId }.forEach { hit ->
                     val linked = hit.appId == linkedAppId
@@ -229,7 +229,7 @@ internal fun XmbConfirmGameDialog(
                         selected = linked,
                         onSelect = { onPickResult(hit) },
                         subtitle = "App ID: ${hit.appId}",
-                        note = if (linked) "Linked" else null,
+                        note = if (linked) "已关联" else null,
                         noteColor = MaterialTheme.colorScheme.primary,
                         leading = { SteamResultThumbnail(hit.appId) },
                     )
@@ -238,7 +238,7 @@ internal fun XmbConfirmGameDialog(
                 XmbProgressCard("正在搜索Steam…")
             } else {
                 XmbDialogText(
-                    "Not the right game? Edit the name and search Steam to pick the correct one.",
+                    "游戏不对？编辑名称并搜索 Steam 选出正确的那个。",
                     muted = true,
                     small = true,
                 )
@@ -308,7 +308,7 @@ internal fun XmbFolderReviewDialog(
     val skipped = candidates.size - importable
     XmbDialogFrame(
         title = "Found ${xmbCountLabel(importable, "game")}",
-        subtitle = if (skipped > 0) "$skipped already added" else "Untick the games you do not want",
+        subtitle = if (skipped > 0) "$skipped already added" else "取消勾选你不想要的游戏",
         onDismiss = onCancel,
         wide = true,
         dismissible = !importing,
@@ -330,7 +330,7 @@ internal fun XmbFolderReviewDialog(
                 title = "Adding ${xmbCountLabel(total, "game")}…",
                 progress = xmbProgressFraction(done, total),
                 trailing = if (total > 0) "$done / $total" else null,
-                detail = "Writing the shortcuts and fetching the cover art",
+                detail = "正在写入快捷方式并获取封面图",
             )
         } else {
             val warn = MaterialTheme.colorScheme.tertiary
@@ -466,7 +466,7 @@ internal fun XmbAndroidGamePickerDialog(
                 OutlinedTextField(
                     value = query,
                     onValueChange = onQueryChange,
-                    label = { Text("Search apps") },
+                    label = { Text("搜索应用") },
                     singleLine = true,
                     modifier = fieldModifier,
                     keyboardActions = xmbDoneActions(stopEditing),
@@ -477,11 +477,11 @@ internal fun XmbAndroidGamePickerDialog(
         }
         when {
             loading -> XmbProgressCard("正在读取已安装的应用…")
-            adding -> XmbProgressCard(title = "Adding ${xmbCountLabel(chosenCount, "game")}…", detail = "Writing the shortcuts")
+            adding -> XmbProgressCard(title = "Adding ${xmbCountLabel(chosenCount, "game")}…", detail = "正在写入快捷方式")
             else -> {
                 if (shown.isEmpty() && gamesOnly && query.isBlank()) {
                     XmbDialogText(
-                        "Some games don't tell Android they are games: try All apps.",
+                        "有些游戏不会告诉 Android 自己是游戏：试试「所有应用」。",
                         muted = true,
                         small = true,
                     )
@@ -556,19 +556,19 @@ internal fun XmbWindowsSteamDialog(
     }
     XmbDialogFrame(
         title = title,
-        subtitle = if (running) "This can take a minute" else "Where should Steam go?",
+        subtitle = if (running) "这可能需要一分钟" else "Steam 装到哪里？",
         onDismiss = onCancel,
         dismissible = !running,
         footer = if (running) null else buttons,
     ) {
         if (progress != null) {
             XmbProgressCard(
-                title = "Downloading Steam…",
+                title = "正在下载 Steam…",
                 progress = progress / 100f,
                 detail = places.getOrNull(pick)?.let { "Saving to ${it.label}" },
             )
         } else if (places.isEmpty()) {
-            XmbProgressCard("Checking the storage…")
+            XmbProgressCard("正在检查存储…")
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 places.forEachIndexed { i, place ->
@@ -578,7 +578,7 @@ internal fun XmbWindowsSteamDialog(
                         onSelect = { onPick(i) },
                         enabled = place.fits,
                         subtitle = when {
-                            place.hasClient -> "Steam is already here"
+                            place.hasClient -> "Steam 已存在于此"
                             place.fits -> "${SteamSdInstall.fmtBytes(place.freeBytes)} free"
                             else -> "Not enough space (${SteamSdInstall.fmtBytes(place.freeBytes)} free)"
                         },
@@ -590,7 +590,7 @@ internal fun XmbWindowsSteamDialog(
     }
 }
 
-/** "Also uninstall Steam?": what would go, or a progress card while the plan is read / the uninstall runs. Keeping is the safe default. */
+/** "同时卸载 Steam？": what would go, or a progress card while the plan is read / the uninstall runs. Keeping is the safe default. */
 @Composable
 internal fun XmbSteamUninstallDialog(
     plan: WindowsSteamClient.UninstallPlan?,
@@ -599,17 +599,17 @@ internal fun XmbSteamUninstallDialog(
     onKeep: () -> Unit,
 ) {
     val buttons: @Composable RowScope.() -> Unit = {
-        XmbDialogButton("Keep Steam", onKeep, primary = true, modifier = Modifier.xmbInitialFocus())
+        XmbDialogButton("保留 Steam", onKeep, primary = true, modifier = Modifier.xmbInitialFocus())
         XmbDialogButton("Uninstall", { plan?.let(onUninstall) }, enabled = plan != null, danger = true)
     }
     XmbDialogFrame(
-        title = "Also uninstall Steam?",
+        title = "同时卸载 Steam？",
         onDismiss = onKeep,
         dismissible = !running,
         footer = if (running) null else buttons,
     ) {
         if (running || plan == null) {
-            XmbProgressCard(if (running) "Uninstalling Steam…" else "Checking Steam's folder…")
+            XmbProgressCard(if (running) "正在卸载 Steam…" else "正在检查 Steam 文件夹…")
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 XmbDialogText("Deletes Steam from ${plan.where} (${SteamSdInstall.fmtBytes(plan.bytes)}).")

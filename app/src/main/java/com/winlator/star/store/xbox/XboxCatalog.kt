@@ -180,10 +180,10 @@ internal object XboxCatalog {
     private fun xboxSearch(query: String): List<String> {
         val locale = "${StoreLang.xboxStore().substringBefore('-')}-${Xodus.market()}"
         val request = JSONObject().put("Query", query).put("Filters", "e30=").put("ReturnFilters", false)
-            .put("ChannelKeyToBeUsedInResponse", "SEARCH")
+            .put("ChannelKeyToBeUsedInResponse", "搜索")
         val headers = mapOf("x-ms-api-version" to "1.1", "MS-CV" to java.util.UUID.randomUUID().toString().replace("-", "").take(16) + ".0")
         val body = JSONObject(fetch("https://emerald.xboxservices.com/xboxcomfd/search/games?locale=$locale", request.toString(), headers))
-        return objects(body.optJSONObject("channels")?.optJSONObject("SEARCH")?.optJSONArray("products")).map { it.optString("productId") }
+        return objects(body.optJSONObject("channels")?.optJSONObject("搜索")?.optJSONArray("products")).map { it.optString("productId") }
     }
 
     fun featured(access: Map<String, String>): List<XboxGame> {

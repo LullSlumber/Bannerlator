@@ -142,7 +142,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
     private var launchVisible by mutableStateOf(false)
     private var installVisible by mutableStateOf(true)
     private var installBtnText by mutableStateOf("Install")
-    /** First install: "Download to" (StoreInstallLocations) before the download starts. */
+    /** First install: "下载到" (StoreInstallLocations) before the download starts. */
     private var locationPickerOpen by mutableStateOf(false)
     private var installBtnColor by mutableIntStateOf(0xFF5533CC.toInt())
     private var setExeVisible by mutableStateOf(false)
@@ -582,7 +582,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
             override fun onSelectExe(candidates: MutableList<String>?, onSelected: Consumer<String>?) {
                 // Completion must NEVER block on a dialog (it would wedge the DL-manager card at
                 // 100% when the user isn't on this screen). Auto-pick the best (first) candidate —
-                // the exe choice is available later via "Set .exe…". Mirrors the Amazon fix.
+                // the exe choice is available later via "设置 .exe…". Mirrors the Amazon fix.
                 if (onSelected != null) onSelected.accept(candidates?.firstOrNull() ?: "")
             }
         }
@@ -608,7 +608,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
             .setMessage(
                 if (prefs.getString("gog_dir_$gameId", null)
                         ?.let { File(GogInstallPath.getInstallDir(this, it), SteamInstallPaths.ADOPTED_MARKER).exists() } == true)
-                    "Your imported folder and its files stay."
+                    "你导入的文件夹及其文件会保留。"
                 else "这将删除所有已安装的游戏文件。"
             )
             .setPositiveButton("Uninstall") { _, _ -> doUninstall() }
@@ -871,7 +871,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                 }
                 return@Thread
             }
-            runOnUiThread { showCloudStatus(if (up) "Preparing upload…" else "Preparing download…") }
+            runOnUiThread { showCloudStatus(if (up) "正在准备上传…" else "正在准备下载…") }
             val cb = object : GogCloudSaveManager.Callback {
                 override fun onStatus(msg: String) { runOnUiThread { showCloudStatus(msg) } }
                 override fun onDone(msg: String) { runOnUiThread { showCloudStatus(msg); cloudBtnsEnabled = true } }
@@ -981,7 +981,7 @@ private fun GogGameDetailScreen(
     val gear = buildList {
         // onInstall doubles as Cancel while the button label reads "Cancel" (see onInstallClicked).
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstall))
-        if (setExeVisible) add(StoreGearItem("🎯", "Set .exe…", onClick = onSetExe))
+        if (setExeVisible) add(StoreGearItem("🎯", "设置 .exe…", onClick = onSetExe))
         if (copyVisible) add(StoreGearItem("📁", "复制到下载目录", onClick = onCopy))
         if (updatesInstalled) {
             add(StoreGearItem("🔄", "检查更新", enabled = checkUpdateEnabled, onClick = onCheckUpdate))

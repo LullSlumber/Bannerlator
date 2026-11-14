@@ -1061,7 +1061,7 @@ private fun DeckLandscapeCard(
                                 if (method == LaunchMethod.STEAMLITE && isSteam) {
                                     Spacer(Modifier.height(10.dp))
                                     DeckOptionRow(
-                                        title = "Controller passthrough", badge = "NEW",
+                                        title = "控制器直通", badge = "NEW",
                                         subtitle = SUB_PASSTHROUGH,
                                         accent = accent, onHelp = { toggleHelp(HELP_PASS) }, onClick = { onPassthrough(!passthrough) },
                                     ) { DeckPill(passthrough, accent) }
@@ -1525,7 +1525,7 @@ private fun ColumnScope.OptionsBlock(
     }
     if (isSteam) {
         OptionRow(
-            title = "Controller passthrough",
+            title = "控制器直通",
             badge = "NEW",
             subtitle = if (compact) null else SUB_PASSTHROUGH,
             accent = accent,
@@ -1627,7 +1627,7 @@ private fun OptionRow(
 /**
  * What the footer's primary button says and does for the selected method: plain "Launch" unless the
  * SteamLite chip is selected and its package check gates the launch ("更新并启动"; disabled
- * "Updating…" while the download runs). Goldberg / Raw are never gated.
+ * "正在更新…" while the download runs). Goldberg / Raw are never gated.
  */
 private fun footerLaunch(
     method: LaunchMethod,
@@ -1637,14 +1637,14 @@ private fun footerLaunch(
 ): Pair<String, (() -> Unit)?> {
     if (method == LaunchMethod.APPSTEAM && appSteamClient != null) {
         return when {
-            appSteamClient.updating -> T("Updating…") to null
+            appSteamClient.updating -> T("正在更新…") to null
             appSteamClient.gated -> T("更新并启动") to appSteamClient.onUpdateAndLaunch
             else -> T("Launch") to doLaunch
         }
     }
     if (method != LaunchMethod.STEAMLITE || client == null) return T("Launch") to doLaunch
     return when {
-        client.updating -> T("Updating…") to null
+        client.updating -> T("正在更新…") to null
         client.gated -> T("更新并启动") to client.onUpdateAndLaunch
         else -> T("Launch") to doLaunch
     }

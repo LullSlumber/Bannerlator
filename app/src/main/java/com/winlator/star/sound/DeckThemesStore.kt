@@ -14,7 +14,7 @@ object DeckThemesStore {
     const val API = "https://api.deckthemes.com"
 
     /** Sort orders the store accepts. */
-    val ORDERS = listOf("Most Downloaded", "Most Stars", "Last Updated", "Alphabetical (A to Z)")
+    val ORDERS = listOf("下载最多", "星标最多", "最近更新", "按字母（A 到 Z）")
 
     class Item(
         val id: String,

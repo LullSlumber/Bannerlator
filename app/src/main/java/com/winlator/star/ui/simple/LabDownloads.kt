@@ -100,8 +100,8 @@ internal fun LabDownloadPicker(types: List<String>, onClose: () -> Unit, vm: Con
             if (pills.isEmpty() || pills.any { it in wanted }) Opt(i.toString(), s.name) else null
         }
         SimplePicker(
-            title = L("Download from source"),
-            options = repos.ifEmpty { listOf(Opt("", L("No repository offers these."))) },
+            title = L("从源头下载"),
+            options = repos.ifEmpty { listOf(Opt("", L("没有仓库提供这些组件。"))) },
             current = "",
             customLabel = cancelLabel,
             onDismiss = onClose,

@@ -301,7 +301,7 @@ private fun keepFile(context: Context, src: String, s: Shortcut, slot: String): 
 }.getOrNull()
 
 private fun slotLabel(slot: String): String =
-    if (LabArt.isIgSlot(slot)) L("In-game menu · %1\$s", slotLabel(LabArt.igBase(slot)))
+    if (LabArt.isIgSlot(slot)) L("游戏内菜单 · %1\$s", slotLabel(LabArt.igBase(slot)))
     else L(LAB_SLOTS.firstOrNull { it.first == slot }?.second ?: slot)
 
 /** Where a slot's picture comes from, as Artwork shows it. */
@@ -442,7 +442,7 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
         MenuEntry("d-desc", L("Description"), details.description ?: notSet, icon = Icons.Filled.Description, onA = { textFor = "desc" }),
     )
     val clipPick = s.getExtra(LabArt.K_CLIP, "")
-    val appGroup = L("App pages")
+    val appGroup = L("应用页面")
     val artRows = LAB_SLOTS.map { (slot, label) ->
         MenuEntry("art-$slot", L(label), slotSource(s, slot), group = appGroup, thumb = { SlotThumb(s, slot) }, onA = { slotFor = slot })
     } + listOf(
@@ -730,7 +730,7 @@ private fun LabClipChooser(s: Shortcut, onDismiss: () -> Unit) {
             list.isEmpty() -> Text(
                 when {
                     LabArt.appId(s) == null -> L("Not linked to Steam: link it under Details to find trailers.")
-                    unreachable -> L("Could not reach Steam.")
+                    unreachable -> L("无法连接 Steam。")
                     else -> L("Steam has no trailers for this game.")
                 },
                 color = SimpleMuted, fontSize = 13.sp, modifier = Modifier.padding(8.dp),

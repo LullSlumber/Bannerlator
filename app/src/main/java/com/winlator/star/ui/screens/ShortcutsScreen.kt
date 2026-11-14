@@ -5330,7 +5330,7 @@ private fun GameModsDialog(setting: GameModsSetting, onDismiss: () -> Unit) {
                 OutlinedTextField(
                     value = setting.startWith,
                     onValueChange = { setting.startWith = it },
-                    label = { Text("Start with the game") },
+                    label = { Text("从系统选取…") },
                     placeholder = { Text("F:\\Trainers\\Trainer.exe") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -5862,7 +5862,7 @@ internal fun ShortcutSettingsDialogScreen(
     }
 
     // Single guest-side refresh control (per-game override). Backed by two extras that the merged
-    // "In-game refresh rate" dropdown drives together: unlockGameRefreshRate ("" inherit / "1" / "0")
+    // "游戏内刷新率" dropdown drives together: unlockGameRefreshRate ("" inherit / "1" / "0")
     // and maxGameRefreshRate ("" inherit / "0" unlimited / "N" cap). Both empty = inherit container.
     // See Container.isUnlockGameRefreshRate / getMaxGameRefreshRate.
     var maxGameRefreshRate by remember {
@@ -6367,7 +6367,7 @@ internal fun ShortcutSettingsDialogScreen(
             putExtra("nativeBackend", vkNativeBackend)
             putExtra("rendererDriverId", vkRendererDriverId)
             putExtra("renderScale", if (renderScale == "1.0") null else renderScale)
-            // "In-game refresh rate" per-game override: both extras written together, "" = inherit the
+            // "游戏内刷新率" per-game override: both extras written together, "" = inherit the
             // container (store null so the extra is cleared, not left empty → keeps the shortcut default).
             putExtra("maxGameRefreshRate", maxGameRefreshRate.ifEmpty { null })
             putExtra("unlockGameRefreshRate", unlockGameRefreshRate.ifEmpty { null })
@@ -6520,7 +6520,7 @@ internal fun ShortcutSettingsDialogScreen(
         onChangeContainer()
     }
 
-    // Panel refresh rates (drives whether the "In-game refresh rate" row exists) — hoisted so the D-pad
+    // Panel refresh rates (drives whether the "游戏内刷新率" row exists) — hoisted so the D-pad
     // order list below can account for that conditional row.
     val panelRates = remember {
         com.winlator.star.widget.XServerView.getSupportedRefreshRates(
@@ -7017,7 +7017,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         autoOn = containerFast || effectiveWaylandShortcut, locked = fastGlLocked != null, onPick = pickFastGl)
                                 }
                                 com.winlator.star.ui.components.OpenGLCardRow(
-                                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "Show FPS", null,
+                                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "显示 FPS", null,
                                     focused = dp.isFocused(fpsSw.extra),
                                     modifier = Modifier.dpadBringIntoView(dp, fpsSw.extra),
                                 ) {
@@ -8884,7 +8884,7 @@ private fun ScTvTab(
 
         // ── The one switch that matters ─────────────────────────────────────────────────────────
         TvSettingRow(
-            title = "Launch this game on the TV",
+            title = "在电视上启动此游戏",
             subtitle = com.winlator.star.display.ExternalDisplay.HELP_LAUNCH,
         ) {
             DpSwitch(dp, "tvLaunch", checked = tvLaunch, onCheckedChange = onTvLaunchChange)
@@ -8926,7 +8926,7 @@ private fun ScTvTab(
 
         // ── Render resolution ───────────────────────────────────────────────────────────────────
         TvSettingRow(
-            title = "Match the TV's resolution",
+            title = "匹配电视的分辨率",
             subtitle = run {
                 val tvRes = com.winlator.star.display.ExternalDisplay.resolutionOf(
                     com.winlator.star.display.ExternalDisplay.effectiveMode(display, tvModeId))
@@ -9190,7 +9190,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Components", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             DpButton(dp, "cmpRefresh", onActivate = { refreshCatalog() }) {
-                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "Checking…" else "检查 Nightlies") }
+                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "检查中…" else "检查 Nightlies") }
             }
         }
         Text(
@@ -9964,9 +9964,9 @@ internal fun launchShortcutNow(activity: Activity, shortcut: Shortcut, preflight
 internal const val EXTRA_LAST_PLAYED = "lastPlayed"
 
 /**
- * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "Last played" line
+ * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "上次游玩" line
  * read it. saveData() rewrites the .desktop file, so its modified time is put back afterwards, since the
- * Deck's "Recently added" shelf sorts on it. Best-effort: a failed write never blocks the launch.
+ * Deck's "最近添加" shelf sorts on it. Best-effort: a failed write never blocks the launch.
  */
 internal fun recordLastPlayed(shortcut: Shortcut) {
     runCatching {
@@ -9978,7 +9978,7 @@ internal fun recordLastPlayed(shortcut: Shortcut) {
 }
 
 /**
- * "Launch this game on the TV" (the shortcut's TV tab — see display.ExternalDisplay): start the session
+ * "在电视上启动此游戏" (the shortcut's TV tab — see display.ExternalDisplay): start the session
  * ON the external display instead of the handheld. Returns true when it did, false when the caller
  * should launch normally.
  *
@@ -10508,7 +10508,7 @@ private fun MoveToContainerCoordinator(
                 onClick = {
                     val copy = keepCopy
                     val opts = options
-                    stage = if (copy) "Copying…" else "Moving…"
+                    stage = if (copy) "正在复制…" else "Moving…"
                     scope.launch {
                         val r = withContext(Dispatchers.IO) {
                             MoveGameToContainer.run(context, target, c, copy, opts, p) { s -> stage = s }
@@ -11335,7 +11335,7 @@ private fun StoreOptionRows(
             Column(modifier = Modifier.weight(1f)) {
                 Text("Start in Big Picture", fontSize = 14.sp)
                 Text(
-                    "Opens Steam in Big Picture mode",
+                    "以大屏幕模式打开 Steam",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

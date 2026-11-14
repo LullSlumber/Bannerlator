@@ -73,7 +73,7 @@ internal object LabLibrary {
     fun chooseFilter(v: String) { filter = v; prefs?.edit()?.putString("filter", v)?.apply() }
 
     fun sortLabel(v: LibrarySort): String = when (v) {
-        LibrarySort.RECENT -> L("Last played")
+        LibrarySort.RECENT -> L("上次游玩")
         LibrarySort.NAME -> L("名称 A–Z")
         LibrarySort.NAME_DESC -> L("名称 Z–A")
         LibrarySort.CONTAINER -> L("Container")
@@ -135,7 +135,7 @@ internal fun LabRuntimeStatus(s: Shortcut, fontSize: TextUnit = 10.sp, color: Co
             LabBar(if (rt.percent in 0..100) rt.percent / 100f else 0f, Modifier.fillMaxWidth().padding(top = 3.dp))
         }
         rt.updateAvailable -> Text(
-            L("Update to %1\$s", rt.available),
+            L("更新到 %1\$s", rt.available),
             color = Color.White, fontSize = fontSize, maxLines = 1, overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 3.dp)
                 .background(MaterialTheme.colorScheme.primary, SimpleShape)

@@ -59,7 +59,7 @@ import com.winlator.star.ui.simple.T
  *   expert (environment variables)         tab.advanced (before the Reset action)
  *   linux (Games folders, nightlies...)    tab.linux
  *
- * Hand-offs: the game page's "Game actions" (registry category "game": Game Details, Change program, Copy to drive C, Move to
+ * Hand-offs: the game page's "游戏操作" (registry category "game": Game Details, Change program, Copy to drive C, Move to
  * another container and the link to the container's Edit page) stay on tab.game, at its end; the launch info line and the
  * "Windows 组件" link (same tab now) are dropped.
  */

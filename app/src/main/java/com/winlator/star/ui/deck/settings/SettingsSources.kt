@@ -103,7 +103,7 @@ internal class ContainerFormSource(
             val ok = !creating || vm.container != null
             // A refusal for a missing Wine version has been toasted by confirm() itself; a creation that failed has not.
             if (!ok && vm.selectedWineVersion.isNotBlank()) {
-                Toast.makeText(env.context, "Could not create the container.", Toast.LENGTH_LONG).show()
+                Toast.makeText(env.context, "无法创建容器。", Toast.LENGTH_LONG).show()
             }
             // A failed creation keeps the form as it is, so the user can try again.
             if (ok) reload()

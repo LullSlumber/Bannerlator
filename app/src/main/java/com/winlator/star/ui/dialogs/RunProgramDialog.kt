@@ -135,7 +135,7 @@ fun RunProgramDialog(state: XServerDialogState) {
                     if (entries.isEmpty()) item(key = "empty") {
                         SimpleRowDivider()
                         Text(
-                            "Nothing here",
+                            "这里什么都没有",
                             fontFamily = NunitoSansFamily,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -179,8 +179,8 @@ private fun runPlaces(context: Context, driveC: String?, gameDir: String?): List
     runCatching { StorageRoots.list(context) }.getOrDefault(emptyList())
         .filter { it.removable }
         .forEach { out.add(RunPlace(it.label, it.dir, Icons.Filled.SdStorage)) }
-    driveC?.let { File(it) }?.takeIf { it.isDirectory }?.let { out.add(RunPlace("C: drive", it, Icons.Filled.Computer)) }
-    gameDir?.let { File(it) }?.takeIf { it.isDirectory }?.let { out.add(RunPlace("Game folder", it, Icons.Filled.SportsEsports)) }
+    driveC?.let { File(it) }?.takeIf { it.isDirectory }?.let { out.add(RunPlace("C: 盘", it, Icons.Filled.Computer)) }
+    gameDir?.let { File(it) }?.takeIf { it.isDirectory }?.let { out.add(RunPlace("游戏文件夹", it, Icons.Filled.SportsEsports)) }
     return out
 }
 

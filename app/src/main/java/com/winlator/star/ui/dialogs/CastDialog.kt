@@ -132,7 +132,7 @@ fun CastDialog(state: XServerDialogState) {
                                         if (isActive) {
                                             // Connected / connecting: show live status + Disconnect.
                                             val label = when (status) {
-                                                XServerDialogState.CastStatus.CONNECTING -> "Connecting…"
+                                                XServerDialogState.CastStatus.CONNECTING -> "正在连接…"
                                                 XServerDialogState.CastStatus.CONNECTED  -> "Connected"
                                                 XServerDialogState.CastStatus.FAILED     -> "Failed to connect"
                                                 else -> ""

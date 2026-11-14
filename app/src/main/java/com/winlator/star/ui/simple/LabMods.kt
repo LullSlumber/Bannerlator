@@ -84,11 +84,11 @@ internal fun LabModsDialog(setting: GameModsSetting, onChange: () -> Unit, onDis
                 )
                 if (mod === GameMods.SPECIAL_K && on) {
                     val auto = GameMods.targetDll(mod, "", setting.imports, setting.machine)
-                    ModRow(L("DLL"), if (setting.skDll.isEmpty()) L("%1\$s (auto)", auto) else setting.skDll, null, onClick = { setting.nextSkDll(); onChange() })
+                    ModRow(L("DLL"), if (setting.skDll.isEmpty()) L("%1\$s（自动）", auto) else setting.skDll, null, onClick = { setting.nextSkDll(); onChange() })
                 }
             }
             ModRow(
-                L("Start with the game"),
+                L("从系统选取…"),
                 setting.startWith.trim().ifEmpty { "—" },
                 if (setting.mods.isEmpty()) first else null,
                 onClick = { editStart = true },
@@ -105,7 +105,7 @@ internal fun LabModsDialog(setting: GameModsSetting, onChange: () -> Unit, onDis
             onDismissRequest = { editStart = false },
             confirmButton = { TextButton(onClick = { editStart = false; setting.startWith = v.trim(); onChange() }) { Text(L("Save")) } },
             dismissButton = { TextButton(onClick = { editStart = false }) { Text(L("Cancel")) } },
-            title = { Text(L("Start with the game")) },
+            title = { Text(L("从系统选取…")) },
             text = {
                 OutlinedTextField(
                     value = v, onValueChange = { v = it }, singleLine = true,

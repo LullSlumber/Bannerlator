@@ -37,8 +37,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * "Download to": Internal storage, each SD card / USB drive found, the user's own folders and "+ Custom folder…"
- * (the in-app file manager), with "Use as default". [onPick] gets the chosen place; the dialog closes itself.
+ * "下载到": Internal storage, each SD card / USB drive found, the user's own folders and "+ Custom folder…"
+ * (the in-app file manager), with "设为默认". [onPick] gets the chosen place; the dialog closes itself.
  */
 @Composable
 fun StoreInstallLocationDialog(
@@ -83,7 +83,7 @@ fun StoreInstallLocationDialog(
             ) { Text("Download") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-        title = { Text("Download to") },
+        title = { Text("下载到") },
         text = {
             if (list == null) {
                 CircularProgressIndicator()
@@ -101,13 +101,13 @@ fun StoreInstallLocationDialog(
                                     fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                                 )
                                 Text(
-                                    if (l.available) "${SteamSdInstall.fmtBytes(l.freeBytes)} free · ${l.base.path}" else "Not available",
+                                    if (l.available) "${SteamSdInstall.fmtBytes(l.freeBytes)} free · ${l.base.path}" else "不可用",
                                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                                 )
                             }
                         }
                     }
-                    TextButton(onClick = { pick.launch(InAppFilePicker.buildDirIntent(ctx, "Choose a download folder")) }) {
+                    TextButton(onClick = { pick.launch(InAppFilePicker.buildDirIntent(ctx, "选择下载文件夹")) }) {
                         Text("+ Custom folder…")
                     }
                     Row(
@@ -115,7 +115,7 @@ fun StoreInstallLocationDialog(
                         modifier = Modifier.fillMaxWidth().clickable(enabled = selected != defaultId) { makeDefault = !makeDefault }.padding(top = 4.dp),
                     ) {
                         Checkbox(checked = makeDefault || selected == defaultId, enabled = selected != defaultId, onCheckedChange = { makeDefault = it })
-                        Text("Use as default", fontSize = 14.sp)
+                        Text("设为默认", fontSize = 14.sp)
                     }
                 }
             }

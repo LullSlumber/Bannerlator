@@ -46,7 +46,7 @@ fun InputControlsDialog(state: XServerDialogState) {
     var timeoutEnabled   by remember(initTimeout)      { mutableStateOf(initTimeout) }
     var hapticsEnabled   by remember(initHaptics)      { mutableStateOf(initHaptics) }
 
-    val allItems = listOf("-- Disabled --") + profiles
+    val allItems = listOf("-- 已禁用 --") + profiles
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     OutlinedAlertDialog(
@@ -60,7 +60,7 @@ fun InputControlsDialog(state: XServerDialogState) {
                     onExpandedChange = { dropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = allItems.getOrElse(selectedIdx) { "-- Disabled --" },
+                        value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("配置") },
@@ -105,7 +105,7 @@ fun InputControlsDialog(state: XServerDialogState) {
                     enabled = selectedIdx > 0,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Profile Settings…")
+                    Text("配置文件设置…")
                 }
             }
         },

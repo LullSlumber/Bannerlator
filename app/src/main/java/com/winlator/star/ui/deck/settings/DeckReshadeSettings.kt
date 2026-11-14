@@ -481,7 +481,7 @@ private fun LoadoutCard(sec: DeckReshadeSection, names: List<String>) {
         val shortcutPage = sec.env.scope == EditorScope.GAME && rememberXmbHome()
         DeckLine(
             label = when {
-                shortcutPage -> L("Different from the container")
+                shortcutPage -> L("DirectX 转译、GPU 驱动、分辨率、HDR 和视觉效果。")
                 sec.env.scope == EditorScope.GAME -> L("Set for this game")
                 else -> L("Set for this container")
             },

@@ -273,7 +273,7 @@ internal object SettingsRegistry {
                 if (env.isLinuxEntry) T("此驱动程序无法显示会话。\"System\" 或不再安装的驱动程序会使合成器停留在系统 Vulkan 上，从而显示黑屏。")
                 // The XMB editor has a "Get more" link on this row; the plain Deck, Lab and Classic still list the download below.
                 else if (!com.winlator.star.ui.theme.AppThemeState.deckXmbHome.value) T("Wayland 在此需要 Turnip 驱动程序。“System” 或缺失的驱动程序无法导入游戏的帧并显示黑屏。请在下方下载一个（下载 Turnip 驱动程序）。")
-                else T("Wayland needs a Turnip driver here. \"System\" or a missing driver cannot import the game's frames and shows a black screen. Use Get more to download one.")
+                else T("Wayland 在此设备需要 Turnip 驱动。「系统」或缺失驱动无法导入游戏画面并显示黑屏。使用「获取更多」下载一个。")
             vm != null && vm.compositorDriverAutoPicked == version ->
                 if (vm.compositorDriverPickedFromDefaults) T("为您选择：您的新容器默认值中的驱动程序。")
                 else T("为您选择：可导入游戏帧的最新已安装 Turnip。")
@@ -430,7 +430,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.controllerPassthrough", category = "launch", group = T("Steam 选项"), level = ADVANCED,
-            label = T("让游戏处理控制器"), hint = T("将手柄直接交给游戏，而不是 Steam 输入。适用于经典游戏（半条命 2、CS:S）。会关闭 Steam 输入。"), tech = T("Controller passthrough"),
+            label = T("让游戏处理控制器"), hint = T("将手柄直接交给游戏，而不是 Steam 输入。适用于经典游戏（半条命 2、CS:S）。会关闭 Steam 输入。"), tech = T("控制器直通"),
             control = { _, _ -> Control.Toggle },
             // The opposite of Steam Input, so turning one on turns the other off, as the launch menu does.
             game = GameBinding(
@@ -509,7 +509,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "launch.steamBigPicture", category = "launch", group = T("Windows Steam"), level = SIMPLE,
-            label = T("Start in Big Picture"), hint = T("Opens Steam in Big Picture mode."), tech = "steamBigPicture",
+            label = T("Start in Big Picture"), hint = T("以大屏幕模式打开 Steam。"), tech = "steamBigPicture",
             control = { _, _ -> Control.Toggle },
             game = builtIn10(com.winlator.star.store.WindowsSteamClient.EXTRA_BIG_PICTURE, false),
             visible = { env, _ -> gameScope(env) && env.isWindowsSteam },
@@ -607,10 +607,10 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = ID_DISPLAY_SERVER, category = "display", group = T("屏幕"), level = ADVANCED,
-            label = T("Display server"), hint = T("yserver is a new X server, still in testing."), tech = "BANNER_YSERVER",
+            label = T("显示服务器"), hint = T("yserver 是新的 X 服务器，仍在测试中。"), tech = "BANNER_YSERVER",
             control = { env, _ ->
                 Control.Segmented(listOf(
-                    Opt(DS_X, T("X server")),
+                    Opt(DS_X, T("X 服务器")),
                     Opt(DS_Y, "yserver", disabledReason = if (YServerComponent.binary(env.context) != null) null else T("yserver isn't in this build.")),
                 ))
             },
@@ -640,7 +640,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "display.refreshInGame", category = "display", group = T("刷新率"), level = ADVANCED,
-            label = T("游戏可选择的刷新率"), hint = T("告诉游戏屏幕能做什么。需要带 xrandr 的 Wine 构建。"), tech = T("In-game refresh rate"),
+            label = T("游戏可选择的刷新率"), hint = T("告诉游戏屏幕能做什么。需要带 xrandr 的 Wine 构建。"), tech = T("游戏内刷新率"),
             control = { env, _ ->
                 Control.Select(listOf(Opt("-1", T("锁定为 60 Hz")), Opt("0", T("任意（无限制）"))) +
                     env.panelRates.filter { it > 60 }.map { Opt("$it", "$it Hz") })
@@ -688,7 +688,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "display.hdrOutput", category = "display", group = "HDR", level = ADVANCED,
-            label = T("HDR output"), hint = T("向屏幕发送真正的 HDR10。"), tech = T("HDR 输出 (HDR10)"),
+            label = T("HDR 输出"), hint = T("向屏幕发送真正的 HDR10。"), tech = T("HDR 输出 (HDR10)"),
             help = WaylandHdr.HELP_TEXT,
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.waylandHdr }, { vm, v -> vm.waylandHdr = v }),
@@ -773,7 +773,7 @@ internal object SettingsRegistry {
         *WrapperDetectedRows.defs().toTypedArray(),
         SettingDef(
             id = "graphics.fastOpenGL", category = "graphics", group = "OpenGL", level = ADVANCED,
-            label = T("Fast OpenGL"), hint = FastOpenGL.HINT, tech = FastOpenGL.EXTRA,
+            label = T("快速 OpenGL"), hint = FastOpenGL.HINT, tech = FastOpenGL.EXTRA,
             help = T("OpenGL 游戏（以及通过 WineD3D 的 DirectDraw / 较旧 Direct3D）在捆绑的 Mesa 和 Zink 上运行，并由 Vulkan 呈现，而不是每帧缓慢复制。在 X11 上需要 Turnip 图形驱动程序。在 Wayland 下始终开启。"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.fastOpenGL }, { vm, v -> vm.fastOpenGL = v }),
@@ -830,7 +830,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.nativeBackend", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
-            label = T("直接到屏幕方法"), tech = T("Native backend"),
+            label = T("直接到屏幕方法"), tech = T("原生后端"),
             control = { _, _ -> seg("auto" to T("Auto"), "asr" to T("SurfaceFlinger"), "flip" to T("Vulkan scan-out")) },
             vm = vmString({ it.rendererNativeBackend }, { vm, v -> vm.rendererNativeBackend = v }),
             game = key("nativeBackend"),
@@ -872,8 +872,8 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "performance.frameGen", category = "performance", group = T("Frame generation"), level = SIMPLE,
-            label = T("Frame generation"), hint = T("插入额外帧以实现更流畅的运动。"), tech = T("插帧生成"),
+            id = "performance.frameGen", category = "performance", group = T("帧率"), level = SIMPLE,
+            label = T("帧率"), hint = T("插入额外帧以实现更流畅的运动。"), tech = T("插帧生成"),
             help = T("内置 (Win-FG) 在应用内部进行插值。Lossless Scaling 使用您自己的 Lossless.dll。两者都需要 Vulkan 屏幕渲染器、Wayland 或 Linux 条目。倍数在游戏中设置。"),
             control = { env, _ ->
                 Control.Segmented(listOf(
@@ -893,7 +893,7 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "performance.frameGenModel", category = "performance", group = T("Frame generation"), level = ADVANCED,
+            id = "performance.frameGenModel", category = "performance", group = T("帧率"), level = ADVANCED,
             label = T("运动模型"), tech = T("插值模型"),
             control = { _, _ -> seg("3" to T("光流"), "4" to T("双向")) },
             vm = vmInt({ if (it.frameGenModel == 4) 4 else 3 }, { vm, v -> vm.frameGenModel = v }),
@@ -901,7 +901,7 @@ internal object SettingsRegistry {
             visible = { _, values -> values("performance.frameGen") == "bionic" },
         ),
         SettingDef(
-            id = "performance.fgCapture", category = "performance", group = T("Frame generation"), level = EXPERT,
+            id = "performance.fgCapture", category = "performance", group = T("帧率"), level = EXPERT,
             label = T("采集分辨率"), hint = T("帧生成链运行的高度；宽度跟随您的屏幕。更低则开销小得多，画面更柔和。"), tech = "fgCaptureResolution",
             control = { env, _ ->
                 val heights = (env.vm?.screenSizeEntries ?: emptyList())
@@ -938,7 +938,7 @@ internal object SettingsRegistry {
             visible = { _, values -> FeatureFlags.LSFG_NATIVE_EXPERIMENTS_ENABLED && values("performance.frameGen") == "lsfg-native" },
         ),
         SettingDef(
-            id = "performance.lsfgVk11", category = "performance", group = T("Frame generation"), level = EXPERT,
+            id = "performance.lsfgVk11", category = "performance", group = T("帧率"), level = EXPERT,
             label = T("在 Vulkan 1.1 驱动程序上使用 LSFG（兼容）"), hint = T("允许 LSFG 原生在仅报告 Vulkan 1.1 但具有所需扩展的驱动程序上运行。也适用于每个游戏的覆盖设置。"), tech = "lsfgVk11Compat",
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.lsfgVk11Compat }, { vm, v -> vm.lsfgVk11Compat = v }),
@@ -1051,7 +1051,7 @@ internal object SettingsRegistry {
             disabled = { env, _ ->
                 if (env.box64ECInstalled) null
                 else if (!com.winlator.star.ui.theme.AppThemeState.deckXmbHome.value) T("未安装 Box64EC。请在下方下载一个（翻译器下载）。")
-                else T("No Box64EC installed. Use Get more to download one.")
+                else T("未安装 Box64EC。使用「获取更多」下载一个。")
             },
             getMore = "box64ec",
         ),
@@ -1158,7 +1158,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.dinputVisible", category = "input", group = T("控制器"), level = ADVANCED,
-            label = T("DirectInput games can see the controller"), hint = T("默认关闭，因此同时读取 XInput 和 DirectInput 的游戏只会看到一个手柄。"),
+            label = T("DirectInput 游戏可以看到控制器"), hint = T("默认关闭，因此同时读取 XInput 和 DirectInput 的游戏只会看到一个手柄。"),
             help = T("允许 DirectInput 游戏（许多较旧游戏、赛车游戏、方向盘）看到控制器。关闭会将其从 DirectInput 中隐藏，以便同时支持 XInput 和 DirectInput 的游戏不会看到两个。经典 DirectInput 手柄身份始终会开启此选项。"),
             tech = T("Exclusive Input独占输入 / 启用 DInput"),
             control = { _, _ -> Control.Toggle },
@@ -1181,7 +1181,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.dinputVibration", category = "input", group = T("控制器"), level = ADVANCED,
-            label = T("DirectInput vibration"), hint = T("DirectInput 游戏（赛车、飞行、许多较旧游戏）可以使控制器震动。默认开启。"),
+            label = T("DirectInput 震动"), hint = T("DirectInput 游戏（赛车、飞行、许多较旧游戏）可以使控制器震动。默认开启。"),
             help = T("允许 DirectInput 游戏使控制器震动：普通震动，以及赛车和飞行游戏发送到方向盘或操纵杆的力反馈，通过控制器的两个马达感受到。它遵循震动设置（震动目标和强度）。稳定的力（例如赛车游戏保持方向盘直行）会在几秒后消退，因此控制器不会持续嗡嗡作响。DirectInput 游戏仅在可以看到控制器时才能感受到。更改在控制器重新连接时（在游戏中，控制 › 手柄可执行此操作）或下次启动时应用。环境变量中的 BANNERIN_DINPUT_FF 优先于此设置。"),
             tech = DInputVibration.EXTRA,
             control = { _, _ -> Control.Toggle },
@@ -1199,7 +1199,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.bannerinXInputSwitching", category = "input", group = T("控制器"), level = ADVANCED,
-            label = T("Allow in-game switching"), hint = T("在游戏内菜单中切换 Direct XInput 的开启或关闭，无需重启。"),
+            label = T("允许游戏内切换"), hint = T("在游戏内菜单中切换 Direct XInput 的开启或关闭，无需重启。"),
             help = T("无论 Direct XInput 是开启还是关闭，都会安装 Bannerlator 的 XInput DLL，并将 Wine 自己的 XInput 放在旁边，以便游戏内菜单中的控制 › 手柄可以在游戏运行时在它们之间切换（控制器会重新连接）。默认开启。关闭：Direct XInput 保持游戏启动时的状态，更改它需要重启。"),
             tech = BannerinXInput.EXTRA_SWITCHING,
             control = { _, _ -> Control.Toggle },
@@ -1208,7 +1208,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.stickPacing", category = "input", group = T("控制器"), level = ADVANCED,
-            label = T("Stick updates"), hint = T("摇杆移动到达游戏的频率。也可在游戏中更改。"),
+            label = T("摇杆更新"), hint = T("摇杆移动到达游戏的频率。也可在游戏中更改。"),
             help = T("自动（默认）：游戏绘制的每一帧更新一次摇杆，直到设定的限制（默认每秒 60 次），因此绘制速度快于读取输入速度的游戏永远不会落后。固定：每秒那么多次更新。无节奏限制：每次变化立即发送。立即应用，也可在游戏中应用（控制 › 手柄）。环境变量中的 BANNERIN_AXIS_HZ / BANNERIN_AXIS_AUTO_MAX 优先于此设置。"),
             tech = StickPacing.EXTRA,
             control = { _, _ ->
@@ -1304,7 +1304,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.aimMode", category = "input", group = T("鼠标与触摸"), level = ADVANCED,
-            label = T("Aim mode"), tech = "aimMode · relativeMouse",
+            label = T("瞄准模式"), tech = "aimMode · relativeMouse",
             control = { _, _ -> seg(TouchAimSettings.AUTO to T("Auto"), TouchAimSettings.ON to T("On"), TouchAimSettings.OFF to T("Off")) },
             game = GameBinding(
                 keys = listOf(TouchAimSettings.EXTRA_AIM, TouchAimSettings.EXTRA_RELATIVE_MOUSE),
@@ -1352,7 +1352,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.rumbleMotors", category = "input", group = T("震动"), level = ADVANCED,
-            label = T("Rumble motors"), hint = T("对于两个马达同时运行时摇杆会变慢的掌机，单马达可保持摇杆流畅。"),
+            label = T("震动马达"), hint = T("对于两个马达同时运行时摇杆会变慢的掌机，单马达可保持摇杆流畅。"),
             help = T("两者（PC 精确）：像 PC 控制器一样分别驱动大马达和小马达。单马达（更流畅的摇杆）：使用一个马达。某些掌机控制器（例如 AYANEO Pocket FIT）在两个马达运行时会使摇杆更新变慢；单马达将这种变慢减半，使瞄准保持流畅。默认：Pocket FIT 上为单马达，其他地方为两者。"),
             tech = RumbleMotors.EXTRA,
             control = { _, _ -> seg("${RumbleMotors.BOTH}" to T("两者（PC 精确）"), "${RumbleMotors.SINGLE}" to T("单马达（更流畅的摇杆）")) },
@@ -1479,7 +1479,7 @@ internal object SettingsRegistry {
         // Performance overlay: the launch path reads the on/off switch from the container only.
         SettingDef(
             id = "hud.show", category = "hud", group = T("Overlay"), level = SIMPLE,
-            label = T("显示性能覆盖层"), hint = T("在游戏上方显示 FPS、CPU/GPU 负载和温度。其样式在下面，也可在游戏中从侧边菜单设置。"), tech = T("Show FPS"),
+            label = T("显示性能覆盖层"), hint = T("在游戏上方显示 FPS、CPU/GPU 负载和温度。其样式在下面，也可在游戏中从侧边菜单设置。"), tech = T("显示 FPS"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.showFPS }, { vm, v -> vm.showFPS = v }),
         ),

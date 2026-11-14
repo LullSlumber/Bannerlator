@@ -101,7 +101,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var selectedWineVersion by mutableStateOf("")
 
     // Whether the given wine/Proton layer has xrandr compiled in — i.e. can actually deliver the
-    // in-game refresh unlock. The editor uses this to warn under the "In-game refresh rate" control
+    // in-game refresh unlock. The editor uses this to warn under the "游戏内刷新率" control
     // when the selected Proton can't. Cached per layer id in WineRandrSupport (cheap to recall).
     //
     // MUST be safe during early composition and in the create-new-container flow: contentsManager is a
@@ -349,7 +349,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     // in-game refresh dropdown. 0 = no cap. Separate axis from the two above (host panel rate).
     var maxGameRefreshRate by mutableStateOf(0)
     // Guest-side refresh: unlockGameRefreshRate (off = Locked 60) + maxGameRefreshRate (cap; 0 =
-    // Unlimited) together back the single "In-game refresh rate" dropdown. Default = unlock + no cap
+    // Unlimited) together back the single "游戏内刷新率" dropdown. Default = unlock + no cap
     // (Unlimited). refreshWasExplicit tracks whether the loaded container had actually set the extra, so
     // an untouched default is NOT persisted (keeps it "default" → no compatible-layer nag at launch).
     var unlockGameRefreshRate by mutableStateOf(true)
@@ -375,17 +375,17 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var lcAll by mutableStateOf("")
     var lcAllEntries by mutableStateOf(emptyList<String>()); private set
 
-    // "DirectInput games can see the controller" (core.DInputVisibility): the one switch that replaced
+    // "DirectInput 游戏可以看到控制器" (core.DInputVisibility): the one switch that replaced
     // Enable XInput / Enable DInput / Exclusive Input. Saved into the same inputType/exclusiveXInput
     // fields older builds read; a new container starts off, as the old default did.
     var dinputVisible by mutableStateOf(false)
-    // "DirectInput vibration" (core.DInputVibration, extra "dinputVibration", stored only when off).
+    // "DirectInput 震动" (core.DInputVibration, extra "dinputVibration", stored only when off).
     var dinputVibration by mutableStateOf(true)
     // Direct XInput (BANNERIN): XInput games read the BANNERIN slot files directly (core/BannerinXInput).
     var bannerinXInput by mutableStateOf(true)
-    // "Allow in-game switching" of Direct XInput (core/BannerinXInput.switchingEffective).
+    // "允许游戏内切换" of Direct XInput (core/BannerinXInput.switchingEffective).
     var bannerinXInputSwitching by mutableStateOf(true)
-    // "Stick updates" (core.StickPacing format: auto:N / fixed:N / off).
+    // "摇杆更新" (core.StickPacing format: auto:N / fixed:N / off).
     var stickPacing by mutableStateOf(StickPacing.DEFAULT.format())
 
     // Controller vibration (PC-accurate dual-motor rumble), per-container. Mode: 0=Off 1=Controller
@@ -513,7 +513,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     val xrMappingLabels = listOf(
-        "按键 A", "Button B", "按键 X", "按键 Y",
+        "按键 A", "按键 B", "按键 X", "按键 Y",
         "肩键", "扳机键",
         "摇杆上", "摇杆下", "摇杆左", "摇杆右"
     )

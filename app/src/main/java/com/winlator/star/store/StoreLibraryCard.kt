@@ -59,7 +59,7 @@ object StoreViewMode {
         LabArt.init(ctx.applicationContext)
     }
 
-    val label: String get() = when (LabArt.cards) { LabArt.WIDE -> "Wide"; LabArt.ICONS -> "Icons"; else -> "Covers" }
+    val label: String get() = when (LabArt.cards) { LabArt.WIDE -> "宽"; LabArt.ICONS -> "Icons"; else -> "Covers" }
 
     fun next(ctx: Context) {
         load(ctx)

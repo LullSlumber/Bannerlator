@@ -805,11 +805,11 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
     val prefs = remember { context.getSharedPreferences("save_manager_prefs", Context.MODE_PRIVATE) }
     var steamOn by remember { mutableStateOf(prefs.getBoolean("auto_collect_steam_on_exit", true)) }
     var steamUpOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_steam_on_exit", true)) }
-    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_steam_on_launch", true)) }
+    var steamDlOn by remember { mutableStateOf(prefs.getBoolean("Steam 游戏", true)) }
     // Goldberg is an offline (emulated) Steam session, so cloud sync during Goldberg launches is OFF by default.
     var goldbergCloudOn by remember { mutableStateOf(prefs.getBoolean("goldberg_cloud_sync", true)) }
     var gogOn by remember { mutableStateOf(prefs.getBoolean("auto_upload_gog_on_exit", true)) }
-    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("auto_download_gog_on_launch", true)) }
+    var gogDlOn by remember { mutableStateOf(prefs.getBoolean("GOG 游戏", true)) }
     var customOn by remember { mutableStateOf(prefs.getBoolean("auto_backup_custom_on_exit", true)) }
     // Achievement sync-back is owned by SteamPrefs (NOT save_manager_prefs) and is default OFF — it
     // writes unlocks to the user's REAL Steam account, so it's gated behind an ON warning below.
@@ -931,9 +931,9 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
             val prefKey = when (prompt.kind) {
                 ToggleKind.STEAM -> "auto_collect_steam_on_exit"
                 ToggleKind.STEAM_UP -> "auto_upload_steam_on_exit"
-                ToggleKind.STEAM_DL -> "auto_download_steam_on_launch"
+                ToggleKind.STEAM_DL -> "Steam 游戏"
                 ToggleKind.GOG -> "auto_upload_gog_on_exit"
-                ToggleKind.GOG_DL -> "auto_download_gog_on_launch"
+                ToggleKind.GOG_DL -> "GOG 游戏"
                 ToggleKind.CUSTOM -> "auto_backup_custom_on_exit"
                 ToggleKind.ACHV_SYNC -> "" // unreachable — handled above
             }

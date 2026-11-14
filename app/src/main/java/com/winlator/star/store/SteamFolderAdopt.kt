@@ -107,15 +107,15 @@ object SteamFolderAdopt {
 
     /** Why [folder] cannot hold a game, or null when it can. */
     fun refuseReason(folder: File): String? {
-        if (!folder.isDirectory) return "That folder is gone."
-        if (SteamInstallPaths.isLibraryContainer(folder)) return "Pick the game's own folder, not the Steam library."
+        if (!folder.isDirectory) return "该文件夹已不存在。"
+        if (SteamInstallPaths.isLibraryContainer(folder)) return "选择游戏自己的文件夹，而不是 Steam 库。"
         val path = folder.absolutePath.trimEnd('/')
         if (path == "/storage/emulated/0" || path.matches(Regex("/storage/[0-9A-F]{4}-[0-9A-F]{4}"))) {
-            return "Pick the game's own folder, not the whole storage."
+            return "选择游戏自己的文件夹，而不是整个存储。"
         }
         val probe = File(folder, ".bannerlator_write_probe")
         val writable = try { probe.writeText("1"); true } catch (_: Throwable) { false } finally { probe.delete() }
-        if (!writable) return "Bannerlator can't write to that folder."
+        if (!writable) return "Bannerlator 无法写入该文件夹。"
         return null
     }
 
@@ -136,7 +136,7 @@ object SteamFolderAdopt {
         val app = ctx.applicationContext
         refuseReason(folder)?.let { return it }
         val db = SteamDatabase.getInstance(app)
-        val row = db.getGame(appId) ?: return "That game isn't in your Steam library."
+        val row = db.getGame(appId) ?: return "该游戏不在你的 Steam 游戏库中。"
         if (row.isInstalled) return "${row.name} is already installed."
         return try {
             // Marker first: from here on a cancel keeps the folder's files.
@@ -148,7 +148,7 @@ object SteamFolderAdopt {
             null
         } catch (t: Throwable) {
             Log.w(TAG, "adopt $appId at ${folder.path} failed", t)
-            t.message ?: "Could not start the install."
+            t.message ?: "无法开始安装。"
         }
     }
 }

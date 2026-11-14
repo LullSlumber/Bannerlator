@@ -159,12 +159,12 @@ internal fun DeckAssignTab(s: InputControlsDeckState) {
                 CtlInfoRow { cs ->
                     Text("Auto", color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.width(76.dp))
                     Text(
-                        text = if (auto.isEmpty()) "Nobody left" else auto.joinToString(", ") { slotName(it) },
+                        text = if (auto.isEmpty()) "无人在线" else auto.joinToString(", ") { slotName(it) },
                         color = cs.onSurfaceVariant,
                         fontSize = 13.sp,
                         modifier = Modifier.weight(1f),
                     )
-                    CtlChip("Launch order", cs.onSurfaceVariant)
+                    CtlChip("启动顺序", cs.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(4.dp))
             }
@@ -194,7 +194,7 @@ internal fun DeckAssignTab(s: InputControlsDeckState) {
                     },
                 )
                 DeckRowDivider()
-                CtlNote("Applies to new containers only; existing ones keep their own settings. Two devices on one player share control. The in-game menu can still change it live.")
+                CtlNote("仅对新容器生效；现有容器保留各自设置。同一玩家的两台设备共享操控。游戏内菜单仍可实时更改。")
             }
         },
         leftWeight = 1.2f,
@@ -213,7 +213,7 @@ private fun SlotRow(title: String, slot: Int, rows: List<PlayerSlotEditorRow>, o
         CtlRow(onClick = { open = true }) { cs ->
             Text(title, color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.width(76.dp))
             Text(
-                text = if (here.isEmpty()) (if (slot >= 0) "Open" else "Nothing ignored") else here.joinToString(", ") { slotName(it) },
+                text = if (here.isEmpty()) (if (slot >= 0) "Open" else "没有忽略任何内容") else here.joinToString(", ") { slotName(it) },
                 color = if (here.isEmpty()) cs.onSurfaceVariant else cs.onSurface,
                 fontSize = 13.sp,
                 modifier = Modifier.weight(1f),
@@ -221,8 +221,8 @@ private fun SlotRow(title: String, slot: Int, rows: List<PlayerSlotEditorRow>, o
             when {
                 here.isEmpty() -> Unit
                 slot < 0 -> CtlChip("Ignored", cs.onSurfaceVariant)
-                here.size > 1 -> CtlChip("Shared", cs.primary)
-                else -> CtlChip("Pinned", cs.primary)
+                here.size > 1 -> CtlChip("共享", cs.primary)
+                else -> CtlChip("已固定", cs.primary)
             }
             Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = cs.onSurfaceVariant)
         }
@@ -284,7 +284,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
             CtlCardTitle("已连接的控制器") { CtlChip("${pads.size}", MaterialTheme.colorScheme.primary) }
         }
         if (pads.isEmpty()) {
-            CtlNote("No controller connected. Plug one in or pair it over Bluetooth.")
+            CtlNote("未连接手柄。请插入 USB 或通过蓝牙配对。")
         } else {
             Spacer(Modifier.height(4.dp))
             for (c in pads) {
@@ -304,7 +304,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
             Spacer(Modifier.height(4.dp))
         }
         Row(modifier = Modifier.padding(start = 14.dp, end = 14.dp, bottom = 12.dp, top = 2.dp)) {
-            DeckButton("Bluetooth settings", null, { openBluetoothSettings(context) })
+            DeckButton("蓝牙设置", null, { openBluetoothSettings(context) })
         }
     }
 }
@@ -320,7 +320,7 @@ private fun deviceLine(pad: CtlPad): String {
             else -> "Generic"
         }
     )
-    if (Build.VERSION.SDK_INT >= 29) parts.add(if (dev.isExternal) "External" else "Built-in")
+    if (Build.VERSION.SDK_INT >= 29) parts.add(if (dev.isExternal) "外部" else "Built-in")
     parts.add("%04X:%04X".format(dev.vendorId, dev.productId))
     if (pad.battery >= 0) parts.add("battery ${pad.battery}%")
     return parts.joinToString(" · ")
@@ -363,14 +363,14 @@ private fun GyroCard() {
                 sensor == null -> "No gyroscope on this device"
                 !calibrated -> "未校准"
                 abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS ->
-                    "Very little drift: the device already compensates"
+                    "漂移极小：设备已在自行补偿"
                 else -> "已移除偏差：x %.4f，y %.4f 弧度/秒".format(biasX, biasY)
             }
             CtlCardTitle("陀螺仪")
             Text(summary, color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
             if (sensor != null) {
                 Text(
-                    if (status.isNotEmpty()) status else "Rest the device on a flat surface, then calibrate.",
+                    if (status.isNotEmpty()) status else "将设备平放在水平面上，然后校准。",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                 )
@@ -382,9 +382,9 @@ private fun GyroCard() {
                                 activeRun = null
                                 status = when (result) {
                                     is GyroCalibrator.Result.Success ->
-                                        if (result.negligible) "Calibrated: nothing to remove" else "校准完成"
+                                        if (result.negligible) "已校准：没有需要移除的" else "校准完成"
                                     GyroCalibrator.Result.Moved -> "请保持设备静止并重试"
-                                    GyroCalibrator.Result.NotEnoughSamples -> "Couldn't sample, try again"
+                                    GyroCalibrator.Result.NotEnoughSamples -> "采样失败，请重试"
                                     GyroCalibrator.Result.Unavailable -> "陀螺仪不可用"
                                 }
                                 refreshBias()
@@ -425,7 +425,7 @@ private fun MenuButtonCard() {
                 CtlHelpButton { helpRes = R.string.help_menu_button }
             }
             Text(
-                "Opens the in-game menu on a handheld without a Back key. The button then isn't sent to the game.",
+                "在没有返回键的手持设备上打开游戏内菜单。该按键不会再发送给游戏。",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
@@ -489,7 +489,7 @@ private fun SteamControllerCard() {
         CtlToggleRow(
             label = "Steam控制器支持",
             checked = enabled,
-            sub = "Reads it directly, as Steam does. Pair it in Bluetooth settings or plug it in. Applies from the next game start.",
+            sub = "像 Steam 一样直接读取。在蓝牙设置中配对或直接插入。从下次游戏启动时生效。",
             onChange = { on ->
                 enabled = on
                 prefs.setSteamControllerEnabled(context, on)
@@ -506,7 +506,7 @@ private fun SteamControllerCard() {
                     trackpadMode = trackpadModes[i.coerceIn(0, trackpadModes.size - 1)]
                     prefs.setSteamTrackpadMouseMode(context, trackpadMode)
                 },
-                sub = "Clicking it is a left click; with both, the left one right-clicks",
+                sub = "点击为左键；两个都接时，左边那个是右键",
             )
             for (i in STEAM_PADDLE_NAMES.indices) {
                 DeckRowDivider()
@@ -525,7 +525,7 @@ private fun SteamControllerCard() {
                 DeckRowDivider()
                 CtlRow(onClick = { requestBluetooth() }) { cs ->
                     Text(
-                        "Bluetooth permission is off: only a USB controller works",
+                        "蓝牙权限已关闭：仅支持 USB 手柄",
                         color = cs.onSurface,
                         fontSize = 13.sp,
                         modifier = Modifier.weight(1f),
@@ -533,7 +533,7 @@ private fun SteamControllerCard() {
                     if (Build.VERSION.SDK_INT >= 31) Text("Allow", color = cs.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
-            CtlNote("The back buttons and the … button work in every game. The other buttons use the Default / Any controller bindings.")
+            CtlNote("返回类按键和 … 按键在所有游戏中生效。其余按键使用「默认 / 任意手柄」的按键映射。")
         }
         Spacer(Modifier.height(4.dp))
     }

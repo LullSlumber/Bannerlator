@@ -40,7 +40,7 @@ import com.winlator.star.ui.theme.AppThemeState
 import com.winlator.star.ui.theme.WinlatorTheme
 
 /**
- * The handheld's companion screen while a game plays on the TV ("Launch this game on the TV" — see
+ * The handheld's companion screen while a game plays on the TV ("在电视上启动此游戏" — see
  * [ExternalDisplay]). It says what is happening, asks the user not to touch the handheld, and gives
  * them the two things they may still need: put input back on the TV, and end the game.
  *

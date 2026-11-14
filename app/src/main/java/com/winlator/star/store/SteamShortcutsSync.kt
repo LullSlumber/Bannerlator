@@ -41,7 +41,7 @@ object SteamShortcutsSync {
             val accounts = File(steamRoot, "userdata").listFiles { f ->
                 f.isDirectory && f.name.all { it.isDigit() } && f.name != "0"
             }.orEmpty()
-            if (accounts.isEmpty()) return "Non-Steam games: no signed-in account yet (listed on the next start)"
+            if (accounts.isEmpty()) return "非 Steam 游戏：尚未登录账号（下次启动时列出）"
 
             val games = ArrayList<Game>()
             var unreachable = 0

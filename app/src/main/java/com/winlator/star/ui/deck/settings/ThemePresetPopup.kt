@@ -54,7 +54,7 @@ import com.winlator.star.ui.theme.CUSTOM_PRESET_INDEX
 import com.winlator.star.ui.theme.ThemePreset
 import com.winlator.star.ui.theme.themePresets
 
-// The XMB / Deck Settings > Appearance "Theme preset": a line that shows the current theme's name and colour squares and opens a
+// The XMB / Deck Settings > Appearance "主题预设": a line that shows the current theme's name and colour squares and opens a
 // popup grid of every theme (each a card with its name and its colour squares, the current one highlighted). Picking one applies it
 // at once (AppThemeState.setPreset, what the Classic Appearance screen's swatch does) and closes the popup. The squares are the
 // preset's own colours: background, surface, surface variant and the accent. The Custom slot shows the custom accent colour, as the
@@ -92,8 +92,8 @@ internal fun ThemePresetLine(onOpen: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val preset = themePresets.getOrElse(index) { themePresets.first() }
     DeckLine(
-        label = L("Theme preset"),
-        hint = L("The colours of every screen. Pick a theme from the list; a Custom accent colour below switches to the Custom theme."),
+        label = L("主题预设"),
+        hint = L("所有界面的配色。从列表选择主题；下方的自定义强调色会切换到自定义主题。"),
         onClick = onOpen,
         trailing = {
             Text(preset.name, color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -124,11 +124,11 @@ internal fun ThemePresetDialog(onDismiss: () -> Unit) {
             Surface(shape = deckShape(22.dp), color = cs.surface, modifier = Modifier.fillMaxWidth(0.94f).fillMaxHeight(0.9f)) {
                 Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(L("Theme preset"), color = cs.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, modifier = Modifier.weight(1f))
+                        Text(L("主题预设"), color = cs.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, modifier = Modifier.weight(1f))
                         DeckSmallButton(L("Close"), Icons.Filled.Close) { onDismiss() }
                     }
                     Text(
-                        L("Each theme shows its background, surface, panel and accent colours. Picking one applies it at once."),
+                        L("每个主题展示其背景、表面、面板和强调色。选择即应用。"),
                         color = cs.onSurfaceVariant, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp, bottom = 10.dp),
                     )
                     LazyVerticalGrid(

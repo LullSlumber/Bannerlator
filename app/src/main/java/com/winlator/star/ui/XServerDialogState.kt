@@ -375,7 +375,7 @@ object XServerDialogState {
         val xinputAvailable: Boolean = false,
         /** XInput source wanted: true = Direct (BANNERIN), false = Wine's own. */
         val xinputDirect: Boolean = true,
-        /** The source can switch in-game ("Allow in-game switching" was on at launch). */
+        /** The source can switch in-game ("允许游戏内切换" was on at launch). */
         val xinputSwitchable: Boolean = false,
         val dinputVisible: Boolean = false,
         /** Non-null: why DirectInput visibility is fixed for this launch (passthrough, DirectInput pad). */
@@ -428,7 +428,7 @@ object XServerDialogState {
     val controllerSaveScope: StateFlow<ControllerSaveScope> = _controllerSaveScope
     fun setControllerSaveScope(scope: ControllerSaveScope) { _controllerSaveScope.value = scope }
 
-    /** The footer's "Save for" choice: true = this game, false = all games in the container. */
+    /** The footer's "保存用于" choice: true = this game, false = all games in the container. */
     @JvmField var onControllerSaveScope: PadBoolCallback? = null
 
     // -------------------------------------------------------------------------

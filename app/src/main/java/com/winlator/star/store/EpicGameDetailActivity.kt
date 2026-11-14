@@ -93,7 +93,7 @@ class EpicGameDetailActivity : ComponentActivity() {
 
     private var exeNameText by mutableStateOf("")
     private var installBtnText by mutableStateOf("Install")
-    /** First install: "Download to" (StoreInstallLocations) before the download starts. */
+    /** First install: "下载到" (StoreInstallLocations) before the download starts. */
     private var locationPickerOpen by mutableStateOf(false)
     private var installBtnColor by mutableIntStateOf(0xFF1A73E8.toInt())
     private var launchBtnVisible by mutableStateOf(false)
@@ -539,7 +539,7 @@ class EpicGameDetailActivity : ComponentActivity() {
             .setTitle("Uninstall $title?")
             .setMessage(
                 if (prefs!!.getString("epic_dir_$appName", null)?.let { File(it, SteamInstallPaths.ADOPTED_MARKER).exists() } == true)
-                    "Your imported folder and its files stay."
+                    "你导入的文件夹及其文件会保留。"
                 else "这将删除所有已安装的游戏文件。"
             )
             .setPositiveButton("Uninstall") { _, _ ->
@@ -723,7 +723,7 @@ class EpicGameDetailActivity : ComponentActivity() {
                         }
 
                         override fun onProgress(message: String?, pct: Int) {
-                            val label = repairTracker.label(repairTracker.percent(pct), lead = "Repairing…")
+                            val label = repairTracker.label(repairTracker.percent(pct), lead = "正在修复…")
                             if (!isDestroyed && !isFinishing) runOnUiThread { verifyStatusText = label }
                         }
                     })
@@ -968,7 +968,7 @@ private fun EpicGameDetailScreen(
     val gear = buildList {
         // onInstallClick doubles as Cancel (keep / delete dialog) while the label reads "Cancel".
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstallClick))
-        if (setExeBtnVisible) add(StoreGearItem("🎯", "Set .exe…", onClick = onSetExeClick))
+        if (setExeBtnVisible) add(StoreGearItem("🎯", "设置 .exe…", onClick = onSetExeClick))
         if (installed) {
             add(StoreGearItem("🔄", "检查更新", enabled = checkUpdatesEnabled, onClick = onCheckUpdates))
             add(StoreGearItem("🩹", "Verify / repair files", enabled = verifyEnabled, onClick = onVerifyRepair))
@@ -1077,7 +1077,7 @@ private fun EpicGameDetailScreen(
                         else {
                             val storedVer = prefs.getString("epic_manifest_version_$appName", null)
                             if (storedVer != null) "Installed: ${storedVer.substring(0, minOf(14, storedVer.length))}…"
-                            else "Version not recorded — Verify / Repair records it"
+                            else "版本未记录 — 「验证 / 修复」会记录它"
                         }
                         StoreStatusText(displayText)
                         Spacer(Modifier.height(8.dp))

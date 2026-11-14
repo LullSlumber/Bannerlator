@@ -1248,7 +1248,7 @@ class ShortcutsViewModel(app: Application) : AndroidViewModel(app) {
             disableOnScreen(context, shortcut)
             if (AndroidGames.isHome(shortcut.container)) AndroidGames.deleteArt(shortcut)
             refresh()
-            // "Also uninstall Steam?" is asked by GameActionsHost.
+            // "同时卸载 Steam？" is asked by GameActionsHost.
             steamUninstall?.let { WindowsSteamClient.offerUninstall(it) }
         }
         return deleted

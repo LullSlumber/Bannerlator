@@ -46,7 +46,7 @@ import com.winlator.star.ui.deck.rememberXmbHome
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.simple.L
 
-// The "Win components" tab's own page of the XMB / Deck container editor: the builtin / native DLL rows
+// The "Win 组件" tab's own page of the XMB / Deck container editor: the builtin / native DLL rows
 // (components.*) and the two media codec rows (windows.codecBackend, windows.softwareDecoding), which the
 // registry declares as ordinary rows in the category CAT_COMPONENTS. The layout (ContainerLayout) hides those rows
 // from the editor's own row list and this section draws them instead, with the same row composable (SettingRow),
@@ -169,7 +169,7 @@ internal class WinComponentsSection(
             })
             if (matching.isEmpty()) {
                 add(PageExtra("wincomp-none") {
-                    Text(L("Nothing matches \"%1\$s\".", q), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 6.dp, vertical = 12.dp))
+                    Text(L("没有与「%1\$s」匹配的结果。", q), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 6.dp, vertical = 12.dp))
                 })
             }
             shown.forEachIndexed { i, id ->
@@ -182,8 +182,8 @@ internal class WinComponentsSection(
                 add(PageExtra("wincomp-more") {
                     Column(modifier = Modifier.padding(top = 12.dp)) {
                         GroupCard(first = true, last = true, highlight = false) {
-                            DeckActionRow(DeckAction("more", Icons.Filled.MoreHoriz, L("Show more (%1\$s)", rest.size),
-                                L("The other components, with their own search.")) { popupIds = rest })
+                            DeckActionRow(DeckAction("more", Icons.Filled.MoreHoriz, L("显示更多（%1\$s）", rest.size),
+                                L("其他组件，有独立搜索。")) { popupIds = rest })
                         }
                     }
                 })
@@ -242,18 +242,18 @@ private fun WinComponentsDialog(section: WinComponentsSection, ids: List<String>
     OutlinedAlertDialog(
         onDismissRequest = { section.popupIds = null },
         confirmButton = { TextButton(onClick = { section.popupIds = null }) { Text(L("Done")) } },
-        title = { Text(L("More components (%1\$s)", ids.size)) },
+        title = { Text(L("更多组件（%1\$s）", ids.size)) },
         text = {
             Column {
                 WinComponentsSearchBar(
                     query = query,
                     onQuery = { query = it },
-                    placeholder = L("Search these components"),
+                    placeholder = L("搜索这些组件"),
                     autoFocus = true,
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
                 if (rows.isEmpty()) {
-                    Text(L("Nothing matches \"%1\$s\".", query), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(vertical = 12.dp))
+                    Text(L("没有与「%1\$s」匹配的结果。", query), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(vertical = 12.dp))
                 } else {
                     // The group cards cast a shadow round them, which the list would clip at its edge: it keeps some room.
                     LazyColumn(contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp), modifier = Modifier.heightIn(max = 420.dp)) {

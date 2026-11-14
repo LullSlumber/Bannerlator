@@ -12,9 +12,9 @@ internal object PageWording {
     /** The kicker over the container's name in the XMB rail (and the other interfaces' header). */
     fun containerKicker(): String = L("容器设置")
 
-    /** The kicker over a game's name: "Shortcut settings" for every kind of game in the XMB; the other interfaces say what kind it is. */
+    /** The kicker over a game's name: "快捷方式设置" for every kind of game in the XMB; the other interfaces say what kind it is. */
     fun shortcutKicker(xmb: Boolean, world: World): String = when {
-        xmb -> L("Shortcut settings")
+        xmb -> L("快捷方式设置")
         world == World.LINUX -> L("Linux Steam client")
         world == World.ANDROID -> L("Android game")
         else -> L("Game settings")
@@ -22,15 +22,15 @@ internal object PageWording {
 
     /** The button on a row the game sets itself (XMB): what it goes back to, by what the row follows while unset. */
     fun resetLabel(inherit: Inherit?): String = when (inherit) {
-        Inherit.APP -> L("Reset to app setting")
+        Inherit.APP -> L("重置为应用设置")
         Inherit.BUILT_IN -> L("Reset to default")
-        else -> L("Reset to container")
+        else -> L("重置为容器")
     }
 
     /** The note beside the accent dot of such a row: the value the game follows while unset, [value] as the row shows it. */
     fun followsNote(inherit: Inherit?, value: String): String = when (inherit) {
-        Inherit.APP -> L("App setting: %1\$s", value)
-        Inherit.BUILT_IN -> L("Default: %1\$s", value)
-        else -> L("Container: %1\$s", value)
+        Inherit.APP -> L("应用设置：%1\$s", value)
+        Inherit.BUILT_IN -> L("默认：%1\$s", value)
+        else -> L("容器：%1\$s", value)
     }
 }

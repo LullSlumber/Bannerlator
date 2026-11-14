@@ -60,7 +60,7 @@ internal fun LabStorageDialog(container: Container, onDismiss: () -> Unit) {
             SizeLine(L("缓存"), cache)
             SizeLine(L("总计"), driveC + cache, strong = true)
             Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-                LabButton(L("Clear cache")) {
+                LabButton(L("清除缓存")) {
                     FileUtils.clear(File(container.getRootDir(), ".cache"))
                     container.putExtra("desktopTheme", null)
                     container.saveData()

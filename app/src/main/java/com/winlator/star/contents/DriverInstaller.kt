@@ -61,7 +61,7 @@ object DriverInstaller {
                     when {
                         r.id.isNotEmpty() -> Result(Place.ANDROID, r.id, m.getDriverName(r.id).ifEmpty { r.id })
                         r.reason == AdrenotoolsManager.InstallResult.SAME_NAME ->
-                            Result(null, r.detail ?: "", r.detail ?: "", error = L("%1\$s is already installed", r.detail ?: ""), sameName = true)
+                            Result(null, r.detail ?: "", r.detail ?: "", error = L("%1\$s 已安装", r.detail ?: ""), sameName = true)
                         else -> Result(null, error = reasonText(r.reason, r.detail))
                     }
                 }
@@ -92,15 +92,15 @@ object DriverInstaller {
             else -> ""
         }
         r.sameName -> r.error ?: ""
-        else -> L("Install failed: %1\$s", r.error ?: "?")
+        else -> L("安装失败：%1\$s", r.error ?: "?")
     }
 
     private fun reasonText(reason: String?, detail: String?): String = when (reason) {
         AdrenotoolsManager.InstallResult.NO_META -> L("No meta.json in the zip")
         AdrenotoolsManager.InstallResult.BAD_META -> L("Its meta.json can't be read")
         AdrenotoolsManager.InstallResult.NO_LIBRARY -> L("Its meta.json names no library")
-        AdrenotoolsManager.InstallResult.LIBRARY_MISSING -> L("%1\$s is not in the zip", detail ?: "")
-        AdrenotoolsManager.InstallResult.BUILT_IN -> L("Same name as a built-in driver")
+        AdrenotoolsManager.InstallResult.LIBRARY_MISSING -> L("%1\$s 不在这个 zip 里", detail ?: "")
+        AdrenotoolsManager.InstallResult.BUILT_IN -> L("与内置驱动重名")
         // Routed by kind before AdrenoTools sees it; only a zip whose meta.json moved between reads lands here.
         AdrenotoolsManager.InstallResult.LINUX_KIND -> L("Linux runtime drivers")
         AdrenotoolsManager.InstallResult.WAYLAND_KIND -> L("Wayland game drivers")

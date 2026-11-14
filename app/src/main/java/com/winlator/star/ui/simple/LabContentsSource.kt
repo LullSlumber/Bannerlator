@@ -75,7 +75,7 @@ internal fun catalogEntry(
             else {
                 // A driver already installed, or refused because one with its name is: download it again over that one.
                 if (item.isDriver && (installed || st?.replaceable == true)) add(MenuAction(L("Download and replace"), { install(replace = true) }))
-                if (saved) add(MenuAction(L("Save the file again"), { vm.saveArchive(item, force = true) }))
+                if (saved) add(MenuAction(L("重新保存文件"), { vm.saveArchive(item, force = true) }))
                 else add(MenuAction(L("Save the file only"), { vm.saveArchive(item) }))
             }
         },
@@ -90,7 +90,7 @@ internal fun fileInstallMessage(type: String, name: String, ok: Boolean): String
     if (ContentsTypes.isDriver(type)) return null
     if (ok) return L("Installed %1\$s", name)
     val why = ContentDownloadRegistry.get(ContentsInstaller.keyFor(type, "file", name))?.error
-    return if (why.isNullOrBlank()) L("Could not install %1\$s", name) else L("Could not install %1\$s: %2\$s", name, why)
+    return if (why.isNullOrBlank()) L("Could not install %1\$s", name) else L("无法安装 %1\$s：%2\$s", name, why)
 }
 
 /** One repository's components: A downloads and installs, with progress on the line; Y reloads the list. */

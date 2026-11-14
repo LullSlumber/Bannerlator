@@ -290,7 +290,7 @@ object SteamLibraryArt {
             tmp.writeText(root.toString())
             if (!tmp.renameTo(f)) {
                 tmp.delete()
-                StorefrontLog.w(TAG, "PICS art: could not replace the on-disk mirror")
+                StorefrontLog.w(TAG, "PICS 艺术图：无法替换磁盘上的镜像")
             }
         } catch (e: Exception) {
             runCatching { tmp.delete() }

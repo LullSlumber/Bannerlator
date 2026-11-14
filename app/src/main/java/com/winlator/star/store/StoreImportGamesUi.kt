@@ -58,7 +58,7 @@ fun StoreImportGamesFlow(store: StoreInstallLocations.Store, onClose: () -> Unit
     LaunchedEffect(Unit) {
         if (!asked) {
             asked = true
-            pick.launch(InAppFilePicker.buildDirIntent(ctx, "Choose your games folder"))
+            pick.launch(InAppFilePicker.buildDirIntent(ctx, "选择你的游戏文件夹"))
         }
     }
     val dir = picked ?: return
@@ -71,7 +71,7 @@ fun StoreImportGamesFlow(store: StoreInstallLocations.Store, onClose: () -> Unit
         OutlinedAlertDialog(
             onDismissRequest = onClose,
             confirmButton = { TextButton(onClick = onClose) { Text("Cancel") } },
-            title = { Text("Import game library") },
+            title = { Text("导入游戏库") },
             text = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(Modifier.padding(end = 12.dp))
@@ -122,7 +122,7 @@ private fun StoreImportList(store: StoreInstallLocations.Store, dir: File, r: St
             ) { Text(if (adding) "正在添加…" else "Add ${toAdd.size}") }
         },
         dismissButton = { TextButton(enabled = !adding, onClick = onClose) { Text("Cancel") } },
-        title = { Text("Import game library") },
+        title = { Text("导入游戏库") },
         text = {
             if (r.found.isEmpty()) {
                 Text("No game folders found in ${dir.name}.")
@@ -188,7 +188,7 @@ private fun StoreGameChooser(games: List<StoreFolderImport.Game>, folderName: St
         title = { Text(folderName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
-                OutlinedTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("Search your games") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("搜索你的游戏") }, modifier = Modifier.fillMaxWidth())
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 360.dp).padding(top = 6.dp)) {
                     items(shown, key = { it.id }) { g ->
                         Text(

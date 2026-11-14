@@ -100,7 +100,7 @@ object EpicLibraryRepo {
             val rawGames = fetch.games
             if (rawGames == null) {
                 // A page failed: keep the cached library rather than a partial list.
-                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("Could not load your Epic library")
+                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("无法加载你的 Epic 游戏库")
                 else SyncResult.Ok(cachedList, 0)
             }
             if (rawGames.isEmpty()) {

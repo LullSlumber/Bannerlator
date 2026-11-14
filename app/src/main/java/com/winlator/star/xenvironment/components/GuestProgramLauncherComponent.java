@@ -243,7 +243,7 @@ public class GuestProgramLauncherComponent extends EnvironmentComponent {
                 }
             } else {
                 // A box64ec.dll left in system32 by a removed component is not used either.
-                Log.w("GuestProgramLauncherComponent", "Box64EC selected but no Box64EC component is installed, using FEXCore");
+                Log.w("GuestProgramLauncherComponent", "已选择 Box64EC 但未安装 Box64EC 组件，改用 FEXCore");
                 box64ec = false;
                 box64ecUnavailable = true;
             }

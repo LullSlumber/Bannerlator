@@ -623,7 +623,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 },
                 enabled = !checkingUpdate,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text(if (checkingUpdate) "Checking…" else "检查更新", color = MaterialTheme.colorScheme.onPrimary) }
+            ) { Text(if (checkingUpdate) "检查中…" else "检查更新", color = MaterialTheme.colorScheme.onPrimary) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = notifyUpdates, onCheckedChange = {
                     notifyUpdates = it
@@ -673,7 +673,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     steamOfflinePresence = it
                     SteamPrefs.setOfflinePresenceEnabled(context, it)
                 })
-                Text("Show me as in-game for offline launches", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("对离线启动显示我在游戏中", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
                     steamHelp = "显示我在游戏中" to
@@ -710,10 +710,10 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             //    Rust engine's CM pick, JavaSteam's CM pick (next app start), the download CDN
             //    preference and the in-game genuine client's CM seed.
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Steam connection region", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Steam连接区域", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
-                    steamHelp = "Steam connection region" to
+                    steamHelp = "Steam连接区域" to
                         "Which Steam datacenter to connect to. Auto pings each one and keeps the fastest " +
                         "for a day, re-testing after a failed connect. Pick a specific one only if Auto " +
                         "keeps choosing badly — the store applies it on its next connect."
@@ -953,7 +953,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         FieldSet {
             val uiSounds by com.winlator.star.sound.UiSoundPacks.state.collectAsState()
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Menu sounds", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                Text("菜单音效", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.weight(1f))
                 androidx.compose.material3.Switch(
                     checked = uiSounds.on,
                     onCheckedChange = { com.winlator.star.sound.UiSoundPacks.setOn(context, it) },

@@ -149,7 +149,7 @@ private val SLIDE_PHOTOS = intArrayOf(
 )
 
 /** Which slide a step's live text captions: sign-in → 1, network → 2 (over the "signed in" photo),
- *  cloud → 3, game files + SteamLite client + "Launching…" → 4. Mirrors the pre-flight's order. */
+ *  cloud → 3, game files + SteamLite client + "正在启动…" → 4. Mirrors the pre-flight's order. */
 private fun slideOf(step: Step): Int = when (step) {
     Step.SESSION -> 0
     Step.NETWORK -> 1
@@ -420,7 +420,7 @@ private fun captionFor(
         return Caption(label, st?.second ?: pendingLine, toneOf(st?.first), trailOf(st?.first), help)
     }
     return when (slide) {
-        0 -> of("Steam sign-in", Step.SESSION, HELP_SESSION, "正在检查Steam登录…")
+        0 -> of("Steam登录", Step.SESSION, HELP_SESSION, "正在检查Steam登录…")
         1 -> {
             // "已登录Steam" only when that's true; a Launch-anyway pass (session skipped)
             // keeps the plain step name so the photo isn't captioned with a claim it can't make.
@@ -443,7 +443,7 @@ private data class FailCardModel(
     val title: String,
     val body: String,
     val red: Boolean,
-    /** The plain-terms help for this outcome (what each choice does), shown by the XMB card under "More info". */
+    /** The plain-terms help for this outcome (what each choice does), shown by the XMB card under "更多信息". */
     val help: String,
     /** The same choices as [buttons] for the XMB card: the recommended one first ([PreflightAction.primary]). */
     val actions: List<PreflightAction>,
@@ -929,7 +929,7 @@ private fun XmbPreflight(
 ) {
     XmbDialogFrame(
         title = gameName,
-        subtitle = (if (launching) "Launching…" else "正在准备Steam") + " · " + clientLabel,
+        subtitle = (if (launching) "正在启动…" else "正在准备Steam") + " · " + clientLabel,
         onDismiss = onDismiss,
         wide = true,
         // Back and B cancel; a stray tap outside must not (the old dialog was modal the same way).
@@ -1128,7 +1128,7 @@ private fun XmbPreflightDisc(background: Color, tick: Color) {
 /**
  * The terminal outcome in the XMB look: an icon and the bold title on a tinted strip, the body in white, the choices as big
  * buttons ([columns] of them per line; the recommended one first and holding the controller focus) and the long help folded
- * under a "More info" row.
+ * under a "更多信息" row.
  */
 @Composable
 private fun XmbPreflightFail(card: FailCardModel, columns: Int) {
@@ -1176,14 +1176,14 @@ private fun XmbPreflightFail(card: FailCardModel, columns: Int) {
     }
 }
 
-/** "More info": one highlight stop that unfolds the outcome's help (what each choice does) as muted text under it. */
+/** "更多信息": one highlight stop that unfolds the outcome's help (what each choice does) as muted text under it. */
 @Composable
 private fun XmbPreflightMore(help: String, expanded: Boolean, onToggle: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         XmbRowCard(onClick = onToggle) {
             Icon(Icons.Filled.Info, contentDescription = null, tint = cs.primary, modifier = Modifier.size(22.dp))
-            XmbRowTitle("More info", Modifier.weight(1f), maxLines = 1)
+            XmbRowTitle("更多信息", Modifier.weight(1f), maxLines = 1)
             Icon(
                 if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(24.dp),

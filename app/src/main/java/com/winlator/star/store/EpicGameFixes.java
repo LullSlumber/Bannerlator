@@ -146,7 +146,7 @@ public final class EpicGameFixes {
                 new IniEdit(troverEngineIni, "/Script/EngineSettings.GameMapsSettings",
                         "ServerDefaultMap=/Game/Squanch/LobbyLevel/Lobby_master",
                         "GameDefaultMap=/Game/Squanch/LobbyLevel/Lobby_master"),
-                new IniEdit(troverEngineIni, "Plugins",
+                new IniEdit(troverEngineIni, "插件",
                         "DisabledPlugins=\"SteamVR\"",
                         "DisabledPlugins=\"SteamVRInput\"",
                         "DisabledPlugins=\"OculusVR\"",

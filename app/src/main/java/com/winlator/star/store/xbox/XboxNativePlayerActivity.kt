@@ -269,7 +269,7 @@ class XboxNativePlayerActivity : ComponentActivity() {
         }
         if (closed) return
 
-        show("Connecting…")
+        show("正在连接…")
         // Small network buffer: no playout delay, frames go to the decoder and screen as soon as they are complete.
         val trials = if (settings.smallBuffer) "WebRTC-ForcePlayoutDelay/min_ms:0,max_ms:0/WebRTC-ZeroPlayoutDelay/min_pacing:0ms,max_decode_queue_size:8/" else ""
         PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(applicationContext)

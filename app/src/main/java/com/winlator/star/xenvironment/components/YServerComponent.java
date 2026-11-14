@@ -201,13 +201,13 @@ public class YServerComponent extends EnvironmentComponent {
             File wl = new File(waylandRuntimeDir, "wayland-0");
             boolean up = false;
             while (!(up = socketAccepts(wl)) && SystemClock.uptimeMillis() - t0 < 15000) SystemClock.sleep(25);
-            Log.i(TAG, "compositor socket " + (up ? "up" : "NOT accepting") + " after "
+            Log.i(TAG, "compositor socket " + (up ? "up" : "未接受") + " after "
                     + (SystemClock.uptimeMillis() - t0) + " ms");
         }
         try {
             process = pb.start();
         } catch (IOException e) {
-            Log.e(TAG, "yserver did not start", e);
+            Log.e(TAG, "yserver 未启动", e);
             return;
         }
         startReader(process, log);
@@ -215,7 +215,7 @@ public class YServerComponent extends EnvironmentComponent {
         while (!socket.exists() && process.isAlive() && SystemClock.uptimeMillis() - t1 < 8000) {
             SystemClock.sleep(10);
         }
-        Log.i(TAG, "yserver (" + mode + ", " + bin + ") " + (socket.exists() ? "ready" : "NOT ready")
+        Log.i(TAG, "yserver (" + mode + ", " + bin + ") " + (socket.exists() ? "ready" : "未就绪")
                 + " after " + (SystemClock.uptimeMillis() - t1) + " ms, alive=" + process.isAlive() + ", log " + log);
     }
 
@@ -229,7 +229,7 @@ public class YServerComponent extends EnvironmentComponent {
             process.destroyForcibly();
             Thread.currentThread().interrupt();
         }
-        Log.i(TAG, "yserver stopped");
+        Log.i(TAG, "yserver 已停止");
         process = null;
     }
 

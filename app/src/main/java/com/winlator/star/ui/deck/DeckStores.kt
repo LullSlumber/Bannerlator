@@ -213,7 +213,7 @@ internal fun DeckStoresPage(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = gutter, vertical = 16.dp),
         ) {
-            DeckPageHeader(Icons.Filled.Storefront, "商店", "Game stores are hidden. Turn on \"Show game stores\" in Settings > Appearance to list them here.")
+            DeckPageHeader(Icons.Filled.Storefront, "商店", "游戏商店已隐藏。在 设置 > 外观 中打开「显示游戏商店」即可在此列出。")
         }
         return
     }

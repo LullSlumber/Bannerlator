@@ -34,7 +34,7 @@ class LinuxLoadingState(context: Context) {
     fun update(log: File?) {
         read(log)?.let { step = it.first; percent = it.second }
         val seconds = (SystemClock.elapsedRealtime() - startedAt) / 1000
-        val elapsed = String.format(java.util.Locale.US, "%d:%02d elapsed · still working", seconds / 60, seconds % 60)
+        val elapsed = String.format(java.util.Locale.US, "%d:%02d 已过 · 仍在处理", seconds / 60, seconds % 60)
         val hint = if (hints.isEmpty()) null else hints[((seconds / 8) % hints.size).toInt()]
         PreloaderState.linuxProgress(step, percent, elapsed, hint)
     }

@@ -370,7 +370,7 @@ object SteamGameUpdater {
         postProgress: (Float, String) -> Unit,
         postDone: (Result, String) -> Unit,
     ) {
-        if (appId <= 0) { postDone(Result.FAILED, "Not a Steam game"); return }
+        if (appId <= 0) { postDone(Result.FAILED, "不是 Steam 游戏"); return }
         postProgress(-1f, "Preparing…")
 
         val repo = SteamRepository.getInstance()

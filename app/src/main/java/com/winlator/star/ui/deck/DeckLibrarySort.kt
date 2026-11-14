@@ -8,7 +8,7 @@ import com.winlator.star.container.Shortcut
 internal enum class LibrarySort(val label: String) {
     NAME("名称 A–Z"),
     NAME_DESC("名称 Z–A"),
-    RECENT("Last played"),
+    RECENT("上次游玩"),
     PLAYTIME("最多游玩"),
     CONTAINER("Container"),
     STORE("Store"),

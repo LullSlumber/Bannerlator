@@ -1265,7 +1265,7 @@ private fun TopLevelFields(
                     )
                 }
                 com.winlator.star.ui.components.OpenGLCardRow(
-                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "Show FPS", null
+                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "显示 FPS", null
                 ) {
                     Switch(checked = viewModel.glFpsHud, onCheckedChange = { viewModel.glFpsHud = it })
                 }
@@ -2630,7 +2630,7 @@ private fun AdvancedTab(
                     Icon(Icons.Default.Help, contentDescription = null, modifier = Modifier.size(18.dp))
                 }
             }
-            // "Allow in-game switching" of Direct XInput (core.BannerinXInput): both DLL sets go in, so
+            // "允许游戏内切换" of Direct XInput (core.BannerinXInput): both DLL sets go in, so
             // Controls › Pad can flip it while the game runs.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
@@ -6123,7 +6123,7 @@ internal fun DxvkConfigDialog(
                                     Text("在构建时更新（助手侧维护）。\n检查新版本")
                                     Spacer(Modifier.height(6.dp))
                                     TextButton(onClick = { runLiveCheck() }, enabled = !liveChecking) {
-                                        Text(if (liveChecking) "Checking…" else "检查新版本", style = MaterialTheme.typography.bodySmall)
+                                        Text(if (liveChecking) "检查中…" else "检查新版本", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             },
@@ -6576,7 +6576,7 @@ internal fun FpsCounterConfigDialog(
     fun bool(k: String, fallbackKey: String, d: String) =
         cfg.getOrDefault(k, cfg.getOrDefault(fallbackKey, d)) == "1"
 
-    // Master HUD on/off — mirrors the in-game drawer's "Show HUD" toggle so the two surfaces keep an
+    // Master HUD on/off — mirrors the in-game drawer's "显示 HUD" toggle so the two surfaces keep an
     // identical key set. When off, the overlay stays hidden even while a game window is bound.
     var hudEnabled by remember { mutableStateOf(bool("hudEnabled", "hudEnabled", "1")) }
     // Orientation (vertical/horizontal) is toggled live by tapping the HUD in-game; preserve it.
@@ -6720,7 +6720,7 @@ internal fun FpsCounterConfigDialog(
                         onCheckedChange = { hudEnabled = it }
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Show HUD")
+                    Text("显示 HUD")
                 }
                 Spacer(Modifier.height(12.dp))
                 HudThreeStop(
@@ -6789,10 +6789,10 @@ internal fun FpsCounterConfigDialog(
                     if (show("DX ver", false)) add(Triple("DX ver", showDxVer) { showDxVer = !showDxVer })
                     if (show("Session", false)) add(Triple("Session", showSession) { showSession = !showSession })
                     // Clock: gamenative's own chip, and every Fusion size (subtle corner readout)
-                    if (show("Clock", gameNative)) add(Triple("Clock", showClock) { showClock = !showClock })
-                    if (show("Engine", true)) add(Triple("Engine", showEngine) { showEngine = !showEngine })
-                    if (show("GPU model", rich)) add(Triple("GPU model", showGpuModel) { showGpuModel = !showGpuModel })
-                    if (!fusion && gameHub) add(Triple("Dual battery", dualBattery) { dualBattery = !dualBattery })
+                    if (show("时钟", gameNative)) add(Triple("时钟", showClock) { showClock = !showClock })
+                    if (show("引擎", true)) add(Triple("引擎", showEngine) { showEngine = !showEngine })
+                    if (show("GPU型号", rich)) add(Triple("GPU型号", showGpuModel) { showGpuModel = !showGpuModel })
+                    if (!fusion && gameHub) add(Triple("双电池电量", dualBattery) { dualBattery = !dualBattery })
                     // Global appearance control, shown for every style/size.
                     add(Triple("锁定位置", hudLocked) { hudLocked = !hudLocked })
                 }

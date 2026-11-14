@@ -280,7 +280,7 @@ internal fun DeckGamePage(
                 if (!banner) FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val tile = Modifier.widthIn(min = 150.dp, max = 240.dp)
                     DeckStat(playtimeShort(stats.ms), "游玩时间", tile)
-                    DeckStat(lastPlayed, "Last played", tile)
+                    DeckStat(lastPlayed, "上次游玩", tile)
                     achievements?.let { (got, total) ->
                         DeckStat("$got / $total", "Achievements", tile, progress = got.toFloat() / total.coerceAtLeast(1))
                     }
@@ -289,7 +289,7 @@ internal fun DeckGamePage(
                 } else DeckStatStrip(
                     buildList {
                         add(playtimeShort(stats.ms) to "游玩时间")
-                        add(lastPlayed to "Last played")
+                        add(lastPlayed to "上次游玩")
                         achievements?.let { (got, total) -> add("$got/$total" to "Achievements") }
                         add((if (stats.count > 0) "${stats.count}" else "—") to (if (stats.count == 1) "Launch" else "Launches"))
                         if (!isAndroid) add((if (onSd) "SD card" else "Internal") to "Storage")

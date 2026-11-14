@@ -205,7 +205,7 @@ class EpicGamesActivity : ComponentActivity() {
 
     private suspend fun syncLibrary(showProgress: Boolean) {
         try {
-            if (showProgress) setSync("Checking credentials\u2026")
+            if (showProgress) setSync("正在检查凭据…")
             val token = EpicCredentialStore.getValidAccessToken(this)
             if (token == null) {
                 setSync("Not logged in")
@@ -217,7 +217,7 @@ class EpicGamesActivity : ComponentActivity() {
                 return
             }
 
-            if (showProgress) setSync("Fetching game list\u2026")
+            if (showProgress) setSync("正在获取游戏列表…")
             val fetch = EpicApiClient.fetchLibrary(token)
             if (fetch.authFailed) {
                 setSync("Not logged in")
@@ -230,7 +230,7 @@ class EpicGamesActivity : ComponentActivity() {
             }
             val rawGames = fetch.games
             if (rawGames == null) {
-                setSync("Could not load the Epic library")
+                setSync("无法加载 Epic 游戏库")
                 withContext(Dispatchers.Main) { enableRefresh() }
                 return
             }
@@ -1020,7 +1020,7 @@ private fun GameListCard(
                 }
                 if (downloadState.installed) {
                     Text(
-                        text = "\u2713 Installed",
+                        text = "✓ 已安装",
                         fontSize = 10.sp,
                         color = Color(0xFF4CAF50), // semantic installed-green
                         modifier = Modifier.padding(top = 4.dp),

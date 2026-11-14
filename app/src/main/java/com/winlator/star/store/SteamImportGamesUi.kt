@@ -58,7 +58,7 @@ fun SteamImportGamesFlow(onClose: () -> Unit) {
     LaunchedEffect(Unit) {
         if (!asked) {
             asked = true
-            pick.launch(InAppFilePicker.buildDirIntent(ctx, "Choose your games folder"))
+            pick.launch(InAppFilePicker.buildDirIntent(ctx, "选择你的游戏文件夹"))
         }
     }
     val dir = picked ?: return
@@ -71,7 +71,7 @@ fun SteamImportGamesFlow(onClose: () -> Unit) {
         OutlinedAlertDialog(
             onDismissRequest = onClose,
             confirmButton = { TextButton(onClick = onClose) { Text("Cancel") } },
-            title = { Text("Import game library") },
+            title = { Text("导入游戏库") },
             text = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(Modifier.padding(end = 12.dp))
@@ -133,7 +133,7 @@ private fun ImportList(dir: File, r: SteamFolderAdopt.Result, onClose: () -> Uni
             ) { Text(if (adding) "正在添加…" else "Add ${toAdd.size}") }
         },
         dismissButton = { TextButton(enabled = !adding, onClick = onClose) { Text("Cancel") } },
-        title = { Text("Import game library") },
+        title = { Text("导入游戏库") },
         text = {
             if (r.found.isEmpty()) {
                 Text("No game folders found in ${dir.name}.")
@@ -151,7 +151,7 @@ private fun ImportList(dir: File, r: SteamFolderAdopt.Result, onClose: () -> Uni
                             modifier = Modifier.fillMaxWidth().clickable { useAsDefault = !useAsDefault }.padding(top = 8.dp),
                         ) {
                             Checkbox(checked = useAsDefault, onCheckedChange = { useAsDefault = it })
-                            Text("Use this folder for new Steam downloads", fontSize = 14.sp)
+                            Text("将此文件夹用于新的 Steam 下载", fontSize = 14.sp)
                         }
                     }
                 }
@@ -208,7 +208,7 @@ private fun GameChooser(games: List<SteamFolderAdopt.Game>, folderName: String, 
         title = { Text(folderName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
-                OutlinedTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("Search your games") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("搜索你的游戏") }, modifier = Modifier.fillMaxWidth())
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 360.dp).padding(top = 6.dp)) {
                     items(shown, key = { it.appId }) { g ->
                         Text(

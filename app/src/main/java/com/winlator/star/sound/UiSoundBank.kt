@@ -113,7 +113,7 @@ internal class UiSoundBank private constructor(val key: String, private val pool
                             .build(),
                     )
                     .build()
-            }.onFailure { Log.w(TAG, "SoundPool unavailable", it) }.getOrNull() ?: return null
+            }.onFailure { Log.w(TAG, "SoundPool 不可用", it) }.getOrNull() ?: return null
             return UiSoundBank(key, pool).also { b -> worker.execute { b.loadAll(files) } }
         }
     }

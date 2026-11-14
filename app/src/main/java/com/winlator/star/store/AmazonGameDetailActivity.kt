@@ -105,7 +105,7 @@ class AmazonGameDetailActivity : ComponentActivity() {
     private var launchBtnEnabled by mutableStateOf(false)
     private var installBtnVisible by mutableStateOf(true)
     private var installBtnText by mutableStateOf("Install")
-    /** First install: "Download to" (StoreInstallLocations) before the download starts. */
+    /** First install: "下载到" (StoreInstallLocations) before the download starts. */
     private var locationPickerOpen by mutableStateOf(false)
     private var installBtnColor by mutableIntStateOf(0xFFFF9900.toInt())
     private var installBtnEnabled by mutableStateOf(true)

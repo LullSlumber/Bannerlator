@@ -127,7 +127,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     val importer = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data ?: InAppFilePicker.pickedUri(result.data) ?: return@rememberLauncherForActivityResult
         val json = runCatching { context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } }.getOrNull()
-        toast(context, if (json != null && vm.importRepoListJson(json, merge = true)) L("Repositories imported") else L("That file is not a repository list"))
+        toast(context, if (json != null && vm.importRepoListJson(json, merge = true)) L("Repositories imported") else L("该文件不是仓库列表"))
     }
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
@@ -135,13 +135,13 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     }
     fun exportList() = runCatching {
         val share = Intent(Intent.ACTION_SEND).apply { type = "application/json"; putExtra(Intent.EXTRA_TEXT, vm.exportRepoListJson()) }
-        context.startActivity(Intent.createChooser(share, L("Export repositories")))
+        context.startActivity(Intent.createChooser(share, L("导出仓库")))
     }
     // Classic's refresh: the source list read again and the cached lists dropped, so the next open loads them fresh.
     fun refreshLists() {
         vm.reloadSources()
         vm.refreshSelected()
-        if (query.isNotBlank()) vm.setQuery(query) else toast(context, L("Refreshed"))
+        if (query.isNotBlank()) vm.setQuery(query) else toast(context, L("已刷新"))
     }
     fun openPage(s: HubSource) {
         val url = vm.browseUrl(s)
@@ -157,7 +157,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 when { searching -> L("Searching…"); results.size == 1 -> L("1 result"); else -> L("%1\$s results", results.size) },
                 icon = Icons.Filled.Search,
                 onA = { searchOpen = true },
-                actions = listOf(MenuAction(L("Search again"), { searchOpen = true }), MenuAction(L("Clear the search"), { vm.setQuery("") })),
+                actions = listOf(MenuAction(L("再次搜索"), { searchOpen = true }), MenuAction(L("清除搜索"), { vm.setQuery("") })),
             ),
         )
         if (!searching) results.groupBy { it.type }.values.flatten().forEach { item ->
@@ -188,22 +188,22 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         MenuAction(
                             if (s.removeIsHide) L("Hide this repository") else L("Remove this repository"),
                             { vm.removeSource(s) }, danger = true,
-                            confirm = if (s.removeIsHide) L("Hide %1\$s? Restore default repositories shows it again.", s.name) else L("Remove %1\$s?", s.name),
+                            confirm = if (s.removeIsHide) L("隐藏 %1\$s？恢复默认仓库可让它重新显示。", s.name) else L("Remove %1\$s?", s.name),
                         ),
                     )
                 },
             )
         }.sortedBy { if (it.group == L("Components")) 0 else 1 }
         listOf(
-            MenuEntry("search", L("Search all repositories"), icon = Icons.Filled.Search, onA = { searchOpen = true }),
-            MenuEntry("refresh", L("Refresh the lists"), icon = Icons.Filled.Refresh, onA = { refreshLists() }),
+            MenuEntry("search", L("搜索所有仓库"), icon = Icons.Filled.Search, onA = { searchOpen = true }),
+            MenuEntry("refresh", L("刷新列表"), icon = Icons.Filled.Refresh, onA = { refreshLists() }),
         ) + repos + listOf(
             MenuEntry("fromfile", L("Install content from file"), icon = Icons.Filled.FolderOpen, primary = true, onA = fromFile),
             MenuEntry(
-                "io", L("Import or export the list"), icon = Icons.Filled.ImportExport, group = L("Manage"),
+                "io", L("导入或导出列表"), icon = Icons.Filled.ImportExport, group = L("Manage"),
                 actions = listOf(
-                    MenuAction(L("Import a list from a file"), { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.JSON, L("Select repository list"))) }),
-                    MenuAction(L("Export the list"), { exportList() }),
+                    MenuAction(L("从文件导入列表"), { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.JSON, L("选择仓库列表"))) }),
+                    MenuAction(L("导出列表"), { exportList() }),
                 ),
             ),
             MenuEntry(
@@ -226,7 +226,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     }.orEmpty()
     // Classic's gold badges: which architecture's new containers it is the default for.
     fun defaultLabel(archs: List<String>): String? =
-        if (archs.isEmpty()) null else L("Default · %1\$s", archs.joinToString(", ") { SetAsDefault.archLabel(it) })
+        if (archs.isEmpty()) null else L("默认 · %1\$s", archs.joinToString(", ") { SetAsDefault.archLabel(it) })
     val installed = remember(tick, cm) {
         buildList {
             runCatching { adreno?.enumarateInstalledDrivers()?.toList() }.getOrNull().orEmpty().forEach { id ->
@@ -253,7 +253,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 add(
                     MenuEntry(
                         key = "w$id", title = name, group = L("Wayland game drivers"),
-                        subtitle = listOfNotNull(wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, if (noWsi) L("No Wayland WSI detected") else null).joinToString(" · ").ifBlank { null },
+                        subtitle = listOfNotNull(wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, if (noWsi) L("未检测到 Wayland WSI") else null).joinToString(" · ").ifBlank { null },
                         icon = Icons.Filled.Memory,
                         actions = listOf(MenuAction(L("移除"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
@@ -359,7 +359,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     if (addRepo) AddRepoDialog(vm, onDismiss = { addRepo = false })
     if (searchOpen) SearchDialog(query, onDismiss = { searchOpen = false }) { q -> searchOpen = false; vm.setQuery(q) }
     if (restoreAsk) {
-        SimpleConfirm(L("恢复默认仓库"), L("Hidden built-in repositories come back. Yours stay."), danger = false, onDismiss = { restoreAsk = false }) {
+        SimpleConfirm(L("恢复默认仓库"), L("隐藏的内置仓库会恢复。你自己的仓库不受影响。"), danger = false, onDismiss = { restoreAsk = false }) {
             restoreAsk = false
             vm.restoreDefaultSources()
         }
@@ -376,7 +376,7 @@ private fun SearchDialog(initial: String, onDismiss: () -> Unit, onSearch: (Stri
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onClick = { onSearch(text.trim()) }) { Text(L("Search")) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(L("Cancel")) } },
-        title = { Text(L("Search all repositories")) },
+        title = { Text(L("搜索所有仓库")) },
         text = {
             OutlinedTextField(
                 value = text, onValueChange = { text = it }, singleLine = true,

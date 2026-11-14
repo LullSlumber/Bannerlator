@@ -1382,4 +1382,14 @@
     <string name="xmb_kb_down">下</string>
     <string name="ig_keyboard_hint_xmb">屏幕键盘，可直接向游戏中输入。手柄上按 Select + X 开关。</string>
     <string name="ig_keyboard_hint_android">Android 键盘，可直接向游戏中输入。</string>
+    <string name="frame_generation_wfg">WFG（WinNative，内置）</string>
+    <string name="xmb_all_games_more">还有 %1$d 个</string>
+    <string name="xmb_hint_add_game">添加游戏</string>
+    <string name="xmb_shell_exit_prompt">再按一次 B 退出</string>
+    <string name="xmb_store_card_signed_out">登录</string>
+    <string name="xmb_store_details">详情</string>
+    <string name="xmb_store_no_games">暂无游戏</string>
+    <string name="xmb_tab_downloads">下载</string>
+    <string name="xmb_tab_friends">好友</string>
+    <string name="xmb_tab_stores">商店</string>
 </resources>

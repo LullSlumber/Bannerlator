@@ -100,12 +100,12 @@ object StoreInstallLocations {
     /** Adds a folder the user picked; returns an error message, or null when it was added (or already there). */
     fun addCustom(ctx: Context, path: String): String? {
         val dir = File(path).absoluteFile
-        if (!dir.isDirectory) return "That folder doesn't exist."
-        val vol = WinePath.storageVolumeRootOf(dir.absolutePath) ?: return "Pick a folder on internal storage, an SD card or a USB drive."
+        if (!dir.isDirectory) return "该文件夹不存在。"
+        val vol = WinePath.storageVolumeRootOf(dir.absolutePath) ?: return "选择内部存储、SD 卡或 U 盘上的文件夹。"
         if (dir.absolutePath.trimEnd('/') == vol.trimEnd('/')) return "Pick or make a folder inside the drive, not the whole drive."
         val probe = File(dir, ".bannerlator_write_probe")
         val ok = try { probe.writeText("1"); true } catch (_: Throwable) { false } finally { probe.delete() }
-        if (!ok) return "Bannerlator can't write to that folder."
+        if (!ok) return "Bannerlator 无法写入该文件夹。"
         val list = customFolders(ctx)
         if (dir.absolutePath !in list) saveCustom(ctx, list + dir.absolutePath)
         return null

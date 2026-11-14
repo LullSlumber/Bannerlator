@@ -45,7 +45,7 @@ fun SteamStatusPill(
         SteamRepository.SteamStatus.ONLINE ->
             Triple(Color(0xFF3BA55D), "Online", false)
         SteamRepository.SteamStatus.CONNECTING ->
-            Triple(Color(0xFFE0A82E), "Connecting…", false)
+            Triple(Color(0xFFE0A82E), "正在连接…", false)
         SteamRepository.SteamStatus.SIGNED_IN_ELSEWHERE ->
             Triple(Color(0xFFE07B2E), "已在别处登录", true)
         SteamRepository.SteamStatus.OFFLINE ->

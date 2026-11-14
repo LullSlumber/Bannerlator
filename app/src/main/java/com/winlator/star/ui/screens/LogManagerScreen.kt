@@ -97,7 +97,7 @@ import java.io.File
  * runs to keep) and leaves the viewer only. Classic and Lab keep the default (true) and show the whole screen.
  *
  * [inDeckTools] is the Deck shell's Tools > Logs tab: all the recording options live here and nowhere in Settings, folded
- * into a collapsible "Recording options" section at the top (collapsed until opened, and remembered) so the per-game list
+ * into a collapsible "录制选项" section at the top (collapsed until opened, and remembered) so the per-game list
  * gets the room, the games sit two to a row as fixed-size tiles, and the store download-engine switches and speed tier are
  * left out (they are in Settings > Storage & data). Everything else about the screen is unchanged; default false.
  */
@@ -1259,7 +1259,7 @@ private fun CardAction(
 }
 
 /**
- * The Deck's "Recording options" header: one row that folds the whole recording-options block (where logs go, what to
+ * The Deck's "录制选项" header: one row that folds the whole recording-options block (where logs go, what to
  * record, Wine debug channels, how many runs to keep) away so the per-game tiles get the room.
  */
 @Composable
@@ -1276,15 +1276,15 @@ private fun OptionsHeader(open: Boolean, onToggle: () -> Unit) {
                 .padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 10.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Recording options", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("录制选项", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Text(
-                    "What to record, Wine debug channels, log folder, runs to keep",
+                    "录制内容、Wine 调试通道、日志文件夹、保留的次数",
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp, maxLines = 2
                 )
             }
             Icon(
                 if (open) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                if (open) "Collapse recording options" else "Expand recording options",
+                if (open) "收起录制选项" else "展开录制选项",
                 tint = MaterialTheme.colorScheme.primary
             )
         }

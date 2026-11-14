@@ -30,7 +30,7 @@ object UiSoundPacks {
     private const val TAG = "UiSounds"
 
     const val STEAM_ID = "steam-big-picture"
-    private const val STEAM_NAME = "Steam Big Picture"
+    private const val STEAM_NAME = "Steam 大屏幕模式"
     private const val STEAM_URL =
         "https://github.com/The412Banner/winlator-contents/releases/download/Steam-ui-sound/Steam-BigPicture-sounds.zip"
     private const val STEAM_SHA256 = "07455cb31b28e153412be6cdc9553ee10e003125163ee2c32ae793a2aec9e164"
@@ -85,7 +85,7 @@ object UiSoundPacks {
                 cache.writeText(json)
                 _state.update { it.copy(store = page.items) }
             } catch (e: Exception) {
-                Log.w(TAG, "DeckThemes list refresh failed", e)
+                Log.w(TAG, "DeckThemes 列表刷新失败", e)
             } finally {
                 storeRefreshing = false
             }
@@ -155,10 +155,10 @@ object UiSoundPacks {
         if (id != STEAM_ID && s.packs.none { it.id == id }) {
             val item = s.store.firstOrNull { "store-" + it.id == id } ?: return
             if (s.busy != null) {
-                toast(ctx, com.winlator.star.ui.simple.L("Another sound pack is downloading"))
+                toast(ctx, com.winlator.star.ui.simple.L("另一个音效包正在下载"))
                 return
             }
-            toast(ctx, com.winlator.star.ui.simple.L("Downloading %1\$s", item.name))
+            toast(ctx, com.winlator.star.ui.simple.L("正在下载 %1\$s", item.name))
             installStore(ctx, item)
             return
         }
@@ -190,7 +190,7 @@ object UiSoundPacks {
     fun importZip(ctx: Context, uri: Uri) {
         val id = "zip-" + System.currentTimeMillis()
         install(ctx, id, select = true) { tmp, _ ->
-            (ctx.contentResolver.openInputStream(uri) ?: throw IOException("cannot open the file")).use { input ->
+            (ctx.contentResolver.openInputStream(uri) ?: throw IOException("无法打开文件")).use { input ->
                 tmp.outputStream().use { input.copyTo(it) }
             }
             Triple(id, Source.ZIP, null)
@@ -242,7 +242,7 @@ object UiSoundPacks {
                 if (pack.music) throw IOException("this is a music pack, not a sound pack")
                 val dest = File(root, id)
                 dest.deleteRecursively()
-                if (!packRoot.renameTo(dest)) throw IOException("cannot move the pack into place")
+                if (!packRoot.renameTo(dest)) throw IOException("无法将音效包移到位")
                 File(dest, NOTE).writeText(
                     JSONObject().put("source", source.name).put("storeId", storeId ?: "")
                         .put("name", if (source == Source.STEAM) STEAM_NAME else pack.name).toString(),
@@ -254,7 +254,7 @@ object UiSoundPacks {
             } catch (e: Exception) {
                 Log.w(TAG, "sound pack install failed ($busyId)", e)
                 _state.update { it.copy(error = e.message ?: e.javaClass.simpleName) }
-                toast(ctx, com.winlator.star.ui.simple.L("Sound pack download failed: %1\$s", e.message ?: e.javaClass.simpleName))
+                toast(ctx, com.winlator.star.ui.simple.L("音效包下载失败：%1\$s", e.message ?: e.javaClass.simpleName))
             } finally {
                 tmp.delete()
                 work.deleteRecursively()

@@ -164,7 +164,7 @@ internal object KnownEnvVars {
         // Wine extras
         KnownEnvVar("WINE_DISABLE_FULLSCREEN_HACK", EnvVarType.CHECKBOX, listOf("0", "1")),
         KnownEnvVar("WINE_X11FORCEGLX", EnvVarType.CHECKBOX, listOf("0", "1")),
-        // Power-user overrides of the "Fast OpenGL" setting on X11 (core.FastOpenGL / X11Egl):
+        // Power-user overrides of the "快速 OpenGL" setting on X11 (core.FastOpenGL / X11Egl):
         // BANNER_X11_EGL=0 off, =1 EGL route; BANNER_X11_GLX=1 GLX route (server-side GLX).
         KnownEnvVar("BANNER_X11_EGL", EnvVarType.CHECKBOX, listOf("0", "1")),
         KnownEnvVar("BANNER_X11_GLX", EnvVarType.CHECKBOX, listOf("0", "1")),

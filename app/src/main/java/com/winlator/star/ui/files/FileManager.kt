@@ -287,7 +287,7 @@ fun FileManagerRoot(
 
     fun paste(sources: List<File>, dest: File, cut: Boolean) {
         if (sources.isEmpty()) return
-        runOp(if (cut) "Moving…" else "Copying…") {
+        runOp(if (cut) "Moving…" else "正在复制…") {
             var applyAll: ConflictChoice? = null
             var done = 0
             var failed = 0

@@ -650,7 +650,7 @@ private val RAIL_WIDTH = 124.dp
 /**
  * Connection state for the rail: a colour dot over a SHORT word.
  *
- * A bare dot tested badly — at a glance it doesn't read as "Steam connection". The full
+ * A bare dot tested badly — at a glance it doesn't read as "Steam 连接". The full
  * [SteamStatusPill] is the other extreme: its longest label ("已在别处登录") wraps to three
  * lines inside a 96dp rail, which is why the rail dropped it in the first place. So the label here
  * is a deliberately short synonym that fits on one line at [RAIL_WIDTH], while the untruncated

@@ -64,9 +64,9 @@ object WindowsSteamClient {
     private const val MACHINE_AMD64 = 0x8664
     private const val DEFAULT_LIBRARY = "SteamLibrary"
 
-    /** storeSource of the shortcut "Add Windows Steam client x64" writes; its badge and its place first in the library key on it. */
+    /** storeSource of the shortcut "添加 Windows Steam 客户端 x64" writes; its badge and its place first in the library key on it. */
     const val STORE_SOURCE = "windows_steam"
-    const val SHORTCUT_NAME = "Windows Steam Client x64"
+    const val SHORTCUT_NAME = "Windows Steam 客户端 x64"
     const val BADGE_LABEL = "Windows Steam"
 
     /** Name of the client's folder among the app's Steam library folders (Steam store download and move targets). */
@@ -112,7 +112,7 @@ object WindowsSteamClient {
     const val EXEC_ARGS = "-nocrashmonitor -noshaders -no-shared-textures -cef-single-process -cef-in-process-gpu " +
         "-cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -cef-disable-gpu"
 
-    /** True for the shortcut "Add Windows Steam client x64" writes. */
+    /** True for the shortcut "添加 Windows Steam 客户端 x64" writes. */
     @JvmStatic
     fun isWindowsSteamShortcut(s: Shortcut?): Boolean = s != null && s.getExtra("storeSource") == STORE_SOURCE
 
@@ -186,7 +186,7 @@ object WindowsSteamClient {
             Log.i(TAG, "Windows Steam client added to ${container.name}: ${file.absolutePath} (downloaded=$downloaded)")
             return AddResult.Added(file, downloaded)
         } catch (e: WinePath.NoFreeDriveLetterException) {
-            return AddResult.Failed("This container has no free drive letters left")
+            return AddResult.Failed("此容器没有可用的盘符了")
         } catch (t: Throwable) {
             Log.w(TAG, "addClient failed", t)
             return AddResult.Failed(t.message ?: t.javaClass.simpleName)
@@ -203,7 +203,7 @@ object WindowsSteamClient {
         val sha2 = pkg?.string("sha2")?.lowercase()
         val size = pkg?.string("size")?.toLongOrNull() ?: -1L
         if (name.isNullOrBlank() || sha2.isNullOrBlank() || name.contains('/') || name.contains("..")) {
-            return "Steam's update list has no 64-bit client"
+            return "Steam 的更新列表中没有 64 位客户端"
         }
         val zip = File(ctx.cacheDir, "steam_win64.zip.part")
         try {
@@ -240,7 +240,7 @@ object WindowsSteamClient {
 
             if (!dir.isDirectory && !dir.mkdirs()) return "Could not create ${dir.absolutePath}"
             val start = firstEntryOffset(zip)
-            if (start < 0) return "The download is not a zip file"
+            if (start < 0) return "下载内容不是 zip 文件"
             val root = dir.canonicalPath + File.separator
             ZipInputStream(zip.inputStream().also { it.channel.position(start) }).use { zin ->
                 while (true) {
@@ -390,7 +390,7 @@ object WindowsSteamClient {
                 if (!env.has(ENV_OTHER_PROCESS_RENDERING)) env.put(ENV_OTHER_PROCESS_RENDERING, "0")
                 notes.add("GPU drawing on: $ENV_OTHER_PROCESS_RENDERING=${env.get(ENV_OTHER_PROCESS_RENDERING)}, -cef-disable-gpu left out")
             } else {
-                notes.add("GPU drawing off (only with the GL renderer on X11): Steam draws on the CPU")
+                notes.add("关闭 GPU 绘制（仅限 X11 上的 GL 渲染器）：Steam 由 CPU 绘制")
             }
             if (is64Bit(container, winPath)) {
                 when {
@@ -404,10 +404,10 @@ object WindowsSteamClient {
                     }
                 }
             } else {
-                notes.add("32-bit client: no environment change")
+                notes.add("32 位客户端：环境无变化")
             }
             val added = ensureStorageLibraries(ctx, container, winPath)
-            notes.add(if (added.isEmpty()) "Steam libraries: every mapped storage already has one"
+            notes.add(if (added.isEmpty()) "Steam 库：每个已映射的存储都已有库"
                       else "Steam libraries added: " + added.joinToString(", "))
             // The app's games as non-Steam games, written while the client is not running yet.
             val steamRoot = try { WinePath.resolveAndroidPath(container, winPath)?.parentFile } catch (t: Throwable) { null }
@@ -649,7 +649,7 @@ object WindowsSteamClient {
 
     private val offers = MutableStateFlow<List<UninstallOffer>>(emptyList())
 
-    /** Removed Windows Steam shortcuts waiting for the "Also uninstall Steam?" question, oldest first. */
+    /** Removed Windows Steam shortcuts waiting for the "同时卸载 Steam？" question, oldest first. */
     val uninstallOffers: StateFlow<List<UninstallOffer>> = offers.asStateFlow()
 
     @JvmStatic
