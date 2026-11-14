@@ -75,7 +75,7 @@ fun rememberGogLibrary(onMessage: (String) -> Unit = {}): GogLibraryState {
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "正在同步库…"
+            status = "Syncing library…"
             scope.launch {
                 val result = GogLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false
@@ -148,7 +148,7 @@ fun GogLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "搜索您的GOG库…",
+                placeholder = "Search your GOG library…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -160,6 +160,11 @@ fun GogLibraryTab(
             ) {
                 StoreFilterChip("All", !installedOnly) { installedOnly = false }
                 StoreFilterChip("Installed", installedOnly) { installedOnly = true }
+                // Game folders the user already has → installed in place, only missing files download.
+                var importing by remember { mutableStateOf(false) }
+                StoreFilterChip("+ Import game library", false) { importing = true }
+                if (importing) StoreImportGamesFlow(StoreInstallLocations.Store.GOG) { importing = false }
+                StoreViewButton()
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = state.statusText,
@@ -175,20 +180,20 @@ fun GogLibraryTab(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "Fetching your GOG games…" })
+                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your GOG games…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "您的GOG库在此为空",
-                    body = "同步以从GOG拉取您的游戏，或打开完整库界面。",
-                    actionLabel = "立即同步",
+                    title = "Your GOG library is empty here",
+                    body = "Sync to pull your games from GOG, or open the full library screen.",
+                    actionLabel = "Sync now",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
+                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
             }
 
             else -> LazyVerticalGrid(
@@ -196,8 +201,8 @@ fun GogLibraryTab(
                 columns = GridCells.Adaptive(storeGridCell(wide)),
                 modifier = Modifier.fillMaxSize().focusGroup(),
                 contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 8.dp, bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(shown, key = { it.gameId }) { g ->
                     CatalogLibraryTile(
@@ -206,16 +211,6 @@ fun GogLibraryTab(
                         onOpen = { onOpen(g) },
                         badgeText = if (g.generation > 0) "Gen ${g.generation}" else null,
                     )
-                }
-                item(key = "full_library_footer", span = { GridItemSpan(maxLineSpan) }) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
-                        StoreNotice(
-                            title = "完整库",
-                            body = "需要列表视图、批量安装或DLC同步？打开完整库界面。",
-                            actionLabel = "打开完整库",
-                            onAction = onOpenFullLibrary,
-                        )
-                    }
                 }
             }
         }

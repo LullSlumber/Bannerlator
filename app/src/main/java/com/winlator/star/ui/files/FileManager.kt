@@ -77,6 +77,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.AddToHomeScreen
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -85,6 +86,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -140,6 +142,13 @@ import java.io.File
  * copy / move / compress / extract, and the Bannerlator actions (run a program in a container, add it to
  * Games). The same screen is the in-app picker ([pickMode] / [pickDirMode]): then it only browses and
  * returns the chosen file or folder through [onPick].
+ *
+ * [compactToolbar] (the Deck shell's Tools > Files) swaps the tall toolbar pill, the paste capsule and the
+ * path line for one slim row: back, up, the path, then the actions. The clipboard then shows as a floating paste button
+ * (with a small clear button) at the bottom right, above the shell's hint row, only while something is copied or cut.
+ *
+ * [dense] (the XMB mode's picker) tightens everything further: a slimmer toolbar row with smaller icons, rows about 40 dp tall with
+ * smaller text, smaller crumbs and Home tiles, a slim title and Select bar. See [LocalFmDense]. Behaviour is unchanged.
  */
 @Composable
 fun FileManagerRoot(
@@ -150,6 +159,8 @@ fun FileManagerRoot(
     pickerTitle: String? = null,
     driveCPath: File? = null,
     onPick: ((File) -> Unit)? = null,
+    compactToolbar: Boolean = false,
+    dense: Boolean = false,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -556,7 +567,7 @@ fun FileManagerRoot(
         return buildList {
             if (dir) add(FmMenuEntry("Open", Icons.Filled.FolderOpen) { p.openDir(f) })
             if (isArchive) add(FmMenuEntry("Browse", Icons.Filled.FolderZip) { p.open(FmLoc.InArchive(f, "")) })
-            if (!dir && isRunnable(f.name)) add(FmMenuEntry("运行", Icons.Filled.PlayArrow) { runFile(f) })
+            if (!dir && isRunnable(f.name)) add(FmMenuEntry("Run", Icons.Filled.PlayArrow) { runFile(f) })
             if (!dir && f.extension.equals("exe", true)) add(FmMenuEntry("Add to Games", Icons.Filled.AddToHomeScreen) { addShortcut(f) })
             if (unpackable) {
                 add(FmMenuEntry("Fast Extract", Icons.Filled.Bolt) { fastExtract(f) })
@@ -565,24 +576,24 @@ fun FileManagerRoot(
                 })
             }
             if (!dir) {
-                add(FmMenuEntry(if (isTextFile(f)) "编辑" else "Open as text", Icons.Filled.TextSnippet) {
+                add(FmMenuEntry(if (isTextFile(f)) "Edit" else "Open as text", Icons.Filled.TextSnippet) {
                     context.startActivity(TextEditorActivity.intent(context, f))
                 })
                 add(FmMenuEntry("Open with…", Icons.AutoMirrored.Filled.OpenInNew) { openWith(f) })
             }
             add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-            add(FmMenuEntry("拷贝", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
-            add(FmMenuEntry("剪切", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
+            add(FmMenuEntry("Copy", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
+            add(FmMenuEntry("Cut", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
             add(FmMenuEntry("Rename", Icons.Filled.Edit) { renameTarget = f })
             add(FmMenuEntry("Compress", Icons.Filled.FolderZip) { compressTargets = listOf(f) })
-            if (!dir) add(FmMenuEntry("分享", Icons.Filled.Share) { share(listOf(f)) })
+            if (!dir) add(FmMenuEntry("Share", Icons.Filled.Share) { share(listOf(f)) })
             if (dir) {
                 val fav = FavoritesStore.isFavorite(context, f.absolutePath)
-                add(FmMenuEntry(if (fav) "Remove from Favorites" else "添加到收藏夹", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
+                add(FmMenuEntry(if (fav) "Remove from Favorites" else "Add to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
             }
             add(FmMenuEntry("Copy path", Icons.Filled.Link) { copyPath(f) })
-            add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
-            add(FmMenuEntry("删除", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
+            add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
+            add(FmMenuEntry("Delete", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
         }
     }
 
@@ -590,7 +601,7 @@ fun FileManagerRoot(
         add(FmMenuEntry("Open", if (item.isDir) Icons.Filled.FolderOpen else Icons.AutoMirrored.Filled.OpenInNew) { openItem(p, item) })
         add(FmMenuEntry("Extract…", Icons.Filled.Unarchive) { extractReq = p to listOf(item) })
         add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-        add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
+        add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
     }
 
     fun menuFor(p: FmPane, item: FmItem): (() -> List<FmMenuEntry>)? = when {
@@ -614,7 +625,7 @@ fun FileManagerRoot(
                 Triple("Downloads", HomeIcons.downloads, File(internal, "Download")),
                 Triple("Pictures", HomeIcons.pictures, File(internal, "Pictures")),
                 Triple("Documents", HomeIcons.documents, File(internal, "Documents")),
-                Triple("游戏", HomeIcons.games, File(internal, "Winlator/Games")),
+                Triple("Games", HomeIcons.games, File(internal, "Winlator/Games")),
                 Triple("Bannerlator", HomeIcons.folder, File(internal, "Bannerlator")),
             ).forEach { (t, icon, dir) ->
                 if (dir.isDirectory) add(FmHomeTile(t, icon, androidx.compose.ui.graphics.Color(0xFF2FA7A0), dir, countItems = t == "Downloads", subtitle = if (t == "Downloads") null else ""))
@@ -622,7 +633,7 @@ fun FileManagerRoot(
         }
         val drivesC = buildList {
             val seen = HashSet<String>()
-            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "此容器")); seen.add(it.absolutePath) }
+            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "This container")); seen.add(it.absolutePath) }
             containers.forEach { c ->
                 val dc = File(c.rootDir, ".wine/drive_c")
                 if (dc.isDirectory && seen.add(dc.absolutePath)) add(FmHomeTile(c.name, HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), dc, subtitle = "Drive C:"))
@@ -639,8 +650,8 @@ fun FileManagerRoot(
         return listOf(
             FmHomeSection("Storage", storage),
             FmHomeSection("Places", places),
-            FmHomeSection("容器管理", drivesC),
-            FmHomeSection("收藏夹", favorites),
+            FmHomeSection("Containers", drivesC),
+            FmHomeSection("Favorites", favorites),
         )
     }
 
@@ -657,12 +668,15 @@ fun FileManagerRoot(
 
     // Deck / XMB controller: X opens the toolbar menu, Y the search.
     val deckActions = LocalDeckActions.current
-    DisposableEffect(deckActions) {
+    DisposableEffect(deckActions, compactToolbar) {
         val options: () -> Unit = { moreOpen = true }
         val search: () -> Unit = { searchOpen = true }
         deckActions.options.value = options
         deckActions.search.value = search
+        // XMB: the shell's hint row then also shows "X Options" (Files only; the picker has no shell around it).
+        if (compactToolbar) deckActions.xmbOptionsHint.value = true
         onDispose {
+            if (compactToolbar) deckActions.xmbOptionsHint.value = false
             if (deckActions.options.value === options) deckActions.options.value = null
             if (deckActions.search.value === search) deckActions.search.value = null
         }
@@ -705,8 +719,8 @@ fun FileManagerRoot(
             conflictAnswer = null
         }
     }
-    runChoice?.let { f -> ContainerChoiceDialog("在哪个容器中运行?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
-    shortcutChoice?.let { f -> ContainerChoiceDialog("添加到哪个容器?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
+    runChoice?.let { f -> ContainerChoiceDialog("Run in which container?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
+    shortcutChoice?.let { f -> ContainerChoiceDialog("Add to which container?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
     panes.forEach { p ->
         val unlistable = p.unlistable
         LaunchedEffect(unlistable) {
@@ -742,196 +756,298 @@ fun FileManagerRoot(
         }
     }
 
+    // ── Toolbar menus (the + menu and the ⋮ menu, shared by both toolbar layouts) ──
+
+    fun newMenuEntries(dir: File): List<FmMenuEntry> = listOf(
+        FmMenuEntry("New folder", Icons.Filled.CreateNewFolder) { newFolderIn = dir },
+        FmMenuEntry("New text file", Icons.Filled.NoteAdd) { newFileIn = dir },
+    )
+
+    /** [note] is an inert first line (the compact toolbar puts the free space there when the row is too narrow for it). */
+    fun moreMenuEntries(dir: File?, note: String?): List<FmMenuEntry> = buildList {
+        if (note != null) add(FmMenuEntry(note, Icons.Filled.Info) { })
+        add(FmMenuEntry(if (pane.showHidden) "Hide hidden files" else "Show hidden files", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
+            val v = !pane.showHidden
+            panes.forEach { it.applyShowHidden(v) }
+        })
+        if (pane.loc != FmLoc.Home) add(FmMenuEntry("Select all", Icons.Filled.SelectAll) { pane.selectAll() })
+        add(FmMenuEntry("Refresh", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
+        if (pick == null) add(FmMenuEntry(if (dualPref) "One pane" else "Two panes", Icons.Filled.ViewColumn) {
+            dualPref = !dualPref
+            FmPrefs.setDualPane(context, dualPref)
+            if (!dualPref) active = 0
+        })
+        if (pick == null && dir != null) {
+            val fav = FavoritesStore.isFavorite(context, dir.absolutePath)
+            add(FmMenuEntry(if (fav) "Remove folder from Favorites" else "Add folder to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
+            add(FmMenuEntry("Folder properties", Icons.Filled.Info) { propsTarget = diskItem(dir) })
+        }
+        val l = pane.loc
+        if (pick == null && l is FmLoc.InArchive) add(FmMenuEntry("Extract all…", Icons.Filled.Unarchive) { extractReq = pane to emptyList() })
+        // The compact toolbar has no paste capsule: the controller reaches the clipboard's clear action from here too.
+        if (compactToolbar && pick == null && clipboard.isNotEmpty()) add(FmMenuEntry("Clear clipboard", Icons.Filled.Close) { clipboard = emptyList() })
+    }
+
     // ── Layout ──
 
-    Column(Modifier.fillMaxSize().fmBackdrop()) {
-        if (pick != null && !pickerTitle.isNullOrEmpty()) {
-            Text(
-                pickerTitle,
-                color = cs.onSurface, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
-            )
-        }
-
-        // Toolbar: acts on the active pane.
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp).fmGlass(RoundedCornerShape(28.dp)).padding(horizontal = 4.dp),
-        ) {
-            IconButton(onClick = { pane.clearSelection(); pane.open(FmLoc.Home) }, enabled = pane.loc != FmLoc.Home) {
-                Icon(Icons.Filled.Home, "主页", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
-            }
-            IconButton(onClick = { pane.goBack() }, enabled = pane.canGoBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = if (pane.canGoBack) cs.primary else cs.onSurfaceVariant)
-            }
-            IconButton(onClick = { pane.up() }, enabled = pane.loc != FmLoc.Home) {
-                Icon(Icons.Filled.ArrowUpward, "Up", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
-            }
-            Spacer(Modifier.weight(1f))
-            IconButton(onClick = { searchOpen = !searchOpen; if (!searchOpen) pane.clearSearch() }, enabled = pane.loc != FmLoc.Home) {
-                Icon(Icons.Filled.Search, "Search")
-            }
-            IconButton(onClick = {
-                val next = when (pane.viewMode) { FmViewMode.LIST -> FmViewMode.COMPACT; FmViewMode.COMPACT -> FmViewMode.GRID; FmViewMode.GRID -> FmViewMode.LIST }
-                panes.forEach { it.applyViewMode(next) }
-            }) {
-                Icon(
-                    when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                    "查看",
+    // The Box lets the compact (XMB) layout float the paste button over the page.
+    CompositionLocalProvider(LocalFmDense provides dense) {
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().fmBackdrop()) {
+            if (pick != null && !pickerTitle.isNullOrEmpty()) {
+                Text(
+                    pickerTitle,
+                    color = cs.onSurface, fontSize = if (dense) 13.sp else 16.sp, fontWeight = FontWeight.SemiBold,
+                    maxLines = if (dense) 1 else Int.MAX_VALUE,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth().padding(start = if (dense) 12.dp else 16.dp, end = if (dense) 12.dp else 16.dp, top = if (dense) 4.dp else 10.dp, bottom = if (dense) 0.dp else 2.dp),
                 )
             }
-            IconButton(onClick = { sortFor = pane }) { Icon(Icons.Filled.Sort, "Sort") }
-            val dir = pane.currentDir
-            if (pick == null && dir != null) {
-                Box {
-                    IconButton(onClick = { newOpen = true }) { Icon(Icons.Filled.Add, "New", tint = cs.primary) }
-                    if (newOpen) FmMenu(true, { newOpen = false }, listOf(
-                        FmMenuEntry("New folder", Icons.Filled.CreateNewFolder) { newFolderIn = dir },
-                        FmMenuEntry("New text file", Icons.Filled.NoteAdd) { newFileIn = dir },
-                    ))
-                }
-            }
-            Box {
-                IconButton(onClick = { moreOpen = true }) { Icon(Icons.Filled.MoreVert, "More") }
-                if (moreOpen) {
-                    val entries = buildList {
-                        add(FmMenuEntry(if (pane.showHidden) "隐藏隐藏文件" else "显示隐藏文件", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
-                            val v = !pane.showHidden
-                            panes.forEach { it.applyShowHidden(v) }
-                        })
-                        if (pane.loc != FmLoc.Home) add(FmMenuEntry("Select all", Icons.Filled.SelectAll) { pane.selectAll() })
-                        add(FmMenuEntry("刷新", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
-                        if (pick == null) add(FmMenuEntry(if (dualPref) "One pane" else "Two panes", Icons.Filled.ViewColumn) {
-                            dualPref = !dualPref
-                            FmPrefs.setDualPane(context, dualPref)
-                            if (!dualPref) active = 0
-                        })
-                        if (pick == null && dir != null) {
-                            val fav = FavoritesStore.isFavorite(context, dir.absolutePath)
-                            add(FmMenuEntry(if (fav) "Remove folder from Favorites" else "Add folder to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
-                            add(FmMenuEntry("Folder properties", Icons.Filled.Info) { propsTarget = diskItem(dir) })
+
+            // Toolbar: acts on the active pane.
+            if (compactToolbar) {
+                // One slim row (40 dp buttons): back, up, the path, then search / view / sort / new / more. The clipboard is the
+                // floating paste button at the bottom right (FmPasteFab), not a chip in this row.
+                // Two panes keep their own path line over each pane, so the row then has no path of its own.
+                BoxWithConstraints(Modifier.fillMaxWidth()) {
+                    val narrow = maxWidth < 560.dp
+                    // The slim toolbar row: 40 dp buttons, or 32 dp in the dense (XMB picker) look.
+                    val tb = if (dense) 32.dp else 40.dp
+                    val tbIcon = if (dense) 19.dp else 22.dp
+                    val dualBar = dualPref && pick == null && maxWidth >= 640.dp
+                    val barDir = pane.currentDir
+                    val barLoc = pane.loc
+                    val barFree = remember(barDir?.absolutePath, pane.listingTick) {
+                        if (barDir == null) 0L else runCatching { barDir.usableSpace }.getOrDefault(0L)
+                    }
+                    val sizeText: String? = when {
+                        barDir != null && barFree > 0 -> "${StringUtils.formatBytes(barFree)} free"
+                        barLoc is FmLoc.InArchive -> pane.index?.formatLabel
+                        else -> null
+                    }
+                    Column(Modifier.fillMaxWidth()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp).height(tb).fmGlass(RoundedCornerShape(20.dp)).padding(horizontal = 2.dp),
+                        ) {
+                            IconButton(onClick = { pane.goBack() }, enabled = pane.canGoBack, modifier = Modifier.size(tb)) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = if (pane.canGoBack) cs.primary else cs.onSurfaceVariant, modifier = Modifier.size(tbIcon))
+                            }
+                            IconButton(onClick = { pane.up() }, enabled = pane.loc != FmLoc.Home, modifier = Modifier.size(tb)) {
+                                Icon(Icons.Filled.ArrowUpward, "Up", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant, modifier = Modifier.size(tbIcon))
+                            }
+                            if (dualBar) {
+                                Spacer(Modifier.weight(1f))
+                            } else {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f).padding(start = 2.dp)) {
+                                    FmCrumbs(crumbsFor(pane, containers, imagefsDir, driveCPath), Modifier.weight(1f), vPad = if (dense) 5.dp else 9.dp)
+                                    if (!narrow && sizeText != null) {
+                                        Text(sizeText, color = cs.onSurfaceVariant, fontSize = if (dense) 10.sp else 11.sp, maxLines = 1, modifier = Modifier.padding(horizontal = 6.dp))
+                                    }
+                                }
+                            }
+                            IconButton(onClick = { searchOpen = !searchOpen; if (!searchOpen) pane.clearSearch() }, enabled = pane.loc != FmLoc.Home, modifier = Modifier.size(tb)) {
+                                Icon(Icons.Filled.Search, "Search", modifier = Modifier.size(tbIcon))
+                            }
+                            IconButton(onClick = {
+                                val next = when (pane.viewMode) { FmViewMode.LIST -> FmViewMode.COMPACT; FmViewMode.COMPACT -> FmViewMode.GRID; FmViewMode.GRID -> FmViewMode.LIST }
+                                panes.forEach { it.applyViewMode(next) }
+                            }, modifier = Modifier.size(tb)) {
+                                Icon(
+                                    when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
+                                    "View",
+                                    modifier = Modifier.size(tbIcon),
+                                )
+                            }
+                            IconButton(onClick = { sortFor = pane }, modifier = Modifier.size(tb)) { Icon(Icons.Filled.Sort, "Sort", modifier = Modifier.size(tbIcon)) }
+                            if (pick == null && barDir != null) {
+                                Box {
+                                    IconButton(onClick = { newOpen = true }, modifier = Modifier.size(tb)) { Icon(Icons.Filled.Add, "New", tint = cs.primary, modifier = Modifier.size(tbIcon)) }
+                                    if (newOpen) FmMenu(true, { newOpen = false }, newMenuEntries(barDir))
+                                }
+                            }
+                            Box {
+                                IconButton(onClick = { moreOpen = true }, modifier = Modifier.size(tb)) { Icon(Icons.Filled.MoreVert, "More", modifier = Modifier.size(tbIcon)) }
+                                if (moreOpen) FmMenu(true, { moreOpen = false }, moreMenuEntries(barDir, if (narrow) sizeText else null))
+                            }
                         }
-                        val l = pane.loc
-                        if (pick == null && l is FmLoc.InArchive) add(FmMenuEntry("Extract all…", Icons.Filled.Unarchive) { extractReq = pane to emptyList() })
-                    }
-                    FmMenu(true, { moreOpen = false }, entries)
-                }
-            }
-        }
-
-        if (searchOpen && pane.loc != FmLoc.Home) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 2.dp)) {
-                XmbTapToEdit(Modifier.weight(1f)) { fieldModifier, stopEditing ->
-                    OutlinedTextField(
-                        value = pane.query,
-                        onValueChange = { pane.query = it },
-                        singleLine = true,
-                        placeholder = { Text("Search this folder", fontSize = 13.sp) },
-                        leadingIcon = { Icon(Icons.Filled.Search, null) },
-                        keyboardActions = xmbDoneActions(stopEditing),
-                        modifier = fieldModifier,
-                        shape = RoundedCornerShape(24.dp),
-                    )
-                }
-                if (pane.currentDir != null) {
-                    TextButton(onClick = { pane.searchSubfolders() }, enabled = pane.query.isNotBlank() && !pane.deepSearching) {
-                        Text("In subfolders")
                     }
                 }
-                IconButton(onClick = { searchOpen = false; pane.clearSearch() }) { Icon(Icons.Filled.Close, "Close search") }
-            }
-        }
-
-        // Paste capsule: what's on the clipboard and a one-tap paste into the active pane's folder.
-        if (clipboard.isNotEmpty() && pick == null) {
-            val dest = pane.currentDir
-            val what = if (clipboard.size == 1) clipboard[0].name else "${clipboard.size} items"
-            FmCapsule(
-                icon = Icons.Filled.ContentPaste,
-                text = (if (clipCut) "Move " else "Copy ") + what,
-                actionLabel = if (dest != null) "Paste here" else null,
-                onAction = if (dest != null) ({ paste(clipboard, dest, clipCut) }) else null,
-                onClose = { clipboard = emptyList() },
-            )
-        }
-        opLabel?.let { label ->
-            FmCapsule(
-                icon = Icons.Filled.DriveFileMove,
-                text = label + (opProgress?.let { "  ${(it * 100).toInt()}%" } ?: ""),
-                actionLabel = "Cancel",
-                onAction = { opJob?.cancel() },
-                progress = opProgress,
-                showProgress = true,
-            )
-        }
-
-        BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-            val dual = dualPref && pick == null && maxWidth >= 640.dp
-            LaunchedEffect(dual) { if (!dual) active = 0 }
-            Row(Modifier.fillMaxSize()) {
-                val shown = if (dual) panes else panes.take(1)
-                shown.forEachIndexed { i, p ->
-                    if (i > 0) Spacer(Modifier.width(2.dp))
-                    PaneView(
-                        pane = p,
-                        active = !dual || i == active,
-                        dual = dual,
-                        onActivate = { active = i },
-                        home = { homeSections() },
-                        storageTick = storageTick,
-                        containers = containers,
-                        imagefsDir = imagefsDir,
-                        driveCPath = driveCPath,
-                        pickActive = pick != null,
-                        menuFor = { item -> menuFor(p, item) },
-                        onOpen = { item -> active = i; openItem(p, item) },
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                    )
-                }
-            }
-        }
-
-        // Selection bar.
-        if (pane.selectionMode && pick == null) {
-            val items = pane.selectedItems()
-            val disk = items.filterIsInstance<FmItem.Disk>().map { it.file }
-            val entries = items.filterIsInstance<FmItem.Entry>()
-            val otherDir = if (dualPref) panes[if (active == 0) 1 else 0].currentDir else null
-            val actions = if (pane.inArchive) listOf(
-                FmSelAction("Extract", Icons.Filled.Unarchive, entries.isNotEmpty()) { extractReq = pane to entries },
-                FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() },
-            ) else buildList {
-                add(FmSelAction("拷贝", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
-                add(FmSelAction("剪切", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
-                if (otherDir != null) {
-                    add(FmSelAction("Copy over", Icons.Filled.ContentCopy, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, false) })
-                    add(FmSelAction("Move over", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, true) })
-                } else {
-                    add(FmSelAction("Copy to", Icons.Filled.Folder, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Copy to") { paste(d, it, false) } })
-                    add(FmSelAction("Move to", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Move to") { paste(d, it, true) } })
-                }
-                add(FmSelAction("Compress", Icons.Filled.FolderZip, disk.isNotEmpty()) { compressTargets = disk })
-                add(FmSelAction("分享", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
-                if (disk.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { renameTarget = disk[0]; pane.clearSelection() })
-                add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
-                add(FmSelAction("删除", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
-            }
-            FmSelectionBar(pane.selected.size, actions) { pane.clearSelection() }
-        }
-
-        // Folder picker: confirm the folder on screen.
-        if (pick?.dirsOnly == true) {
-            val dir = pane.currentDir
-            Button(
-                onClick = { dir?.let { FmPrefs.setLastPickerDir(context, it); onPick?.invoke(it) } },
-                enabled = dir != null,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            } else Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp).fmGlass(RoundedCornerShape(28.dp)).padding(horizontal = 4.dp),
             ) {
-                Icon(Icons.Filled.Folder, null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(if (dir != null) "Select \"${dir.name.ifBlank { dir.absolutePath }}\"" else "Open a folder to select it", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                IconButton(onClick = { pane.clearSelection(); pane.open(FmLoc.Home) }, enabled = pane.loc != FmLoc.Home) {
+                    Icon(Icons.Filled.Home, "Home", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
+                }
+                IconButton(onClick = { pane.goBack() }, enabled = pane.canGoBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = if (pane.canGoBack) cs.primary else cs.onSurfaceVariant)
+                }
+                IconButton(onClick = { pane.up() }, enabled = pane.loc != FmLoc.Home) {
+                    Icon(Icons.Filled.ArrowUpward, "Up", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
+                }
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = { searchOpen = !searchOpen; if (!searchOpen) pane.clearSearch() }, enabled = pane.loc != FmLoc.Home) {
+                    Icon(Icons.Filled.Search, "Search")
+                }
+                IconButton(onClick = {
+                    val next = when (pane.viewMode) { FmViewMode.LIST -> FmViewMode.COMPACT; FmViewMode.COMPACT -> FmViewMode.GRID; FmViewMode.GRID -> FmViewMode.LIST }
+                    panes.forEach { it.applyViewMode(next) }
+                }) {
+                    Icon(
+                        when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
+                        "View",
+                    )
+                }
+                IconButton(onClick = { sortFor = pane }) { Icon(Icons.Filled.Sort, "Sort") }
+                val dir = pane.currentDir
+                if (pick == null && dir != null) {
+                    Box {
+                        IconButton(onClick = { newOpen = true }) { Icon(Icons.Filled.Add, "New", tint = cs.primary) }
+                        if (newOpen) FmMenu(true, { newOpen = false }, newMenuEntries(dir))
+                    }
+                }
+                Box {
+                    IconButton(onClick = { moreOpen = true }) { Icon(Icons.Filled.MoreVert, "More") }
+                    if (moreOpen) FmMenu(true, { moreOpen = false }, moreMenuEntries(dir, null))
+                }
+            }
+
+            if (searchOpen && pane.loc != FmLoc.Home) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 2.dp)) {
+                    XmbTapToEdit(Modifier.weight(1f)) { fieldModifier, stopEditing ->
+                        OutlinedTextField(
+                            value = pane.query,
+                            onValueChange = { pane.query = it },
+                            singleLine = true,
+                            placeholder = { Text("Search this folder", fontSize = 13.sp) },
+                            leadingIcon = { Icon(Icons.Filled.Search, null) },
+                            keyboardActions = xmbDoneActions(stopEditing),
+                            modifier = fieldModifier,
+                            shape = RoundedCornerShape(24.dp),
+                        )
+                    }
+                    if (pane.currentDir != null) {
+                        TextButton(onClick = { pane.searchSubfolders() }, enabled = pane.query.isNotBlank() && !pane.deepSearching) {
+                            Text("In subfolders")
+                        }
+                    }
+                    IconButton(onClick = { searchOpen = false; pane.clearSearch() }) { Icon(Icons.Filled.Close, "Close search") }
+                }
+            }
+
+            // Paste capsule: what's on the clipboard and a one-tap paste into the active pane's folder.
+            if (clipboard.isNotEmpty() && pick == null && !compactToolbar) {
+                val dest = pane.currentDir
+                val what = if (clipboard.size == 1) clipboard[0].name else "${clipboard.size} items"
+                FmCapsule(
+                    icon = Icons.Filled.ContentPaste,
+                    text = (if (clipCut) "Move " else "Copy ") + what,
+                    actionLabel = if (dest != null) "Paste here" else null,
+                    onAction = if (dest != null) ({ paste(clipboard, dest, clipCut) }) else null,
+                    onClose = { clipboard = emptyList() },
+                )
+            }
+            opLabel?.let { label ->
+                FmCapsule(
+                    icon = Icons.Filled.DriveFileMove,
+                    text = label + (opProgress?.let { "  ${(it * 100).toInt()}%" } ?: ""),
+                    actionLabel = "Cancel",
+                    onAction = { opJob?.cancel() },
+                    progress = opProgress,
+                    showProgress = true,
+                )
+            }
+
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                val dual = dualPref && pick == null && maxWidth >= 640.dp
+                LaunchedEffect(dual) { if (!dual) active = 0 }
+                Row(Modifier.fillMaxSize()) {
+                    val shown = if (dual) panes else panes.take(1)
+                    shown.forEachIndexed { i, p ->
+                        if (i > 0) Spacer(Modifier.width(2.dp))
+                        PaneView(
+                            pane = p,
+                            active = !dual || i == active,
+                            dual = dual,
+                            onActivate = { active = i },
+                            home = { homeSections() },
+                            storageTick = storageTick,
+                            containers = containers,
+                            imagefsDir = imagefsDir,
+                            driveCPath = driveCPath,
+                            pickActive = pick != null,
+                            showPath = dual || !compactToolbar,
+                            menuFor = { item -> menuFor(p, item) },
+                            onOpen = { item -> active = i; openItem(p, item) },
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                    }
+                }
+            }
+
+            // Selection bar.
+            if (pane.selectionMode && pick == null) {
+                val items = pane.selectedItems()
+                val disk = items.filterIsInstance<FmItem.Disk>().map { it.file }
+                val entries = items.filterIsInstance<FmItem.Entry>()
+                val otherDir = if (dualPref) panes[if (active == 0) 1 else 0].currentDir else null
+                val actions = if (pane.inArchive) listOf(
+                    FmSelAction("Extract", Icons.Filled.Unarchive, entries.isNotEmpty()) { extractReq = pane to entries },
+                    FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() },
+                ) else buildList {
+                    add(FmSelAction("Copy", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
+                    add(FmSelAction("Cut", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
+                    if (otherDir != null) {
+                        add(FmSelAction("Copy over", Icons.Filled.ContentCopy, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, false) })
+                        add(FmSelAction("Move over", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, true) })
+                    } else {
+                        add(FmSelAction("Copy to", Icons.Filled.Folder, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Copy to") { paste(d, it, false) } })
+                        add(FmSelAction("Move to", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Move to") { paste(d, it, true) } })
+                    }
+                    add(FmSelAction("Compress", Icons.Filled.FolderZip, disk.isNotEmpty()) { compressTargets = disk })
+                    add(FmSelAction("Share", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
+                    if (disk.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { renameTarget = disk[0]; pane.clearSelection() })
+                    add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
+                    add(FmSelAction("Delete", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
+                }
+                FmSelectionBar(pane.selected.size, actions) { pane.clearSelection() }
+            }
+
+            // Folder picker: confirm the folder on screen.
+            if (pick?.dirsOnly == true) {
+                val dir = pane.currentDir
+                Button(
+                    onClick = { dir?.let { FmPrefs.setLastPickerDir(context, it); onPick?.invoke(it) } },
+                    enabled = dir != null,
+                    // Dense (the XMB picker): a slim bar, 36 dp tall instead of 40 + 16 of padding.
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = if (dense) 10.dp else 16.dp, vertical = if (dense) 3.dp else 8.dp)
+                        .then(if (dense) Modifier.height(36.dp) else Modifier),
+                    contentPadding = if (dense) PaddingValues(horizontal = 12.dp, vertical = 0.dp) else ButtonDefaults.ContentPadding,
+                ) {
+                    Icon(Icons.Filled.Folder, null, modifier = Modifier.size(if (dense) 16.dp else 18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        if (dir != null) "Select \"${dir.name.ifBlank { dir.absolutePath }}\"" else "Open a folder to select it",
+                        fontSize = if (dense) 13.sp else androidx.compose.ui.unit.TextUnit.Unspecified,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
+        // XMB (compact toolbar): the clipboard is a round paste button above the hint row, shown only while something is
+        // copied or cut. It carries no name, only what it does (paste / move) for accessibility.
+        if (compactToolbar && pick == null && clipboard.isNotEmpty()) {
+            val dest = pane.currentDir
+            FmPasteFab(
+                cut = clipCut,
+                onPaste = if (dest != null) ({ paste(clipboard, dest, clipCut) }) else null,
+                onClear = { clipboard = emptyList() },
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        }
+    }
     }
 }
 
@@ -951,6 +1067,7 @@ private fun PaneView(
     menuFor: (FmItem) -> (() -> List<FmMenuEntry>)?,
     onOpen: (FmItem) -> Unit,
     modifier: Modifier = Modifier,
+    showPath: Boolean = true,
 ) {
     val cs = MaterialTheme.colorScheme
     Column(
@@ -961,9 +1078,9 @@ private fun PaneView(
             }
         },
     ) {
-        // Path line.
+        // Path line (the compact toolbar carries the path itself when there is a single pane).
         val loc = pane.loc
-        Row(
+        if (showPath) Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
@@ -994,9 +1111,9 @@ private fun PaneView(
                 val rootDir = pane.currentDir
                 if (pane.viewMode == FmViewMode.GRID) {
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 104.dp),
+                        columns = GridCells.Adaptive(minSize = if (LocalFmDense.current) 84.dp else 104.dp),
                         state = pane.gridState,
-                        contentPadding = PaddingValues(6.dp),
+                        contentPadding = PaddingValues(if (LocalFmDense.current) 3.dp else 6.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         if (showParent) item(key = "..") { FmParentRow(compact = true) { pane.up() } }
@@ -1006,7 +1123,7 @@ private fun PaneView(
                     }
                 } else {
                     val compact = pane.viewMode == FmViewMode.COMPACT
-                    LazyColumn(state = pane.listState, contentPadding = PaddingValues(vertical = 4.dp), modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(state = pane.listState, contentPadding = PaddingValues(vertical = if (LocalFmDense.current) 2.dp else 4.dp), modifier = Modifier.fillMaxSize()) {
                         if (showParent) item(key = "..") { FmParentRow(compact) { pane.up() } }
                         items(shown, key = { it.key }) { item ->
                             // Subfolder search results say where they were found.
@@ -1021,7 +1138,7 @@ private fun PaneView(
                 when {
                     pane.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     shown.isEmpty() && err != null -> FmEmpty(err)
-                    shown.isEmpty() && pane.deepSearching -> FmEmpty("正在搜索…")
+                    shown.isEmpty() && pane.deepSearching -> FmEmpty("Searching…")
                     shown.isEmpty() && (pane.query.isNotBlank() || pane.deepResults != null) -> FmEmpty("Nothing matches")
                     shown.isEmpty() -> FmEmpty("Empty folder")
                 }
@@ -1033,7 +1150,7 @@ private fun PaneView(
 /** Path segments for a pane: storage or container name first, then the folders, all clickable. */
 private fun crumbsFor(pane: FmPane, containers: List<Container>, imagefsDir: File, driveCPath: File?): List<Pair<String, () -> Unit>> {
     val out = ArrayList<Pair<String, () -> Unit>>()
-    out.add("主页" to { pane.open(FmLoc.Home) })
+    out.add("Home" to { pane.open(FmLoc.Home) })
     fun dirCrumbs(dir: File) {
         val roots = buildList {
             add(File("/storage/emulated/0") to "Internal")

@@ -8,7 +8,7 @@ object XServerDialogState {
 
     enum class ActiveDialog {
         NONE, VIBRATION, DEBUG, INPUT_CONTROLS, SCREEN_EFFECTS, ACTIVE_WINDOWS, NEW_TASK, CAST,
-        CONTROLLER_TEST
+        CONTROLLER_TEST, RUN_PROGRAM
     }
 
     // -------------------------------------------------------------------------
@@ -558,6 +558,7 @@ object XServerDialogState {
      * notifications so they match the existing input notifications. Main-thread only.
      */
     fun showInfoToast(title: String, subLabel: String, message: String?) {
+        com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.TOAST)
         _toastToken += 1
         _controllerToast.value = ControllerToastData(title, subLabel, emptyList(), _toastToken, message)
     }
@@ -658,6 +659,7 @@ object XServerDialogState {
      */
     @JvmStatic
     fun showAchievementToast(name: String, description: String?, iconPath: String?) {
+        com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.ACHIEVEMENT)
         _achievementPillId += 1
         _achievementPills.value = _achievementPills.value +
             AchievementPill(_achievementPillId, name, description, iconPath)
@@ -975,6 +977,17 @@ object XServerDialogState {
     // Runs the command entered in the New Task dialog (same path the native prompt's OK ran:
     // winHandler.exec(command)).
     @JvmField var onTmNewTaskSubmit: TmStringCallback? = null
+    // Opens the file picker for "Run a program": the picked program starts in this session from its own folder.
+    @JvmField var onRunProgramPicker: Runnable? = null
+    // The New Task box's Browse…: the picked program's Windows path comes back into the box (for start options).
+    @JvmField var onNewTaskBrowse: Runnable? = null
+    // Text the New Task box opens with once (set by Browse…), instead of taskmgr.exe.
+    @JvmField var newTaskPrefill: String? = null
+    // The "Run a program" popup (RUN_PROGRAM): the container's C: drive and the game's folder (Android paths, null when
+    // unknown) offered after the device's storage, and what picking a file does.
+    @JvmField var runBrowserDriveC: String? = null
+    @JvmField var runBrowserGameDir: String? = null
+    @JvmField var onRunBrowserPick: TmStringCallback? = null
 
     fun interface TmStringCallback { fun invoke(name: String) }
     fun interface TmFrontCallback { fun invoke(name: String, pid: Int) }

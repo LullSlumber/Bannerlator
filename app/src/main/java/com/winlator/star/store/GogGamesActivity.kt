@@ -33,7 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
+import com.winlator.star.ui.screens.OutlinedAlertDialog as AlertDialog
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -537,7 +537,7 @@ class GogGamesActivity : ComponentActivity() {
                 }
             }
 
-            return GogGame(id, titleStr, imageUrl, desc, developer, category, generation, verticalCover)
+            return GogGame(id, GogTitles.localized(prefs, id, titleStr, token), imageUrl, desc, developer, category, generation, verticalCover)
         } catch (e: Exception) {
             return null
         }
@@ -649,15 +649,7 @@ class GogGamesActivity : ComponentActivity() {
     // ── Game click handlers ──────────────────────────────────────────────────
 
     private fun onGameClick(game: GogGame) {
-        if (viewMode == "list") {
-            if (expandedGameId == game.gameId) {
-                openDetailScreen(game)
-            } else {
-                expandedGameId = game.gameId
-            }
-        } else {
-            expandedGameId = if (expandedGameId == game.gameId) null else game.gameId
-        }
+        openDetailScreen(game)
     }
 
     private fun onInstallClick(game: GogGame) {
@@ -704,6 +696,12 @@ class GogGamesActivity : ComponentActivity() {
         // applicationContext: the GOG engine keeps the Context for its whole background run; the
         // list Activity must not be pinned/leaked. Registry hooks run on the engine callback thread.
         val ticker = GogDownloadTicker(game.gameId)
+        // A new download from this list goes to the default GOG location (internal unless one was set).
+        if (!prefs.contains("gog_dir_${game.gameId}")) {
+            val locs = StoreInstallLocations.locations(applicationContext, StoreInstallLocations.Store.GOG)
+            val def = StoreInstallLocations.defaultId(applicationContext, StoreInstallLocations.Store.GOG, locs)
+            locs.firstOrNull { it.id == def && it.kind != StoreInstallLocations.Kind.INTERNAL }?.let { GogInstallPath.setPendingBase(game.gameId, it.base) }
+        }
         val cancelRunnable = GogDownloadManager.startDownload(applicationContext, game, object : GogDownloadManager.Callback {
             override fun onBytes(done: Long, total: Long, speedBps: Long, etaSeconds: Long) {
                 ticker.onBytes(done, total, speedBps, etaSeconds)
@@ -848,7 +846,8 @@ class GogGamesActivity : ComponentActivity() {
                 if (dirName != null) {
                     lifecycleScope.launch(Dispatchers.IO) {
                         val installPath = GogInstallPath.getInstallDir(this@GogGamesActivity, dirName)
-                        deleteDir(installPath)
+                        StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.GOG, installPath)
+                        GogInstallPath.forgetBase(applicationContext, dirName)
                         // Purge the FULL native install record + clear the DL manager's row, so the
                         // detail page and the cross-store Download Manager stay in sync. Mirrors Amazon.
                         GogInstallState.purge(applicationContext, game.gameId)

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,6 +34,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -117,7 +119,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.winlator.star.R
+import com.winlator.star.ui.deck.XmbInk
 import com.winlator.star.ui.deck.XmbTapToEdit
+import com.winlator.star.ui.deck.rememberXmbFocusGroup
+import com.winlator.star.ui.deck.rememberXmbHighlightItem
 import com.winlator.star.ui.deck.xmbDoneActions
 import com.winlator.star.ui.deck.rememberXmbHome
 import com.winlator.star.contents.AdrenotoolsManager
@@ -129,6 +134,9 @@ import com.winlator.star.store.download.ContentDownloadPhase
 import com.winlator.star.store.download.ContentDownloadRegistry
 import com.winlator.star.store.download.ContentDownloadState
 import com.winlator.star.store.download.InstallProgressDialog
+import com.winlator.star.ui.screens.XmbGroupColumn
+import com.winlator.star.ui.screens.XmbGroupRow
+import com.winlator.star.ui.screens.XmbPanelColumn
 import com.winlator.star.ui.screens.adrenodownload.DriverFeed
 import com.winlator.star.ui.screens.adrenodownload.DriverSourceStore
 import com.winlator.star.ui.screens.MenuItemDivider
@@ -136,6 +144,10 @@ import com.winlator.star.ui.screens.OfficialSourceColor
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.screens.SourceTagBadge
 import com.winlator.star.ui.screens.outlinedMenuCard
+import com.winlator.star.ui.screens.xmbBtn
+import com.winlator.star.ui.screens.xmbListPadding
+import com.winlator.star.ui.screens.xmbMenuBack
+import com.winlator.star.ui.screens.xmbStop
 import com.winlator.star.util.InAppFilePicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -145,9 +157,9 @@ private val InstalledGreen = Color(0xFF37C26B)
 private val SavedBlue = Color(0xFF3D9BFF)
 
 private enum class HubTab(val label: String, val railLabel: String) {
-    DOWNLOAD("下载组件", "Download"),
+    DOWNLOAD("Download Components", "Download"),
     INSTALLED("Installed", "Installed"),
-    MY_FILES("我的文件", "我的文件"),
+    MY_FILES("My Files", "My Files"),
     LINUX("Linux Runtime", "Linux"),
 }
 
@@ -353,7 +365,7 @@ private fun SourceListPane(
                 value = query,
                 onValueChange = { vm.setQuery(it) },
                 modifier = fieldModifier,
-                placeholder = { Text("搜索所有仓库…") },
+                placeholder = { Text("Search all repositories…") },
                 leadingIcon = { Icon(Icons.Filled.Search, null, tint = cs.onSurfaceVariant) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
@@ -369,14 +381,14 @@ private fun SourceListPane(
     }
     val listHeader: @Composable () -> Unit = {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("选择在线仓库", style = MaterialTheme.typography.titleMedium,
+            Text("Select Online Repository", style = MaterialTheme.typography.titleMedium,
                 color = cs.onSurface, modifier = Modifier.weight(1f))
-            IconButton(onClick = { vm.reloadSources(); vm.refreshSelected() }) {
-                Icon(Icons.Filled.Refresh, "刷新", tint = cs.primary)
+            IconButton(onClick = { vm.reloadSources(); vm.refreshSelected() }, modifier = Modifier.xmbBtn(CircleShape)) {
+                Icon(Icons.Filled.Refresh, "Refresh", tint = cs.primary)
             }
-            IconButton(onClick = onImport) { Icon(Icons.Filled.FileDownload, "Import list", tint = cs.primary) }
-            IconButton(onClick = onSettings) { Icon(Icons.Filled.Settings, "Settings", tint = cs.primary) }
-            IconButton(onClick = onAdd) { Icon(Icons.Filled.Add, "添加仓库", tint = cs.primary) }
+            IconButton(onClick = onImport, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.FileDownload, "Import list", tint = cs.primary) }
+            IconButton(onClick = onSettings, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.Settings, "Settings", tint = cs.primary) }
+            IconButton(onClick = onAdd, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.Add, "Add repository", tint = cs.primary) }
         }
     }
 
@@ -390,7 +402,7 @@ private fun SourceListPane(
         if (xmbHome) {
             // XMB home: the search field and the header are the list's first items, so they scroll away with the
             // repositories and come back when you scroll up.
-            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = xmbListPadding()) {
                 item(key = "search") {
                     Spacer(Modifier.height(12.dp))
                     searchField()
@@ -439,7 +451,7 @@ private fun SourceListPane(
         if (query.isBlank() || !showInlineResults) {
             listHeader()
             Spacer(Modifier.height(6.dp))
-            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = xmbListPadding()) {
                 itemsIndexed(sources, key = { i, s -> "$i-${s.name}-${s.driverOnly}" }) { _, source ->
                     RepoCard(source, isSelected = selected == source,
                         onClick = { vm.selectSource(source) }, onMenu = { onMenu(source) })
@@ -473,7 +485,7 @@ private fun SearchResultsPane(vm: ContentsHubViewModel, modifier: Modifier = Mod
                     Text("No components match “$query”.", color = cs.onSurfaceVariant)
                 }
             } else {
-                LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = xmbListPadding()) {
                     itemsIndexed(searchResults, key = { i, it -> "$i-${it.sourceName}-${it.type}-${it.downloadUrl}" }) { _, item ->
                         ComponentRow(vm, item, showSource = true)
                         Spacer(Modifier.height(10.dp))
@@ -493,7 +505,29 @@ private fun RepoCard(
 ) {
     val cs = MaterialTheme.colorScheme
     val driverOnly = source.driverOnly
-    val pills = source.typePills
+    if (rememberXmbHome()) {
+        // XMB interface: the card is one D-pad stop (selected: a faint accent fill and edge); A enters it, the first stop
+        // inside is the card's own action (open the repository), then the options button.
+        val group = rememberXmbFocusGroup()
+        XmbGroupColumn(group, RoundedCornerShape(16.dp), Modifier, PaddingValues(16.dp), accent = isSelected) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f).xmbBtn(RoundedCornerShape(12.dp), first = true).clickable(onClick = onClick),
+                ) {
+                    Icon(if (driverOnly) Icons.Filled.ViewInAr else Icons.Filled.Folder, null,
+                        tint = cs.primary, modifier = Modifier.size(26.dp))
+                    Spacer(Modifier.width(14.dp))
+                    RepoCardInfo(source, Modifier.weight(1f))
+                }
+                IconButton(onClick = onMenu, modifier = Modifier.xmbBtn(CircleShape)) {
+                    Icon(Icons.Filled.MoreVert, "Options", tint = cs.onSurfaceVariant)
+                }
+                Icon(Icons.Filled.ChevronRight, null, tint = cs.onSurfaceVariant)
+            }
+        }
+        return
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -506,31 +540,39 @@ private fun RepoCard(
         Icon(if (driverOnly) Icons.Filled.ViewInAr else Icons.Filled.Folder, null,
             tint = cs.primary, modifier = Modifier.size(26.dp))
         Spacer(Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            // Name takes the slack and ellipsises; the Official tag is fixed-width so it never wraps
-            // the row, narrow or wide.
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(source.name, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f, fill = false))
-                if (source.isOfficial) {
-                    Spacer(Modifier.width(8.dp))
-                    SourceTagBadge("Official", OfficialSourceColor)
-                }
-            }
-            Text(source.displayFormat, style = MaterialTheme.typography.bodySmall,
-                color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (pills.isNotEmpty()) {
-                Spacer(Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                    pills.take(4).forEach { TypePill(it) }
-                    if (pills.size > 4) TypePill("+${pills.size - 4}")
-                }
-            }
-        }
+        RepoCardInfo(source, Modifier.weight(1f))
         IconButton(onClick = onMenu) { Icon(Icons.Filled.MoreVert, "Options", tint = cs.onSurfaceVariant) }
         Icon(Icons.Filled.ChevronRight, null, tint = cs.onSurfaceVariant)
+    }
+}
+
+/** The name, format and type pills of a [RepoCard] (the same column in both looks). */
+@Composable
+private fun RepoCardInfo(source: HubSource, modifier: Modifier) {
+    val cs = MaterialTheme.colorScheme
+    val pills = source.typePills
+    Column(modifier = modifier) {
+        // Name takes the slack and ellipsises; the Official tag is fixed-width so it never wraps
+        // the row, narrow or wide.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(source.name, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
+                maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f, fill = false))
+            if (source.isOfficial) {
+                Spacer(Modifier.width(8.dp))
+                SourceTagBadge("Official", OfficialSourceColor)
+            }
+        }
+        Text(source.displayFormat, style = MaterialTheme.typography.bodySmall,
+            color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        if (pills.isNotEmpty()) {
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                pills.take(4).forEach { TypePill(it) }
+                if (pills.size > 4) TypePill("+${pills.size - 4}")
+            }
+        }
     }
 }
 
@@ -557,9 +599,9 @@ private fun EmptyDetailPlaceholder() {
         verticalArrangement = Arrangement.Center) {
         Icon(Icons.Filled.Apps, null, tint = cs.outline, modifier = Modifier.size(56.dp))
         Spacer(Modifier.height(12.dp))
-        Text("选取一个仓库", style = MaterialTheme.typography.titleMedium, color = cs.onSurfaceVariant)
+        Text("Pick a repository", style = MaterialTheme.typography.titleMedium, color = cs.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))
-        Text("从列表中选择来源以浏览并下载其组件。",
+        Text("Choose a source from the list to browse and download its components.",
             style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
     }
 }
@@ -578,7 +620,7 @@ private fun RepoDetail(vm: ContentsHubViewModel, showBack: Boolean) {
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             if (showBack) {
-                IconButton(onClick = { vm.selectSource(null) }) { Icon(Icons.Filled.ArrowBack, "Back", tint = cs.onSurface) }
+                IconButton(onClick = { vm.selectSource(null) }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.ArrowBack, "Back", tint = cs.onSurface) }
             }
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -593,7 +635,7 @@ private fun RepoDetail(vm: ContentsHubViewModel, showBack: Boolean) {
                 Text("${src.displayFormat} · ${items.size} ${if (src.driverOnly) "drivers" else "components"}",
                     style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             }
-            IconButton(onClick = { vm.refreshSelected() }) { Icon(Icons.Filled.Refresh, "刷新", tint = cs.primary) }
+            IconButton(onClick = { vm.refreshSelected() }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.Refresh, "Refresh", tint = cs.primary) }
         }
 
         // Keep-raw is controlled once from Contents settings (single source of truth); no per-repo bar.
@@ -609,11 +651,11 @@ private fun RepoDetail(vm: ContentsHubViewModel, showBack: Boolean) {
         when {
             loading -> Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = cs.primary) }
             items.isEmpty() -> Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("没有可用组件。", color = cs.onSurfaceVariant)
+                Text("No components available.", color = cs.onSurfaceVariant)
             }
             else -> {
                 val shown = if (filter == "All") items else items.filter { it.type == filter }
-                LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = xmbListPadding()) {
                     itemsIndexed(shown, key = { i, it -> "$i-${it.type}-${it.downloadUrl}" }) { _, item ->
                         ComponentRow(vm, item, showSource = false)
                         Spacer(Modifier.height(10.dp))
@@ -627,17 +669,21 @@ private fun RepoDetail(vm: ContentsHubViewModel, showBack: Boolean) {
 @Composable
 private fun FilterPill(label: String, active: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
-    Text(
-        text = label,
-        style = MaterialTheme.typography.bodyMedium,
-        color = if (active) Color.Black else cs.onSurfaceVariant,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
-            .border(1.dp, if (active) cs.primary else cs.outline, RoundedCornerShape(20.dp))
-            .background(if (active) cs.primary else Color.Transparent, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 15.dp, vertical = 8.dp),
-    )
+    val stop = rememberXmbHighlightItem()
+    XmbInk(stop) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (active) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .xmbStop(RoundedCornerShape(20.dp), stop)
+                .border(1.dp, if (active) cs.primary else cs.outline, RoundedCornerShape(20.dp))
+                .background(if (active) cs.primary else Color.Transparent, RoundedCornerShape(20.dp))
+                .clickable(onClick = onClick)
+                .padding(horizontal = 15.dp, vertical = 8.dp),
+        )
+    }
 }
 
 // ── Component / driver row ─────────────────────────────────────────────────────
@@ -658,10 +704,15 @@ private fun ComponentRow(vm: ContentsHubViewModel, item: ContentsHubViewModel.Ca
     val state: ContentDownloadState? = registry[ContentsInstaller.keyFor(item.type, item.sourceName, item.versionName)]
     val busy = state != null && !state.terminal
 
-    Column(modifier = Modifier.fillMaxWidth()
-        .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
-        .background(cs.surface, RoundedCornerShape(14.dp))
-        .padding(14.dp)) {
+    // XMB interface: the card is one D-pad stop; A enters it and reaches Download / Save below.
+    val group = rememberXmbFocusGroup()
+    XmbGroupColumn(group, RoundedCornerShape(14.dp),
+        classicModifier = Modifier.fillMaxWidth()
+            .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
+            .background(cs.surface, RoundedCornerShape(14.dp))
+            .padding(14.dp),
+        contentPadding = PaddingValues(14.dp)) {
+        val cs = MaterialTheme.colorScheme
         Row(verticalAlignment = Alignment.Top) {
             Box(modifier = Modifier.size(38.dp)
                 .background(if (item.isDriver) cs.primary.copy(alpha = 0.14f) else cs.onSurface.copy(alpha = 0.05f),
@@ -706,8 +757,8 @@ private fun ComponentRow(vm: ContentsHubViewModel, item: ContentsHubViewModel.Ca
             // A save-only run shares the key with an install; only the wording differs.
             val label = when (state.phase) {
                 ContentDownloadPhase.DOWNLOADING -> "Downloading ${(state.fraction * 100).toInt()}%"
-                ContentDownloadPhase.INSTALLING -> if (state.saveOnly) "正在保存到我的文件" else "Installing"
-                ContentDownloadPhase.DONE -> if (state.saveOnly) "Saved" else "Installed"
+                ContentDownloadPhase.INSTALLING -> if (state.saveOnly) "Saving to My Files" else "Installing"
+                ContentDownloadPhase.DONE -> if (state.saveOnly) "Saved" else state.note ?: "Installed"
                 ContentDownloadPhase.ERROR -> state.error ?: "Failed"
             }
             if (!state.terminal) {
@@ -724,15 +775,17 @@ private fun ComponentRow(vm: ContentsHubViewModel, item: ContentsHubViewModel.Ca
         // button's height (IntrinsicSize.Min), so the pair never wraps in portrait or landscape.
         Row(horizontalArrangement = Arrangement.spacedBy(9.dp), verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            if (installed) {
+            // A driver with the same name is installed: the same download again overwrites it.
+            val replace = state != null && state.phase == ContentDownloadPhase.ERROR && state.replaceable
+            if (installed && !replace) {
                 PrimaryButton("Installed", Icons.Filled.CheckCircle, enabled = false,
                     container = InstalledGreen.copy(alpha = 0.16f), content = InstalledGreen, modifier = Modifier.weight(1f)) {}
             } else {
-                PrimaryButton(if (busy) "正在处理…" else "下载并安装", Icons.Filled.Download,
-                    enabled = !busy, container = cs.primary, content = Color.Black, modifier = Modifier.weight(1f)) {
+                PrimaryButton(if (busy) "Working…" else if (replace) "Replace" else "Download & Install", Icons.Filled.Download,
+                    enabled = !busy, container = cs.primary, content = Color.Black, modifier = Modifier.weight(1f), first = true) {
                     ContentsInstaller.install(
                         context.applicationContext, item.type, item.sourceName, item.versionName,
-                        item.downloadUrl, vm.keepRaw.value,
+                        item.downloadUrl, vm.keepRaw.value, replace = replace,
                     ) { vm.refreshStatus(); vm.refreshFolders() }
                 }
             }
@@ -747,6 +800,7 @@ private fun ComponentRow(vm: ContentsHubViewModel, item: ContentsHubViewModel.Ca
                     } else vm.saveArchive(item)
                 },
                 onLongClick = { vm.saveArchive(item, force = true) },
+                first = installed,
             )
         }
     }
@@ -754,13 +808,16 @@ private fun ComponentRow(vm: ContentsHubViewModel, item: ContentsHubViewModel.Ca
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SaveArchiveAction(saved: Boolean, enabled: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
+private fun SaveArchiveAction(
+    saved: Boolean, enabled: Boolean, onClick: () -> Unit, onLongClick: () -> Unit, first: Boolean = false,
+) {
     val cs = MaterialTheme.colorScheme
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxHeight()
             .width(46.dp)
+            .xmbBtn(RoundedCornerShape(11.dp), first)
             .border(1.dp, if (saved) SavedBlue.copy(alpha = 0.5f) else cs.outline, RoundedCornerShape(11.dp))
             .background(if (saved) SavedBlue.copy(alpha = 0.10f) else cs.onSurface.copy(alpha = 0.04f), RoundedCornerShape(11.dp))
             .then(if (enabled) Modifier.combinedClickable(
@@ -797,12 +854,13 @@ private fun StatusBadge(text: String, bg: Color, fg: Color, icon: ImageVector) {
 @Composable
 private fun PrimaryButton(
     text: String, icon: ImageVector, enabled: Boolean, container: Color, content: Color,
-    modifier: Modifier = Modifier, onClick: () -> Unit,
+    modifier: Modifier = Modifier, first: Boolean = false, onClick: () -> Unit,
 ) {
     // Respect the caller's container alpha (faint tints must stay translucent); dim the whole
     // component when disabled rather than forcing the fill opaque.
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
         modifier = modifier
+            .xmbBtn(RoundedCornerShape(11.dp), first, tint = if (container == MaterialTheme.colorScheme.primary) Color.White else Color.Unspecified)
             .background(container, RoundedCornerShape(11.dp))
             .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
             .alpha(if (enabled) 1f else 0.5f)
@@ -838,24 +896,24 @@ private fun MyFilesTab(vm: ContentsHubViewModel) {
             .padding(12.dp)) {
             Icon(Icons.Filled.Inventory2, null, tint = cs.primary, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(9.dp))
-            Text("您选择保留的原始 .wcp / .zip / .tzst 压缩包，按组件类型归档。可离线重新安装、分享或删除。",
+            Text("Raw .wcp / .zip / .tzst archives you chose to keep, filed by component type. Re-install offline, share, or delete.",
                 style = MaterialTheme.typography.bodySmall, color = cs.primary)
         }
         Spacer(Modifier.height(12.dp))
         // Save location lives once in Contents settings (the cog) — no duplicate bar here.
-        PrimaryButton("从文件安装内容…", Icons.Filled.FolderOpen, enabled = true,
+        PrimaryButton("Install content from file…", Icons.Filled.FolderOpen, enabled = true,
             container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
-            installPicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "选择内容包"))
+            installPicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "Select content pack"))
         }
         Spacer(Modifier.height(14.dp))
 
         if (folders.isEmpty()) {
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("尚无已保存的压缩包。\n使用组件上的磁盘图标将其压缩包保存于此，或在安装前启用 “保留原始压缩包”。",
+                Text("No saved archives yet.\nUse the disk icon on a component to save its archive here, or enable “Keep raw archive” before installing.",
                     color = cs.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
             }
         } else {
-            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = xmbListPadding()) {
                 itemsIndexed(folders.keys.toList(), key = { i, t -> "$i-$t" }) { _, type ->
                     FolderCard(vm, type, folders[type].orEmpty(),
                         open = type in expanded.value,
@@ -876,27 +934,37 @@ private fun FolderCard(
 ) {
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current
-    Column(modifier = Modifier.fillMaxWidth()
-        .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
-        .background(cs.surface, RoundedCornerShape(14.dp))) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(15.dp)) {
-            Icon(if (ContentsTypes.isDriver(type)) Icons.Filled.ViewInAr else Icons.Filled.Folder, null,
-                tint = cs.primary, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(13.dp))
-            Text(type, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
-                fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-            Text("${files.size}", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant,
-                modifier = Modifier.background(cs.onSurface.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 9.dp, vertical = 2.dp))
-            Spacer(Modifier.width(8.dp))
-            Icon(Icons.Filled.ExpandMore, null, tint = cs.onSurfaceVariant)
+    // XMB interface: a glass panel; its header is one stop (A opens / closes it), each file below is a two-level stop
+    // (A enters it, then Install / Share / Delete). Elsewhere the Column it was.
+    XmbPanelColumn(RoundedCornerShape(14.dp),
+        classicModifier = Modifier.fillMaxWidth()
+            .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
+            .background(cs.surface, RoundedCornerShape(14.dp))) {
+        val cs = MaterialTheme.colorScheme
+        val head = rememberXmbHighlightItem()
+        XmbInk(head) {
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(14.dp), head).clickable(onClick = onToggle).padding(15.dp)) {
+                Icon(if (ContentsTypes.isDriver(type)) Icons.Filled.ViewInAr else Icons.Filled.Folder, null,
+                    tint = cs.primary, modifier = Modifier.size(24.dp))
+                Spacer(Modifier.width(13.dp))
+                Text(type, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
+                    fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text("${files.size}", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant,
+                    modifier = Modifier.background(cs.onSurface.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
+                        .padding(horizontal = 9.dp, vertical = 2.dp))
+                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Filled.ExpandMore, null, tint = cs.onSurfaceVariant)
+            }
         }
         if (open) {
             Divider(color = cs.outline)
             files.forEach { f ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                val group = rememberXmbFocusGroup()
+                XmbGroupRow(group, RoundedCornerShape(10.dp),
+                    classicModifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp), card = false,
+                    verticalAlignment = Alignment.CenterVertically) {
                     Icon(if (f.name.endsWith(".zip", true)) Icons.Filled.FolderZip else Icons.Filled.Inventory2,
                         null, tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(12.dp))
@@ -917,16 +985,16 @@ private fun FolderCard(
                         ContentsInstaller.installFromFile(context.applicationContext, f.type, f.name, f.uri) { ok ->
                             if (ok) vm.markInstalledFromSaved(f) else vm.refreshStatus()
                         }
-                    }) { Icon(Icons.Filled.InstallDesktop, "Install", tint = cs.primary) }
-                    IconButton(onClick = { shareArchive(context, f) }) { Icon(Icons.Filled.Share, "分享", tint = cs.onSurfaceVariant) }
-                    IconButton(onClick = { vm.deleteSaved(f) }) { Icon(Icons.Filled.DeleteOutline, "删除", tint = cs.onSurfaceVariant) }
+                    }, modifier = Modifier.xmbBtn(CircleShape, first = true)) { Icon(Icons.Filled.InstallDesktop, "Install", tint = cs.primary) }
+                    IconButton(onClick = { shareArchive(context, f) }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.Share, "Share", tint = cs.onSurfaceVariant) }
+                    IconButton(onClick = { vm.deleteSaved(f) }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Filled.DeleteOutline, "Delete", tint = cs.onSurfaceVariant) }
                 }
             }
         }
     }
 }
 
-private fun shareArchive(context: Context, f: ComponentLibrary.SavedFile) {
+internal fun shareArchive(context: Context, f: ComponentLibrary.SavedFile) {
     runCatching {
         val shareUri = if (f.uri.scheme == "content") f.uri else {
             val file = java.io.File(f.uri.path!!)
@@ -1049,13 +1117,13 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(14.dp)) {
             InstalledSectionHeader("GPU Drivers", Icons.Filled.ViewInAr)
             Spacer(Modifier.height(10.dp))
-            PrimaryButton("从文件安装内容…", Icons.Filled.FolderOpen, enabled = true,
+            PrimaryButton("Install content from file…", Icons.Filled.FolderOpen, enabled = true,
                 container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
-                filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "选择内容包"))
+                filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, "Select content pack"))
             }
             Spacer(Modifier.height(12.dp))
             if (drivers.isEmpty()) {
-                InstalledEmpty("未安装GPU驱动。")
+                InstalledEmpty("No GPU drivers installed.")
             } else {
                 drivers.forEach { id ->
                     InstalledRow(icon = Icons.Filled.ViewInAr, driver = true,
@@ -1068,20 +1136,20 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             }
 
             Spacer(Modifier.height(20.dp))
-            InstalledSectionHeader("Wayland游戏驱动（Linux ICD）", Icons.Filled.ViewInAr)
+            InstalledSectionHeader("Wayland game drivers (Linux ICD)", Icons.Filled.ViewInAr)
             Spacer(Modifier.height(6.dp))
             Text("The Vulkan driver a game renders on under the Wayland display backend. Import a zip with a " +
                 "libvulkan_freedreno*.so built for Wayland/Linux (optional libdrm.so, meta.json). Android Turnip " +
                 "zips (vulkan.adXXXX.so) belong under GPU Drivers above and are rejected here.",
                 style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             Spacer(Modifier.height(10.dp))
-            PrimaryButton("导入Wayland游戏驱动（.zip）…", Icons.Filled.FolderOpen, enabled = true,
+            PrimaryButton("Import Wayland game driver (.zip)…", Icons.Filled.FolderOpen, enabled = true,
                 container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
                 waylandDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "Select Wayland game driver zip"))
             }
             Spacer(Modifier.height(12.dp))
             if (waylandDrivers.isEmpty()) {
-                InstalledEmpty("未导入Wayland游戏驱动。Wayland上的容器使用Proton中捆绑的Turnip。")
+                InstalledEmpty("No Wayland game drivers imported. Containers on Wayland use the Turnips bundled in the Proton.")
             } else {
                 waylandDrivers.forEach { id ->
                     val ver = waylandManager.getDriverVersion(id)
@@ -1095,7 +1163,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             }
 
             Spacer(Modifier.height(20.dp))
-            InstalledSectionHeader("Linux runtime 驱动（Steam 客户端）", Icons.Filled.ViewInAr)
+            InstalledSectionHeader("Linux runtime drivers (Steam client)", Icons.Filled.ViewInAr)
             Spacer(Modifier.height(6.dp))
             Text("The Vulkan driver the Linux runtime draws with: the native Steam client\u2019s interface and every " +
                 "game it launches. Import a \"-Linux\" Turnip zip (glibc). The client and its games are Linux " +
@@ -1103,13 +1171,13 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
                 "rejected here. Frames still reach the screen through the GPU driver above.",
                 style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             Spacer(Modifier.height(10.dp))
-            PrimaryButton("导入 Linux runtime 驱动（.zip）…", Icons.Filled.FolderOpen, enabled = true,
+            PrimaryButton("Import Linux runtime driver (.zip)\u2026", Icons.Filled.FolderOpen, enabled = true,
                 container = cs.onSurface.copy(alpha = 0.06f), content = cs.onSurface, modifier = Modifier.fillMaxWidth()) {
                 linuxDriverPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), "Select Linux runtime driver zip"))
             }
             Spacer(Modifier.height(12.dp))
             if (linuxDrivers.isEmpty()) {
-                InstalledEmpty("未导入 Linux runtime驱动程序。Linux 会话使用runtime内置的 Turnip。")
+                InstalledEmpty("No Linux runtime drivers imported. Linux sessions use the Turnip built into the runtime.")
             } else {
                 linuxDrivers.forEach { id ->
                     val ver = linuxDriverManager.getDriverVersion(id)
@@ -1126,7 +1194,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             InstalledSectionHeader("Components", Icons.Filled.Extension)
             Spacer(Modifier.height(10.dp))
             if (components.isEmpty()) {
-                InstalledEmpty("未安装任何组件。")
+                InstalledEmpty("No components installed.")
             } else {
                 components.forEach { (type, profiles) ->
                     val label = type.toString()
@@ -1165,12 +1233,12 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemoveDriver = null },
             containerColor = cs.surfaceContainerHigh,
-            title = { Text("移除驱动?", color = cs.onSurface) },
+            title = { Text("Remove driver?", color = cs.onSurface) },
             text = { Text("Remove \"${manager.getDriverName(id)}\"?", color = cs.onSurface) },
             confirmButton = {
                 TextButton(onClick = {
                     manager.removeDriver(id); confirmRemoveDriver = null; refreshKey++; vm.refreshStatus()
-                }) { Text("移除", color = cs.primary) }
+                }) { Text("Remove", color = cs.primary) }
             },
             dismissButton = { TextButton(onClick = { confirmRemoveDriver = null }) { Text("Cancel", color = cs.primary) } },
         )
@@ -1188,7 +1256,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             confirmButton = {
                 TextButton(onClick = {
                     linuxDriverManager.removeDriver(id); confirmRemoveLinuxDriver = null; refreshKey++
-                }) { Text("移除", color = cs.primary) }
+                }) { Text("Remove", color = cs.primary) }
             },
             dismissButton = { TextButton(onClick = { confirmRemoveLinuxDriver = null }) { Text("Cancel", color = cs.primary) } },
         )
@@ -1205,7 +1273,7 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
             confirmButton = {
                 TextButton(onClick = {
                     waylandManager.removeDriver(id); confirmRemoveWaylandDriver = null; refreshKey++
-                }) { Text("移除", color = cs.primary) }
+                }) { Text("Remove", color = cs.primary) }
             },
             dismissButton = { TextButton(onClick = { confirmRemoveWaylandDriver = null }) { Text("Cancel", color = cs.primary) } },
         )
@@ -1216,13 +1284,13 @@ private fun InstalledTab(vm: ContentsHubViewModel) {
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemoveProfile = null },
             containerColor = cs.surfaceContainerHigh,
-            title = { Text("移除组件?", color = cs.onSurface) },
+            title = { Text("Remove component?", color = cs.onSurface) },
             text = { Text("Remove \"${profile.verName}\"?", color = cs.onSurface) },
             confirmButton = {
                 TextButton(onClick = {
                     val cm = ContentsManager(context); cm.removeContent(profile); cm.syncContents()
                     confirmRemoveProfile = null; refreshKey++; vm.refreshStatus()
-                }) { Text("移除", color = cs.primary) }
+                }) { Text("Remove", color = cs.primary) }
             },
             dismissButton = { TextButton(onClick = { confirmRemoveProfile = null }) { Text("Cancel", color = cs.primary) } },
         )
@@ -1251,11 +1319,16 @@ private fun InstalledRow(
     defaultArchs: List<String> = emptyList(), onSetDefault: (() -> Unit)? = null, onRemove: () -> Unit,
 ) {
     val cs = MaterialTheme.colorScheme
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+    // XMB interface: the row is a glass card and one D-pad stop; A enters it (the ⋮ menu, then the trash).
+    val group = rememberXmbFocusGroup()
+    XmbGroupRow(group, RoundedCornerShape(14.dp),
+        classicModifier = Modifier.fillMaxWidth()
             .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
             .background(cs.surface, RoundedCornerShape(14.dp))
-            .padding(horizontal = 14.dp, vertical = 12.dp)) {
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp), card = true,
+        verticalAlignment = Alignment.CenterVertically) {
+        val cs = MaterialTheme.colorScheme
         Box(modifier = Modifier.size(38.dp)
             .background(if (driver) cs.primary.copy(alpha = 0.14f) else cs.onSurface.copy(alpha = 0.05f), RoundedCornerShape(10.dp)),
             contentAlignment = Alignment.Center) {
@@ -1269,8 +1342,11 @@ private fun InstalledRow(
                 maxLines = 1, overflow = TextOverflow.Ellipsis)
             DefaultBadges(defaultArchs)
         }
-        onSetDefault?.let { SetDefaultMenuButton(it) }
-        IconButton(onClick = onRemove) { Icon(Icons.Filled.DeleteOutline, "移除", tint = cs.onSurfaceVariant) }
+        // The trash is the first stop when there is no menu before it.
+        onSetDefault?.let { SetDefaultMenuButton(it, first = true) }
+        IconButton(onClick = onRemove, modifier = Modifier.xmbBtn(CircleShape, first = onSetDefault == null)) {
+            Icon(Icons.Filled.DeleteOutline, "Remove", tint = cs.onSurfaceVariant)
+        }
     }
 }
 
@@ -1282,34 +1358,46 @@ private fun InstalledComponentFolder(
     onRemove: (ContentProfile) -> Unit,
 ) {
     val cs = MaterialTheme.colorScheme
-    Column(modifier = Modifier.fillMaxWidth()
-        .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
-        .background(cs.surface, RoundedCornerShape(14.dp))) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(15.dp)) {
-            Icon(typeIcon(type), null, tint = cs.primary, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(13.dp))
-            Text(type, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
-                fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-            Text("${profiles.size}", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant,
-                modifier = Modifier.background(cs.onSurface.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 9.dp, vertical = 2.dp))
-            Spacer(Modifier.width(8.dp))
-            Icon(Icons.Filled.ExpandMore, null, tint = cs.onSurfaceVariant)
+    // XMB interface: same as FolderCard (a glass panel, the header a stop, each profile a two-level stop).
+    XmbPanelColumn(RoundedCornerShape(14.dp),
+        classicModifier = Modifier.fillMaxWidth()
+            .border(1.dp, cs.outline, RoundedCornerShape(14.dp))
+            .background(cs.surface, RoundedCornerShape(14.dp))) {
+        val cs = MaterialTheme.colorScheme
+        val head = rememberXmbHighlightItem()
+        XmbInk(head) {
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(14.dp), head).clickable(onClick = onToggle).padding(15.dp)) {
+                Icon(typeIcon(type), null, tint = cs.primary, modifier = Modifier.size(24.dp))
+                Spacer(Modifier.width(13.dp))
+                Text(type, style = MaterialTheme.typography.titleSmall, color = cs.onSurface,
+                    fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text("${profiles.size}", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant,
+                    modifier = Modifier.background(cs.onSurface.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
+                        .padding(horizontal = 9.dp, vertical = 2.dp))
+                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Filled.ExpandMore, null, tint = cs.onSurfaceVariant)
+            }
         }
         if (open) {
             Divider(color = cs.outline)
             profiles.forEach { p ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                val group = rememberXmbFocusGroup()
+                val setDefault = onSetDefault(p)
+                XmbGroupRow(group, RoundedCornerShape(10.dp),
+                    classicModifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp), card = false,
+                    verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(p.verName, style = MaterialTheme.typography.bodySmall, color = cs.onSurface,
                             maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
                         Text("Code ${p.verCode}", style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
                         DefaultBadges(defaultArchs(p))
                     }
-                    onSetDefault(p)?.let { SetDefaultMenuButton(it) }
-                    IconButton(onClick = { onRemove(p) }) { Icon(Icons.Filled.DeleteOutline, "移除", tint = cs.onSurfaceVariant) }
+                    setDefault?.let { SetDefaultMenuButton(it, first = true) }
+                    IconButton(onClick = { onRemove(p) }, modifier = Modifier.xmbBtn(CircleShape, first = setDefault == null)) {
+                        Icon(Icons.Filled.DeleteOutline, "Remove", tint = cs.onSurfaceVariant)
+                    }
                 }
             }
         }
@@ -1326,12 +1414,16 @@ private fun DefaultBadges(archs: List<String>) {
 
 /** The ⋮ beside an installed item's trash: holds "Set as default…". */
 @Composable
-private fun SetDefaultMenuButton(onSetDefault: () -> Unit) {
+private fun SetDefaultMenuButton(onSetDefault: () -> Unit, first: Boolean = false) {
     val cs = MaterialTheme.colorScheme
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, "More options", tint = cs.onSurfaceVariant) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }, modifier = Modifier.outlinedMenuCard()) {
+        IconButton(onClick = { open = true }, modifier = Modifier.xmbBtn(CircleShape, first)) {
+            Icon(Icons.Filled.MoreVert, "More options", tint = cs.onSurfaceVariant)
+        }
+        // The menu is a window of its own: the controller's B closes it (nothing outside the XMB interface).
+        DropdownMenu(expanded = open, onDismissRequest = { open = false },
+            modifier = Modifier.outlinedMenuCard().xmbMenuBack { open = false }) {
             DropdownMenuItem(
                 text = { Text("Set as default\u2026", color = DefaultGold, fontWeight = FontWeight.Bold) },
                 leadingIcon = { Icon(Icons.Filled.Star, null, tint = DefaultGold) },
@@ -1367,36 +1459,36 @@ internal fun AddRepoDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cs.surfaceContainerHigh,
-        title = { Text("添加仓库", color = cs.onSurface) },
+        title = { Text("Add repository", color = cs.onSurface) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text("粘贴任何组件或GPU驱动程序来源 — 它会像内置源一样加入列表。",
+                Text("Paste any component or GPU-driver source — it joins the list like a built-in.",
                     style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(value = name, onValueChange = { name = it }, singleLine = true,
-                    label = { Text("显示名称") }, modifier = Modifier.fillMaxWidth())
+                    label = { Text("Display name") }, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(value = url, onValueChange = { url = it }, singleLine = true,
-                    label = { Text(if (isDriver) "GitHub仓库（所有者/仓库）或JSON URL" else "URL（仓库、发布API或JSON）") },
+                    label = { Text(if (isDriver) "GitHub repo (owner/repo) or JSON URL" else "URL (repo, releases API, or JSON)") },
                     modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
                 // GPU-driver sources persist through the shared adrenotools store (also visible in
                 // the AdrenoTools screen); component sources use the Contents source store.
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(10.dp), wholeSubtree = true)) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("GPU驱动程序来源", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
-                        Text("与AdrenoTools屏幕共享", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                        Text("GPU driver source", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
+                        Text("Shared with the AdrenoTools screen", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                     }
                     Switch(checked = isDriver, onCheckedChange = { isDriver = it },
                         colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = cs.primary))
                 }
                 if (!isDriver) {
                     Spacer(Modifier.height(8.dp))
-                    Text("来源格式", style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
+                    Text("Source format", style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
                     Box {
-                        TextButton(onClick = { formatMenu = true }) { Text(format.name.replace('_', ' '), color = cs.primary) }
+                        TextButton(onClick = { formatMenu = true }, modifier = Modifier.xmbBtn(CircleShape)) { Text(format.name.replace('_', ' '), color = cs.primary) }
                         androidx.compose.material3.DropdownMenu(expanded = formatMenu, onDismissRequest = { formatMenu = false },
-                            modifier = Modifier.outlinedMenuCard()) {
+                            modifier = Modifier.outlinedMenuCard().xmbMenuBack { formatMenu = false }) {
                             RemoteSourceRepository.SourceFormat.values().forEach { fmt ->
                                 androidx.compose.material3.DropdownMenuItem(text = { Text(fmt.name.replace('_', ' ')) },
                                     onClick = { format = fmt; formatMenu = false })
@@ -1419,7 +1511,7 @@ internal fun AddRepoDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit) {
                     }
                     onDismiss()
                 }
-            }) { Text("添加源", color = cs.primary) }
+            }) { Text("Add source", color = cs.primary) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel", color = cs.primary) } },
     )
@@ -1448,14 +1540,14 @@ private fun RepoMenuDialog(
         title = { Text(source.name, color = cs.onSurface) },
         text = {
             Column {
-                MenuRow(Icons.Filled.Apps, if (source.driverOnly) "浏览驱动程序" else "浏览组件") { onDismiss(); vm.selectSource(source) }
+                MenuRow(Icons.Filled.Apps, if (source.driverOnly) "Browse drivers" else "Browse components") { onDismiss(); vm.selectSource(source) }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.OpenInNew, "打开来源页面") {
+                MenuRow(Icons.Filled.OpenInNew, "Open source page") {
                     runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(vm.browseUrl(source)))) }
                     onDismiss()
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.Delete, if (source.removeIsHide) "隐藏默认仓库" else "移除仓库",
+                MenuRow(Icons.Filled.Delete, if (source.removeIsHide) "Hide default repository" else "Remove repository",
                     tint = cs.error) { vm.removeSource(source); onDismiss() }
             }
         },
@@ -1465,11 +1557,14 @@ private fun RepoMenuDialog(
 
 @Composable
 private fun MenuRow(icon: ImageVector, label: String, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant, onClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp)) {
-        Icon(icon, null, tint = tint, modifier = Modifier.size(22.dp))
-        Spacer(Modifier.width(14.dp))
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = if (tint == MaterialTheme.colorScheme.error) tint else MaterialTheme.colorScheme.onSurface)
+    val stop = rememberXmbHighlightItem()
+    XmbInk(stop) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(10.dp), stop).clickable(onClick = onClick).padding(vertical = 12.dp)) {
+            Icon(icon, null, tint = tint, modifier = Modifier.size(22.dp))
+            Spacer(Modifier.width(14.dp))
+            Text(label, style = MaterialTheme.typography.bodyMedium, color = if (tint == MaterialTheme.colorScheme.error) tint else MaterialTheme.colorScheme.onSurface)
+        }
     }
 }
 
@@ -1491,16 +1586,16 @@ private fun ImportExportDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit) 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cs.surfaceContainerHigh,
-        title = { Text("导入/导出来源", color = cs.onSurface) },
+        title = { Text("Import / export sources", color = cs.onSurface) },
         text = {
             Column {
-                MenuRow(Icons.Filled.FileDownload, "从文件导入列表…") {
+                MenuRow(Icons.Filled.FileDownload, "Import list from file…") {
                     importer.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"
                     })
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.FileUpload, "导出当前列表") {
+                MenuRow(Icons.Filled.FileUpload, "Export current list") {
                     runCatching {
                         val json = vm.exportRepoListJson()
                         val share = Intent(Intent.ACTION_SEND).apply {
@@ -1525,36 +1620,36 @@ private fun SettingsDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit, onLo
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cs.surfaceContainerHigh,
-        title = { Text("内容设置", color = cs.onSurface) },
+        title = { Text("Contents settings", color = cs.onSurface) },
         text = {
             // Scrolls so the taller body still fits a landscape phone (dialog height is capped there).
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(10.dp), wholeSubtree = true).padding(vertical = 6.dp)) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("默认保留原始压缩包", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
-                        Text("将每次安装的下载保存到我的文件", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                        Text("Keep raw archive by default", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
+                        Text("Save every install's download to My Files", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                     }
                     Switch(checked = keepRaw, onCheckedChange = { vm.setKeepRaw(it) },
                         colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = cs.primary))
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.FolderSpecial, "保存位置") { onLocation() }
+                MenuRow(Icons.Filled.FolderSpecial, "Save location") { onLocation() }
                 Text(baseDisplay, style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant,
                     modifier = Modifier.padding(start = 36.dp))
-                Text("仅保存的压缩包（磁盘图标）也按类型归档在此文件夹中。",
+                Text("Save-only archives (the disk icon) are filed by type in this folder too.",
                     style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant,
                     modifier = Modifier.padding(start = 36.dp, top = 2.dp))
                 MenuItemDivider()
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(10.dp), wholeSubtree = true).padding(vertical = 6.dp)) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("在仓库中显示官方目录", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
-                        Text("关闭会在此处隐藏它；容器和快捷方式面板会保留它", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                        Text("Show Official catalog in repositories", style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
+                        Text("Off hides it here; container and shortcut sheets keep it", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                     }
                     Switch(checked = showOfficial, onCheckedChange = { vm.setShowOfficial(it) },
                         colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = cs.primary))
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.Restore, "恢复默认仓库") { vm.restoreDefaultSources(); onDismiss() }
+                MenuRow(Icons.Filled.Restore, "Restore default repositories") { vm.restoreDefaultSources(); onDismiss() }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text("Close", color = cs.primary) } },
@@ -1579,21 +1674,21 @@ private fun LocationDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
         containerColor = cs.surfaceContainerHigh,
-        title = { Text("组件保存位置", color = cs.onSurface) },
+        title = { Text("Component save location", color = cs.onSurface) },
         text = {
             Column {
-                Text("原始压缩包归档于 <folder>/components/<type>/ — 位于Bannerlator的日志和存档旁边。",
+                Text("Raw archives are filed under <folder>/components/<type>/ — next to Bannerlator's logs and saves.",
                     style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                 Spacer(Modifier.height(10.dp))
-                MenuRow(Icons.Filled.Folder, "Downloads › bannerlator（默认）") {
+                MenuRow(Icons.Filled.Folder, "Downloads › bannerlator (default)") {
                     vm.library.setDefaultBase(); vm.refreshBase(); vm.refreshFolders(); onDismiss()
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.FolderSpecial, "应用私有存储") {
+                MenuRow(Icons.Filled.FolderSpecial, "App-private storage") {
                     vm.library.setFileBase(vm.library.appPrivateBasePath()); vm.refreshBase(); vm.refreshFolders(); onDismiss()
                 }
                 MenuItemDivider()
-                MenuRow(Icons.Filled.FolderOpen, "选择其他文件夹…") {
+                MenuRow(Icons.Filled.FolderOpen, "Choose another folder…") {
                     dirPicker.launch(
                         InAppFilePicker.buildDirIntent(
                             context,

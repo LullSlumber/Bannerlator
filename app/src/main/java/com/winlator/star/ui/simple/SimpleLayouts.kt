@@ -258,7 +258,7 @@ private fun FilterChips(ctl: SimpleController, d: SimpleData) {
 /** A legend for what the focused thing allows. */
 private fun mainLegend(ctl: SimpleController): List<Pair<String, String>> = when {
     ctl.section == SEC_SETTINGS -> listOf("↕" to "Move", "↔" to "Change", "A" to "Select", "B" to "Back")
-    ctl.section == SEC_LIBRARY && ctl.focusedGame() != null -> listOf("A" to "Play", "X" to "Game settings", "Y" to "游戏菜单", "⧉" to "Help")
+    ctl.section == SEC_LIBRARY && ctl.focusedGame() != null -> listOf("A" to "Play", "X" to "Game settings", "Y" to "Game menu", "⧉" to "Help")
     ctl.section == SEC_LIBRARY -> listOf("A" to "Add a game", "⧉" to "Help")
     else -> listOf("A" to "Open", "↔" to "Browse", "B" to "Back")
 }
@@ -349,7 +349,7 @@ internal fun SimpleShelfLayout(ctl: SimpleController, d: SimpleData) {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { setupChips(g).forEach { SimpleChip(it) } }
                         }
                         ctl.section == SEC_LIBRARY -> {
-                            Text(if (d.games.isEmpty()) "尚无游戏" else "Add a game", color = Color.White, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+                            Text(if (d.games.isEmpty()) "No games yet" else "Add a game", color = Color.White, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 30.sp)
                             Spacer(Modifier.height(4.dp))
                             Text("An .exe from your files, or a game from your stores.", color = SimpleMuted, fontSize = 14.sp)
                         }
@@ -542,7 +542,7 @@ private fun RailDetail(ctl: SimpleController, d: SimpleData, modifier: Modifier)
             }
         }
         Spacer(Modifier.height(16.dp))
-        val title = g?.name ?: item?.title ?: "Add a game"
+        val title = g?.let { LabTitles.of(it) } ?: item?.title ?: "Add a game"
         Text(title, color = Color.White, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = titleSize(title, 26), maxLines = 2, overflow = TextOverflow.Ellipsis)
         Spacer(Modifier.height(4.dp))
         Text(
@@ -607,7 +607,7 @@ internal fun SimpleFocusLayout(ctl: SimpleController, d: SimpleData) {
             }
             Text(kicker.uppercase(), color = accent, fontWeight = FontWeight.Bold, fontSize = 12.sp, letterSpacing = 2.sp)
             Spacer(Modifier.height(8.dp))
-            val title = g?.name ?: item?.title ?: if (d.games.isEmpty()) "尚无游戏" else "Add a game"
+            val title = g?.let { LabTitles.of(it) } ?: item?.title ?: if (d.games.isEmpty()) "No games yet" else "Add a game"
             Text(title, color = Color.White, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = titleSize(title, 46), lineHeight = titleSize(title, 50), maxLines = 2, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(10.dp))
             Text(

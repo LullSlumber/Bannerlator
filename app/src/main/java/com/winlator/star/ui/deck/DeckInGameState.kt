@@ -29,8 +29,8 @@ object DeckInGameState {
 
     enum class Panel { NONE, QUICK, MENU }
 
-    /** Full-menu pages, in rail order. STEAM, TV and FRIENDS only show where they apply (see [DeckInGameMenu]). */
-    enum class MenuTab { SCREEN, PERFORMANCE, EFFECTS, OVERLAY, CONTROLS, AUDIO, STEAM, TV, FRIENDS, TOOLS }
+    /** Full-menu pages, in rail order. STEAM, TV, FRIENDS and MODS only show where they apply (see [DeckInGameMenu]). */
+    enum class MenuTab { SCREEN, PERFORMANCE, EFFECTS, OVERLAY, CONTROLS, AUDIO, STEAM, TV, FRIENDS, MODS, TOOLS }
 
     /** Quick-menu pages. FRIENDS only shows while a live friends source exists. */
     enum class QuickTab { QUICK, TOOLS, FRIENDS, OPENERS }
@@ -64,6 +64,10 @@ object DeckInGameState {
     private val _gameTitle = MutableStateFlow("")
     val gameTitle: StateFlow<String> = _gameTitle
 
+    // The running game's shortcut (its .desktop path): Lab's in-game menu draws the game's art, logo and icon from it.
+    private val _gameShortcutPath = MutableStateFlow<String?>(null)
+    val gameShortcutPath: StateFlow<String?> = _gameShortcutPath
+
     // Launched from a shortcut: the "per game" settings are written to it; without one they land on the container.
     private val _launchedFromShortcut = MutableStateFlow(false)
     val launchedFromShortcut: StateFlow<Boolean> = _launchedFromShortcut
@@ -87,10 +91,15 @@ object DeckInGameState {
     // Lab: one in-game menu whose first page is Quick (the quick menu's controls), then the full menu's pages.
     private val _labQuick = MutableStateFlow(true)
     val labQuick: StateFlow<Boolean> = _labQuick
-    private val lab: Boolean get() = com.winlator.star.ui.theme.AppThemeState.simpleHome.value
+    // The XMB mode's drawer is Lab's menu in XMB dress (XmbInGameMenu), so it runs the same state machine. The two styles
+    // never run together (AppThemeState keeps simpleHome and deckXmbHome apart).
+    private val lab: Boolean get() = com.winlator.star.ui.theme.AppThemeState.simpleHome.value || xmbDrawer
+
+    /** XMB mode: the in-game menu is the one glass drawer on the left (XmbInGameMenu) instead of the Deck's quick menu + game menu. */
+    val xmbDrawer: Boolean get() = com.winlator.star.ui.theme.AppThemeState.deckXmbHome.value
 
     fun openQuick() {
-        if (lab) _labQuick.value = true
+        // Lab: the menu reopens on the page it was left on during this game session (Quick the first time).
         setPanel(Panel.QUICK)
     }
 
@@ -107,6 +116,7 @@ object DeckInGameState {
 
     /** Lab: the Quick page. */
     fun selectLabQuick() {
+        if (!_labQuick.value) com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.TAB)
         _labQuick.value = true
         requestFocus()
     }
@@ -131,12 +141,14 @@ object DeckInGameState {
     }
 
     fun selectMenuTab(tab: MenuTab) {
+        if (_labQuick.value || _menuTab.value != tab) com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.TAB)
         _menuTab.value = tab
         _labQuick.value = false
         requestFocus()
     }
 
     fun selectQuickTab(tab: QuickTab) {
+        if (_quickTab.value != tab) com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.TAB)
         _quickTab.value = tab
         requestFocus()
     }
@@ -156,12 +168,16 @@ object DeckInGameState {
 
     fun requestFocus() { _focusRequest.value = _focusRequest.value + 1 }
 
-    /** The full-menu pages that apply to this session: the Steam page only in the Linux Steam client, TV and Friends as the Classic rail shows them. */
-    fun availableMenuTabs(kind: InGameSessionKind, tv: Boolean, friends: Boolean): List<MenuTab> = MenuTab.values().filter {
+    /**
+     * The full-menu pages that apply to this session: the Steam page only in the Linux Steam client, TV, Friends and Mods
+     * as the Classic rail shows them (Mods while the game's EXE can take a mod, XServerDrawerState.mods).
+     */
+    fun availableMenuTabs(kind: InGameSessionKind, tv: Boolean, friends: Boolean, mods: Boolean = modsTabShown()): List<MenuTab> = MenuTab.values().filter {
         when (it) {
             MenuTab.STEAM -> kind == InGameSessionKind.LINUX_STEAM
             MenuTab.TV -> tv
             MenuTab.FRIENDS -> friends
+            MenuTab.MODS -> mods
             else -> true
         }
     }
@@ -174,6 +190,8 @@ object DeckInGameState {
     }
 
     private fun friendsTabShown(): Boolean = InGameFriendsSource.state.value.tabVisible
+
+    private fun modsTabShown(): Boolean = XServerDrawerState.mods.value.isNotEmpty()
 
     /**
      * The panel's own controller buttons while one is open (key-down only): L1 / R1 change page, X swaps the quick menu
@@ -212,6 +230,7 @@ object DeckInGameState {
 
     fun setSessionKind(v: InGameSessionKind) { _sessionKind.value = v }
     fun setGameTitle(v: String) { _gameTitle.value = v }
+    fun setGameShortcutPath(v: String?) { _gameShortcutPath.value = v }
     fun setLaunchedFromShortcut(v: Boolean) { _launchedFromShortcut.value = v }
     fun setHudSavedToShortcut(v: Boolean) { _hudSavedToShortcut.value = v }
     fun setCornerButton(v: Boolean) { _cornerButton.value = v }
@@ -224,6 +243,8 @@ object DeckInGameState {
     private fun setPanel(p: Panel) {
         val was = _panel.value
         if (was == p) return
+        // Quick ↔ full menu swap; opening and closing sound through onPanelOpenChanged (the activity).
+        if (was != Panel.NONE && p != Panel.NONE) com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.MENU_OPEN)
         _panel.value = p
         if (p != Panel.NONE) requestFocus()
         if ((was == Panel.NONE) != (p == Panel.NONE)) onPanelOpenChanged?.accept(p != Panel.NONE)
@@ -235,8 +256,10 @@ object DeckInGameState {
         controlFocused = false
         _menuTab.value = MenuTab.SCREEN
         _quickTab.value = QuickTab.QUICK
+        _labQuick.value = true
         _sessionKind.value = InGameSessionKind.WINE_X11
         _gameTitle.value = ""
+        _gameShortcutPath.value = null
         _launchedFromShortcut.value = false
         _hudSavedToShortcut.value = false
         onPanelOpenChanged = null

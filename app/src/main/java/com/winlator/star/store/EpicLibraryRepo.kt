@@ -95,9 +95,16 @@ object EpicLibraryRepo {
             val token = EpicCredentialStore.getValidAccessToken(appCtx) ?: return@withContext SyncResult.NotLoggedIn
 
             onStatus("Fetching game list…")
-            val rawGames = EpicApiClient.getLibraryItems(token)
-            if (rawGames.isNullOrEmpty()) {
-                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("在您的Epic库中未找到游戏")
+            val fetch = EpicApiClient.fetchLibrary(token)
+            if (fetch.authFailed) return@withContext SyncResult.NotLoggedIn
+            val rawGames = fetch.games
+            if (rawGames == null) {
+                // A page failed: keep the cached library rather than a partial list.
+                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("Could not load your Epic library")
+                else SyncResult.Ok(cachedList, 0)
+            }
+            if (rawGames.isEmpty()) {
+                return@withContext if (cachedList.isEmpty()) SyncResult.Failed("No games found in your Epic library")
                 else SyncResult.Ok(cachedList, 0)
             }
 

@@ -60,6 +60,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.winlator.star.MainActivity
 import com.winlator.star.R
 import com.winlator.star.ui.EmulatorLabels
+import com.winlator.star.ui.LocalXmbHintInset
 import com.winlator.star.ui.findActivity
 import com.winlator.star.contentdialog.DXVKConfigDialog
 import com.winlator.star.contentdialog.WineD3DConfigDialog
@@ -225,6 +226,8 @@ fun ContainerDetailScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = saveAndExit,
+                // XMB mode: above the floating Back / Search hints (0 elsewhere).
+                modifier = Modifier.padding(bottom = LocalXmbHintInset.current),
                 containerColor = if (viewModel.isSaving)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
                 else
@@ -1663,11 +1666,12 @@ private fun TopLevelFields(
         // runs the same shaders from the same DLL inside our compositor and is the one that
         // measurably reaches the panel. Its code paths remain (parked on feat/lsfg-vk-plumbing);
         // a container still set to "lsfg" resolves to "lsfg-native" (Container.getFrameGenEngine).
-        val fgEngines = listOf("off", "bionic", "lsfg-native")
+        val fgEngines = listOf("off", "bionic", "lsfg-native", "wfg")
         val fgEngineLabels = listOf(
             stringResource(R.string.frame_generation_off),
             stringResource(R.string.frame_generation_bionic),
-            stringResource(R.string.frame_generation_lsfg_native)
+            stringResource(R.string.frame_generation_lsfg_native),
+            stringResource(R.string.frame_generation_wfg)
         )
         val lsfgDllAvailable = remember { java.io.File(context.filesDir, "lsfg-vk/Lossless.dll").isFile }
         val fgDisabledOpts = buildSet {
@@ -3640,7 +3644,7 @@ private fun WaylandTriStateRow(
  * the progress row while it runs and a Re-check that drops the cache.
  */
 @Composable
-private fun WaylandAdapterReportBlock(
+internal fun WaylandAdapterReportBlock(
     report: com.winlator.star.core.WaylandDriverProbe.Report?,
     probing: Boolean,
     note: String?,

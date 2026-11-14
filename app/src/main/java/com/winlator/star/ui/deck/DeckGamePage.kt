@@ -112,6 +112,7 @@ internal fun DeckGamePage(
     onOpenContainer: (Int) -> Unit,
     vm: ShortcutsViewModel = viewModel(),
 ) {
+    com.winlator.star.sound.PageSound()
     val context = LocalContext.current
     val cs = MaterialTheme.colorScheme
     val shortcuts by vm.shortcuts.collectAsState(initial = emptyList())
@@ -136,7 +137,7 @@ internal fun DeckGamePage(
     DisposableEffect(deckActions) {
         val open: () -> Unit = { menuOpen = true }
         deckActions.options.value = open
-        deckActions.optionsLabel.value = "游戏菜单"
+        deckActions.optionsLabel.value = "Game menu"
         onDispose { if (deckActions.options.value === open) deckActions.options.value = null }
     }
 
@@ -200,18 +201,20 @@ internal fun DeckGamePage(
             )
         }
         val backButton: @Composable () -> Unit = {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .deckFocusRing(deckShape(16.dp), scaleTo = 1f)
-                            .clip(deckShape(16.dp))
-                            .background(deckGlass())
-                            .border(1.dp, deckLine(), deckShape(16.dp))
-                            .clickable(onClick = onBack)
-                            .size(52.dp),
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = cs.onSurface)
-                    }
+            DeckInk { item, ink ->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .deckFocusRingInk(RoundedCornerShape(16.dp), item, scaleTo = 1f)
+                        .clip(deckShape(16.dp))
+                        .background(deckGlass())
+                        .border(1.dp, deckLine(), deckShape(16.dp))
+                        .clickable(onClick = onBack)
+                        .size(52.dp),
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = ink.onSurface)
+                }
+            }
         }
         val main: @Composable (Modifier) -> Unit = { mod ->
             Column(modifier = mod, verticalArrangement = Arrangement.spacedBy(if (banner) 12.dp else 16.dp)) {
@@ -249,20 +252,22 @@ internal fun DeckGamePage(
                     DeckPill("gamescope · Wayland")
                 } else FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     // The container chip opens that container's settings.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .deckFocusRing(deckShape(16.dp), scaleTo = 1.03f)
-                            .clip(deckShape(16.dp))
-                            .border(1.dp, deckLine(), deckShape(16.dp))
-                            .clickable { onOpenContainer(s.container.id) }
-                            .heightIn(min = 38.dp)
-                            .padding(horizontal = 14.dp),
-                    ) {
-                        Icon(Icons.Filled.Inventory2, contentDescription = null, tint = cs.onSurface, modifier = Modifier.size(17.dp))
-                        Text(s.container.name, color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    DeckInk { item, ink ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier
+                                .deckFocusRingInk(RoundedCornerShape(16.dp), item, scaleTo = 1.03f)
+                                .clip(deckShape(16.dp))
+                                .border(1.dp, deckLine(), deckShape(16.dp))
+                                .clickable { onOpenContainer(s.container.id) }
+                                .heightIn(min = 38.dp)
+                                .padding(horizontal = 14.dp),
+                        ) {
+                            Icon(Icons.Filled.Inventory2, contentDescription = null, tint = ink.onSurface, modifier = Modifier.size(17.dp))
+                            Text(s.container.name, color = ink.onSurface, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = ink.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                        }
                     }
                     s.getExtra("dxwrapper", s.container.getDXWrapper()).takeIf { it.isNotBlank() }?.let { DeckPill(it.uppercase()) }
                     s.getExtra("launchMode", "").takeIf { it.isNotBlank() }?.let {
@@ -271,21 +276,21 @@ internal fun DeckGamePage(
                     if (onSd) DeckPill("SD card")
                 }
                 // Stats: playtime, last played, achievements (Steam, when cached), storage.
-                val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "追踪之前" else "从未"
+                val lastPlayed = lastPlayedLabel(context, stats.lastPlayed) ?: if (stats.ms > 0L) "Before tracking" else "Never"
                 if (!banner) FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val tile = Modifier.widthIn(min = 150.dp, max = 240.dp)
-                    DeckStat(playtimeShort(stats.ms), "游玩时间", tile)
-                    DeckStat(lastPlayed, "上次游玩", tile)
+                    DeckStat(playtimeShort(stats.ms), "Playtime", tile)
+                    DeckStat(lastPlayed, "Last played", tile)
                     achievements?.let { (got, total) ->
-                        DeckStat("$got / $total", "成就", tile, progress = got.toFloat() / total.coerceAtLeast(1))
+                        DeckStat("$got / $total", "Achievements", tile, progress = got.toFloat() / total.coerceAtLeast(1))
                     }
                     DeckStat(if (stats.count > 0) "${stats.count}" else "—", if (stats.count == 1) "Launch" else "Launches", tile)
                     if (!isAndroid) DeckStat(if (onSd) "SD card" else "Internal", "Storage", tile)
                 } else DeckStatStrip(
                     buildList {
-                        add(playtimeShort(stats.ms) to "游玩时间")
-                        add(lastPlayed to "上次游玩")
-                        achievements?.let { (got, total) -> add("$got/$total" to "成就") }
+                        add(playtimeShort(stats.ms) to "Playtime")
+                        add(lastPlayed to "Last played")
+                        achievements?.let { (got, total) -> add("$got/$total" to "Achievements") }
                         add((if (stats.count > 0) "${stats.count}" else "—") to (if (stats.count == 1) "Launch" else "Launches"))
                         if (!isAndroid) add((if (onSd) "SD card" else "Internal") to "Storage")
                     },
@@ -321,38 +326,40 @@ internal fun DeckGamePage(
                 if (!isAndroid) {
                     val overrides = overrideCount(s)
                     val setupShape = deckShape(20.dp)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .deckFocusRing(setupShape, scaleTo = 1.01f)
-                            .clip(setupShape)
-                            .background(cs.primary.copy(alpha = 0.10f))
-                            .border(1.dp, cs.primary.copy(alpha = 0.45f), setupShape)
-                            .clickable { actions.perform(GameMenuAction.SETTINGS, s) }
-                            .padding(horizontal = 20.dp, vertical = 16.dp),
-                    ) {
-                        Icon(Icons.Filled.AccountTree, contentDescription = null, tint = cs.primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = when {
-                                    isLinux -> "Steam (Linux) 设置"
-                                    overrides == 0 -> "Uses its container’s setup"
-                                    else -> "$overrides setting${if (overrides == 1) "" else "s"} set just for this game"
-                                },
-                                color = cs.onSurface,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                            )
-                            Text(setupSummary(s), color = cs.onSurfaceVariant, fontSize = 13.5.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    DeckInk { item, ink ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .deckFocusRingInk(setupShape, item, scaleTo = 1.01f)
+                                // The accent-tinted panel pops off the glass like every other card.
+                                .xmbGlassCard(setupShape, ink.primary.copy(alpha = 0.10f))
+                                .border(1.dp, ink.primary.copy(alpha = 0.45f), setupShape)
+                                .clickable { actions.perform(GameMenuAction.SETTINGS, s) }
+                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                        ) {
+                            Icon(Icons.Filled.AccountTree, contentDescription = null, tint = ink.primary, modifier = Modifier.size(24.dp))
+                            Spacer(Modifier.width(16.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = when {
+                                        isLinux -> "Steam (Linux) settings"
+                                        overrides == 0 -> "Uses its container’s setup"
+                                        else -> "$overrides setting${if (overrides == 1) "" else "s"} set just for this game"
+                                    },
+                                    color = ink.onSurface,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                )
+                                Text(setupSummary(s), color = ink.onSurfaceVariant, fontSize = 13.5.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            }
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = ink.onSurfaceVariant)
                         }
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = cs.onSurfaceVariant)
                     }
                 }
                 if (details.hasDisplayableDetails()) {
                     Column {
-                        DeckSectionLabel("关于此游戏")
+                        DeckSectionLabel("About this game")
                         DeckCard {
                             val facts = listOfNotNull(
                                 details.releaseYear,
@@ -371,6 +378,9 @@ internal fun DeckGamePage(
         }
 
         if (wide) {
+            // XMB: the cards' shadows reach ~10 dp past them and the scroll container clips at its edge, so the page keeps that
+            // much room at the sides inside it.
+            val shadowRoom = if (rememberXmbHome()) 12.dp else 0.dp
             Row(
                 horizontalArrangement = Arrangement.spacedBy(28.dp),
                 modifier = Modifier.fillMaxSize().padding(horizontal = gutter),
@@ -380,20 +390,19 @@ internal fun DeckGamePage(
                         .weight(0.62f)
                         .fillMaxHeight()
                         .verticalScroll(rememberScrollState())
-                        .padding(vertical = 24.dp),
+                        .padding(horizontal = shadowRoom, vertical = 24.dp),
                 )
                 Column(
                     modifier = Modifier
                         .weight(0.38f)
                         .fillMaxHeight()
                         .padding(vertical = 24.dp)
-                        .clip(deckShape(28.dp))
-                        .background(deckGlass())
+                        .xmbGlassCard(RoundedCornerShape(28.dp), deckGlass())
                         .border(1.dp, deckLine(), deckShape(28.dp))
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp),
                 ) {
-                    DeckSectionLabel("游戏菜单", Modifier.padding(start = 6.dp))
+                    DeckSectionLabel("Game menu", Modifier.padding(start = 6.dp))
                     DeckGameMenuList(s, onPlay = { launcher.requestLaunch(s) }, onAction = { actions.perform(it, s) }, onContainer = { onOpenContainer(s.container.id) })
                 }
             }
@@ -430,7 +439,7 @@ internal fun DeckGamePage(
                 }
                 main(Modifier.fillMaxWidth().padding(horizontal = gutter))
                 Column(Modifier.padding(horizontal = gutter)) {
-                    DeckSectionLabel("游戏菜单")
+                    DeckSectionLabel("Game menu")
                     DeckGameMenuList(s, onPlay = { launcher.requestLaunch(s) }, onAction = { actions.perform(it, s) }, onContainer = { onOpenContainer(s.container.id) })
                 }
             }
@@ -469,45 +478,45 @@ internal fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>
         if (gameMenuOffers(a, s)) null as String? to GameMenuEntry(menuTitle(a), hint, a, danger) else null
     return listOf(
         listOf(ENTRY_PLAY to GameMenuEntry("Play", when {
-            isAndroid -> "打开应用，如同 Android 自身的启动器一样。"
-            LinuxShortcuts.isLinuxEntry(s) -> "在 Linux 运行时上启动 Steam 客户端。"
-            else -> "从每个视图都走相同的启动路径：启动选项、Steam 预检、Goldberg、云存档同步。"
+            isAndroid -> "Opens the app, as Android's own launcher would."
+            LinuxShortcuts.isLinuxEntry(s) -> "Starts the Steam client on the Linux runtime."
+            else -> "Same launch path from every view: launch options, Steam pre-flight, Goldberg, cloud-save sync."
         }, null)),
         listOfNotNull(
-            e(GameMenuAction.SETTINGS, "显示、图形、控制等，仅用于此游戏。"),
+            e(GameMenuAction.SETTINGS, "Display, graphics, controls and more, for this game only."),
             // Android games and the Linux Steam entry have no Wine container to open.
-            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("容器设置", "打开此游戏运行的容器。", null),
+            if (!isWineEntry(s)) null else ENTRY_CONTAINER to GameMenuEntry("Container settings", "Opens the container this game runs in.", null),
         ),
         listOfNotNull(
-            e(GameMenuAction.GAME_DETAILS, "名称、Steam 链接、类型、年份、描述。"),
-            e(GameMenuAction.SCRAPE_COVER, "在 SteamGridDB 上查找封面图并选择一张。"),
-            e(GameMenuAction.COMMUNITY_CONFIGS, "其他玩家在其设备上为此游戏调整的设置。"),
+            e(GameMenuAction.GAME_DETAILS, "Name, Steam link, genres, year, description."),
+            e(GameMenuAction.SCRAPE_COVER, "Find cover art on SteamGridDB and pick one."),
+            e(GameMenuAction.COMMUNITY_CONFIGS, "Settings other players tuned for this game on their devices."),
         ),
         listOfNotNull(
-            e(GameMenuAction.CLOUD_SAVES, "此游戏的 Steam 云同步。"),
-            e(GameMenuAction.BACKUP_SAVES, "将此游戏的存档压缩到其备份文件夹中。"),
-            e(GameMenuAction.RESTORE_SAVES, "选择存档备份并将其恢复到容器中。"),
-            e(GameMenuAction.VIEW_LOGS, "此游戏捕获的日志。"),
+            e(GameMenuAction.CLOUD_SAVES, "Steam Cloud sync for this game."),
+            e(GameMenuAction.BACKUP_SAVES, "Zip this game's saves into its backup folder."),
+            e(GameMenuAction.RESTORE_SAVES, "Pick a save backup and restore it into a container."),
+            e(GameMenuAction.VIEW_LOGS, "This game's captured logs."),
             e(GameMenuAction.SHARE_LOGS, "Zip this game's log folder and share it."),
-            e(GameMenuAction.PROPERTIES, "游玩次数和总游玩时间。"),
+            e(GameMenuAction.PROPERTIES, "Times played and total playtime."),
         ),
         listOfNotNull(
-            e(GameMenuAction.CLONE, "将此快捷方式复制到另一个容器。"),
-            e(GameMenuAction.COPY_TO_DRIVE_C, "将游戏文件夹复制到容器的 C 盘并重新指向它。"),
-            e(GameMenuAction.CHANGE_EXE, "将快捷方式指向游戏文件夹中的另一个 .exe。"),
-            e(GameMenuAction.ADD_TO_HOME, "将启动器图标固定到 Android 主屏幕。"),
-            e(GameMenuAction.EXPORT, "将此快捷方式保存到您的导出文件夹。"),
+            e(GameMenuAction.CLONE, "Copy this shortcut into another container."),
+            e(GameMenuAction.COPY_TO_DRIVE_C, "Copy the game folder onto the container's C: drive and repoint it."),
+            e(GameMenuAction.CHANGE_EXE, "Point the shortcut at a different .exe in the game's folder."),
+            e(GameMenuAction.ADD_TO_HOME, "Pin a launcher icon to Android's home screen."),
+            e(GameMenuAction.EXPORT, "Save this shortcut to your export folder."),
         ),
-        listOfNotNull(e(GameMenuAction.REMOVE, "会先询问。仅移除快捷方式；游戏文件保留。", danger = true)),
+        listOfNotNull(e(GameMenuAction.REMOVE, "Asks first. Only the shortcut goes; the game files stay.", danger = true)),
     ).filter { it.isNotEmpty() }
 }
 
 private fun menuTitle(a: GameMenuAction): String = when (a) {
     GameMenuAction.SETTINGS -> "Game settings"
-    GameMenuAction.GAME_DETAILS -> "游戏详情"
-    GameMenuAction.SCRAPE_COVER -> "封面图"
-    GameMenuAction.COMMUNITY_CONFIGS -> "此游戏的社区配置"
-    GameMenuAction.CLOUD_SAVES -> "云存档"
+    GameMenuAction.GAME_DETAILS -> "Game details"
+    GameMenuAction.SCRAPE_COVER -> "Cover art"
+    GameMenuAction.COMMUNITY_CONFIGS -> "Community configs for this game"
+    GameMenuAction.CLOUD_SAVES -> "Cloud saves"
     GameMenuAction.VIEW_LOGS -> "View logs"
     else -> a.label
 }
@@ -595,16 +604,18 @@ internal fun DeckGameMenuSheet(
                         .padding(horizontal = 20.dp, vertical = 18.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("游戏菜单", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .deckFocusRing(deckShape(14.dp), scaleTo = 1f)
-                                .clip(deckShape(14.dp))
-                                .clickable(onClick = onDismiss)
-                                .size(44.dp),
-                        ) {
-                            Icon(Icons.Filled.Close, contentDescription = "Close", tint = cs.onSurface)
+                        Text("Game menu", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
+                        DeckInk { item, ink ->
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .deckFocusRingInk(RoundedCornerShape(14.dp), item, scaleTo = 1f)
+                                    .clip(deckShape(14.dp))
+                                    .clickable(onClick = onDismiss)
+                                    .size(44.dp),
+                            ) {
+                                Icon(Icons.Filled.Close, contentDescription = "Close", tint = ink.onSurface)
+                            }
                         }
                     }
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 14.dp)) {

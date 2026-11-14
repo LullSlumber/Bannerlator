@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -49,13 +50,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -78,12 +82,15 @@ import com.winlator.star.ui.deck.SoraFamily
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.screens.UnsavedChangesDialog
 import com.winlator.star.ui.simple.L
+import com.winlator.star.ui.simple.LabDownloadPicker
+import com.winlator.star.ui.simple.LabDownloads
 import com.winlator.star.ui.simple.SIn
 import com.winlator.star.ui.simple.SimpleCover
 import com.winlator.star.ui.simple.SimpleDim
 import com.winlator.star.ui.simple.SimpleGlyph
 import com.winlator.star.ui.simple.SimpleInk
 import com.winlator.star.ui.simple.SimpleLine
+import com.winlator.star.ui.simple.SimpleRowDivider
 import com.winlator.star.ui.simple.SimpleMuted
 import com.winlator.star.ui.simple.SimplePanelBrush
 import com.winlator.star.ui.simple.SimpleShape
@@ -98,6 +105,7 @@ import com.winlator.star.ui.simple.simpleInputOf
 import com.winlator.star.ui.simple.simpleTap
 import com.winlator.star.ui.theme.AppThemeState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 // The Simple style's container, new-container, All-containers and game menus, laid out like the Classic editors:
@@ -120,6 +128,8 @@ private class CPage(val title: String, val items: List<CItem>) : CItem
 private class CExtra(val category: String, val title: String, val keys: (String) -> Boolean = { true }, val top: Boolean? = null) : CItem
 /** The [category]'s hand-offs (change the program, move to another container ...). */
 private class CLinks(val category: String) : CItem
+/** A category's extra drawn in place among the rows (not behind a row of its own), e.g. the adapter report. */
+private class CInline(val category: String, val keys: (String) -> Boolean) : CItem
 private class CTab(val title: String, val icon: ImageVector, val items: List<CItem>, val leftovers: Set<String> = emptySet())
 
 private fun pre(vararg p: String): (SettingDef) -> Boolean = { d -> p.any { d.id.startsWith(it) } }
@@ -127,13 +137,16 @@ private fun pre(vararg p: String): (SettingDef) -> Boolean = { d -> p.any { d.id
 /** The Wayland compositor's driver (SettingsRegistry's own id; the X11 driver configuration's version is graphics.gdc.version). */
 private const val COMPOSITOR_DRIVER = "graphics.compositorDriver"
 
+/** DeckWrapperDetectedSection's invisible extra that reads the picked wrapper's detected keys (kept running like GRAPHICS_PROBES). */
+private const val WRAPPER_DETECTED_PROBE = "wrapper-detected-probe"
+
 private fun graphicsItems(game: Boolean): List<CItem> = listOf(
     CHead(L("Graphics")),
     CRow("performance.syncMode", L("Sync")).takeIf { game },
-    CRow("graphics.driver", L("图形驱动程序")),
+    CRow("graphics.driver", L("Graphics Driver")),
     CPage(L("Driver settings"), listOf(CMatch(pre("graphics.gdc.")))),
-    CRow(COMPOSITOR_DRIVER, L("图形驱动程序")),
-    CPage(L("Wayland游戏驱动程序"), listOf(CMatch(pre("graphics.wl.")))),
+    CRow(COMPOSITOR_DRIVER, L("Graphics Driver")),
+    CPage(L("Wayland game driver"), listOf(CInline("graphics") { it == WAYLAND_ADAPTER_REPORT }, CMatch(pre("graphics.wl.")))),
     CRow("display.hdrOutput", L("HDR output (HDR10)")),
     CRow("graphics.fastOpenGL", L("OpenGL: Fast")),
     CRow("graphics.glFpsHud", L("OpenGL: Show FPS")),
@@ -145,13 +158,13 @@ private fun graphicsItems(game: Boolean): List<CItem> = listOf(
     CPage(
         L("Vulkan settings"),
         listOf(
-            CRow("graphics.nativeRenderer", L("原生渲染器")), CRow("graphics.nativeBackend", L("Native backend")),
-            CRow("graphics.presentMode", L("呈现模式")), CRow("graphics.rendererDriver", L("渲染器驱动程序")),
-            CRow("graphics.swapColours", L("颜色")),
+            CRow("graphics.nativeRenderer", L("Native Renderer")), CRow("graphics.nativeBackend", L("Native backend")),
+            CRow("graphics.presentMode", L("Present Mode")), CRow("graphics.rendererDriver", L("Renderer Driver")),
+            CRow("graphics.swapColours", L("Colors")),
         ),
     ),
-    CRow("graphics.sfColours", L("校正 SurfaceFlinger 颜色")),
-    CRow("display.renderScale", L("渲染缩放（超采样）")),
+    CRow("graphics.sfColours", L("Correct SurfaceFlinger colours")),
+    CRow("display.renderScale", L("Render scale (supersampling)")),
     CPage(
         L("Wrapper settings and tools"),
         listOf(CMatch(pre("graphics.wrapperDetected.")), CExtra("graphics", L("Detected in this wrapper"), { it.startsWith("wrapper-detected") }), CExtra("graphics", L("Downloads and tools"))),
@@ -161,8 +174,8 @@ private fun graphicsItems(game: Boolean): List<CItem> = listOf(
 private fun audioItems(game: Boolean): List<CItem> = listOf(
     CHead(L("Audio")),
     CRow("audio.driver", L("Audio Driver")),
-    CPage(if (game) L("Audio settings · this game") else L("音频设置"), listOf(CMatch(pre("audio.latency")), CExtra("audio", L("声音")))),
-    CRow("audio.microphone", L("麦克风")),
+    CPage(if (game) L("Audio settings · this game") else L("Audio settings"), listOf(CMatch(pre("audio.latency")), CExtra("audio", L("Sound")))),
+    CRow("audio.microphone", L("Microphone")),
     CRow("audio.midiSoundfont", L("MIDI SoundFont")),
 )
 
@@ -170,7 +183,7 @@ private fun componentsTab(): CTab = CTab(
     L("Win Components"), Icons.Filled.GridView,
     listOf(
         CExtra(SettingsRegistry.CAT_COMPONENTS, L("This game needs"), top = true),
-        CExtra(SettingsRegistry.CAT_COMPONENTS, L("浏览并安装组件"), top = false),
+        CExtra(SettingsRegistry.CAT_COMPONENTS, L("Browse & install components"), top = false),
         CMatch { it.category == SettingsRegistry.CAT_COMPONENTS },
         CHead(L("Codecs")),
         CRow("windows.codecBackend", L("Builtin decoder")),
@@ -185,46 +198,46 @@ private fun envTab(title: String): CTab = CTab(
     leftovers = setOf("expert"),
 )
 
-/** Classic's container editor: GENERAL · ENVIRONMENT · DRIVES · WIN COMPONENTS · ADVANCED (All containers has no drives). */
+/** Classic's container editor: GENERAL · ENVIRONMENT · DRIVES · WIN COMPONENTS · ADVANCED, plus CONTROLLER (All containers has no drives). */
 private fun containerLayout(): List<CTab> = listOf(
     CTab(
         L("General"), Icons.Filled.Settings,
         listOf(
             CHead(L("Container")),
             CRow("windows.containerName", L("Name")),
-            CRow("display.resolution", L("屏幕尺寸")),
-            CRow("windows.wineVersion", L("Wine 版本")),
+            CRow("display.resolution", L("Screen Size")),
+            CRow("windows.wineVersion", L("Wine Version")),
             CRow("performance.syncMode", L("Sync")),
-            CRow(SettingsEnv.ID_BACKEND, L("显示后端")),
+            CRow(SettingsEnv.ID_BACKEND, L("Display backend")),
         ) + graphicsItems(game = false) + listOf(
-            CHead(L("显示")),
-            CRow("display.fullscreenMode", L("全屏模式")),
-            CRow("display.alignment", L("屏幕对齐")),
+            CHead(L("Display")),
+            CRow("display.fullscreenMode", L("Fullscreen Mode")),
+            CRow("display.alignment", L("Screen Alignment")),
             CRow("performance.frameGen", L("Frame Generation (AI)")),
-            CRow("performance.frameGenModel", L("插值模型")),
+            CRow("performance.frameGenModel", L("Interpolation model")),
             CRow("performance.fgCapture", L("Capture resolution")),
             CRow("performance.lsfgVk11", L("LSFG on Vulkan 1.1 drivers (compat)")),
-            CRow("performance.fpsLimiter", L("FPS限制器")),
+            CRow("performance.fpsLimiter", L("FPS Limiter")),
             CRow("display.refreshAuto", L("Auto (match FPS)")),
-            CRow("display.refreshManual", L("手动刷新率")),
+            CRow("display.refreshManual", L("Manual refresh rate")),
             CRow("display.refreshInGame", L("In-game refresh rate")),
             CRow("hud.show", L("Show FPS Counter")),
-            CPage(L("FPS counter settings"), listOf(CMatch(pre("hud.")), CExtra("hud", L("诊断")))),
+            CPage(L("FPS counter settings"), listOf(CMatch(pre("hud.")), CExtra("hud", L("Diagnostics")))),
         ) + audioItems(game = false) + listOf(
             CHead(L("Emulation")),
-            CRow("performance.translator", L("转译器 (32位)")),
-            CRow("performance.translator64", L("转译器 (64位)")),
+            CRow("performance.translator", L("Emulator (32-bit)")),
+            CRow("performance.translator64", L("Emulator (64-bit)")),
             CHead(L("Other")),
-            CRow("windows.closeOnExit", L("游戏退出时关闭")),
-            CPage(L("ReShade 滤镜配置"), listOf(CMatch(pre("visuals.reshade.")), CExtra("visuals", L("Effects"), { it.startsWith("reshade") }))),
+            CRow("windows.closeOnExit", L("Close when game exits")),
+            CPage(L("ReShade loadout"), listOf(CMatch(pre("visuals.reshade.")), CExtra("visuals", L("Effects"), { it.startsWith("reshade") }))),
             CRow("windows.locale", "LC_ALL"),
             CHead(L("Desktop")),
-            CRow("windows.theme", L("主题")),
+            CRow("windows.theme", L("Theme")),
             CRow("windows.desktopBackground", L("Background")),
-            CRow("windows.wallpaperScope", L("将壁纸应用至")),
+            CRow("windows.wallpaperScope", L("Apply wallpaper to")),
             CExtra("windows", L("Wallpaper Image"), { it.startsWith("windows-wallpaper") }),
-            CRow("windows.desktopColor", L("背景颜色")),
-            CRow("input.mouseWarp", L("鼠标偏移覆盖")),
+            CRow("windows.desktopColor", L("Background Color")),
+            CRow("input.mouseWarp", L("Mouse Warp Override")),
             CRow("windows.runAsAdmin", L("Run as administrator")),
         ),
         leftovers = setOf("game", "launch", "display", "graphics", "audio", "hud", "windows", "linux"),
@@ -235,27 +248,35 @@ private fun containerLayout(): List<CTab> = listOf(
     CTab(
         L("Advanced"), Icons.Filled.Memory,
         listOf(
+            CHead(L("Display server")),
+            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("Display server")),
             CHead("Box64EC"),
-            CRow("performance.box64ecVersion", L("Box64EC 版本")),
+            CRow("performance.box64ecVersion", L("Box64EC Version")),
             CHead("Box64"),
             CRow("performance.box64Version", L("Version")),
-            CRow("performance.box64Preset", L("预设")),
+            CRow("performance.box64Preset", L("Preset")),
             CHead("FEXCore"),
-            CRow("performance.fexVersion", L("FEXCore 版本")),
-            CRow("performance.fexPreset", L("FEXCore 预设")),
-            CRow("performance.forceSsbs", L("强制 SSBS（CPU 速度修复）")),
+            CRow("performance.fexVersion", L("FEXCore Version")),
+            CRow("performance.fexPreset", L("FEXCore Preset")),
+            CRow("performance.forceSsbs", L("Force SSBS (CPU speed fix)")),
             CPage(L("Preset values"), listOf(CExtra("performance", L("Translator presets"), { it.startsWith("perf-preset") }))),
-        ) + controllerItems(game = false) + listOf(
             CHead(L("System")),
-            CRow("performance.startupServices", L("启动选择")),
-            CPage(L("自定义服务"), listOf(CMatch(pre("performance.service.")))),
-            CRow("performance.cpuAffinity", L("核心关联")),
+            CRow("performance.startupServices", L("Startup Selection")),
+            CPage(L("Custom Services"), listOf(CMatch(pre("performance.service.")))),
+            CRow("performance.cpuAffinity", L("Processor Affinity")),
             CRow("performance.cpuAffinity32", L("Processor Affinity (32-bit apps)")),
-            CHead("XR"),
-            CRow("input.xr.primary", L("主控制器")),
-            CPage(L("手柄映射"), listOf(CMatch(pre("input.xr.map")))),
         ),
-        leftovers = setOf("input", "performance", "visuals"),
+        leftovers = setOf("performance", "visuals"),
+    ),
+    // Its own tab, as the game editor has it.
+    CTab(
+        L("Controller"), Icons.Filled.Gamepad,
+        listOf(CHead(L("Controls")), CRow("input.controlsProfile", L("Controls Profile"))) + controllerItems(game = false) + listOf(
+            CHead("XR"),
+            CRow("input.xr.primary", L("Primary controller")),
+            CPage(L("Controller Mapping"), listOf(CMatch(pre("input.xr.map")))),
+        ),
+        leftovers = setOf("input"),
     ),
 )
 
@@ -267,29 +288,29 @@ private fun controllerItems(game: Boolean): List<CItem> = listOf(
     CRow("input.bannerinXInputSwitching", L("Allow in-game switching")),
     CRow("input.stickPacing", L("Stick updates")),
     CRow("input.controllerIdentity", L("Controller identity")),
-    CRow("input.disableXInput", L("禁用XInput")),
-    CHead(L("震动")),
-    CRow("input.vibrationTarget", L("震动目标")),
+    CRow("input.disableXInput", L("Disable XInput")),
+    CHead(L("Vibration")),
+    CRow("input.vibrationTarget", L("Rumble Target")),
     CRow("input.vibrationIntensity", L("Rumble Intensity")),
     CRow("input.rumbleMotors", L("Rumble Motors")),
-    CHead(if (game) L("Input") else L("玩家槽位")),
-    CRow("input.touchMode", L("触摸屏模式")),
-    CRow("input.numControllers", L("控制器数量")),
-    CRow("input.onScreenPriority", L("屏幕优先级")),
-    CRow("input.hideOnController", L("当控制器连接时隐藏屏幕控制")),
-    CPage(L("玩家槽位"), listOf(CExtra("input", L("Slots"), { it.startsWith("slots") }))),
-    CRow("input.relativeMouse", L("相对鼠标")),
+    CHead(if (game) L("Input") else L("Player Slots")),
+    CRow("input.numControllers", L("Num Controllers")),
+    CRow("input.onScreenPriority", L("On-screen priority")),
+    CRow("input.hideOnController", L("Hide on-screen controls when a controller connects")),
+    CPage(L("Player Slots"), listOf(CExtra("input", L("Slots"), { it.startsWith("slots") }))),
+    CRow("input.touchMode", L("Touch")),
+    CRow("input.aimMode", L("Aim mode")),
     CHead(L("Gyro (Motion Aim)")),
-    CRow("input.gyro.enabled", L("启用体感瞄准")),
-    CRow("input.gyro.mode", L("体感模式")),
-    CRow("input.gyro.target", L("体感目标")),
-    CRow("input.gyro.activator", L("激活按钮")),
-    CRow("input.gyro.activation", L("激活")),
-    CRow("input.gyro.sensitivity", L("灵敏度")),
-    CRow("input.gyro.deadzone", L("死区")),
-    CRow("input.gyro.smoothing", L("平滑")),
-    CRow("input.gyro.invertX", L("反转 X")),
-    CRow("input.gyro.invertY", L("反转 Y")),
+    CRow("input.gyro.enabled", L("Enable Motion Aim")),
+    CRow("input.gyro.mode", L("Motion Mode")),
+    CRow("input.gyro.target", L("Motion Target")),
+    CRow("input.gyro.activator", L("Activator Button")),
+    CRow("input.gyro.activation", L("Activation")),
+    CRow("input.gyro.sensitivity", L("Sensitivity")),
+    CRow("input.gyro.deadzone", L("Deadzone")),
+    CRow("input.gyro.smoothing", L("Smoothing")),
+    CRow("input.gyro.invertX", L("Invert X")),
+    CRow("input.gyro.invertY", L("Invert Y")),
 )
 
 /** Classic's game editor: General · Win Components · Env Vars · Advanced · Controller (+ TV). */
@@ -299,31 +320,31 @@ private fun gameLayout(): List<CTab> = listOf(
         listOf(
             CHead(L("Game")),
             CRow("game.name", L("Name")),
-            CRow("game.arguments", L("执行参数")),
+            CRow("game.arguments", L("Exec Arguments")),
             CLinks("game"),
             CPage(L("Icon"), listOf(CExtra("game", L("Icon"), { it.startsWith("icon") }))),
             CHead(L("Launch")),
             CMatch(pre("launch.")),
             CLinks("launch"),
-            CHead(L("显示")),
-            CRow("display.resolution", L("屏幕尺寸")),
-            CRow("display.alignment", L("屏幕对齐")),
-            CRow("display.fullscreenMode", L("全屏模式")),
+            CHead(L("Display")),
+            CRow("display.resolution", L("Screen Size")),
+            CRow("display.alignment", L("Screen Alignment")),
+            CRow("display.fullscreenMode", L("Fullscreen Mode")),
             CRow("display.refreshInGame", L("In-game refresh rate")),
-            CRow(SettingsEnv.ID_BACKEND, L("显示后端")),
+            CRow(SettingsEnv.ID_BACKEND, L("Display backend")),
         ) + graphicsItems(game = true) + listOf(
             CRow("performance.frameGen", L("Frame Generation (AI)")),
-            CRow("performance.frameGenModel", L("插值模型")),
-            CRow("performance.fpsLimiter", L("FPS限制器")),
+            CRow("performance.frameGenModel", L("Interpolation model")),
+            CRow("performance.fpsLimiter", L("FPS Limiter")),
             CPage(L("Performance"), listOf(CMatch(pre("performance.power.", "performance.root.")), CExtra("performance", L("Power profile and root"), { it.startsWith("perf-power") }))),
             CRow("hud.show", L("Show FPS Counter")),
             CPage(L("FPS counter settings"), listOf(CMatch(pre("hud.")))),
         ) + audioItems(game = true) + listOf(
             CHead(L("Other")),
-            CRow("performance.translator", L("转译器 (32位)")),
-            CRow("performance.translator64", L("转译器 (64位)")),
+            CRow("performance.translator", L("Emulator (32-bit)")),
+            CRow("performance.translator64", L("Emulator (64-bit)")),
             CRow("windows.locale", "LC_ALL"),
-            CRow("windows.closeOnExit", L("游戏退出时关闭")),
+            CRow("windows.closeOnExit", L("Close when game exits")),
             CHead(L("Linux runtime")),
             CMatch { it.category == "linux" },
             CExtra("linux", L("Games folders and components")),
@@ -335,31 +356,36 @@ private fun gameLayout(): List<CTab> = listOf(
     CTab(
         L("Advanced"), Icons.Filled.Memory,
         listOf(
+            CHead(L("Display server")),
+            CRow(SettingsRegistry.ID_DISPLAY_SERVER, L("Display server")),
             CHead("Box64"),
             CRow("performance.box64Version", L("Version")),
-            CRow("performance.box64Preset", L("预设")),
+            CRow("performance.box64Preset", L("Preset")),
             CHead("Box64EC"),
-            CRow("performance.box64ecVersion", L("Box64EC 版本")),
+            CRow("performance.box64ecVersion", L("Box64EC Version")),
             CHead("FEXCore"),
-            CRow("performance.fexVersion", L("FEXCore 版本")),
-            CRow("performance.fexPreset", L("FEXCore 预设")),
-            CRow("performance.forceSsbs", L("强制 SSBS（CPU 速度修复）")),
+            CRow("performance.fexVersion", L("FEXCore Version")),
+            CRow("performance.fexPreset", L("FEXCore Preset")),
+            CRow("performance.forceSsbs", L("Force SSBS (CPU speed fix)")),
             CPage(L("Preset values"), listOf(CExtra("performance", L("Translator presets"), { it.startsWith("perf-preset") }))),
             CHead(L("System")),
-            CRow("input.controlsProfile", L("控制器配置")),
-            CRow("performance.startupServices", L("启动选择")),
-            CPage(L("自定义服务"), listOf(CMatch(pre("performance.service.")))),
-            CRow("performance.cpuAffinity", L("核心关联")),
+            CRow("performance.startupServices", L("Startup Selection")),
+            CPage(L("Custom Services"), listOf(CMatch(pre("performance.service.")))),
+            CRow("performance.cpuAffinity", L("Processor Affinity")),
             CRow("performance.cpuAffinity32", L("Processor Affinity (32-bit apps)")),
-            CHead(L("锐化度 (VKBasalt)")),
-            CRow("visuals.vkbasalt", L("滤镜效果")),
+            CHead(L("Sharpness (VKBasalt)")),
+            CRow("visuals.vkbasalt", L("Effect")),
             CMatch(pre("visuals.vkbasalt")),
             CHead(L("ReShade")),
-            CPage(L("ReShade 滤镜配置"), listOf(CMatch(pre("visuals.reshade.")), CExtra("visuals", L("Effects"), { it.startsWith("reshade") }))),
+            CPage(L("ReShade loadout"), listOf(CMatch(pre("visuals.reshade.")), CExtra("visuals", L("Effects"), { it.startsWith("reshade") }))),
         ),
         leftovers = setOf("performance", "visuals"),
     ),
-    CTab(L("Controller"), Icons.Filled.Gamepad, controllerItems(game = true), leftovers = setOf("input")),
+    CTab(
+        L("Controller"), Icons.Filled.Gamepad,
+        listOf(CHead(L("Controls")), CRow("input.controlsProfile", L("Controls Profile"))) + controllerItems(game = true),
+        leftovers = setOf("input"),
+    ),
     CTab("TV", Icons.Filled.Tv, listOf(CMatch(pre("display.tv.")))),
 )
 
@@ -371,6 +397,7 @@ private class RSet(val def: SettingDef, val label: String) : RLine
 private class RPage(val title: String, val lines: List<RLine>) : RLine
 private class RExtra(val title: String, val items: List<PageExtra>) : RLine
 private class RLink(val h: Handoff) : RLine
+private class RInline(val items: List<PageExtra>) : RLine
 private class RTab(val title: String, val icon: ImageVector, val lines: List<RLine>)
 
 private fun pruneHeads(lines: List<RLine>): List<RLine> = lines.filterIndexed { i, l ->
@@ -395,7 +422,8 @@ private fun resolve(
     val placed = HashSet<SettingDef>()
     val extraItems: Map<String, List<Pair<PageExtra, Boolean>>> =
         extras.mapValues { (_, e) -> e.top().map { it to true } + e.bottom().map { it to false } }
-    val placedExtra = HashSet<String>()
+    // The Graphics lists reader and the wrapper keys reader draw nothing; the editor keeps them running itself (see SimpleClassicEditor).
+    val placedExtra = hashSetOf("graphics|$GRAPHICS_PROBES", "graphics|$WRAPPER_DETECTED_PROBE")
     fun res(items: List<CItem>): List<RLine> = buildList {
         for (item in items) when (val it = item) {
             is CHead -> add(RHead(it.title))
@@ -412,6 +440,13 @@ private fun resolve(
                     .map { (p, _) -> p }
                 list.forEach { p -> placedExtra += "${it.category}|${p.key}" }
                 if (list.isNotEmpty()) add(RExtra(it.title, list))
+            }
+            is CInline -> {
+                val list = extraItems[it.category].orEmpty()
+                    .filter { (p, _) -> "${it.category}|${p.key}" !in placedExtra && it.keys(p.key) }
+                    .map { (p, _) -> p }
+                list.forEach { p -> placedExtra += "${it.category}|${p.key}" }
+                if (list.isNotEmpty()) add(RInline(list))
             }
             is CLinks -> handoffs[it.category].orEmpty()
                 .filter { h -> !h.target.startsWith(SettingsRegistry.TARGET_CATEGORY) && h.target != SettingsRegistry.TARGET_NONE }
@@ -466,6 +501,13 @@ internal fun SimpleClassicEditor(
         handoffs.mapValues { (_, list) -> list.filter { env.world in it.worlds } }.filterValues { it.isNotEmpty() }
     }
     LaunchedEffect(env) { env.loadAsync() }
+    // Driver versions, DXVK/VKD3D/VEGAS/D7VK builds and the GPU names are read by this extra while it is
+    // composed. Lab has no Graphics page to host it, so it runs for as long as the editor is open.
+    val graphicsProbes = remember(extras) { extras["graphics"]?.top()?.filter { it.key == GRAPHICS_PROBES }.orEmpty() }
+    graphicsProbes.forEach { it.content() }
+    // The picked wrapper's detected keys, so "Detected in this wrapper" only shows when it has rows. Read on every
+    // composition: it applies only to X11 Wine containers and games, which the backend row can change.
+    extras["graphics"]?.top()?.filter { it.key == WRAPPER_DETECTED_PROBE }.orEmpty().forEach { p -> key(p.key) { p.content() } }
     val catLabels = remember(categories) { categories.associate { it.id to it.label } }
     val tabs = resolve(
         if (game) gameLayout() else containerLayout(),
@@ -497,13 +539,16 @@ internal fun SimpleClassicEditor(
     if (tabIsExtra) openExtra = lines[0] as RExtra
     val extraOpen = openExtra != null
     LaunchedEffect(extraOpen, tabKey) { if (extraOpen) zone = KZone.EXTRAS else if (zone == KZone.EXTRAS) zone = KZone.ROWS }
-    fun canFocus(l: RLine?) = l != null && l !is RHead
+    fun canFocus(l: RLine?) = l != null && l !is RHead && l !is RInline
     val rowNow = row.coerceIn(0, max(0, lines.size - 1)).let { r ->
         if (canFocus(lines.getOrNull(r))) r else lines.indexOfFirst { canFocus(it) }.coerceAtLeast(0)
     }
 
     // Dialogs and pickers.
     var pickerFor by remember { mutableStateOf<SettingDef?>(null) }
+    // The setting whose "+ Download from source" pages are open.
+    var downloadFor by remember { mutableStateOf<SettingDef?>(null) }
+    val downloadScope = rememberCoroutineScope()
     var textFor by remember { mutableStateOf<SettingDef?>(null) }
     var coresFor by remember { mutableStateOf<SettingDef?>(null) }
     var checklistFor by remember { mutableStateOf<SettingDef?>(null) }
@@ -512,7 +557,7 @@ internal fun SimpleClassicEditor(
     var pendingConfirm by remember { mutableStateOf<Pair<SettingDef, String>?>(null) }
     var afterUnsaved by remember { mutableStateOf<(() -> Unit)?>(null) }
     var saving by remember { mutableStateOf(false) }
-    val dialogOpen = pickerFor != null || textFor != null || coresFor != null || checklistFor != null ||
+    val dialogOpen = pickerFor != null || downloadFor != null || textFor != null || coresFor != null || checklistFor != null ||
         customFor != null || helpFor != null || pendingConfirm != null || afterUnsaved != null
 
     val pick: (SettingDef, String) -> Unit = { def, v ->
@@ -595,7 +640,7 @@ internal fun SimpleClassicEditor(
             is RPage -> { stack = stack + (l.title to rowNow); row = 0 }
             is RExtra -> { stack = stack + (l.title to rowNow); row = 0 }
             is RLink -> guard { onHandoff(l.h) }
-            is RHead -> Unit
+            is RHead, is RInline -> Unit
         }
     }
 
@@ -677,7 +722,8 @@ internal fun SimpleClassicEditor(
                     else if (a == SIn.LEFT && layout == AppThemeState.SIMPLE_LAYOUT_RAIL && stack.isEmpty()) zone = KZone.TABS
                 }
                 SIn.A -> cur?.let { activate(it) }
-                else -> return@onKey a == SIn.START
+                SIn.START -> curDef?.let { d -> if ((d.help ?: d.hint) != null) helpFor = d }
+                else -> return@onKey false
             }
         }
         true
@@ -712,7 +758,7 @@ internal fun SimpleClassicEditor(
                 if (ex != null) {
                     ExtrasPanel(ex, extrasAnchor, active = zone == KZone.EXTRAS, modifier = mod)
                 } else {
-                    LinesPanel("$tabKey/${stack.joinToString("/") { it.first }}", lines, rowNow, active = zone == KZone.ROWS, source = source, env = env, values = values, game = game, modifier = mod) { i ->
+                    LinesPanel("$tabKey/${stack.joinToString("/") { it.first }}", lines, rowNow, active = zone == KZone.ROWS, source = source, env = env, values = values, game = game, modifier = mod, onHelp = { helpFor = it }) { i ->
                         zone = KZone.ROWS
                         if (i == rowNow) lines.getOrNull(i)?.let { activate(it) } else row = i
                     }
@@ -781,7 +827,25 @@ internal fun SimpleClassicEditor(
             onDismiss = { pickerFor = null },
             onPick = { v -> pickerFor = null; pick(def, v) },
             onCustom = { pickerFor = null; customFor = def },
+            onDownload = LabDownloads.typesFor(def.id, env)?.let { { pickerFor = null; downloadFor = def } },
         )
+    }
+    downloadFor?.let { def ->
+        val types = LabDownloads.typesFor(def.id, env)
+        if (types == null) downloadFor = null
+        else LabDownloadPicker(types, onClose = {
+            downloadFor = null
+            downloadScope.launch {
+                // Back to the picker with the list read again; nothing is picked for the user.
+                runCatching { LabDownloads.refresh(def.id, env) }
+                pickerFor = def
+                // A download still running when the pages closed is listed once it has installed.
+                if (LabDownloads.downloading()) {
+                    LabDownloads.awaitDownloads()
+                    runCatching { LabDownloads.refresh(def.id, env) }
+                }
+            }
+        })
     }
     customFor?.let { def ->
         val control = def.control(env, values) as? Control.Select
@@ -1052,7 +1116,7 @@ private fun SideCard(
                 add("Wine" to vm.selectedWineVersion)
             }
             if (vm != null) add("Arch" to if (vm.isArm64EC) "ARM64EC" else "x86-64")
-            add(L("显示") to if (values(SettingsEnv.ID_BACKEND) == com.winlator.star.container.Container.DISPLAY_BACKEND_WAYLAND) "Wayland" else "X11")
+            add(L("Display") to if (values(SettingsEnv.ID_BACKEND) == com.winlator.star.container.Container.DISPLAY_BACKEND_WAYLAND) "Wayland" else "X11")
             if (game) {
                 val n = SettingsRegistry.defs.count { d -> source.shows(d) && d.game != null && runCatching { source.origin(d) }.getOrNull() == Origin.SET_HERE }
                 add(L("Set for this game") to n.toString())
@@ -1121,6 +1185,7 @@ private fun LinesPanel(
     values: (String) -> String,
     game: Boolean,
     modifier: Modifier,
+    onHelp: (SettingDef) -> Unit,
     onTap: (Int) -> Unit,
 ) {
     // One list state per page (the lines are rebuilt on every change; the state must not be).
@@ -1135,12 +1200,17 @@ private fun LinesPanel(
             .border(1.dp, SimpleLine, SimpleShape),
     ) {
         itemsIndexed(lines) { i, l ->
-            when (l) {
-                is RHead -> Text(l.title.uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp, modifier = Modifier.padding(start = 14.dp, top = 12.dp, bottom = 4.dp))
-                is RSet -> ClassicSettingLine(l, source, env, values, game, focused = i == row, active = active) { onTap(i) }
-                is RPage -> ClassicLinkLine(l.title, pageSummary(l, source, env, values), focused = i == row, active = active) { onTap(i) }
-                is RExtra -> ClassicLinkLine(l.title, null, focused = i == row, active = active) { onTap(i) }
-                is RLink -> ClassicLinkLine(l.h.label, null, focused = i == row, active = active) { onTap(i) }
+            Column {
+                // A faint line between two options (none under a section title).
+                if (l !is RHead && i > 0 && lines[i - 1] !is RHead) SimpleRowDivider()
+                when (l) {
+                    is RHead -> Text(l.title.uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp, modifier = Modifier.padding(start = 14.dp, top = 12.dp, bottom = 4.dp))
+                    is RSet -> ClassicSettingLine(l, source, env, values, game, focused = i == row, active = active, onHelp = { onHelp(l.def) }) { onTap(i) }
+                    is RPage -> ClassicLinkLine(l.title, pageSummary(l, source, env, values), focused = i == row, active = active) { onTap(i) }
+                    is RExtra -> ClassicLinkLine(l.title, null, focused = i == row, active = active) { onTap(i) }
+                    is RLink -> ClassicLinkLine(l.h.label, null, focused = i == row, active = active) { onTap(i) }
+                    is RInline -> Column(Modifier.fillMaxWidth()) { l.items.forEach { it.content() } }
+                }
             }
         }
     }
@@ -1178,6 +1248,7 @@ private fun ClassicSettingLine(
     game: Boolean,
     focused: Boolean,
     active: Boolean,
+    onHelp: () -> Unit,
     onTap: () -> Unit,
 ) {
     val accent = MaterialTheme.colorScheme.primary
@@ -1200,10 +1271,13 @@ private fun ClassicSettingLine(
             .simpleTap(onTap)
             .padding(horizontal = 14.dp, vertical = 6.dp),
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(L(l.label), color = if (editable) (if (focused) SimpleStrong else SimpleInk.copy(alpha = 0.9f)) else SimpleDim, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            val sub = disabled ?: (if (focused) note else null)
-            if (sub != null) Text(L(sub), color = SimpleDim, fontSize = 12.sp, maxLines = if (focused) 2 else 1, overflow = TextOverflow.Ellipsis)
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f, fill = false)) {
+                Text(L(l.label), color = if (editable) (if (focused) SimpleStrong else SimpleInk.copy(alpha = 0.9f)) else SimpleDim, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                val sub = disabled ?: (if (focused) note else null)
+                if (sub != null) Text(L(sub), color = SimpleDim, fontSize = 12.sp, maxLines = if (focused) 2 else 1, overflow = TextOverflow.Ellipsis)
+            }
+            if ((def.help ?: def.hint) != null) HelpDot(focused, onHelp)
         }
         if (game) {
             val tag = when (origin) {
@@ -1244,6 +1318,23 @@ private fun ClassicSettingLine(
                 else if (editable) Text("›", color = SimpleMuted, fontSize = 16.sp)
             }
         }
+    }
+}
+
+/** The "?" beside a setting with an explanation, as the classic editors have: opens it (START does too). */
+@Composable
+private fun HelpDot(focused: Boolean, onClick: () -> Unit) {
+    val tint = if (focused) MaterialTheme.colorScheme.primary else SimpleMuted
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .size(22.dp)
+            .clip(androidx.compose.foundation.shape.CircleShape)
+            .border(1.dp, tint.copy(alpha = 0.7f), androidx.compose.foundation.shape.CircleShape)
+            .clickable(onClick = onClick),
+    ) {
+        Text("?", color = tint, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 

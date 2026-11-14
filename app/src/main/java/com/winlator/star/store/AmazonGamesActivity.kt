@@ -36,7 +36,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
+import com.winlator.star.ui.screens.OutlinedAlertDialog as AlertDialog
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -351,11 +351,7 @@ class AmazonGamesActivity : ComponentActivity() {
     // ── Card actions ──────────────────────────────────────────────────────
 
     private fun onCardClick(game: AmazonGame) {
-        if (expandedProductId == game.productId) {
-            openDetailScreen(game)
-        } else {
-            expandedProductId = game.productId
-        }
+        openDetailScreen(game)
     }
 
     private fun onInstallOrLaunch(game: AmazonGame) {
@@ -441,7 +437,13 @@ class AmazonGamesActivity : ComponentActivity() {
 
             var sanitized = game.title.replace("[^a-zA-Z0-9 \\-_]".toRegex(), "").trim()
             if (sanitized.isEmpty()) sanitized = "game_${game.productId.hashCode()}"
-            val installDir = File(File(filesDir, "imagefs/Amazon"), sanitized)
+            // An update reuses the game's folder; a fresh install from this list goes to the default Amazon location.
+            val installDir = prefs!!.getString("amazon_dir_${game.productId}", null)?.takeIf { it.isNotBlank() && File(it).exists() }
+                ?.let { File(it) } ?: run {
+                val locs = StoreInstallLocations.locations(applicationContext, StoreInstallLocations.Store.AMAZON)
+                val def = StoreInstallLocations.defaultId(applicationContext, StoreInstallLocations.Store.AMAZON, locs)
+                File(locs.firstOrNull { it.id == def }?.base ?: File(filesDir, "imagefs/Amazon"), sanitized)
+            }
 
             prefs!!.edit().putString(
                 "amazon_dir_${game.productId}",
@@ -564,7 +566,7 @@ class AmazonGamesActivity : ComponentActivity() {
         val installedDir = prefs!!.getString("amazon_dir_${game.productId}", null)
         if (installedDir == null) return
         lifecycleScope.launch(Dispatchers.IO) {
-            deleteDir(File(installedDir))
+            StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.AMAZON, File(installedDir))
             // Purge the FULL native install record via the canonical helper, and clear the DL
             // manager's registry/library row — so uninstalling from the list keeps the detail
             // page and the cross-store Download Manager in sync (previously it left the DL card
@@ -1223,7 +1225,7 @@ private fun GameGridTile(
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
             .combinedClickable(
-                onClick = onToggleExpansion,
+                onClick = onLongPress,
                 onLongClick = onLongPress,
             ),
     ) {

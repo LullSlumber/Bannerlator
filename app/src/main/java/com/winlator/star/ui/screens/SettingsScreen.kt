@@ -60,6 +60,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -77,6 +78,7 @@ import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
 import com.winlator.star.R
 import com.winlator.star.SettingsFragment
+import com.winlator.star.ui.LocalXmbHintInset
 import com.winlator.star.util.InAppFilePicker
 import com.winlator.star.box64.Box64Preset
 import com.winlator.star.box64.Box64PresetManager
@@ -147,7 +149,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     var steamRegionProbe by remember { mutableStateOf<Map<String, Long>>(emptyMap()) }
     var steamRegionProbing by remember { mutableStateOf(false) }
     var showSteamRegionDropdown by remember { mutableStateOf(false) }
-    // "测试网络" (store/NetworkProbe): the same NAT / UDP verdict the SteamLite pre-flight shows.
+    // "Test network" (store/NetworkProbe): the same NAT / UDP verdict the SteamLite pre-flight shows.
     var steamNetResult by remember { mutableStateOf(NetworkProbe.cached()) }
     var steamNetProbing by remember { mutableStateOf(false) }
     // "Steam library locations" manager dialog (store/SteamLibraryLocationsUi).
@@ -248,6 +250,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     }
 
     fun saveSettings() {
+        com.winlator.star.sound.UiSounds.cue(com.winlator.star.sound.UiCue.SAVED)
         val editor = prefs.edit()
         editor.putString("box64_preset", selectedBox64Preset)
         editor.putString("fexcore_preset", selectedFEXCorePreset)
@@ -388,7 +391,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     // badge survives an app restart. The DLL file itself is still the single runtime source of truth;
     // this pref is purely cosmetic provenance. Cleared when the DLL is removed.
     fun lsfgDllStatusText(): String {
-        if (!(lsfgDllFile.isFile && lsfgDllFile.length() > 0)) return "未设置 — LSFG 原生将保持关闭"
+        if (!(lsfgDllFile.isFile && lsfgDllFile.length() > 0)) return "Not set — LSFG Native will stay off"
         val mb = lsfgDllFile.length() / (1024 * 1024)
         return when (prefs.getString("lsfg_dll_source", null)) {
             "store"  -> "Imported from Steam store (Lossless Scaling) — $mb MB"
@@ -409,7 +412,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         if (!lsfgShaderBuilding.compareAndSet(false, true)) return
         val main = android.os.Handler(android.os.Looper.getMainLooper())
         val appCtx = context.applicationContext
-        lsfgShaderStatus = "正在为LSFG Native准备着色器…（一次性，可能需要一分钟）"
+        lsfgShaderStatus = "Preparing shaders for LSFG Native… (one-time, can take a minute)"
         Thread({
             val started = System.currentTimeMillis()
             val status = try {
@@ -418,8 +421,8 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             val took = (System.currentTimeMillis() - started) / 1000
             val text = when (status) {
                 com.winlator.star.core.LsfgNative.STATUS_OK ->
-                    if (took >= 2) "Shaders ready for LSFG Native (built in ${took}s)" else "着色器已为LSFG Native就绪"
-                -1 -> "着色器准备失败；将在游戏启动时重试"
+                    if (took >= 2) "Shaders ready for LSFG Native (built in ${took}s)" else "Shaders ready for LSFG Native"
+                -1 -> "Shader preparation failed; it will be retried when a game launches"
                 else -> com.winlator.star.core.LsfgNative.explain(status)
             }
             main.post { lsfgShaderStatus = text; lsfgShaderBuilding.set(false) }
@@ -453,7 +456,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         val src = findStoreLosslessDll()
         if (src == null) {
             Toast.makeText(context,
-                "未找到Steam商店的Lossless Scaling — 请从商店下载或手动导入。",
+                "No Steam-store Lossless Scaling found — download it from the store or import manually.",
                 Toast.LENGTH_LONG).show()
             return
         }
@@ -529,7 +532,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     if (showRestoreConfirm) {
         OutlinedAlertDialog(
             onDismissRequest = { showRestoreConfirm = false; pendingRestoreUri = null },
-            title = { Text("恢复数据") },
+            title = { Text("Restore Data") },
             text = { Text("This will restart the app. Continue?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -540,7 +543,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         context.startActivity(intent)
                         (context as? Activity)?.finish()
                     }
-                }) { Text("恢复") }
+                }) { Text("Restore") }
             },
             dismissButton = { TextButton(onClick = { showRestoreConfirm = false; pendingRestoreUri = null }) { Text("Cancel") } }
         )
@@ -555,7 +558,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // ── Updates ──────────────────────────────────────────────────
-        FieldSetLabel("更新")
+        FieldSetLabel("Updates")
         FieldSet {
             val latest = updateInfo
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -601,7 +604,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) { Text("Download & install V ${latest.versionName}", color = Color.White) } // intentional: high-contrast label on green fill
             } else if (latest != null) {
-                Text("已是最新版本。", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                Text("You're up to date.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
             }
             Button(
                 onClick = {
@@ -612,7 +615,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                             checkingUpdate = false
                             when {
                                 info == null -> AppUtils.showToast(context, "Couldn't check for updates")
-                                !info.isNewer -> AppUtils.showToast(context, "您已是最新版本")
+                                !info.isNewer -> AppUtils.showToast(context, "You're on the latest version")
                                 else -> {}
                             }
                         }
@@ -620,13 +623,13 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 },
                 enabled = !checkingUpdate,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text(if (checkingUpdate) "Checking…" else "检查更新", color = MaterialTheme.colorScheme.onPrimary) }
+            ) { Text(if (checkingUpdate) "Checking…" else "Check for updates", color = MaterialTheme.colorScheme.onPrimary) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = notifyUpdates, onCheckedChange = {
                     notifyUpdates = it
                     UpdateManager.setNotifyEnabled(context, it)
                 })
-                Text("有更新时通知我", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Notify me about updates", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = includePrereleases, onCheckedChange = {
@@ -638,7 +641,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         activity?.runOnUiThread { updateInfo = info; checkingUpdate = false }
                     }
                 })
-                Text("包含预发布版本（测试版）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Include pre-releases (beta builds)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
         }
 
@@ -650,17 +653,17 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     steamChatNotifs = it
                     SteamPrefs.setChatNotificationsEnabled(context, it)
                 })
-                Text("Steam聊天通知", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Steam chat notifications", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
-                    steamHelp = "Steam聊天通知" to
+                    steamHelp = "Steam chat notifications" to
                         "Shows an Android notification when a Steam friend messages you and their chat " +
                         "isn't open in the app. Tap it to open the chat. Off = messages still arrive, you " +
                         "just aren't told until you open Friends."
                 }) { Icon(Icons.Default.Help, "Help", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             Text(
-                "当Steam好友在未打开聊天时给您发消息时显示通知。",
+                "Show a notification when a Steam friend messages you while their chat isn't open.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp,
                 modifier = Modifier.padding(start = 12.dp),
             )
@@ -673,14 +676,14 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 Text("Show me as in-game for offline launches", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
-                    steamHelp = "显示我在游戏中" to
+                    steamHelp = "Show me as in-game" to
                         "When you launch a Steam game with Goldberg or Raw, tell Steam you're playing it so " +
                         "friends see it and your playtime counts — like the real Steam client. " +
                         "Off = launch silently. SteamLite launches always show as in-game."
                 }) { Icon(Icons.Default.Help, "Help", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             Text(
-                "当使用Goldberg或Raw（非SteamLite）启动Steam游戏时，向Steam报告为正在玩该游戏 — 好友看到且游戏时间会计入，就像真正的客户端一样。关闭 = 静默启动。",
+                "When a Steam game launches with Goldberg or Raw (not SteamLite), report it to Steam as the game being played — friends see it and playtime counts, like the real client. Off = launch silently.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp,
                 modifier = Modifier.padding(start = 12.dp),
             )
@@ -707,10 +710,10 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             //    Rust engine's CM pick, JavaSteam's CM pick (next app start), the download CDN
             //    preference and the in-game genuine client's CM seed.
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Steam连接区域", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Steam connection region", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
-                    steamHelp = "Steam连接区域" to
+                    steamHelp = "Steam connection region" to
                         "Which Steam datacenter to connect to. Auto pings each one and keeps the fastest " +
                         "for a day, re-testing after a failed connect. Pick a specific one only if Auto " +
                         "keeps choosing badly — the store applies it on its next connect."
@@ -732,7 +735,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     modifier = Modifier.outlinedMenuCard()
                 ) {
                     DropdownMenuItem(
-                        text = { Text("自动（按最近ping — 记住最快的一个）") },
+                        text = { Text("Auto (nearest by ping — remembers the winner)") },
                         onClick = {
                             steamRegionMode = SteamRegion.AUTO
                             SteamRegion.setMode(context, SteamRegion.AUTO)
@@ -774,7 +777,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         }, "steam-region-probe-ui").start()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                ) { Text(if (steamRegionProbing) "正在测试…" else "测试区域", color = MaterialTheme.colorScheme.onSurface) }
+                ) { Text(if (steamRegionProbing) "Testing…" else "Test regions", color = MaterialTheme.colorScheme.onSurface) }
                 if (steamRegionProbing) CircularProgressIndicator(modifier = Modifier.size(18.dp))
                 Button(
                     enabled = !steamNetProbing,
@@ -786,11 +789,11 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         }, "steam-net-probe-ui").start()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                ) { Text(if (steamNetProbing) "正在测试…" else "测试网络", color = MaterialTheme.colorScheme.onSurface) }
+                ) { Text(if (steamNetProbing) "Testing…" else "Test network", color = MaterialTheme.colorScheme.onSurface) }
                 if (steamNetProbing) CircularProgressIndicator(modifier = Modifier.size(18.dp))
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
-                    steamHelp = "测试区域 / 测试网络" to
+                    steamHelp = "Test regions / Test network" to
                         "Test regions pings every Steam datacenter now and shows each one's response time " +
                         "in the list above; Auto also remembers the fastest as its pick.\n\n" +
                         "Test network checks how this network handles online game traffic (the same " +
@@ -822,7 +825,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         // ── Box64 Preset ─────────────────────────────────────────────
         FieldSetLabel("Box64")
         FieldSet {
-            Text("Box64 预设", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Box64 Preset", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(8.dp))
             Box {
                 Button(onClick = { showBox64Dropdown = true },
@@ -848,17 +851,17 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 IconButton(onClick = { box64EditTarget = PresetEditTarget.New }) {
-                    Icon(Icons.Default.Add, "添加", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.Add, "Add", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 IconButton(onClick = { box64EditTarget = PresetEditTarget.Existing(selectedBox64Preset) }) {
-                    Icon(Icons.Default.Edit, "编辑", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.Edit, "Edit", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 IconButton(onClick = {
                     ContentDialog.confirm(context, R.string.do_you_want_to_duplicate_this_preset) {
                         Box64PresetManager.duplicatePreset("box64", context, selectedBox64Preset)
                         refreshBox64Presets()
                     }
-                }) { Icon(Icons.Default.ContentCopy, "复制", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.ContentCopy, "Duplicate", tint = MaterialTheme.colorScheme.onSurface) }
                 IconButton(onClick = {
                     if (selectedBox64Preset.startsWith(Box64Preset.CUSTOM)) {
                         ContentDialog.confirm(context, R.string.do_you_want_to_remove_this_preset) {
@@ -866,15 +869,15 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                             refreshBox64Presets()
                         }
                     } else AppUtils.showToast(context, R.string.you_cannot_remove_this_preset)
-                }) { Icon(Icons.Default.Delete, "移除", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.Delete, "Remove", tint = MaterialTheme.colorScheme.onSurface) }
                 IconButton(onClick = {
                     if (selectedBox64Preset.startsWith(Box64Preset.CUSTOM)) {
                         Box64PresetManager.exportPreset("box64", context, selectedBox64Preset)
                     } else AppUtils.showToast(context, "Cannot export this preset")
-                }) { Icon(Icons.Default.FileUpload, "导出", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.FileUpload, "Export", tint = MaterialTheme.colorScheme.onSurface) }
                 ImportSourceIconButton(
                     icon = Icons.Default.FileDownload,
-                    contentDescription = "导入",
+                    contentDescription = "Import",
                     tint = MaterialTheme.colorScheme.onSurface,
                     onInApp = { importBox64InAppLauncher.launch(InAppFilePicker.buildIntent(context, emptyArray(), "Select box64 preset")) },
                     onSystem = { importBox64Launcher.launch(arrayOf("*/*")) },
@@ -883,9 +886,9 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         }
 
         // ── FEXCore Preset ────────────────────────────────────────────
-        FieldSetLabel("FEXCore 设置")
+        FieldSetLabel("FEXCore Config")
         FieldSet {
-            Text("FEXCore 预设", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("FEXCore Preset", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(8.dp))
             Box {
                 Button(onClick = { showFEXCoreDropdown = true },
@@ -911,17 +914,17 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 IconButton(onClick = { fexEditTarget = PresetEditTarget.New }) {
-                    Icon(Icons.Default.Add, "添加", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.Add, "Add", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 IconButton(onClick = { fexEditTarget = PresetEditTarget.Existing(selectedFEXCorePreset) }) {
-                    Icon(Icons.Default.Edit, "编辑", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.Edit, "Edit", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 IconButton(onClick = {
                     ContentDialog.confirm(context, R.string.do_you_want_to_duplicate_this_preset) {
                         FEXCorePresetManager.duplicatePreset(context, selectedFEXCorePreset)
                         refreshFEXCorePresets()
                     }
-                }) { Icon(Icons.Default.ContentCopy, "复制", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.ContentCopy, "Duplicate", tint = MaterialTheme.colorScheme.onSurface) }
                 IconButton(onClick = {
                     if (selectedFEXCorePreset.startsWith(FEXCorePreset.CUSTOM)) {
                         ContentDialog.confirm(context, R.string.do_you_want_to_remove_this_preset) {
@@ -929,28 +932,42 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                             refreshFEXCorePresets()
                         }
                     } else AppUtils.showToast(context, R.string.you_cannot_remove_this_preset)
-                }) { Icon(Icons.Default.Delete, "移除", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.Delete, "Remove", tint = MaterialTheme.colorScheme.onSurface) }
                 IconButton(onClick = {
                     if (selectedFEXCorePreset.startsWith(FEXCorePreset.CUSTOM)) {
                         FEXCorePresetManager.exportPreset(context, selectedFEXCorePreset)
                     } else AppUtils.showToast(context, "Cannot export this preset")
-                }) { Icon(Icons.Default.FileUpload, "导出", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.FileUpload, "Export", tint = MaterialTheme.colorScheme.onSurface) }
                 ImportSourceIconButton(
                     icon = Icons.Default.FileDownload,
-                    contentDescription = "导入",
+                    contentDescription = "Import",
                     tint = MaterialTheme.colorScheme.onSurface,
-                    onInApp = { importFEXCoreInAppLauncher.launch(InAppFilePicker.buildIntent(context, emptyArray(), "选择 FEXCore 预设")) },
+                    onInApp = { importFEXCoreInAppLauncher.launch(InAppFilePicker.buildIntent(context, emptyArray(), "Select FEXCore preset")) },
                     onSystem = { importFEXCoreLauncher.launch(arrayOf("*/*")) },
                 )
             }
         }
 
         // ── Sound ─────────────────────────────────────────────────────
-        FieldSetLabel("声音")
+        FieldSetLabel("Sound")
         FieldSet {
-            Text("MIDI音色库", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            val uiSounds by com.winlator.star.sound.UiSoundPacks.state.collectAsState()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Menu sounds", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                androidx.compose.material3.Switch(
+                    checked = uiSounds.on,
+                    onCheckedChange = { com.winlator.star.sound.UiSoundPacks.setOn(context, it) },
+                )
+            }
+            var showPackPicker by remember { mutableStateOf(false) }
+            Button(onClick = { showPackPicker = true }) {
+                Text(com.winlator.star.sound.UiSoundPacks.choices().firstOrNull { it.first == uiSounds.selected }?.second ?: "Sound pack")
+            }
+            if (showPackPicker) com.winlator.star.ui.simple.SoundPackPicker(onDismiss = { showPackPicker = false })
+            Spacer(Modifier.height(12.dp))
+            Text("MIDI Sound Font", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Text(
-                "新容器以此音色库启动。现有容器保留其自身的 MIDI 选择。",
+                "New containers start with this SoundFont. Existing containers keep their own MIDI choice.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp,
             )
             val sfDisabledLabel = "-- ${context.getString(R.string.disabled)} --"
@@ -1021,41 +1038,41 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                             } else AppUtils.showToast(context, R.string.sound_font_removed_failed)
                         }
                     } else AppUtils.showToast(context, R.string.cannot_remove_default_sound_font)
-                }) { Icon(Icons.Default.Delete, "移除", tint = MaterialTheme.colorScheme.onSurface) }
+                }) { Icon(Icons.Default.Delete, "Remove", tint = MaterialTheme.colorScheme.onSurface) }
             }
         }
 
         // ── Path Settings ─────────────────────────────────────────────
-        FieldSetLabel("路径设置")
+        FieldSetLabel("Path Settings")
         FieldSet {
-            Text("Winlator 路径", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Winlator Path", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(winlatorPath, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
                 Button(onClick = { winlatorPathLauncher.launch(null) },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
-                    Text("选择路径", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
+                    Text("Choose Path", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
                 }
             }
             Spacer(Modifier.height(12.dp))
-            Text("快捷方式导出路径", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Shortcut Export Path", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(shortcutExportPath, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
                 Button(onClick = { shortcutExportPathLauncher.launch(null) },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
-                    Text("选择路径", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
+                    Text("Choose Path", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
                 }
             }
         }
 
         // ── Default Screen on Launch ──────────────────────────────────
-        FieldSetLabel("启动时默认屏幕")
+        FieldSetLabel("Default Screen on Launch")
         FieldSet {
             Text(
-                "选择应用启动时打开的屏幕。",
+                "Which screen the app opens to.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
@@ -1065,29 +1082,29 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     selected = defaultLandingScreen == "games",
                     onClick = { defaultLandingScreen = "games" },
                 )
-                Text("游戏快捷", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Game Shortcuts", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = defaultLandingScreen == "containers",
                     onClick = { defaultLandingScreen = "containers" },
                 )
-                Text("容器管理", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Containers", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
         }
 
         // ── Big Picture Mode ──────────────────────────────────────────
-        FieldSetLabel("大屏幕模式")
+        FieldSetLabel("Big Picture Mode")
         FieldSet {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = bigPictureMode, onCheckedChange = { bigPictureMode = it })
-                Text("应用启动时启用大屏幕模式", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Enable Big Picture Mode on App Launch", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Spacer(Modifier.height(8.dp))
             FieldSet {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = customApiKeyEnabled, onCheckedChange = { customApiKeyEnabled = it })
-                    Text("设置SteamGrid API密钥？（封面图）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                    Text("Set SteamGrid API Key? (Cover Art)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                     Spacer(Modifier.weight(1f))
                     IconButton(onClick = {
                         val url = "https://www.steamgriddb.com/profile/preferences/api"
@@ -1112,7 +1129,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         FieldSetLabel("XServer")
         FieldSet {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("指针速度", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                Text("Cursor Speed", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.weight(1f))
                 Text("${(cursorSpeed * 100).toInt()}%", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             }
             Slider(
@@ -1123,19 +1140,19 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = useDRI3, onCheckedChange = { useDRI3 = it })
-                Text("使用DRI3扩展", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Use DRI3 Extension", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = useXR, onCheckedChange = { useXR = it })
-                Text("使用 XR", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Use XR", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = cursorLock, onCheckedChange = { cursorLock = it })
-                Text("鼠标直控（按音量减键停用）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("True Mouse Control (Deactivate with Volume Down)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = xinputToggle, onCheckedChange = { xinputToggle = it })
-                Text("禁用Xinput（用于独占鼠标/键盘控制）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Disable Xinput (Used for Exclusive M/KB support)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
         }
 
@@ -1145,7 +1162,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         // here — the toggles used to exist in both places writing the same preferences, and this
         // screen saves on the FAB while the manager writes immediately, so one would silently
         // overwrite the other.
-        FieldSetLabel("日志")
+        FieldSetLabel("Logs")
         FieldSet {
             Text(
                 "Where logs are saved, which ones to record, how many past runs to keep, and what is " +
@@ -1157,15 +1174,15 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             Button(
                 onClick = { showLogManager = true },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("打开日志管理器", color = MaterialTheme.colorScheme.onPrimary) }
+            ) { Text("Open Log Manager", color = MaterialTheme.colorScheme.onPrimary) }
         }
 
         // ── Experimental ──────────────────────────────────────────────
-        FieldSetLabel("实验性模式")
+        FieldSetLabel("Experimental")
         FieldSet {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = enableFileProvider, onCheckedChange = { enableFileProvider = it })
-                Text("启用文件提供程序", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Enable File Provider", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = {
                     AppUtils.showHelpBox(context, android.view.View(context), R.string.help_file_provider)
@@ -1173,14 +1190,14 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = openWithBrowser, onCheckedChange = { openWithBrowser = it })
-                Text("使用Android浏览器打开", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Open with Android Browser", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = shareClipboard, onCheckedChange = { shareClipboard = it })
-                Text("共享Android剪贴板", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Share Android Clipboard", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Spacer(Modifier.height(8.dp))
-            Text("可下载内容URL", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Downloadable Contents URL", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = downloadableContentsURL,
@@ -1202,7 +1219,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("重新安装 ImageFS", color = Color.White) } // intentional: high-contrast label on green fill
+            ) { Text("Reinstall ImageFS", color = Color.White) } // intentional: high-contrast label on green fill
             Button(
                 onClick = { showBackupDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
@@ -1212,15 +1229,15 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 onClick = { restoreFileInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select backup")) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("恢复数据", color = Color.White) } // intentional: high-contrast label on green fill
+            ) { Text("Restore Data", color = Color.White) } // intentional: high-contrast label on green fill
             TextButton(
                 onClick = { restoreFileLauncher.launch(arrayOf("*/*")) },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("从系统选取…", color = MaterialTheme.colorScheme.primary) }
+            ) { Text("Pick via system…", color = MaterialTheme.colorScheme.primary) }
         }
 
         // ── Frame Generation: lsfg-vk (Lossless Scaling DLL) ─────────────
-        FieldSetLabel("帧生成 — LSFG Native (Lossless Scaling)")
+        FieldSetLabel("Frame Generation — LSFG Native (Lossless Scaling)")
         FieldSet {
             Text(
                 "LSFG Native needs a Lossless Scaling \"Lossless.dll\". Download Lossless Scaling from the in-app " +
@@ -1230,7 +1247,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 modifier = Modifier.padding(bottom = 6.dp)
             )
             Text(
-                "状态: " + lsfgDllStatus, color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp,
+                "Status: " + lsfgDllStatus, color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp,
                 modifier = Modifier.padding(bottom = 6.dp)
             )
             if (lsfgShaderStatus.isNotEmpty()) {
@@ -1243,21 +1260,21 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 onClick = { detectLosslessDllFromStore() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action, distinct from accent
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("从Steam商店检测", color = Color.White) } // intentional: high-contrast label on green fill
+            ) { Text("Detect from Steam store", color = Color.White) } // intentional: high-contrast label on green fill
             Text(
-                "手动覆盖 — 自行选取Lossless.dll:",
+                "Manual override — pick a Lossless.dll yourself:",
                 color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp,
                 modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
             )
             Button(
-                onClick = { importLosslessDllInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, "选择 Lossless.dll")) },
+                onClick = { importLosslessDllInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, "Select Lossless.dll")) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // intentional: green = success/safe action (install/backup/restore), distinct from accent
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("导入 Lossless.dll", color = Color.White) } // intentional: high-contrast label on green fill
+            ) { Text("Import Lossless.dll", color = Color.White) } // intentional: high-contrast label on green fill
             TextButton(
                 onClick = { importLosslessDllLauncher.launch(arrayOf("*/*")) },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("从系统选取…", color = MaterialTheme.colorScheme.primary) }
+            ) { Text("Pick via system…", color = MaterialTheme.colorScheme.primary) }
             if (lsfgDllFile.isFile) {
                 Button(
                     onClick = {
@@ -1269,12 +1286,12 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) { Text("移除", color = Color.White) } // intentional: high-contrast label on error/destructive fill
+                ) { Text("Remove", color = Color.White) } // intentional: high-contrast label on error/destructive fill
             }
         }
 
         // ── Developer: frame-gen training capture (crowdsourced win-fg dataset) ──
-        FieldSetLabel("开发者 — 帧生成训练捕获")
+        FieldSetLabel("Developer — Frame-gen training capture")
         FieldSet {
             Text(
                 "Help improve Bannerlator's open frame generation. When on, the win-fg frame-gen layer " +
@@ -1304,16 +1321,16 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         }
                     }
                 )
-                Text("贡献帧生成训练采集", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Contribute frame-gen training capture", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 // "?" — opens the contributor recording guide (covers the toggle + resolution below).
                 IconButton(onClick = { showCaptureHelp = true }) {
-                    Icon(Icons.Default.Help, "如何录制良好的训练数据", tint = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.Default.Help, "How to record good training data", tint = MaterialTheme.colorScheme.onSurface)
                 }
             }
             if (captureEnabled) {
                 Text(
-                    "录制已开启——文件保存到Download/win-fg。",
+                    "Recording is ON — files saved to Download/win-fg.",
                     color = Color(0xFF4CAF50), fontSize = 12.sp, // intentional: green = active/success status
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -1333,7 +1350,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     selected = captureRes == WinFgCapture.RES_MATCH,
                     onClick = { captureRes = WinFgCapture.RES_MATCH; WinFgCapture.setCaptureRes(context, WinFgCapture.RES_MATCH) },
                 )
-                Text("匹配游戏（原生）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Match game (native)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
@@ -1352,7 +1369,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
 
             // ── Debug a win-fg freeze (Extra logging + a logcat-to-disk capture) ──
             Spacer(Modifier.height(12.dp))
-            Text("调试win-fg卡死", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("Debug a win-fg freeze", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Text(
                 "Debugging a win-fg freeze? Turn on Extra logging + Diagnostic log, reproduce the " +
                 "freeze, then share the saved log file.",
@@ -1366,10 +1383,10 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                     onCheckedChange = { on ->
                         extraLogging = on
                         WinFgDiag.setExtraLoggingEnabled(context, on)
-                        AppUtils.showToast(context, if (on) "额外win-fg日志已开启" else "额外win-fg日志已关闭")
+                        AppUtils.showToast(context, if (on) "Extra win-fg logging on" else "Extra win-fg logging off")
                     }
                 )
-                Text("额外win-fg日志（详细）", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                Text("Extra win-fg logging (verbose)", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             }
             // Diagnostic log: streams this app's logcat (win-fg native + guest + app) to Download/win-fg-logs.
             Text(
@@ -1402,13 +1419,13 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
             ) {
                 Text(
-                    if (diagRecording) "停止诊断日志" else "启动诊断日志",
+                    if (diagRecording) "Stop diagnostic log" else "Start diagnostic log",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
             if (diagRecording) {
                 Text(
-                    "正在录制…重现卡死，然后点击停止。",
+                    "Recording… reproduce the freeze, then tap Stop.",
                     color = Color(0xFF4CAF50), fontSize = 12.sp, // intentional: green = active/recording status
                     modifier = Modifier.padding(top = 2.dp)
                 )
@@ -1434,7 +1451,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
             Button(
                 onClick = { showPerformanceMenu = true },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) { Text("打开性能设置", color = MaterialTheme.colorScheme.onPrimary) }
+            ) { Text("Open Performance settings", color = MaterialTheme.colorScheme.onPrimary) }
         }
 
         Spacer(Modifier.height(72.dp))
@@ -1481,7 +1498,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                             showCaptureConsent = false
                             AppUtils.showToast(context, "Frame-gen training capture enabled")
                         }
-                    ) { Text("启用") }
+                    ) { Text("Enable") }
                 }
             },
             dismissButton = {
@@ -1509,7 +1526,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
     if (showCaptureHelp) {
         AlertDialog(
             onDismissRequest = { showCaptureHelp = false },
-            title = { Text("如何录制良好的训练数据") },
+            title = { Text("How to record good training data") },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     val onSurface = MaterialTheme.colorScheme.onSurface
@@ -1517,20 +1534,20 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                         Text("• $lead $body", color = onSurface, fontSize = 13.sp,
                             modifier = Modifier.padding(bottom = 8.dp))
                     }
-                    Bullet("作用:", "records raw in-game frames while you play, to help train an " +
+                    Bullet("What this does:", "records raw in-game frames while you play, to help train an " +
                         "open, clean frame-generation model. Off by default; it lowers FPS while recording. " +
                         "Files save to Download/win-fg for you to share.")
-                    Bullet("最佳录制游戏:", "ones with smooth, CONTINUOUS motion — 3D games, racing, " +
+                    Bullet("Best games to record:", "ones with smooth, CONTINUOUS motion — 3D games, racing, " +
                         "action, anything with camera movement. These teach real interpolation.")
-                    Bullet("应避免的游戏:", "menu-heavy screens, 2D games where sprites snap/teleport, and " +
+                    Bullet("Games to avoid:", "menu-heavy screens, 2D games where sprites snap/teleport, and " +
                         "heavy particle-storm / rapid-flashing effects (they're un-interpolatable noise).")
-                    Bullet("限制您的FPS", "to a stable value (e.g. 30 or 60) so frame timing is even — this " +
+                    Bullet("Cap your FPS", "to a stable value (e.g. 30 or 60) so frame timing is even — this " +
                         "makes much cleaner training data.")
-                    Bullet("分辨率:", "\"Match game\" is best (records at your actual play resolution); pick " +
+                    Bullet("Resolution:", "\"Match game\" is best (records at your actual play resolution); pick " +
                         "720p or 1080p to force one. A mix across contributors is ideal.")
-                    Bullet("多样性比时长更有帮助", "— a few minutes each across several different " +
+                    Bullet("Variety helps more than length", "— a few minutes each across several different " +
                         "games beats a long session of one.")
-                    Bullet("隐私:", "only the game's rendered frames are captured — NO HUD/overlay, NO " +
+                    Bullet("Privacy:", "only the game's rendered frames are captured — NO HUD/overlay, NO " +
                         "personal info, NO account data, NO audio. The record is anonymous.")
                 }
             },
@@ -1564,7 +1581,8 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
                 onSaved()
             },
             containerColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+            // XMB mode: above the floating Back / Search hints (0 elsewhere).
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).padding(bottom = LocalXmbHintInset.current)
         ) {
             Icon(Icons.Default.Check, "Save", tint = MaterialTheme.colorScheme.onPrimary)
         }
@@ -1576,7 +1594,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
 
 /**
  * Import trigger that offers the built-in file picker (primary) with the system SAF picker as a
- * secondary "从系统选取…" option (issue #73).
+ * secondary "Pick via system…" option (issue #73).
  */
 @Composable
 internal fun ImportSourceIconButton(
@@ -1594,9 +1612,9 @@ internal fun ImportSourceIconButton(
             onDismissRequest = { expanded = false },
             modifier = Modifier.outlinedMenuCard()
         ) {
-            DropdownMenuItem(text = { Text("浏览文件") }, onClick = { expanded = false; onInApp() })
+            DropdownMenuItem(text = { Text("Browse files") }, onClick = { expanded = false; onInApp() })
             MenuItemDivider()
-            DropdownMenuItem(text = { Text("从系统选取…") }, onClick = { expanded = false; onSystem() })
+            DropdownMenuItem(text = { Text("Pick via system…") }, onClick = { expanded = false; onSystem() })
         }
     }
 }

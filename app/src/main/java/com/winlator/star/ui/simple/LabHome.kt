@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,10 +52,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +66,7 @@ import com.winlator.star.container.ContainerManager
 import com.winlator.star.container.Shortcut
 import com.winlator.star.contents.AdrenotoolsManager
 import com.winlator.star.store.download.ContentDownloadRegistry
+import com.winlator.star.store.xbox.XboxCloudShortcuts
 import com.winlator.star.ui.deck.LibrarySort
 import com.winlator.star.ui.deck.LocalDeckActions
 import com.winlator.star.ui.deck.SoraFamily
@@ -69,7 +74,6 @@ import com.winlator.star.ui.deck.gameSortKeyOf
 import com.winlator.star.ui.deck.lastPlayedLabel
 import com.winlator.star.ui.deck.playtimeLabel
 import com.winlator.star.ui.deck.readPlayStats
-import com.winlator.star.ui.deck.setupSummary
 import com.winlator.star.ui.deck.sortGames
 import com.winlator.star.ui.deck.storeLabelOf
 import com.winlator.star.ui.screens.GameMenuAction
@@ -90,7 +94,7 @@ internal fun LabTileLabel(text: String) {
     Text(text.uppercase(), color = SimpleDim, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp, maxLines = 1)
 }
 
-/** One dashboard tile: a panel, focusable when it does something. */
+/** One dashboard tile: a panel, focusable when it does something. What does not fit (large text) scrolls inside it. */
 @Composable
 private fun LabDashTile(
     modifier: Modifier,
@@ -99,17 +103,30 @@ private fun LabDashTile(
     requester: FocusRequester? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = modifier
+    BoxWithConstraints(
+        modifier
             .labPanel()
             .then(if (onClick != null) Modifier.labTile(onClick = onClick, onMenu = onMenu, requester = requester) else Modifier)
             .padding(14.dp),
+    ) {
+        LabScrollColumn(if (constraints.hasBoundedHeight) maxHeight else 0.dp, Arrangement.spacedBy(6.dp), content)
+    }
+}
+
+/**
+ * A column that scrolls only when its content is taller than [fill]: at least [fill] high, so content that pushes to the
+ * bottom (a weight) still does when it fits.
+ */
+@Composable
+private fun LabScrollColumn(fill: Dp, arrangement: Arrangement.Vertical, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        verticalArrangement = arrangement,
+        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).heightIn(min = fill),
         content = content,
     )
 }
 
-/** A text button the controller can reach: the accent one for the main action. */
+/** A text button the controller can reach: the accent one for the main action, red text and icon when it removes something. */
 @Composable
 internal fun LabButton(
     label: String,
@@ -117,9 +134,11 @@ internal fun LabButton(
     icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
     requester: FocusRequester? = null,
     modifier: Modifier = Modifier,
+    danger: Boolean = false,
     onClick: () -> Unit,
 ) {
     val accent = MaterialTheme.colorScheme.primary
+    val red = MaterialTheme.colorScheme.error
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -129,15 +148,15 @@ internal fun LabButton(
             .labTile(onClick = onClick, requester = requester, onAccent = primary)
             .padding(horizontal = 16.dp),
     ) {
-        if (icon != null) Icon(icon, contentDescription = null, tint = if (primary) Color.White else SimpleInk, modifier = Modifier.size(18.dp))
-        Text(label, color = if (primary) Color.White else SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
+        if (icon != null) Icon(icon, contentDescription = null, tint = if (primary) Color.White else if (danger) red else SimpleInk, modifier = Modifier.size(18.dp))
+        Text(label, color = if (primary) Color.White else if (danger) red else SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
     }
 }
 
 /** A value chip: what a game runs with, at a glance. */
 @Composable
 internal fun LabChip(text: String) {
-    Text(text, color = SimpleInk, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
+    Text(text, color = SimpleInk, fontSize = 12.sp, maxLines = 1, softWrap = false,
         modifier = Modifier.background(SimpleCard, SimpleShape).padding(horizontal = 9.dp, vertical = 5.dp))
 }
 
@@ -145,6 +164,7 @@ internal fun LabChip(text: String) {
  * Lab's home: a dashboard. Continue (the last game: its setup, Play, its page), the next recent games, then live tiles
  * for storage, GPU drivers, downloads, playtime, the device and containers. Every tile opens where it points.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun LabHome(
     onNavigate: (String) -> Unit,
@@ -155,6 +175,8 @@ internal fun LabHome(
     val shortcuts by vm.shortcuts.collectAsState(initial = SimpleSession.lastShortcuts)
     LaunchedEffect(shortcuts) { if (shortcuts.isNotEmpty()) SimpleSession.lastShortcuts = shortcuts }
     val launcher = rememberShortcutLauncher()
+    // A SteamLite retry / Goldberg relaunch or a Ubisoft set-up-then-launch waits for the restarted app's library, as on the Deck and Games screens.
+    LaunchedEffect(shortcuts) { launcher.resumePendingRelaunch(shortcuts) }
     val actions = rememberShortcutActions(vm)
     val deckActions = LocalDeckActions.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -165,6 +187,7 @@ internal fun LabHome(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
     val stats = remember(shortcuts, resumeTick) { readPlayStats(context, shortcuts) }
+    LaunchedEffect(shortcuts) { LabTitles.refresh(context, shortcuts) }
     val recent = remember(shortcuts, stats) { sortGames(shortcuts, LibrarySort.RECENT) { gameSortKeyOf(it, stats) } }
     val dev = rememberLabDevice()
     val downloads by ContentDownloadRegistry.states.collectAsState()
@@ -179,6 +202,20 @@ internal fun LabHome(
     }
     var menuFor by remember { mutableStateOf<Shortcut?>(null) }
     var selPath by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    // The game launched last: the big tile's game until another is picked. The row's first entry is not it when the
+    // Windows Steam client is listed (it is pinned first in every order).
+    val lastGame = remember(recent, stats) {
+        recent.filter { (stats[it.file.path]?.lastPlayed ?: 0L) > 0L }.maxByOrNull { stats[it.file.path]?.lastPlayed ?: 0L } ?: recent.firstOrNull()
+    }
+    // A game played since the last look takes the tile back from an earlier pick.
+    val lastAt = lastGame?.let { stats[it.file.path]?.lastPlayed } ?: 0L
+    var seenLastAt by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(0L) }
+    LaunchedEffect(lastAt) {
+        if (lastAt != seenLastAt) {
+            if (seenLastAt != 0L) selPath = null
+            seenLastAt = lastAt
+        }
+    }
     val playFocus = remember { FocusRequester() }
     val enterTick = deckActions.enterTick.intValue
     LaunchedEffect(resumeTick, enterTick, recent.isNotEmpty()) {
@@ -196,9 +233,11 @@ internal fun LabHome(
         val portrait = maxHeight > maxWidth
         val gap = 12.dp
         val pad = if (portrait) 12.dp else 18.dp
-        val rowH: Dp = if (portrait) 140.dp else ((maxHeight - pad * 2 - gap * 2 - 30.dp) / 3).coerceIn(118.dp, 200.dp)
+        // Bigger text (Android's font size times the app's Font size) makes the tiles taller; the page scrolls when they no longer fit.
+        val textGrow = LocalDensity.current.fontScale.coerceAtLeast(1f)
+        val rowH: Dp = (if (portrait) 140.dp else ((maxHeight - pad * 2 - gap * 2 - 30.dp) / 3).coerceIn(118.dp, 200.dp)) * textGrow
         // The game in the big tile: the one picked in the library row (a tap, or the controller resting on it), else the last played.
-        val game = recent.firstOrNull { it.file.path == selPath } ?: recent.firstOrNull()
+        val game = recent.firstOrNull { it.file.path == selPath } ?: lastGame
         // Its art goes behind the page (Appearance › Game art background).
         LaunchedEffect(game?.file?.path) { LabArt.selected = game }
         // Games without a Steam link: find their art by name (once per game).
@@ -221,13 +260,19 @@ internal fun LabHome(
             // tile took the whole row (the library row and the tiles beside it had no room left).
             androidx.compose.animation.Crossfade(targetState = game, modifier = m, animationSpec = androidx.compose.animation.core.tween(220), label = "labContinue") { game ->
             val st = stats[game.file.path]
+            // The setup as Classic's list card and the launch screen read it (the driver's version, Wayland only when it really runs on it).
+            val chips = remember(game.file.path, LabArt.tick, resumeTick) { labSetupChips(context, game) }
+            val meta = listOfNotNull(
+                if (XboxCloudShortcuts.isNotInstalled(game)) L("Not installed") else null,
+                playtimeLabel(st?.ms ?: 0L), lastPlayedLabel(context, st?.lastPlayed ?: 0L), storeLabelOf(game),
+            ).joinToString(" · ")
             // Art and previews: the tile becomes the game's art with its trailer behind the logo, info and buttons.
             if (LabArt.hasClips(LabArt.gameMode(game))) {
                 LabHeroTile(
                     game,
-                    label = if (game == recent.firstOrNull()) L("Continue") else L("Selected"),
-                    meta = listOfNotNull(playtimeLabel(st?.ms ?: 0L), lastPlayedLabel(context, st?.lastPlayed ?: 0L), storeLabelOf(game)).joinToString(" · "),
-                    chips = setupSummary(game).split(" · ").filter { it.isNotBlank() },
+                    label = if (game == lastGame) L("Continue") else L("Selected"),
+                    meta = meta,
+                    chips = chips,
                     playFocus = playFocus,
                     onPlay = { launcher.requestLaunch(game) },
                     onPage = { onNavigate(LabRoutes.game(game.file.path)) },
@@ -237,15 +282,15 @@ internal fun LabHome(
             }
             Row(Modifier.fillMaxSize().labPanel().padding(14.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 SimpleCover(game, Modifier.width(if (portrait) 150.dp else 170.dp).fillMaxHeight(), title = false)
-                Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    LabTileLabel(if (game == recent.firstOrNull()) L("Continue") else L("Selected"))
+                BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
+                LabScrollColumn(if (constraints.hasBoundedHeight) maxHeight else 0.dp, Arrangement.spacedBy(8.dp)) {
+                    LabTileLabel(if (game == lastGame) L("Continue") else L("Selected"))
                     LabTitle(game, 56.dp, 22.sp)
-                    Text(
-                        listOfNotNull(playtimeLabel(st?.ms ?: 0L), lastPlayedLabel(context, st?.lastPlayed ?: 0L), storeLabelOf(game)).joinToString(" · "),
-                        color = SimpleMuted, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        setupSummary(game).split(" · ").filter { it.isNotBlank() }.take(4).forEach { LabChip(it) }
+                    Text(meta, color = SimpleMuted, fontSize = 13.sp)
+                    LabRuntimeStatus(game, fontSize = 12.sp, color = SimpleMuted)
+                    // Full names; the row scrolls sideways when they do not fit.
+                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        chips.take(4).forEach { LabChip(it) }
                     }
                     Spacer(Modifier.weight(1f))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -253,6 +298,7 @@ internal fun LabHome(
                         LabButton(L("游戏页面")) { onNavigate(LabRoutes.game(game.file.path)) }
                         LabButton("", icon = Icons.Filled.MoreHoriz) { menuFor = game }
                     }
+                }
                 }
             }
             }
@@ -278,6 +324,7 @@ internal fun LabHome(
                         ) {
                             val inner = Modifier.fillMaxSize().padding(if (sel) 3.dp else 0.dp)
                             when (style) {
+                                // No store pills on these small covers: the big tile above names the selected game's store.
                                 LabArt.WIDE -> LabWideCard(s, inner, title = false)
                                 LabArt.ICONS -> LabIconCard(s, inner, Modifier.fillMaxWidth().aspectRatio(1f))
                                 else -> SimpleCover(s, inner, title = false)
@@ -308,8 +355,9 @@ internal fun LabHome(
                 if (dev != null && dev.volumes.size > 1) {
                     dev.volumes.forEach { v ->
                         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(L(v.label), color = SimpleInk, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                            // Name left, size right; the size moves under the name when both do not fit (large text).
+                            FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(L(v.label), color = SimpleInk, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                                 Text(L("%1\$s / %2\$s GB", fmtGb(v.usedGb), fmtGb(v.totalGb)), color = SimpleMuted, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                             }
                             LabBar(v.fraction, Modifier.fillMaxWidth())
@@ -329,20 +377,20 @@ internal fun LabHome(
 
         @Composable
         fun DriverTile(m: Modifier) {
-            LabDashTile(m, onClick = { onNavigate(SimpleRoutes.DRIVERS) }) {
+            LabDashTile(m, onClick = { onNavigate(SimpleRoutes.contents("installed")) }) {
                 LabTileLabel(L("GPU drivers"))
                 val list = drivers
                 Text(if (list == null) "…" else L("%1\$s installed", list.size), color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                list?.take(2)?.forEach { Text(it, color = SimpleMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                list?.take(2)?.forEach { Text(it, color = SimpleMuted, fontSize = 12.sp) }
             }
         }
 
         @Composable
         fun DownloadTile(m: Modifier) {
-            LabDashTile(m, onClick = { onNavigate(SimpleRoutes.COMPONENTS) }) {
+            LabDashTile(m, onClick = { onNavigate(SimpleRoutes.DRIVERS) }) {
                 LabTileLabel(L("Downloads"))
                 if (active != null) {
-                    Text(active.title, color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(active.title, color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     LabBar(active.fraction, Modifier.fillMaxWidth())
                     Text("${(active.fraction * 100).roundToInt()}%", color = SimpleMuted, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
                 } else {
@@ -360,10 +408,11 @@ internal fun LabHome(
             if (game != null && fps != null) {
                 LabDashTile(m, onClick = { onNavigate(LabRoutes.game(game.file.path)) }) {
                     LabTileLabel(L("Last session"))
-                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Wraps to a second line when it does not fit (large text).
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("${fps.lastAvg.roundToInt()}", color = SimpleStrong, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp, fontFamily = FontFamily.Monospace)
-                        Text(L("fps avg"), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(bottom = 4.dp))
-                        if (fps.lastLow > 0) Text(L("· 1%% low %1\$s", fps.lastLow), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(bottom = 4.dp))
+                        Text(L("fps avg"), color = SimpleMuted, fontSize = 12.sp, maxLines = 1, modifier = Modifier.align(Alignment.Bottom).padding(bottom = 4.dp))
+                        if (fps.lastLow > 0) Text(L("· 1%% low %1\$s", fps.lastLow), color = SimpleMuted, fontSize = 12.sp, maxLines = 1, modifier = Modifier.align(Alignment.Bottom).padding(bottom = 4.dp))
                     }
                     LabSparkline(fps.history, Modifier.fillMaxWidth().weight(1f))
                 }
@@ -383,7 +432,7 @@ internal fun LabHome(
                 if (dev != null) {
                     @Composable fun line(k: String, f: Float, v: String) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(k, color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.width(54.dp))
+                            Text(k, color = SimpleMuted, fontSize = 12.sp, maxLines = 1, modifier = Modifier.width(54.dp * textGrow))
                             LabBar(f, Modifier.weight(1f))
                             Text(v, color = SimpleInk, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
                         }
@@ -400,7 +449,7 @@ internal fun LabHome(
             LabDashTile(m, onClick = { onNavigate(SimpleRoutes.CONTAINERS) }) {
                 LabTileLabel(L("容器管理"))
                 Text("${containers?.size ?: "…"}", color = SimpleStrong, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp)
-                Text(containers?.joinToString(" · ").orEmpty(), color = SimpleMuted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(containers?.joinToString(" · ").orEmpty(), color = SimpleMuted, fontSize = 12.sp)
             }
         }
 
@@ -419,7 +468,8 @@ internal fun LabHome(
                 Row(horizontalArrangement = Arrangement.spacedBy(gap)) { cell(1f) { SystemTile(it) }; cell(1f) { ContainersTile(it) } }
             }
         } else {
-            Column(verticalArrangement = Arrangement.spacedBy(gap), modifier = Modifier.fillMaxSize().padding(start = pad, end = pad, top = 4.dp, bottom = pad)) {
+            // Scrolls like portrait when the tiles do not fit (large text or interface size).
+            Column(verticalArrangement = Arrangement.spacedBy(gap), modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = pad, end = pad, top = 4.dp, bottom = pad)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
                     ContinueTile(Modifier.weight(2f).height(rowH * 2 + gap))
                     Column(Modifier.weight(2f), verticalArrangement = Arrangement.spacedBy(gap)) {
@@ -481,18 +531,21 @@ internal fun LabHeroTile(
         LabClipPlayer(game, Modifier.fillMaxSize())
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to Color.Black.copy(alpha = 0.08f), 0.35f to Color.Transparent, 0.66f to Color.Black.copy(alpha = 0.55f), 1f to Color.Black.copy(alpha = 0.86f))))
         Box(
-            Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 156.dp).graphicsLayer {
+            Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 156.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)).graphicsLayer {
                 val p = LabParallax.offset(p3d)
                 translationX = p.first * 8.dp.toPx()
                 translationY = p.second * 6.dp.toPx()
             },
         ) { LabHeroLogo(game) }
-        Column(Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Scrolls when taller than the tile (large text), starting at the bottom so the buttons stay in view.
+        Column(Modifier.align(Alignment.BottomStart).fillMaxWidth().verticalScroll(rememberScrollState(), reverseScrolling = true).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(label.uppercase(), color = Color.White.copy(alpha = 0.72f), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp, maxLines = 1)
-            Text(meta, color = Color.White.copy(alpha = 0.85f), fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(meta, color = Color.White.copy(alpha = 0.85f), fontSize = 13.sp)
+            LabRuntimeStatus(game, fontSize = 12.sp)
+            // Full names; the row scrolls sideways when they do not fit.
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 chips.take(4).forEach {
-                    Text(it, color = Color.White, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.background(Color.Black.copy(alpha = 0.38f), SimpleShape).padding(horizontal = 9.dp, vertical = 5.dp))
+                    Text(it, color = Color.White, fontSize = 12.sp, maxLines = 1, softWrap = false, modifier = Modifier.background(Color.Black.copy(alpha = 0.38f), SimpleShape).padding(horizontal = 9.dp, vertical = 5.dp))
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

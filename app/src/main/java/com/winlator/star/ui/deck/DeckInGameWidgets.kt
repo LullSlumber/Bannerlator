@@ -91,10 +91,10 @@ internal val LocalIgCompact = compositionLocalOf { false }
  */
 internal data class SaveScope(val label: String, val icon: ImageVector) {
     companion object {
-        val GAME = SaveScope("为此游戏保存", Icons.Outlined.SportsEsports)
-        val CONTAINER = SaveScope("为此容器保存", Icons.Outlined.Inventory2)
-        val ALL = SaveScope("为所有游戏保存", Icons.Outlined.Public)
-        val SESSION = SaveScope("仅本次会话", Icons.Outlined.Schedule)
+        val GAME = SaveScope("Saved for this game", Icons.Outlined.SportsEsports)
+        val CONTAINER = SaveScope("Saved for this container", Icons.Outlined.Inventory2)
+        val ALL = SaveScope("Saved for all games", Icons.Outlined.Public)
+        val SESSION = SaveScope("This session only", Icons.Outlined.Schedule)
         val LEGEND = listOf(GAME, CONTAINER, ALL, SESSION)
 
         /** A scope the four standard ones don't cover (a controls profile, a Proton install). */
@@ -102,7 +102,14 @@ internal data class SaveScope(val label: String, val icon: ImageVector) {
     }
 }
 
-/** "为此游戏保存" when this session has a shortcut to write to, else "为此容器保存". */
+/** Lab's in-game menu over the game's art: how solid raised things (chips, buttons, segment boxes) may be; null = their own. */
+internal val LocalIgRaisedAlpha = androidx.compose.runtime.staticCompositionLocalOf<Float?> { null }
+
+/** [base], or less over the game's art (see-through, but less than the cards so they stay easy to read). */
+@Composable
+internal fun igRaised(base: Float): Float = LocalIgRaisedAlpha.current?.let { minOf(it, base) } ?: base
+
+/** "Saved for this game" when this session has a shortcut to write to, else "Saved for this container". */
 @Composable
 internal fun igGameScope(): SaveScope {
     val fromShortcut by DeckInGameState.launchedFromShortcut.collectAsState()
@@ -116,7 +123,7 @@ internal fun IgScopeChip(scope: SaveScope) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clip(if (com.winlator.star.ui.theme.AppThemeState.simpleLook) deckShape(3.dp) else RoundedCornerShape(50))
-            .background(cs.surfaceContainerHigh.copy(alpha = 0.8f))
+            .background(cs.surfaceContainerHigh.copy(alpha = igRaised(0.8f)))
             .padding(horizontal = if (com.winlator.star.ui.theme.AppThemeState.simpleLook) 7.dp else 9.dp, vertical = if (com.winlator.star.ui.theme.AppThemeState.simpleLook) 3.dp else 4.dp),
     ) {
         Icon(scope.icon, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(13.dp))
@@ -156,9 +163,9 @@ internal fun IgCard(modifier: Modifier = Modifier, content: @Composable ColumnSc
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(deckCardFill())
-            .border(1.dp, deckLine().copy(alpha = 0.5f), shape),
+            // The XMB in-game drawer: a glass card (shadow, sheen, edge light). Anywhere else exactly clip + background.
+            .xmbGlassCard(shape)
+            .border(1.dp, deckLineAt(0.5f), shape),
         content = content,
     )
 }
@@ -209,7 +216,7 @@ internal fun Modifier.igFocusOutline(): Modifier {
 }
 
 @Composable
-internal fun IgDivider() = HorizontalDivider(color = deckLine().copy(alpha = 0.35f))
+internal fun IgDivider() = HorizontalDivider(color = deckLineAt(0.35f))
 
 /**
  * One setting: title, a plain-language hint, where it saves, and its control. Wide windows put the control on the
@@ -304,8 +311,8 @@ internal fun <T> IgChips(
                 modifier = Modifier
                     .deckFocusRing(shape)
                     .clip(shape)
-                    .background(if (sel) cs.primary.copy(alpha = 0.16f) else cs.surfaceContainerHigh)
-                    .border(if (sel) 2.dp else 1.dp, if (sel) cs.primary else deckLine().copy(alpha = 0.4f), shape)
+                    .background(if (sel) cs.primary.copy(alpha = 0.16f) else cs.surfaceContainerHigh.copy(alpha = igRaised(1f)))
+                    .border(if (sel) 2.dp else 1.dp, if (sel) cs.primary else deckLineAt(0.4f), shape)
                     .clickable(enabled = on, role = Role.RadioButton) { onSelect(v) }
                     .heightIn(min = if (lab) 34.dp else 40.dp)
                     .widthIn(min = if (lab) 44.dp else 52.dp)
@@ -335,8 +342,8 @@ internal fun <T> IgSegmented(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(track)
-            .background(cs.surfaceContainerHigh.copy(alpha = 0.7f))
-            .border(1.dp, deckLine().copy(alpha = 0.35f), track)
+            .background(cs.surfaceContainerHigh.copy(alpha = igRaised(0.7f)))
+            .border(1.dp, deckLineAt(0.35f), track)
             .padding(5.dp),
     ) {
         options.forEach { (v, label) ->
@@ -372,8 +379,8 @@ internal fun IgSwitch(checked: Boolean, enabled: Boolean = true, onChange: (Bool
             .deckFocusRing(shape)
             .clip(shape)
             .background(if (checked) cs.primary else cs.surfaceContainerHighest)
-            .border(1.dp, if (checked) cs.primary else deckLine().copy(alpha = 0.5f), shape)
-            .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = onChange)
+            .border(1.dp, if (checked) cs.primary else deckLineAt(0.5f), shape)
+            .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = { v -> com.winlator.star.sound.toggleSound(v); onChange(v) })
             .size(width = 52.dp, height = 30.dp)
             .alpha(if (enabled) 1f else 0.45f),
     ) {
@@ -412,8 +419,8 @@ internal fun IgButton(
         modifier = modifier
             .deckFocusRing(shape, scaleTo = 1.04f, onAccent = primary)
             .clip(shape)
-            .background(if (primary) cs.primary else cs.surfaceContainerHigh.copy(alpha = 0.85f))
-            .then(if (primary) Modifier else Modifier.border(1.dp, if (danger) cs.error.copy(alpha = 0.7f) else deckLine().copy(alpha = 0.5f), shape))
+            .background(if (primary) cs.primary else cs.surfaceContainerHigh.copy(alpha = igRaised(0.85f)))
+            .then(if (primary) Modifier else Modifier.border(1.dp, if (danger) cs.error.copy(alpha = 0.7f) else deckLineAt(0.5f), shape))
             .clickable(enabled = enabled, onClick = onClick)
             .heightIn(min = if (com.winlator.star.ui.theme.AppThemeState.simpleLook) 40.dp else 46.dp)
             .padding(horizontal = if (label == null) 13.dp else if (com.winlator.star.ui.theme.AppThemeState.simpleLook) 14.dp else 18.dp)
@@ -445,7 +452,7 @@ internal fun IgSlider(
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.widthIn(min = 200.dp)) {
         Slider(
             value = value,
-            onValueChange = onChange,
+            onValueChange = { v -> if (v != value) com.winlator.star.sound.sliderSound(v > value); onChange(v) },
             onValueChangeFinished = onFinished,
             valueRange = range,
             enabled = enabled,
@@ -505,6 +512,7 @@ internal fun IgConfirmDialog(
     val cs = MaterialTheme.colorScheme
     val cancelFocus = remember { FocusRequester() }
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        com.winlator.star.sound.DialogSound()
         DeckTheme {
             val shape = deckShape(24.dp)
             Column(

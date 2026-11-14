@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.SportsEsports
@@ -106,7 +105,7 @@ private enum class StoreTab(val label: String, val icon: ImageVector) {
     LIBRARY("Library", Icons.Filled.VideoLibrary),
     STORE("Store", Icons.Filled.ShoppingBag),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("配置", Icons.Filled.AccountCircle),
+    PROFILE("Profile", Icons.Filled.AccountCircle),
     DOWNLOADS("Downloads", Icons.Filled.Download),
 }
 
@@ -153,7 +152,7 @@ private fun playtimeText(context: Context, s: Shortcut): String {
     val ms = context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE).getLong("${s.name}_playtime", 0L)
     val minutes = ms / 60_000L
     return when {
-        ms <= 0L -> "尚未游玩"
+        ms <= 0L -> "Not played yet"
         minutes < 60L -> "${minutes.coerceAtLeast(1L)} min played"
         else -> "%.1f h played".format(ms / 3_600_000.0)
     }
@@ -163,13 +162,12 @@ private fun playtimeText(context: Context, s: Shortcut): String {
  * Stores tab: a switcher for the four storefronts (with their sign-in state) and, per store, the
  * Library / Store / Friends / Profile / Downloads strip. Library is native: the store's installed
  * games from the same list Home uses, each opening its Deck game page. Store, Friends, Profile and
- * Downloads explain what is there and open the store's own screen on that tab. Honours Appearance →
- * "显示游戏商店".
+ * Downloads explain what is there and open the store's own screen on that tab. Honours Settings >
+ * Appearance > "Show game stores".
  */
 @Composable
 internal fun DeckStoresPage(
     onLaunchStore: (Screen) -> Unit,
-    onOpenAppearance: () -> Unit,
     onOpenGame: (String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -205,7 +203,7 @@ internal fun DeckStoresPage(
         val open: () -> Unit = { optionsOpen = true }
         if (showStores) {
             deckActions.options.value = open
-            deckActions.optionsLabel.value = "商店选项"
+            deckActions.optionsLabel.value = "Store options"
         }
         onDispose { if (deckActions.options.value === open) deckActions.options.value = null }
     }
@@ -215,15 +213,12 @@ internal fun DeckStoresPage(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = gutter, vertical = 16.dp),
         ) {
-            DeckPageHeader(Icons.Filled.Storefront, "商店", "Game stores are hidden. Turn on \"Show game stores\" in Appearance to list them here.")
-            DeckCard {
-                DeckRow(title = "外观", subtitle = "Show or hide the game stores", icon = Icons.Filled.Palette, onClick = onOpenAppearance)
-            }
+            DeckPageHeader(Icons.Filled.Storefront, "Stores", "Game stores are hidden. Turn on \"Show game stores\" in Settings > Appearance to list them here.")
         }
         return
     }
 
-    DeckPageTitle("商店", "Your storefronts: sign in, see what each one has installed here, and open its store, friends and downloads.")
+    DeckPageTitle("Stores", "Your storefronts: sign in, see what each one has installed here, and open its store, friends and downloads.")
     Column(modifier = Modifier.fillMaxSize().padding(top = 14.dp)) {
         // Store switcher, with the open / more buttons on the right (under it on a phone).
         val switcher: @Composable () -> Unit = {
@@ -263,7 +258,7 @@ internal fun DeckStoresPage(
             tabs = tabs.map { DeckTabItem(it.label, it.icon) },
             selected = tabs.indexOf(tab),
             onSelect = { tabIndex = it },
-            label = "商店选项卡",
+            label = "Store tab",
             modifier = Modifier.padding(horizontal = gutter),
         )
         Spacer(Modifier.height(10.dp))
@@ -296,7 +291,6 @@ internal fun DeckStoresPage(
             onDismiss = { optionsOpen = false },
             onOpenTab = { t -> optionsOpen = false; context.startActivity(storeIntent(context, store, t)) },
             onSignIn = { optionsOpen = false; onLaunchStore(store.screen) },
-            onAppearance = { optionsOpen = false; onOpenAppearance() },
         )
     }
 }
@@ -326,7 +320,7 @@ private fun StoreLibrary(
                 if (!signedIn) {
                     DeckRow(
                         title = "Sign in to ${store.label}",
-                        subtitle = "您的库、下载和云存档需要已登录的账户。",
+                        subtitle = "Your library, downloads and cloud saves need a signed-in account.",
                         icon = Icons.AutoMirrored.Filled.Login,
                         onClick = onSignIn,
                     )
@@ -398,21 +392,21 @@ private fun StoreGameCard(shortcut: Shortcut, subtitle: String, onClick: () -> U
 /** What each hand-off tab holds, in the words the store screens use. */
 private fun handOffText(store: DeckStore, tab: StoreTab): Pair<String, List<String>> = when (tab) {
     StoreTab.STORE -> "Browse the ${store.label} store" to listOf(
-        "精选游戏、优惠和搜索",
-        "包含媒体、配置要求和价格的游戏页面",
-        "购买或领取，然后直接安装到容器中",
+        "Featured games, deals and search",
+        "Game pages with media, requirements and price",
+        "Buy or claim, then install straight into a container",
     )
     StoreTab.FRIENDS -> "Steam friends and chat" to listOf(
-        "谁在线以及他们在玩什么",
-        "聊天、邀请和加入好友的游戏",
+        "Who is online and what they are playing",
+        "Chat, invites and joining a friend's game",
     )
     StoreTab.PROFILE -> "Your ${store.label} account" to listOf(
-        "头像、名称和账户详情",
-        "商店设置、云存档和退出登录",
+        "Avatar, name and account details",
+        "Store settings, cloud saves and sign-out",
     )
     else -> "Downloads" to listOf(
-        "所有商店下载和组件下载都在一个队列中",
-        "暂停、恢复、取消和重新排序",
+        "Every store download and component download in one queue",
+        "Pause, resume, cancel and re-order",
     )
 }
 
@@ -451,7 +445,7 @@ private fun StoreHandOff(
             } else {
                 DeckRow(
                     title = "Sign in to ${store.label}",
-                    subtitle = "登录后您将回到这里。",
+                    subtitle = "You'll come back here once you're signed in.",
                     trailing = { DeckButton("Sign in", Icons.AutoMirrored.Filled.Login, onSignIn, primary = true) },
                     onClick = onSignIn,
                 )
@@ -460,7 +454,7 @@ private fun StoreHandOff(
     }
 }
 
-/** X on the Stores tab: jump into any of the store's screens, sign in, or hide the stores. */
+/** X on the Stores tab: jump into any of the store's screens, or sign in. */
 @Composable
 private fun StoreOptionsDialog(
     store: DeckStore,
@@ -468,7 +462,6 @@ private fun StoreOptionsDialog(
     onDismiss: () -> Unit,
     onOpenTab: (StoreTab) -> Unit,
     onSignIn: () -> Unit,
-    onAppearance: () -> Unit,
 ) {
     val cs = MaterialTheme.colorScheme
     Dialog(onDismissRequest = onDismiss) {
@@ -496,8 +489,7 @@ private fun StoreOptionsDialog(
                     tabsOf(store).filter { it != StoreTab.LIBRARY }.forEach { t ->
                         DeckRow(title = "Open ${t.label}", icon = t.icon, onClick = { onOpenTab(t) })
                     }
-                    DeckRow(title = "打开完整库", icon = Icons.Filled.VideoLibrary, onClick = { onOpenTab(StoreTab.LIBRARY) })
-                    DeckRow(title = "隐藏游戏商店", subtitle = "外观 → 显示游戏商店", icon = Icons.Filled.Palette, onClick = onAppearance)
+                    DeckRow(title = "Open full library", icon = Icons.Filled.VideoLibrary, onClick = { onOpenTab(StoreTab.LIBRARY) })
                 }
             }
         }

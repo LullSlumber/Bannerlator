@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
@@ -37,16 +40,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.winlator.star.R
 import com.winlator.star.contents.AdrenotoolsManager
+import com.winlator.star.ui.deck.rememberXmbFocusGroup
+import com.winlator.star.ui.deck.rememberXmbHome
+import com.winlator.star.ui.deck.xmbOnGlass
+import com.winlator.star.contents.DriverInstaller
 import com.winlator.star.ui.screens.adrenodownload.AdrenoDriverDownloadSheet
 import com.winlator.star.util.InAppFilePicker
+import android.widget.Toast
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AdrenoToolsScreen() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val activity = context as Activity
     val manager = remember { AdrenotoolsManager(activity) }
     val cs = MaterialTheme.colorScheme
@@ -65,9 +79,13 @@ fun AdrenoToolsScreen() {
         if (result.resultCode == Activity.RESULT_OK) {
             // In-app picker returns a path (wrapped as file:// Uri); SAF returns result.data.data.
             (result.data?.data ?: InAppFilePicker.pickedUri(result.data))?.let { uri ->
-                val driverId = manager.installDriver(uri)
-                if (driverId.isNotEmpty()) {
-                    drivers = drivers + driverId
+                // A "-Linux" or "-Wayland" zip goes into its own list; a refused zip says why.
+                scope.launch {
+                    val r = withContext(Dispatchers.IO) {
+                        DriverInstaller.install(context, uri, uri.lastPathSegment?.substringAfterLast('/'))
+                    }
+                    if (r.ok) drivers = manager.enumarateInstalledDrivers().toList()
+                    Toast.makeText(context, DriverInstaller.message(r), if (r.ok) Toast.LENGTH_SHORT else Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -76,7 +94,8 @@ fun AdrenoToolsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(cs.surface)
+            // On the XMB glass the page shows through; an opaque fill would hide it.
+            .then(if (xmbOnGlass()) Modifier else Modifier.background(cs.surface))
     ) {
 
         // Top row: Install button + Download-online icon button
@@ -89,37 +108,37 @@ fun AdrenoToolsScreen() {
             Button(
                 onClick = { confirmInstallPrompt = true },
                 colors = ButtonDefaults.buttonColors(containerColor = cs.primary),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).xmbBtn(CircleShape, tint = Color.White),
             ) {
                 Icon(Icons.Filled.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.size(8.dp))
-                Text("安装GPU驱动")
+                Text("Install GPU driver")
             }
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { showDownloadSheet = true }) {
+            IconButton(onClick = { showDownloadSheet = true }, modifier = Modifier.xmbBtn(CircleShape)) {
                 Icon(
                     imageVector = Icons.Filled.CloudDownload,
-                    contentDescription = "在线下载GPU驱动",
+                    contentDescription = "Download GPU drivers from online sources",
                     tint = cs.primary,
                 )
             }
         }
 
-        Divider(color = cs.outline.copy(alpha = 0.4f))
+        if (!rememberXmbHome()) Divider(color = cs.outline.copy(alpha = 0.4f))
 
         if (drivers.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("未安装GPU驱动。", color = cs.onSurfaceVariant)
+                Text("No GPU drivers installed.", color = cs.onSurfaceVariant)
             }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = xmbListPadding()) {
                 itemsIndexed(drivers) { index, driverId ->
                     DriverItem(
                         name = manager.getDriverName(driverId),
                         version = manager.getDriverVersion(driverId),
                         onRemove = { confirmRemoveIndex = index },
                     )
-                    Divider(color = cs.outline.copy(alpha = 0.25f))
+                    if (!rememberXmbHome()) Divider(color = cs.outline.copy(alpha = 0.25f))
                 }
             }
         }
@@ -134,8 +153,8 @@ fun AdrenoToolsScreen() {
             confirmButton = {
                 TextButton(onClick = {
                     confirmInstallPrompt = false
-                    filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, "选择GPU驱动"))
-                }) { Text("浏览文件") }
+                    filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, "Select GPU driver"))
+                }) { Text("Browse files") }
             },
             dismissButton = {
                 Row {
@@ -146,8 +165,8 @@ fun AdrenoToolsScreen() {
                             type = "*/*"
                         }
                         filePicker.launch(intent)
-                    }) { Text("从系统选取…") }
-                    TextButton(onClick = { confirmInstallPrompt = false }) {
+                    }, modifier = Modifier.xmbBtn(CircleShape)) { Text("Pick via system…") }
+                    TextButton(onClick = { confirmInstallPrompt = false }, modifier = Modifier.xmbBtn(CircleShape)) {
                         Text(context.getString(android.R.string.cancel))
                     }
                 }
@@ -159,7 +178,7 @@ fun AdrenoToolsScreen() {
     confirmRemoveIndex?.let { idx ->
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemoveIndex = null },
-            title = { Text("移除驱动?") },
+            title = { Text("Remove driver?") },
             text = { Text("Remove \"${manager.getDriverName(drivers[idx])}\"?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -167,7 +186,7 @@ fun AdrenoToolsScreen() {
                     manager.removeDriver(id)
                     drivers = drivers.toMutableList().also { it.removeAt(idx) }
                     confirmRemoveIndex = null
-                }) { Text("移除") }
+                }) { Text("Remove") }
             },
             dismissButton = {
                 TextButton(onClick = { confirmRemoveIndex = null }) { Text("Cancel") }
@@ -194,13 +213,23 @@ private fun DriverItem(
     onRemove: () -> Unit,
 ) {
     val cs = MaterialTheme.colorScheme
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+    // XMB interface: the row is a glass card and one D-pad stop; A enters it to reach the remove button.
+    val group = rememberXmbFocusGroup()
+    XmbGroupRow(
+        group = group,
+        shape = RoundedCornerShape(14.dp),
+        classicModifier = Modifier
             .fillMaxWidth()
             .background(cs.surface)
             .padding(horizontal = 16.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        card = true,
+        verticalAlignment = Alignment.CenterVertically,
+        margin = 16.dp,
+        vGap = 6.dp,
     ) {
+        // Read again inside the card: its text takes the accent ink only through the theme the card provides.
+        val cs = MaterialTheme.colorScheme
         Icon(
             imageVector = Icons.Filled.Memory,
             contentDescription = null,
@@ -212,8 +241,8 @@ private fun DriverItem(
             Text(text = name, style = MaterialTheme.typography.bodyLarge, color = cs.onSurface)
             Text(text = version, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
         }
-        IconButton(onClick = onRemove) {
-            Icon(Icons.Filled.Delete, contentDescription = "移除", tint = cs.onSurfaceVariant)
+        IconButton(onClick = onRemove, modifier = Modifier.xmbBtn(CircleShape, first = true)) {
+            Icon(Icons.Filled.Delete, contentDescription = "Remove", tint = cs.onSurfaceVariant)
         }
     }
 }

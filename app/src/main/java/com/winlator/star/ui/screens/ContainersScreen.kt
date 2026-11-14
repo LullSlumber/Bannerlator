@@ -47,7 +47,6 @@ import androidx.compose.material3.FilledTonalButton
 import java.io.File
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -102,6 +101,9 @@ import com.winlator.star.contentdialog.GraphicsDriverConfigDialog
 import com.winlator.star.core.EmuSaveRoots
 import com.winlator.star.core.FileUtils
 import com.winlator.star.core.GameSaveBackup
+import com.winlator.star.ui.deck.XmbInk
+import com.winlator.star.ui.deck.rememberXmbFocusGroup
+import com.winlator.star.ui.deck.rememberXmbHighlightItem
 import com.winlator.star.util.InAppFilePicker
 import com.winlator.star.core.SaveLocator
 import com.winlator.star.core.StringUtils
@@ -204,7 +206,7 @@ fun ContainersScreen(
             // the field state as the seed for future new containers) via the EDIT_DEFAULTS_ID sentinel.
             // Containers screen only. Sits next to the import action.
             IconButton(onClick = { onNavigateToDetail(ContainerDetailViewModel.EDIT_DEFAULTS_ID) }) {
-                Icon(Icons.Filled.Settings, contentDescription = "新容器默认值", tint = androidx.compose.ui.graphics.Color.White)
+                Icon(Icons.Filled.Settings, contentDescription = "Defaults for new containers", tint = androidx.compose.ui.graphics.Color.White)
             }
             IconButton(onClick = { showImportPicker = true }) {
                 Icon(Icons.Filled.FileDownload, contentDescription = "Import container", tint = androidx.compose.ui.graphics.Color.White)
@@ -215,12 +217,12 @@ fun ContainersScreen(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
         if (containers.isEmpty() && !isLoading) {
             Text(
-                text = "还没有容器，点击 + 新建一个。",
+                text = "No containers yet. Tap + to create one.",
                 color = OnSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center),
             )
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = xmbListPadding()) {
                 items(containers, key = { it.id }) { container ->
                     ContainerItem(
                         container = container,
@@ -317,10 +319,10 @@ fun ContainersScreen(
         val backups = remember { vm.availableBackups() }
         OutlinedAlertDialog(
             onDismissRequest = { showImportPicker = false },
-            title = { Text("导入容器") },
+            title = { Text("Import Container") },
             text = {
                 if (backups.isEmpty()) {
-                    Text("在 Downloads/Winlator/Backups/Containers/ 中未找到导出的容器。")
+                    Text("No exported containers found in Downloads/Winlator/Backups/Containers/.")
                 } else {
                     androidx.compose.foundation.layout.Column(
                         modifier = Modifier
@@ -335,7 +337,7 @@ fun ContainersScreen(
                                         Toast.makeText(context, "Container imported: ${dir.name}", Toast.LENGTH_SHORT).show()
                                     }
                                 },
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
                             ) {
                                 Text(dir.name, modifier = Modifier.weight(1f))
                             }
@@ -355,13 +357,13 @@ fun ContainersScreen(
             is ConfirmAction.Duplicate -> {
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("复制 容器?") },
+                    title = { Text("Duplicate container?") },
                     text = { Text("Duplicate \"${action.container.name}\"?") },
                     confirmButton = {
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.duplicate(action.container) {}
-                        }) { Text("复制") }
+                        }) { Text("Duplicate") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -371,13 +373,13 @@ fun ContainersScreen(
             is ConfirmAction.Remove -> {
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("移除容器?") },
+                    title = { Text("Remove container?") },
                     text = { Text("Remove \"${action.container.name}\" permanently?") },
                     confirmButton = {
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.remove(action.container, context) {}
-                        }) { Text("移除") }
+                        }) { Text("Remove") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -396,7 +398,7 @@ fun ContainersScreen(
                             "\"${action.container.name}\" moves from ${action.container.wineVersion} to ${action.target}.\n\n" +
                                 (if (remote != null)
                                     "The $newLabel layer is not on this device yet: it is downloaded from the catalog" +
-                                        layerSizeHint(remote) + " 并首先安装，然后容器更新。\n\n"
+                                        layerSizeHint(remote) + " and installed first, then the container is updated.\n\n"
                                 else "") +
                                 "What changes: the Wine/Proton layer files (system32/syswow64 builtin DLLs are refreshed; " +
                                 "DXVK, FEX/Box64 and game-installed files are left as they are). Wine finishes its own " +
@@ -408,7 +410,7 @@ fun ContainersScreen(
                                 else
                                     "The $oldLabel layer is no longer installed on this device, so this update cannot be " +
                                         "reverted afterwards (a registry backup is still taken). ") +
-                                "请确保此容器中没有正在运行的程序。"
+                                "Make sure nothing is running in this container."
                         )
                     },
                     confirmButton = {
@@ -427,7 +429,7 @@ fun ContainersScreen(
                 val newLabel = ContainerLayerUpdater.layerLabel(action.target, action.container.wineVersion)
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("关于兼容层更新") },
+                    title = { Text("About layer updates") },
                     text = {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             Text(
@@ -436,8 +438,8 @@ fun ContainersScreen(
                                     (if (newLabel == ContainerLayerUpdater.codeLabel(action.target)) "a newer build of the same layer, "
                                     else "a newer DroidDeck-Proton version, ") + "${action.target}, is " +
                                     (if (action.remote != null) "available in the catalog. The $newLabel layer will be " +
-                                        "downloaded" + layerSizeHint(action.remote) + " 首先。"
-                                    else "已安装。") + "\n\n" +
+                                        "downloaded" + layerSizeHint(action.remote) + " first."
+                                    else "installed.") + "\n\n" +
                                     "What the update changes: only Wine's own files inside the container are refreshed to " +
                                     "the new version. DXVK, FEX/Box64 and anything a game installed are left as they are; " +
                                     "Wine finishes its own prefix update on the next launch.\n\n" +
@@ -490,7 +492,7 @@ fun ContainersScreen(
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.revertLayer(action.container, action.snapshot)
-                        }) { Text("还原") }
+                        }) { Text("Revert") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -529,10 +531,10 @@ fun ContainersScreen(
                     Spacer(Modifier.size(8.dp))
                     SaveFlowCaution()
                     Spacer(Modifier.size(8.dp))
-                    TextButton(onClick = { saveFlow = SaveFlow.BackupScope(flow.container) }, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(onClick = { saveFlow = SaveFlow.BackupScope(flow.container) }, modifier = Modifier.fillMaxWidth().xmbStop(CircleShape)) {
                         Text("Back up this save", modifier = Modifier.weight(1f))
                     }
-                    TextButton(onClick = { saveFlow = SaveFlow.RestoreSource(flow.container) }, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(onClick = { saveFlow = SaveFlow.RestoreSource(flow.container) }, modifier = Modifier.fillMaxWidth().xmbStop(CircleShape)) {
                         Text("Restore a save", modifier = Modifier.weight(1f))
                     }
                 }
@@ -554,7 +556,7 @@ fun ContainersScreen(
                                 InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select backup (.zip)")
                             )
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
                     ) { Text("GameHub backup (.zip)", modifier = Modifier.weight(1f)) }
                     TextButton(
                         onClick = {
@@ -562,8 +564,8 @@ fun ContainersScreen(
                             saveFlow = null
                             restorePickerLauncher.launch("application/zip")
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("从系统选取…", modifier = Modifier.weight(1f)) }
+                        modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
+                    ) { Text("Pick via system…", modifier = Modifier.weight(1f)) }
                 }
             },
             confirmButton = { TextButton(onClick = { saveFlow = SaveFlow.Fork(flow.container) }) { Text("Back") } },
@@ -587,10 +589,10 @@ fun ContainersScreen(
                     GameSaveBackup.restore(context, uri, c) { r ->
                         busyMessage = null
                         resultMessage = if (r.ok) "Restored ${r.filesWritten} files to \"${c.name}\""
-                        else "Restore failed: ${r.error ?: "未知错误"}"
+                        else "Restore failed: ${r.error ?: "unknown error"}"
                         emuConflicts = r.emuConflicts
                     }
-                }) { Text("恢复") }
+                }) { Text("Restore") }
             },
             dismissButton = { TextButton(onClick = { saveFlow = null }) { Text("Cancel") } },
         )
@@ -603,11 +605,11 @@ fun ContainersScreen(
                     Spacer(Modifier.size(8.dp))
                     TextButton(
                         onClick = { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
                     ) { Text(stringResource(R.string.save_backup_scope_whole), modifier = Modifier.weight(1f)) }
                     TextButton(
                         onClick = { saveFlow = SaveFlow.GamePicker(flow.container) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
                     ) { Text("${stringResource(R.string.save_backup_scope_game)} ▸", modifier = Modifier.weight(1f)) }
                 }
             },
@@ -722,23 +724,21 @@ private fun ContainerItem(
     }
     val rendererLabel = rendererLabelOf(container.renderer, waylandContainer)
     val frameGenLabel = frameGenLabelOf(container.frameGenEngine)
-    val backendLabel = run {
-        val id = container.emulator
-        LocalContext.current.resources.getStringArray(R.array.emulator_entries)
-            .firstOrNull { StringUtils.parseIdentifier(it) == id } ?: ""
-    }
+    val backendLabel = com.winlator.star.ui.EmulatorLabels.chipLabel(container.emulator, container.wineVersion)
     val subtitle = listOf(container.wineVersion, container.screenSize)
         .filter { it.isNotEmpty() }.joinToString(" · ")
 
-    Card(
+    // XMB interface: the card is one D-pad stop (outlined whole, text in the accent), A enters it and reaches the buttons below
+    // (update layer, "?", Play, Settings), B comes back to the card. Elsewhere this is the plain Card it was.
+    val group = rememberXmbFocusGroup()
+    XmbGroupCard(
+        group = group,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        classicColor = MaterialTheme.colorScheme.surfaceVariant,
+        classicBorder = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -769,7 +769,7 @@ private fun ContainerItem(
                 Text(
                     text = container.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = OnSurface,
+                    color = xmbOnSurface(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -777,7 +777,7 @@ private fun ContainerItem(
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = OnSurfaceVariant,
+                        color = xmbOnSurfaceVariant(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -799,12 +799,12 @@ private fun ContainerItem(
                             onClick = { onUpdateLayer(layerTarget) },
                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                             border = BorderStroke(1.dp, layerOutline),
-                            modifier = Modifier.height(26.dp),
+                            modifier = Modifier.height(26.dp).xmbBtn(CircleShape),
                         ) {
                             if (layerNeedsDownload) {
                                 Icon(
                                     imageVector = Icons.Filled.CloudDownload,
-                                    contentDescription = "需要下载",
+                                    contentDescription = "Download needed",
                                     modifier = Modifier.size(14.dp),
                                 )
                                 Spacer(Modifier.width(4.dp))
@@ -819,11 +819,11 @@ private fun ContainerItem(
                         Spacer(Modifier.width(6.dp))
                         IconButton(
                             onClick = { onLayerHelp(layerTarget) },
-                            modifier = Modifier.size(26.dp),
+                            modifier = Modifier.size(26.dp).xmbBtn(CircleShape),
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.HelpOutline,
-                                contentDescription = "关于兼容层更新",
+                                contentDescription = "About layer updates",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp),
                             )
@@ -846,6 +846,7 @@ private fun ContainerItem(
             Box(
                 modifier = Modifier
                     .size(44.dp)
+                    .xmbBtn(CircleShape, first = true, tint = MaterialTheme.colorScheme.onPrimary)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable(onClick = onRun),
@@ -853,7 +854,7 @@ private fun ContainerItem(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_popup_menu_run),
-                    contentDescription = "运行",
+                    contentDescription = "Run",
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(26.dp),
                 )
@@ -863,43 +864,45 @@ private fun ContainerItem(
 
             // Settings button
             Box {
-                IconButton(onClick = { menuExpanded = true }) {
+                IconButton(onClick = { menuExpanded = true }, modifier = Modifier.xmbBtn(CircleShape)) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = "Settings",
-                        tint = OnSurfaceVariant,
+                        tint = xmbOnSurfaceVariant(),
                     )
                 }
                 ScrollingDropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
+                    // The menu is a window of its own: the controller's B closes it here (nothing outside the XMB interface).
+                    modifier = Modifier.xmbMenuBack { menuExpanded = false },
                 ) {
                     DropdownMenuItem(
-                        text = { Text("编辑") },
+                        text = { Text("Edit") },
                         leadingIcon = { Icon(Icons.Filled.Edit, null) },
                         onClick = { menuExpanded = false; onEdit() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("复制") },
+                        text = { Text("Duplicate") },
                         leadingIcon = { Icon(Icons.Filled.ContentCopy, null) },
                         onClick = { menuExpanded = false; onDuplicate() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("移除") },
+                        text = { Text("Remove") },
                         leadingIcon = { Icon(Icons.Filled.Delete, null) },
                         onClick = { menuExpanded = false; onRemove() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("导出") },
+                        text = { Text("Export") },
                         leadingIcon = { Icon(Icons.Filled.FileUpload, null) },
                         onClick = { menuExpanded = false; onExport() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("备份/恢复存档") },
+                        text = { Text("Backup / Restore save") },
                         leadingIcon = { Icon(Icons.Filled.SettingsBackupRestore, null) },
                         onClick = { menuExpanded = false; onBackupRestore() },
                     )
@@ -925,7 +928,7 @@ private fun ContainerItem(
                     }
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("信息") },
+                        text = { Text("Info") },
                         leadingIcon = { Icon(Icons.Filled.Info, null) },
                         onClick = { menuExpanded = false; onInfo() },
                     )
@@ -964,7 +967,7 @@ private fun layerSizeHint(remote: ContainerLayerUpdater.CatalogCandidate): Strin
     remote.sizeBytes?.let { " (~${ContainerLayerUpdater.formatSize(it)})" } ?: ""
 
 /** Steps of the Backup / Restore game-save flow launched from a container's overflow menu. */
-private sealed class SaveFlow {
+internal sealed class SaveFlow {
     /** Direction picker: back up vs restore. */
     data class Fork(val container: Container) : SaveFlow()
     /** Back up → scope picker: whole container vs a specific game. */
@@ -999,7 +1002,7 @@ private sealed class SaveFlow {
 }
 
 /** Fires a scoped (or whole-container) backup off the UI thread and routes the result to the bars. */
-private fun runScopedBackup(
+internal fun runScopedBackup(
     context: android.content.Context,
     flow: SaveFlow.BackupFormat,
     layout: GameSaveBackup.BackupLayout,
@@ -1014,7 +1017,7 @@ private fun runScopedBackup(
         setBusy(null)
         setResult(
             if (r.ok) "Saved ${r.fileCount} files → ${r.path?.substringAfterLast('/')}"
-            else "Backup failed: ${r.error ?: "未知错误"}"
+            else "Backup failed: ${r.error ?: "unknown error"}"
         )
     }
 }
@@ -1022,57 +1025,65 @@ private fun runScopedBackup(
 /** One selectable row in the game picker: cover art (fallback icon) + game name. */
 @Composable
 private fun GamePickerRow(shortcut: Shortcut, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val cover = shortcut.coverArt ?: shortcut.icon
-        Box(
+    val stop = rememberXmbHighlightItem()
+    XmbInk(stop) {
+        Row(
             modifier = Modifier
-                .size(width = 36.dp, height = 48.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(SurfaceVariantColor),
-            contentAlignment = Alignment.Center,
+                .fillMaxWidth()
+                .xmbStop(RoundedCornerShape(8.dp), stop)
+                .clickable(onClick = onClick)
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (cover != null) {
-                Image(
-                    bitmap = cover.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            } else {
-                Image(
-                    painter = painterResource(R.drawable.icon_wine),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                )
+            val cover = shortcut.coverArt ?: shortcut.icon
+            Box(
+                modifier = Modifier
+                    .size(width = 36.dp, height = 48.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(SurfaceVariantColor),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (cover != null) {
+                    Image(
+                        bitmap = cover.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.icon_wine),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
             }
+            Text(
+                shortcut.name,
+                color = xmbOnSurface(),
+                modifier = Modifier.padding(start = 12.dp).weight(1f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
-        Text(
-            shortcut.name,
-            color = OnSurface,
-            modifier = Modifier.padding(start = 12.dp).weight(1f),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 
 /** A two-line format option in the BackupFormat dialog. */
 @Composable
 private fun BackupFormatOption(title: String, subtitle: String, onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
-    ) {
-        Text(title, color = MaterialTheme.colorScheme.primary)
-        Text(subtitle, color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+    val stop = rememberXmbHighlightItem()
+    XmbInk(stop) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .xmbStop(RoundedCornerShape(8.dp), stop)
+                .clickable(onClick = onClick)
+                .padding(vertical = 8.dp),
+        ) {
+            Text(title, color = MaterialTheme.colorScheme.primary)
+            Text(subtitle, color = xmbOnSurfaceVariant(), style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 
@@ -1085,7 +1096,7 @@ private fun BackupFormatOption(title: String, subtitle: String, onClick: () -> U
  * takes them, so they are shown rather than ticked, and they alone are enough to go on.
  */
 @Composable
-private fun GameSavesDialog(
+internal fun GameSavesDialog(
     container: Container,
     gameName: String,
     gameKey: String,
@@ -1179,25 +1190,31 @@ private fun GameSavesDialog(
                 )
                 Spacer(Modifier.size(4.dp))
                 rows.forEach { c ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                if (checked.contains(c.relPath)) checked.remove(c.relPath) else checked.add(c.relPath)
+                    // XMB interface: the row is the one stop (A ticks it); the checkbox inside is not a second one.
+                    val stop = rememberXmbHighlightItem()
+                    XmbInk(stop) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .xmbStop(RoundedCornerShape(8.dp), stop)
+                                .clickable {
+                                    if (checked.contains(c.relPath)) checked.remove(c.relPath) else checked.add(c.relPath)
+                                }
+                                .padding(vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = checked.contains(c.relPath),
+                                onCheckedChange = {
+                                    if (it) { if (!checked.contains(c.relPath)) checked.add(c.relPath) }
+                                    else checked.remove(c.relPath)
+                                },
+                                modifier = Modifier.xmbNoFocus(),
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(c.relPath, color = xmbOnSurface(), style = MaterialTheme.typography.bodyMedium)
+                                Text(StringUtils.formatBytes(c.sizeBytes), color = xmbOnSurfaceVariant(), style = MaterialTheme.typography.bodySmall)
                             }
-                            .padding(vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(
-                            checked = checked.contains(c.relPath),
-                            onCheckedChange = {
-                                if (it) { if (!checked.contains(c.relPath)) checked.add(c.relPath) }
-                                else checked.remove(c.relPath)
-                            },
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(c.relPath, color = OnSurface, style = MaterialTheme.typography.bodyMedium)
-                            Text(StringUtils.formatBytes(c.sizeBytes), color = OnSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
@@ -1220,9 +1237,9 @@ private fun GameSavesDialog(
                 }
                 Spacer(Modifier.size(4.dp))
                 Row {
-                    TextButton(onClick = { showManualAdd = true }) { Text(stringResource(R.string.save_backup_add_folder)) }
+                    TextButton(onClick = { showManualAdd = true }, modifier = Modifier.xmbStop(CircleShape)) { Text(stringResource(R.string.save_backup_add_folder)) }
                     if (fromSidecar) {
-                        TextButton(onClick = { rescan += 1 }) { Text(stringResource(R.string.save_backup_rescan)) }
+                        TextButton(onClick = { rescan += 1 }, modifier = Modifier.xmbStop(CircleShape)) { Text(stringResource(R.string.save_backup_rescan)) }
                     }
                 }
             }
@@ -1253,7 +1270,7 @@ private fun ManualAddDialog(container: Container, onPick: (File) -> Unit, onCanc
     val root = remember(container.id) { SaveLocator.profileDir(container) }
     var cur by remember(container.id) { mutableStateOf(root) }
     val subDirs = remember(cur.path) {
-        cur.listFiles()?.filter { it.isDirectory }?.sortedBy { it.name.lowercase() } ?: emptyList()
+        cur.listFiles()?.filter { it.isDirectory }?.distinctBy { it.path }?.sortedBy { it.name.lowercase() } ?: emptyList()
     }
     OutlinedAlertDialog(
         onDismissRequest = onCancel,
@@ -1269,13 +1286,13 @@ private fun ManualAddDialog(container: Container, onPick: (File) -> Unit, onCanc
                 LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
                     if (cur.path != root.path) {
                         item {
-                            TextButton(onClick = { cur.parentFile?.let { cur = it } }, modifier = Modifier.fillMaxWidth()) {
+                            TextButton(onClick = { cur.parentFile?.let { cur = it } }, modifier = Modifier.fillMaxWidth().xmbStop(CircleShape)) {
                                 Text("..", modifier = Modifier.weight(1f), color = OnSurface)
                             }
                         }
                     }
                     items(subDirs, key = { it.path }) { d ->
-                        TextButton(onClick = { cur = d }, modifier = Modifier.fillMaxWidth()) {
+                        TextButton(onClick = { cur = d }, modifier = Modifier.fillMaxWidth().xmbStop(CircleShape)) {
                             Text(d.name, modifier = Modifier.weight(1f), color = OnSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
@@ -1325,7 +1342,7 @@ private fun SaveFlowCaution() {
 
 /** Blocking, non-dismissable spinner shown while a backup/restore runs off the UI thread. */
 @Composable
-private fun SaveFlowProgressDialog(message: String) {
+internal fun SaveFlowProgressDialog(message: String) {
     Dialog(
         onDismissRequest = {},
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
@@ -1348,7 +1365,7 @@ private fun SaveFlowProgressDialog(message: String) {
 }
 
 @Composable
-private fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
+internal fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
     var driveCSize by remember { mutableLongStateOf(0L) }
     var cacheSize  by remember { mutableLongStateOf(0L) }
     var totalSize  by remember { mutableLongStateOf(0L) }
@@ -1377,7 +1394,7 @@ private fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("存储信息") },
+        title = { Text("Storage Info") },
         text = {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -1388,13 +1405,13 @@ private fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                     modifier = androidx.compose.ui.Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    Text("驱动器 C", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Drive C", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(driveCSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
-                    Text("缓存", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Cache", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(cacheSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
-                    Text("总计", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Total", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(totalSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
                 // Right column — circular progress + label
@@ -1414,7 +1431,7 @@ private fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                     }
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
                     Text(
-                        "已用空间估算",
+                        "Estimated used space",
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -1428,7 +1445,7 @@ private fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                 container.putExtra("desktopTheme", null)
                 container.saveData()
                 onDismiss()
-            }) { Text("清除缓存") }
+            }) { Text("Clear Cache") }
         },
     )
 }

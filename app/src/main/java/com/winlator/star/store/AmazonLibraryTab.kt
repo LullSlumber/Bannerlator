@@ -71,7 +71,7 @@ fun rememberAmazonLibrary(onMessage: (String) -> Unit = {}): AmazonLibraryState 
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "正在同步库…"
+            status = "Syncing library…"
             scope.launch {
                 val result = AmazonLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false
@@ -140,7 +140,7 @@ fun AmazonLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "搜索您的Amazon库…",
+                placeholder = "Search your Amazon library…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -152,6 +152,11 @@ fun AmazonLibraryTab(
             ) {
                 StoreFilterChip("All", !installedOnly) { installedOnly = false }
                 StoreFilterChip("Installed", installedOnly) { installedOnly = true }
+                // Game folders the user already has → installed in place, only missing files download.
+                var importing by remember { mutableStateOf(false) }
+                StoreFilterChip("+ Import game library", false) { importing = true }
+                if (importing) StoreImportGamesFlow(StoreInstallLocations.Store.AMAZON) { importing = false }
+                StoreViewButton()
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = state.statusText,
@@ -164,20 +169,20 @@ fun AmazonLibraryTab(
 
         when {
             state.games.isEmpty() && state.isSyncing -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "正在获取您的Amazon游戏…" })
+                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your Amazon games…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "您的Amazon库在此为空",
-                    body = "同步以从Amazon拉取您的游戏，或打开完整库界面。",
-                    actionLabel = "立即同步",
+                    title = "Your Amazon library is empty here",
+                    body = "Sync to pull your games from Amazon, or open the full library screen.",
+                    actionLabel = "Sync now",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
+                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
             }
 
             else -> LazyVerticalGrid(
@@ -185,8 +190,8 @@ fun AmazonLibraryTab(
                 columns = GridCells.Adaptive(storeGridCell(wide)),
                 modifier = Modifier.fillMaxSize().focusGroup(),
                 contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 8.dp, bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(shown, key = { it.productId }) { g ->
                     val item = remember(g.productId, state.posterTick) { AmazonLibraryRepo.toCatalogItem(ctx, g) }
@@ -196,16 +201,6 @@ fun AmazonLibraryTab(
                         onOpen = { onOpen(g) },
                         badgeText = if (g.productId in state.updatableIds) "Update" else null,
                     )
-                }
-                item(key = "full_library_footer", span = { GridItemSpan(maxLineSpan) }) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
-                        StoreNotice(
-                            title = "完整库",
-                            body = "需要列表或海报视图，还是列表内安装？打开完整库界面。",
-                            actionLabel = "打开完整库",
-                            onAction = onOpenFullLibrary,
-                        )
-                    }
                 }
             }
         }

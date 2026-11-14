@@ -127,6 +127,9 @@ class MainActivity : AppCompatActivity() {
     @Volatile
     private var contentReady = false
 
+    /** This instance was the app icon landing on a task that already runs: closed at once in onCreate. */
+    private var duplicateLaunch = false
+
     private val showAllFilesDialog = mutableStateOf(false)
     // Deck first-run due at this start (Deck style, never finished); cleared once the user finishes or skips it.
     private val deckOnboardingPending = mutableStateOf(false)
@@ -177,6 +180,16 @@ class MainActivity : AppCompatActivity() {
         // to our first Compose frame; hold it only until the UI is ready to draw (set just below).
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // The app icon on a task this app started another way (a game's home-screen icon, the installer's Open,
+        // adb) makes Android put another MainActivity on top of it, which opens on Home and keeps the old one
+        // underneath. Close that one: the task then shows as it was left.
+        if (savedInstanceState == null && !isTaskRoot &&
+            intent?.action == Intent.ACTION_MAIN && intent?.hasCategory(Intent.CATEGORY_LAUNCHER) == true
+        ) {
+            duplicateLaunch = true
+            finish()
+            return
+        }
         splashScreen.setKeepOnScreenCondition { !contentReady }
 
         PACKAGE_NAME = applicationContext.packageName
@@ -222,6 +235,8 @@ class MainActivity : AppCompatActivity() {
 
         // First-run/install decision is made; let the OS splash hand off to the Compose UI.
         contentReady = true
+        // The start-up sound, once per app start (not on rotation or coming back to the screen).
+        if (savedInstanceState == null) com.winlator.star.sound.UiSounds.startup()
 
         // Settings-side Controller Test: the Input Controls screen's test dialog arms/disarms the input
         // fork through this bus (so this Activity consumes gamepad events instead of navigating the UI),
@@ -382,6 +397,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        // A closed duplicate set nothing up; the capture and the controller belong to the instance under it.
+        if (duplicateLaunch) {
+            super.onDestroy()
+            return
+        }
         // Kill any armed win-fg diagnostic-log capture (logcat subprocess) so it can't outlive the app.
         // The game (XServerDisplayActivity) shares this process, so a mid-play capture survives until here.
         WinFgDiag.stopDiagLog(this)
@@ -531,10 +551,12 @@ class MainActivity : AppCompatActivity() {
             controllerTestFeedKeyEvent(event)
             return true
         }
-        if (super.dispatchKeyEvent(event)) return true
         // Deck shell controller shortcuts (L1/R1 tabs, B back, X/Start options, Y search) get only keys the view tree left unhandled.
         // The handler is null unless the Deck shell is on screen.
-        return com.winlator.star.ui.deck.DeckInput.handler?.invoke(event) ?: false
+        val handled = super.dispatchKeyEvent(event) ||
+            (com.winlator.star.ui.deck.DeckInput.handler?.invoke(event) ?: false)
+        com.winlator.star.sound.UiSounds.key(event, handled)
+        return handled
     }
 
     private fun isControllerTestMotionEvent(event: android.view.MotionEvent): Boolean {
@@ -717,6 +739,7 @@ private fun ClassicAppShell(
 ) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    com.winlator.star.sound.MenuSound(drawerState.targetValue == DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val topBarActionsState = remember { topBarActionsState() }
