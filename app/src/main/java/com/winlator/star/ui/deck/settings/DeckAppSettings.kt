@@ -50,7 +50,7 @@ internal fun DeckAppSettings(navController: NavHostController, onAbout: () -> Un
             overline = "Bannerlator",
             title = L("Settings"),
             icon = Icons.Filled.Settings,
-            subtitle = L("Every app setting applies straight away."),
+            subtitle = L("每个应用设置都会立即生效。"),
         ),
         source = source,
         categories = AppSettingsRegistry.categories,

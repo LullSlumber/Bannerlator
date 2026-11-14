@@ -8,7 +8,7 @@ import org.json.JSONObject
 import java.io.File
 
 /**
- * One way in for a GPU driver zip, from a download list or a file. "GPU driver" is three things and
+ * One way in for a GPU driver zip, from a download list or a file. "虚幻引擎 HDR 修复" is three things and
  * the zip's own meta.json says which ("kind"): an AdrenoTools driver (the Graphics Driver pickers),
  * a "-Linux" glibc ICD (Linux runtime drivers) or a "-Wayland" one (Wayland game drivers). Each is
  * installed where it can be used, and the result says where, or why nothing was installed.

@@ -67,7 +67,7 @@ internal fun LabModsDialog(setting: GameModsSetting, onChange: () -> Unit, onDis
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(L("Mods"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(start = 8.dp, bottom = 6.dp))
+            Text(L("浏览文件"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(start = 8.dp, bottom = 6.dp))
             setting.mods.forEachIndexed { i, mod ->
                 val on = setting.on[mod.id] == true
                 val state = setting.status[mod.id].orEmpty()

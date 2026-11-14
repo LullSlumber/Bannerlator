@@ -83,7 +83,7 @@ fun SteamStoreTab(
     var loadingFeatured by remember { mutableStateOf(true) }
     var reloadKey by remember { mutableStateOf(0) }
 
-    // appIds with a free-license request in flight — drives the per-card "Adding…" state.
+    // appIds with a free-license request in flight — drives the per-card "正在添加…" state.
     var pending by remember { mutableStateOf<Set<Int>>(emptySet()) }
 
     LaunchedEffect(reloadKey) {
@@ -118,7 +118,7 @@ fun SteamStoreTab(
         if (results.isEmpty()) StorefrontLog.i(StorefrontLog.STORE, "search(\"$term\"): 0 results shown")
     }
 
-    /** Owned → Download, in-flight → Working, free → Add, otherwise → the honest "Not owned". */
+    /** Owned → Download, in-flight → Working, free → Add, otherwise → the honest "未拥有". */
     fun actionFor(item: SteamStoreCatalog.StoreItem): StoreAction = when {
         item.appId in ownedAppIds -> StoreAction.Download
         item.appId in pending -> StoreAction.Working
@@ -205,7 +205,7 @@ fun SteamStoreTab(
                     contentAlignment = Alignment.Center,
                 ) {
                     StoreNotice(
-                        title = "Store browsing is unavailable",
+                        title = "商店浏览不可用",
                         body = "Steam's storefront feed didn't answer. Search still works, and " +
                             "everything you already own is in the Library tab.",
                         actionLabel = "Retry",
@@ -253,9 +253,9 @@ private fun StorePortrait(
                 )
             }
         }
-        railItems("What's New", "New & trending", data.newReleases, actionFor, onOpen, onAction)
-        railItems("Top Free Games", "Add instantly", data.topFree, actionFor, onOpen, onAction)
-        railItems("Latest Deals", "Current specials", data.specials, actionFor, onOpen, onAction)
+        railItems("最新动态", "新作与热门", data.newReleases, actionFor, onOpen, onAction)
+        railItems("热门免费游戏", "立即添加", data.topFree, actionFor, onOpen, onAction)
+        railItems("最新优惠", "当前特惠", data.specials, actionFor, onOpen, onAction)
     }
 }
 
@@ -297,7 +297,7 @@ private fun StoreLandscape(
                 }
             }
             if (data.topFree.isNotEmpty()) {
-                item(key = "free_hdr") { StoreSectionHeader("Top Free Games", "Add instantly") }
+                item(key = "free_hdr") { StoreSectionHeader("热门免费游戏", "立即添加") }
                 items(data.topFree, key = { "free_${it.appId}" }) { g ->
                     StoreResultRow(
                         item = g,
@@ -317,8 +317,8 @@ private fun StoreLandscape(
                 .focusGroup(),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            railItems("What's New", "New & trending", data.newReleases, actionFor, onOpen, onAction)
-            railItems("Latest Deals", "Current specials", data.specials, actionFor, onOpen, onAction)
+            railItems("最新动态", "新作与热门", data.newReleases, actionFor, onOpen, onAction)
+            railItems("最新优惠", "当前特惠", data.specials, actionFor, onOpen, onAction)
             if (data.newReleases.isEmpty() && data.specials.isEmpty()) {
                 item(key = "browse_empty") {
                     StoreNotice(
@@ -374,7 +374,7 @@ private fun StoreSearchField(
     onSearch: () -> Unit,
 ) {
     // The same slim field as every other store.
-    CatalogSearchField(query = query, placeholder = "Search the Steam catalog…", onQueryChange = onQueryChange, onClear = onClear, onSearch = onSearch)
+    CatalogSearchField(query = query, placeholder = "搜索Steam目录…", onQueryChange = onQueryChange, onClear = onClear, onSearch = onSearch)
 }
 
 /**
@@ -405,8 +405,8 @@ private fun StoreResults(
             ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) }
 
             results.isEmpty() -> StoreNotice(
-                title = "No matches",
-                body = "Nothing in Steam's catalog matched that. Try a shorter or different title.",
+                title = "无匹配项",
+                body = "Steam目录中没有匹配的内容。请尝试更短或不同的标题。",
             )
 
             // XMB home: the results as a grid of portrait covers.

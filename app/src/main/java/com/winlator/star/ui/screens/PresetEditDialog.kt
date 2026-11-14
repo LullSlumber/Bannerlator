@@ -303,7 +303,7 @@ internal fun PresetEditDialog(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "Environment variables",
+                    "环境变量",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

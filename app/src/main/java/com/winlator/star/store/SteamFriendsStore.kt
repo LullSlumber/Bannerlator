@@ -1045,13 +1045,13 @@ object SteamFriendsStore {
                 rustSession()?.let { rs ->
                     val ok = if (id64 != null && id64 > STEAMID64_BASE) rs.addFriend(id64) else rs.addFriend(0L, q)
                     _addFeedback.value = when {
-                        !ok -> "Not connected to Steam"
+                        !ok -> "未连接到Steam"
                         id64 != null && id64 > STEAMID64_BASE -> "Friend request sent"
                         else -> "Looking up “$q”…"
                     }
                     return@execute
                 }
-                val sf = repo.steamFriends ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
+                val sf = repo.steamFriends ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
                 if (id64 != null && id64 > STEAMID64_BASE) {
                     sf.addFriend(SteamID(id64)); _addFeedback.value = "Friend request sent"
                 } else {
@@ -1077,10 +1077,10 @@ object SteamFriendsStore {
         io.execute {
             try {
                 rustSession()?.let { rs ->
-                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "Not connected to Steam"
+                    _addFeedback.value = if (rs.addFriend(id64)) "Friend request sent" else "未连接到Steam"
                     return@execute
                 }
-                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "Not connected to Steam"; return@execute }
+                repo.steamFriends?.addFriend(SteamID(id64)) ?: run { _addFeedback.value = "未连接到Steam"; return@execute }
                 _addFeedback.value = "Friend request sent"
             } catch (t: Throwable) {
                 Log.w(TAG, "addFriendById failed", t)
@@ -1356,7 +1356,7 @@ object SteamFriendsStore {
             try {
                 val token = mintWebToken()
                 if (token == null) {
-                    replaceMessageText(steamId, placeholder, "⚠️ Couldn't send image (not signed in)")
+                    replaceMessageText(steamId, placeholder, "⚠️ 无法发送图片（未登录）")
                     return@execute
                 }
                 val selfId = try { repo.steamId64 } catch (_: Throwable) { 0L }

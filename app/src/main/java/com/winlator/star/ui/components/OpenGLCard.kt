@@ -65,7 +65,7 @@ fun openGLFastNote(reason: String?): String? = when (reason) {
 
 /** "→ Fast · FPS · Vsync off" / "→ all off": what the game will actually get. */
 fun openGLSummary(fast: Boolean, fps: Boolean, vsyncOff: Boolean): String {
-    val on = listOfNotNull("Fast".takeIf { fast }, "FPS".takeIf { fps }, "Vsync off".takeIf { vsyncOff })
+    val on = listOfNotNull("快速".takeIf { fast }, "FPS".takeIf { fps }, "Vsync off".takeIf { vsyncOff })
     return if (on.isEmpty()) "→ all off" else "→ " + on.joinToString(" · ")
 }
 

@@ -112,13 +112,13 @@ fun AdrenoToolsScreen() {
             ) {
                 Icon(Icons.Filled.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.size(8.dp))
-                Text("Install GPU driver")
+                Text("安装GPU驱动")
             }
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(onClick = { showDownloadSheet = true }, modifier = Modifier.xmbBtn(CircleShape)) {
                 Icon(
                     imageVector = Icons.Filled.CloudDownload,
-                    contentDescription = "Download GPU drivers from online sources",
+                    contentDescription = "在线下载GPU驱动",
                     tint = cs.primary,
                 )
             }
@@ -128,7 +128,7 @@ fun AdrenoToolsScreen() {
 
         if (drivers.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No GPU drivers installed.", color = cs.onSurfaceVariant)
+                Text("未安装GPU驱动。", color = cs.onSurfaceVariant)
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = xmbListPadding()) {
@@ -153,8 +153,8 @@ fun AdrenoToolsScreen() {
             confirmButton = {
                 TextButton(onClick = {
                     confirmInstallPrompt = false
-                    filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, "Select GPU driver"))
-                }) { Text("Browse files") }
+                    filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, "选择GPU驱动"))
+                }) { Text("浏览文件") }
             },
             dismissButton = {
                 Row {
@@ -165,7 +165,7 @@ fun AdrenoToolsScreen() {
                             type = "*/*"
                         }
                         filePicker.launch(intent)
-                    }, modifier = Modifier.xmbBtn(CircleShape)) { Text("Pick via system…") }
+                    }, modifier = Modifier.xmbBtn(CircleShape)) { Text("从系统选取…") }
                     TextButton(onClick = { confirmInstallPrompt = false }, modifier = Modifier.xmbBtn(CircleShape)) {
                         Text(context.getString(android.R.string.cancel))
                     }
@@ -178,7 +178,7 @@ fun AdrenoToolsScreen() {
     confirmRemoveIndex?.let { idx ->
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemoveIndex = null },
-            title = { Text("Remove driver?") },
+            title = { Text("移除驱动?") },
             text = { Text("Remove \"${manager.getDriverName(drivers[idx])}\"?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -186,7 +186,7 @@ fun AdrenoToolsScreen() {
                     manager.removeDriver(id)
                     drivers = drivers.toMutableList().also { it.removeAt(idx) }
                     confirmRemoveIndex = null
-                }) { Text("Remove") }
+                }) { Text("移除") }
             },
             dismissButton = {
                 TextButton(onClick = { confirmRemoveIndex = null }) { Text("Cancel") }
@@ -242,7 +242,7 @@ private fun DriverItem(
             Text(text = version, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
         }
         IconButton(onClick = onRemove, modifier = Modifier.xmbBtn(CircleShape, first = true)) {
-            Icon(Icons.Filled.Delete, contentDescription = "Remove", tint = cs.onSurfaceVariant)
+            Icon(Icons.Filled.Delete, contentDescription = "移除", tint = cs.onSurfaceVariant)
         }
     }
 }

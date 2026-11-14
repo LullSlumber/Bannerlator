@@ -122,7 +122,7 @@ class SteamLoginActivity : ComponentActivity(), SteamAuthManager.AuthListener {
                         onDismiss = { guardDialog = null },
                         onSubmit = { code ->
                             guardDialog = null
-                            statusText = "Verifying…"
+                            statusText = "验证中…"
                             isStatusError = false
                             isLoading = true
                             SteamAuthManager.getInstance().submitGuardCode(code)

@@ -91,10 +91,10 @@ internal val LocalIgCompact = compositionLocalOf { false }
  */
 internal data class SaveScope(val label: String, val icon: ImageVector) {
     companion object {
-        val GAME = SaveScope("Saved for this game", Icons.Outlined.SportsEsports)
-        val CONTAINER = SaveScope("Saved for this container", Icons.Outlined.Inventory2)
-        val ALL = SaveScope("Saved for all games", Icons.Outlined.Public)
-        val SESSION = SaveScope("This session only", Icons.Outlined.Schedule)
+        val GAME = SaveScope("为此游戏保存", Icons.Outlined.SportsEsports)
+        val CONTAINER = SaveScope("为此容器保存", Icons.Outlined.Inventory2)
+        val ALL = SaveScope("为所有游戏保存", Icons.Outlined.Public)
+        val SESSION = SaveScope("仅本次会话", Icons.Outlined.Schedule)
         val LEGEND = listOf(GAME, CONTAINER, ALL, SESSION)
 
         /** A scope the four standard ones don't cover (a controls profile, a Proton install). */
@@ -109,7 +109,7 @@ internal val LocalIgRaisedAlpha = androidx.compose.runtime.staticCompositionLoca
 @Composable
 internal fun igRaised(base: Float): Float = LocalIgRaisedAlpha.current?.let { minOf(it, base) } ?: base
 
-/** "Saved for this game" when this session has a shortcut to write to, else "Saved for this container". */
+/** "为此游戏保存" when this session has a shortcut to write to, else "为此容器保存". */
 @Composable
 internal fun igGameScope(): SaveScope {
     val fromShortcut by DeckInGameState.launchedFromShortcut.collectAsState()

@@ -206,7 +206,7 @@ internal object OverlayRows {
         metric("temp", L("Temperature"), "showTemp", on(true), chip(L("温度"), always), fallback = "showBatteryTemp", twins = listOf("showBatteryTemp")),
         metric("gpuTemp", L("GPU 温度"), "showGpuTemp", on(false), chip(L("GPU 温度")) { gameNative(it) }),
         metric("battery", L("Battery"), "showBattery", on(false), chip(L("Battery")) { gameNative(it) }),
-        metric("runtime", L("Runtime"), "showRuntime", on(false), { !fusion(it) && gameNative(it) }),
+        metric("runtime", L("运行时间"), "showRuntime", on(false), { !fusion(it) && gameNative(it) }),
         metric("low001", L("0.01% low"), "showLow001", on(true), chip(L("0.01% low"), never)),
         metric("fpsDecimal", L("带小数的 FPS"), "fpsDecimal", on(true), chip(L("FPS .1"), never)),
         metric("perCore", L("Per-core CPU"), "showPerCore", on(true), chip(L("Per-core"), never)),

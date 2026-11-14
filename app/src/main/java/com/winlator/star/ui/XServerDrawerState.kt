@@ -89,7 +89,7 @@ object XServerDrawerState {
     // compositor at once AND written to the effective env (shortcut override else container) as the
     // next launch's default. `active` = the compositor's live state. `frames` = its zero-copy frames
     // in the last completed 10 s window. `live` = a zero-copy frame reached the display layer in the
-    // last ~1.5 s, which is what separates "switching..." from "running" right after a flip (the
+    // last ~1.5 s, which is what separates "switching..." 来自 "running" right after a flip (the
     // 10 s counter is far too slow for that).
     private val _waylandZeroCopyRequested = MutableStateFlow(false)
     val waylandZeroCopyRequested: StateFlow<Boolean> = _waylandZeroCopyRequested

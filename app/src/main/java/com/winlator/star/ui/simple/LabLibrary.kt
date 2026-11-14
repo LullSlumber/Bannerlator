@@ -52,7 +52,7 @@ internal object LabLibrary {
         Triple("gog", "GOG", DeckStore.GOG.owns),
         Triple("amazon", "Amazon Games", DeckStore.AMAZON.owns),
         Triple("xbox", "Xbox", DeckStore.XBOX.owns),
-        Triple("custom", T("Added by me"), { s: Shortcut -> isCustomOriginShortcut(s) }),
+        Triple("custom", T("由我添加"), { s: Shortcut -> isCustomOriginShortcut(s) }),
         Triple("linux", "Linux", { s: Shortcut -> LinuxShortcuts.isLinuxEntry(s) }),
         Triple("android", "Android", { s: Shortcut -> AndroidGames.isAndroidEntry(s) }),
     )
@@ -74,8 +74,8 @@ internal object LabLibrary {
 
     fun sortLabel(v: LibrarySort): String = when (v) {
         LibrarySort.RECENT -> L("Last played")
-        LibrarySort.NAME -> L("Name A–Z")
-        LibrarySort.NAME_DESC -> L("Name Z–A")
+        LibrarySort.NAME -> L("名称 A–Z")
+        LibrarySort.NAME_DESC -> L("名称 Z–A")
         LibrarySort.CONTAINER -> L("Container")
         else -> L(v.label)
     }

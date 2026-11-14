@@ -76,7 +76,7 @@ private fun DownloadsIcon(tint: Color) {
     ) {
         Icon(
             imageVector = Icons.Filled.Download,
-            contentDescription = "Downloads & Library",
+            contentDescription = "下载和库",
             tint = tint,
         )
     }

@@ -282,7 +282,7 @@ public final class SteamRepository {
                 }
                 if (realSteamSuspended) return;
                 // Connect-only (no saved sign-in): the channel is up for the login screens; the pill
-                // stays "Signed out" like a signed-out JavaSteam session would show nothing.
+                // stays "已登出" like a signed-out JavaSteam session would show nothing.
                 if (!isLoggedInPrefs()) setStatus(SteamStatus.SIGNED_OUT, "rust engine connected — no saved sign-in");
                 else setStatus(SteamStatus.CONNECTING, "rust engine state " + state);
             } else {
@@ -1043,7 +1043,7 @@ public final class SteamRepository {
             // Without this, if no server list is cached, getNextServerCandidate() returns null
             // and connect() immediately fires DisconnectedCallback without making any connection.
             b.withDirectoryFetch(true);
-            // "Steam connection region" (Settings → Steam): hands JavaSteam the chosen datacenter's
+            // "Steam连接区域" (Settings → Steam): hands JavaSteam the chosen datacenter's
             // TCP CMs on its first connect; returns nothing (→ the directory fetch above, exactly as
             // before) in Auto mode or when the directory lists no TCP CM for that datacenter.
             b.withServerListProvider(SteamRegion.INSTANCE.javaSteamServerListProvider(appContext));
@@ -1322,7 +1322,7 @@ public final class SteamRepository {
         slog(prev + " -> " + s + "  (" + reason + ")");
         emit("SteamStatus:" + s.name());
         // Mirror the honest connection state into the foreground-service notification so the FGS is
-        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "Connecting…" string). Static
+        // a legitimately-ongoing, TRUTHFUL indicator (not a frozen "正在连接…" string). Static
         // no-op when the service isn't running; guarded so any class-load/order issue on this path
         // can never break the pill. (A live download temporarily overrides this with a "Downloading
         // … N%" line from SteamDepotDownloader, which reverts here via refreshFgsStatus() on finish.)
@@ -1335,8 +1335,8 @@ public final class SteamRepository {
         switch (s) {
             case ONLINE:              return "Steam：在线";
             case CONNECTING:          return "Connecting to Steam…";
-            case SIGNED_IN_ELSEWHERE: return "Signed in elsewhere";
-            case SIGNED_OUT:          return "Signed out";
+            case SIGNED_IN_ELSEWHERE: return "已在别处登录";
+            case SIGNED_OUT:          return "已登出";
             case PAUSED_FOR_GAME:     return "已暂停 — 游戏会话活动";
             case OFFLINE:
             default:                  return "Offline";
@@ -1693,7 +1693,7 @@ public final class SteamRepository {
         // (logged in elsewhere / session replaced by a DIFFERENT client) -> surface it, do NOT recover/loop.
         // We intentionally do NOT auto-reconnect here: a genuine different-client replacement means the
         // account is live elsewhere (e.g. desktop Steam), so relogging would start a logon tug-of-war.
-        // The pill shows "Signed in elsewhere" and the user taps to reconnect once they've signed out there.
+        // The pill shows "已在别处登录" and the user taps to reconnect once they've signed out there.
         if (loggingOut || r == EResult.LoggedInElsewhere || r == EResult.LogonSessionReplaced) {
             setStatus(loggingOut ? SteamStatus.SIGNED_OUT : SteamStatus.SIGNED_IN_ELSEWHERE,
                     loggingOut ? "用户登出" : "replaced by another client: " + r.name());
@@ -1866,7 +1866,7 @@ public final class SteamRepository {
     /** Map Steam PICS flat genre IDs (numeric strings) to human-readable names. */
     private static String resolveGenreId(String id) {
         switch (id) {
-            case "1":  return "Action";
+            case "1":  return "动作";
             case "2":  return "策略";
             case "3":  return "角色扮演";
             case "4":  return "休闲";

@@ -121,14 +121,14 @@ fun EpicProfileTab(
                     StoreFilterChip("Account on epicgames.com", false, Modifier.xmbInner(group, first = true)) {
                         onOpenWeb("https://www.epicgames.com/account/personal", "Epic account")
                     }
-                    StoreFilterChip(if (loading) "Refreshing…" else "Refresh", false, Modifier.xmbInner(group), onRefresh)
+                    StoreFilterChip(if (loading) "正在刷新…" else "刷新", false, Modifier.xmbInner(group), onRefresh)
                 }
             }
         }
     }
     val stats: @Composable () -> Unit = {
         val tiles = buildList {
-            add("Games" to libraryCount)
+            add("游戏" to libraryCount)
             add("Installed" to installedCount)
             profile?.takeIf { it.friendsAvailable }?.let { add("Friends" to it.friends.size) }
         }

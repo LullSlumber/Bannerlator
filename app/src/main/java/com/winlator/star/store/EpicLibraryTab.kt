@@ -70,7 +70,7 @@ fun rememberEpicLibrary(onMessage: (String) -> Unit = {}): EpicLibraryState {
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "Syncing library…"
+            status = "正在同步库…"
             scope.launch {
                 val result = EpicLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false
@@ -150,7 +150,7 @@ fun EpicLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "Search your Epic library…",
+                placeholder = "搜索您的Epic库…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -179,20 +179,20 @@ fun EpicLibraryTab(
 
         when {
             state.games.isEmpty() && state.isSyncing -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your Epic games…" })
+                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "Fetching your Epic games…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "Your Epic library is empty here",
-                    body = "Sync to pull your games from Epic, or open the full library screen.",
-                    actionLabel = "Sync now",
+                    title = "您的Epic库在此为空",
+                    body = "同步以从Epic拉取您的游戏，或打开完整库界面。",
+                    actionLabel = "立即同步",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
+                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
             }
 
             else -> LazyVerticalGrid(

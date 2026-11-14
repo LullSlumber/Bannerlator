@@ -199,7 +199,7 @@ internal class AppSettingsExtras(
     private fun updateHint(latest: UpdateManager.UpdateInfo?): String? = when {
         latest == null -> null
         latest.isNewer -> buildString {
-            append(L("Update available"))
+            append(L("有可用更新"))
             if (latest.highlights.isNotEmpty()) {
                 latest.highlights.forEach { h ->
                     append("\n• ")
@@ -212,7 +212,7 @@ internal class AppSettingsExtras(
                 append(latest.notes)
             }
         }
-        else -> L("You're up to date.")
+        else -> L("已是最新版本。")
     }
 
     private fun checkNow() {
@@ -223,7 +223,7 @@ internal class AppSettingsExtras(
                 checking = false
                 when {
                     info == null -> AppUtils.showToast(context, L("Couldn't check for updates"))
-                    !info.isNewer -> AppUtils.showToast(context, L("You're on the latest version"))
+                    !info.isNewer -> AppUtils.showToast(context, L("您已是最新版本"))
                     else -> {}
                 }
             }
@@ -233,29 +233,29 @@ internal class AppSettingsExtras(
     private fun generalBottom(): List<PageExtra> {
         val latest = updateInfo
         val lines = ArrayList<AppLine>()
-        lines += infoLine("status", "Installed: V " + UpdateManager.installedVersionName() + (latest?.let { "   ·   Latest: V " + it.versionName } ?: ""), updateHint(latest))
+        lines += infoLine("status", "已安装: V " + UpdateManager.installedVersionName() + (latest?.let { "   ·   最新版本: V " + it.versionName } ?: ""), updateHint(latest))
         if (latest != null && latest.isNewer) {
-            lines += actionLine(DeckAction("install", Icons.Filled.Download, L("Download and install") + " V " + latest.versionName,
+            lines += actionLine(DeckAction("install", Icons.Filled.Download, L("下载并安装") + " V " + latest.versionName,
                 L("Downloads the new version and starts the installer."), enabled = activity != null) {
                 activity?.let { UpdateManager.downloadAndInstall(it, latest) {} }
             })
         }
-        lines += actionLine(DeckAction("check", Icons.Filled.Refresh, if (checking) L("Checking...") else L("Check for updates"),
+        lines += actionLine(DeckAction("check", Icons.Filled.Refresh, if (checking) L("Checking...") else L("检查更新"),
             L("Looks for a new version now."), enabled = !checking) { checkNow() })
         val about = ArrayList<DeckAction>()
-        about += DeckAction("about", Icons.Filled.Info, L("About Bannerlator"), L("Version, what's powering it and credits.")) { onAbout() }
+        about += DeckAction("about", Icons.Filled.Info, L("关于 Bannerlator"), L("版本、其驱动技术和鸣谢。")) { onAbout() }
         about += DeckAction("help", Icons.Filled.HelpOutline, L("Help and support"), L("GitHub, issue tracker and Discord.")) { showHelp = true }
         if (onMyAccount != null) {
-            about += DeckAction("account", Icons.Filled.AccountCircle, L("My account"), L("Sign in to manage your shared configs.")) { onMyAccount.invoke() }
+            about += DeckAction("account", Icons.Filled.AccountCircle, L("我的账户"), L("Sign in to manage your shared configs.")) { onMyAccount.invoke() }
         }
-        about += DeckAction("setup", Icons.Filled.RestartAlt, L("Run setup again"), L("Walk through the first-run set-up: permissions, theme, stores.")) { DeckSetup.requestRerun() }
-        return cardItems("version", L("Version"), lines) + actionItems("about", L("About and help"), about)
+        about += DeckAction("setup", Icons.Filled.RestartAlt, L("再次运行设置"), L("Walk through the first-run set-up: permissions, theme, stores.")) { DeckSetup.requestRerun() }
+        return cardItems("version", L("Version"), lines) + actionItems("about", L("关于与帮助"), about)
     }
 
     // ── Appearance ──────────────────────────────────────────────────────────────────────────────
 
     private fun appearanceTop(): List<PageExtra> =
-        cardItems("theme", L("Theme"), listOf(AppLine("preset") { ThemePresetLine(onOpen = { showThemes = true }) }))
+        cardItems("theme", L("主题"), listOf(AppLine("preset") { ThemePresetLine(onOpen = { showThemes = true }) }))
 
     private fun appearanceBottom(): List<PageExtra> = listOf(
         PageExtra("accent-label") { GroupLabel(L("Custom accent colour")) },
@@ -279,7 +279,7 @@ internal class AppSettingsExtras(
         return when {
             netProbing -> L("Checking how this network handles online game traffic...")
             net == null -> L("Checks the NAT type and UDP for online games (the same check the SteamLite launch shows).")
-            else -> "Network: " + net.verdict() +
+            else -> "网络: " + net.verdict() +
                 (if (net.nat != NetworkProbe.Nat.OPEN_CONE && net.maskedIp != null) " (IP ${net.maskedIp})" else "") +
                 (if (net.ipv6) " · IPv6" else "")
         }
@@ -314,8 +314,8 @@ internal class AppSettingsExtras(
 
     // The locations are in [libraryTop].
     private fun libraryBottom(): List<PageExtra> = actionItems("steam-conn", L("Steam connection tests"), listOf(
-        DeckAction("regions", Icons.Filled.Refresh, if (regionProbing) L("Testing regions...") else L("Test regions"), regionHint(), enabled = !regionProbing) { testRegions() },
-        DeckAction("network", Icons.Filled.Speed, if (netProbing) L("Testing network...") else L("Test network"), networkHint(), enabled = !netProbing) { testNetwork() },
+        DeckAction("regions", Icons.Filled.Refresh, if (regionProbing) L("Testing regions...") else L("测试区域"), regionHint(), enabled = !regionProbing) { testRegions() },
+        DeckAction("network", Icons.Filled.Speed, if (netProbing) L("Testing network...") else L("测试网络"), networkHint(), enabled = !netProbing) { testNetwork() },
     ))
 
     // ── Performance ─────────────────────────────────────────────────────────────────────────────
@@ -347,7 +347,7 @@ internal class AppSettingsExtras(
             val took = (System.currentTimeMillis() - started) / 1000
             val text = when (status) {
                 com.winlator.star.core.LsfgNative.STATUS_OK ->
-                    if (took >= 2) L("Shaders ready for LSFG Native") + " (" + took + " s)" else L("Shaders ready for LSFG Native")
+                    if (took >= 2) L("着色器已为LSFG Native就绪") + " (" + took + " s)" else L("着色器已为LSFG Native就绪")
                 -1 -> L("Shader preparation failed; it is retried when a game launches")
                 else -> com.winlator.star.core.LsfgNative.explain(status)
             }
@@ -415,9 +415,9 @@ internal class AppSettingsExtras(
         lines += infoLine("status", L("Lossless.dll"), lsfgStatus + (if (shaders.isNotEmpty()) "\n" + shaders else ""))
         lines += actionLine(DeckAction("detect", Icons.Filled.Download, L("Detect from the Steam store"),
             L("Download Lossless Scaling in the in-app Steam store first. The DLL is copied into the app and used by every container whose frame generation engine is LSFG Native.")) { detectLosslessDll() })
-        lines += actionLine(DeckAction("import", Icons.Filled.FileDownload, L("Import Lossless.dll"),
+        lines += actionLine(DeckAction("import", Icons.Filled.FileDownload, L("导入 Lossless.dll"),
             L("Pick a Lossless.dll yourself (in-app file picker).")) {
-            startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("Select Lossless.dll"))) { data ->
+            startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("选择 Lossless.dll"))) { data ->
                 InAppFilePicker.pickedUri(data)?.let { importLosslessDll(it) }
             }
         })
@@ -534,7 +534,7 @@ internal class AppSettingsExtras(
             val builtIn = name == MidiManager.DEFAULT_SF2_FILE
             soundLines += AppLine("sf:$name") {
                 if (builtIn) DeckLine(label = L("Built-in General MIDI bank"), hint = L("Always available; it cannot be removed."))
-                else DeckLine(label = name, trailing = { DeckSmallButton(L("Remove"), Icons.Filled.Delete) { removeSoundBank(name) } })
+                else DeckLine(label = name, trailing = { DeckSmallButton(L("移除"), Icons.Filled.Delete) { removeSoundBank(name) } })
             }
         }
         soundLines += actionLine(DeckAction("add", Icons.Filled.Add, L("Add a sound bank (.sf2)"),
@@ -577,7 +577,7 @@ internal class AppSettingsExtras(
         return listOf(
             PageExtra("space-label") { GroupLabel(L("Space used")) },
             PageExtra("space") { Column { StorageWidget() } },
-        ) + actionItems("folders", L("Folders"), folders) +
+        ) + actionItems("folders", L("文件夹"), folders) +
             cardItems("banks", L("Sound banks"), soundLines) +
             actionItems("backup", L("Backup and restore"), backup)
     }
@@ -598,7 +598,7 @@ internal class AppSettingsExtras(
     private fun applyExtraLogging(on: Boolean) {
         extraLogging = on
         WinFgDiag.setExtraLoggingEnabled(context, on)
-        AppUtils.showToast(context, if (on) L("Extra win-fg logging on") else L("Extra win-fg logging off"))
+        AppUtils.showToast(context, if (on) L("额外win-fg日志已开启") else L("额外win-fg日志已关闭"))
     }
 
     private fun toggleDiagLog() {
@@ -628,7 +628,7 @@ internal class AppSettingsExtras(
         val lines = ArrayList<AppLine>()
         lines += AppLine("capture") {
             DeckLine(
-                label = L("Contribute frame-gen training capture"),
+                label = L("贡献帧生成训练采集"),
                 hint = if (captureEnabled) L("Recording is ON: files are saved to Download/win-fg. Only records while a game's frame generation engine is win-fg. It lowers FPS while recording.")
                 else L("Records raw in-game frames (no HUD, no personal data, no audio) to Download/win-fg for you to share. Turning it on asks you to confirm first."),
                 activate = { setCapture(!captureEnabled) },
@@ -637,7 +637,7 @@ internal class AppSettingsExtras(
         }
         lines += AppLine("resolution") {
             DeckLine(
-                label = L("Capture resolution"),
+                label = L("采集分辨率"),
                 hint = L("Match game records at your play resolution (best data); 720p / 1080p force a fixed size."),
                 trailing = {
                     resolutions.forEach { (value, label) ->
@@ -651,20 +651,20 @@ internal class AppSettingsExtras(
         }
         lines += AppLine("extra") {
             DeckLine(
-                label = L("Extra win-fg logging (verbose)"),
+                label = L("额外win-fg日志（详细）"),
                 hint = L("For debugging a win-fg freeze: turn this and the diagnostic log on, reproduce the freeze, then share the saved log."),
                 activate = { applyExtraLogging(!extraLogging) },
                 trailing = { Switch(checked = extraLogging, onCheckedChange = { applyExtraLogging(it) }) },
             )
         }
         lines += actionLine(DeckAction("diag", Icons.Filled.Description,
-            if (diagRecording) L("Stop diagnostic log") else L("Start diagnostic log"),
+            if (diagRecording) L("停止诊断日志") else L("启动诊断日志"),
             if (diagRecording) L("Recording: reproduce the freeze, then stop.")
             else if (diagLogPath != null) L("Last saved to") + " " + diagLogPath
             else L("Records this app's log to Download/win-fg-logs while you play. No root needed.")) { toggleDiagLog() })
-        lines += actionLine(DeckAction("guide", Icons.Filled.HelpOutline, L("How to record good training data"),
+        lines += actionLine(DeckAction("guide", Icons.Filled.HelpOutline, L("如何录制良好的训练数据"),
             L("What to record, what to avoid and what is captured.")) { showCaptureHelp = true })
-        return cardItems("fg", L("Frame-gen training capture"), lines)
+        return cardItems("fg", L("帧生成训练捕获"), lines)
     }
 
     // ── Dialogs and pickers ─────────────────────────────────────────────────────────────────────
@@ -725,8 +725,8 @@ internal class AppSettingsExtras(
         if (showBackup) {
             OutlinedAlertDialog(
                 onDismissRequest = { showBackup = false },
-                title = { Text("Backup Data") },
-                text = { Text("Do you want to create a backup of the app's data directory?") },
+                title = { Text("备份数据") },
+                text = { Text("是否要创建应用数据目录的备份？") },
                 confirmButton = { TextButton(onClick = { runBackup() }) { Text("Yes") } },
                 dismissButton = { TextButton(onClick = { showBackup = false }) { Text("No") } },
             )
@@ -748,7 +748,7 @@ internal class AppSettingsExtras(
         restoreUri?.let { uri ->
             OutlinedAlertDialog(
                 onDismissRequest = { restoreUri = null },
-                title = { Text("Restore Data") },
+                title = { Text("恢复数据") },
                 text = { Text("This will restart the app. Continue?") },
                 confirmButton = {
                     TextButton(onClick = {
@@ -757,13 +757,13 @@ internal class AppSettingsExtras(
                         intent.data = uri
                         context.startActivity(intent)
                         activity?.finish()
-                    }) { Text("Restore") }
+                    }) { Text("恢复") }
                 },
                 dismissButton = { TextButton(onClick = { restoreUri = null }) { Text("Cancel") } },
             )
         }
 
-        // win-fg training-capture consent: gates enabling, needs the "I understand" tick.
+        // win-fg training-capture consent: gates enabling, needs the "我理解" tick.
         if (showCaptureConsent) {
             var consentChecked by remember { mutableStateOf(false) }
             val consentText = remember { context.getString(R.string.winfg_capture_consent_v1) }
@@ -776,20 +776,20 @@ internal class AppSettingsExtras(
                         Spacer(Modifier.height(12.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(checked = consentChecked, onCheckedChange = { consentChecked = it })
-                            Text(L("I understand"), color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                            Text(L("我理解"), color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                         }
                     }
                 },
                 confirmButton = {
                     TextButton(
-                        enabled = consentChecked, // Enable stays disabled until "I understand" is ticked.
+                        enabled = consentChecked, // Enable stays disabled until "我理解" is ticked.
                         onClick = {
                             WinFgCapture.recordConsentAndEnable(context)
                             captureEnabled = true
                             showCaptureConsent = false
                             AppUtils.showToast(context, L("Frame-gen training capture enabled"))
                         },
-                    ) { Text(L("Enable")) }
+                    ) { Text(L("启用")) }
                 },
                 dismissButton = { TextButton(onClick = { showCaptureConsent = false }) { Text(L("Cancel")) } },
             )
@@ -797,17 +797,17 @@ internal class AppSettingsExtras(
         if (showCaptureHelp) {
             OutlinedAlertDialog(
                 onDismissRequest = { showCaptureHelp = false },
-                title = { Text(L("How to record good training data")) },
+                title = { Text(L("如何录制良好的训练数据")) },
                 text = {
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                         val bullets = listOf(
-                            "What this does:" to "records raw in-game frames while you play, to help train an open, clean frame-generation model. Off by default; it lowers FPS while recording. Files save to Download/win-fg for you to share.",
-                            "Best games to record:" to "ones with smooth, CONTINUOUS motion: 3D games, racing, action, anything with camera movement. These teach real interpolation.",
-                            "Games to avoid:" to "menu-heavy screens, 2D games where sprites snap or teleport, and heavy particle-storm or rapid-flashing effects (un-interpolatable noise).",
-                            "Cap your FPS" to "to a stable value (for example 30 or 60) so frame timing is even: this makes much cleaner training data.",
-                            "Resolution:" to "\"Match game\" is best (records at your actual play resolution); pick 720p or 1080p to force one. A mix across contributors is ideal.",
+                            "作用:" to "在您游玩时记录原始游戏内帧，以帮助训练开放、干净的帧生成模型。默认关闭；录制时会降低FPS。文件保存到Download/win-fg供您分享。",
+                            "最佳录制游戏:" to "ones with smooth, CONTINUOUS motion: 3D games, racing, action, anything with camera movement. These teach real interpolation.",
+                            "应避免的游戏:" to "menu-heavy screens, 2D games where sprites snap or teleport, and heavy particle-storm or rapid-flashing effects (un-interpolatable noise).",
+                            "限制您的FPS" to "to a stable value (for example 30 or 60) so frame timing is even: this makes much cleaner training data.",
+                            "分辨率:" to "\"匹配游戏\" 最佳（以您实际游玩的分辨率录制）；选择720p或1080p强制固定一种。贡献者混合使用最理想。",
                             "Variety helps more than length:" to "a few minutes each across several different games beats a long session of one.",
-                            "Privacy:" to "only the game's rendered frames are captured: NO HUD or overlay, NO personal info, NO account data, NO audio. The record is anonymous.",
+                            "隐私:" to "only the game's rendered frames are captured: NO HUD or overlay, NO personal info, NO account data, NO audio. The record is anonymous.",
                         )
                         bullets.forEach { (lead, body) ->
                             Text("• $lead $body", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp, modifier = Modifier.padding(bottom = 8.dp))

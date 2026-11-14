@@ -58,7 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-// The XMB mode's versions of the "Add games" popups, drawn with the XmbDialogKit. Every one takes the state and the handlers of
+// The XMB mode's versions of the "添加游戏" popups, drawn with the XmbDialogKit. Every one takes the state and the handlers of
 // the stock dialog it replaces (GameActionsHost, AndroidGamePicker, AddToShortcutsFlow) as plain parameters: it holds no state of
 // its own about the flow. The stock dialogs stay as they are for Classic, Lab and plain Deck.
 
@@ -68,7 +68,7 @@ internal class XmbChoice(val title: String, val subtitle: String? = null, val no
 private class XmbMethod(val title: String, val subtitle: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val onClick: () -> Unit)
 
 /**
- * "Add games": what to add. The four options are cards with an icon, in two columns when the dialog is wide enough (landscape)
+ * "添加游戏": what to add. The four options are cards with an icon, in two columns when the dialog is wide enough (landscape)
  * and one column otherwise; Cancel in the footer.
  */
 @Composable
@@ -80,13 +80,13 @@ internal fun XmbImportMethodDialog(
     onWindowsSteam: () -> Unit,
 ) {
     val options = listOf(
-        XmbMethod("Add game EXE", "Pick one game's .exe file", Icons.Filled.InsertDriveFile, onExe),
-        XmbMethod("Add games folder", "Scan a folder that holds all your games for their .exe files", Icons.Filled.Folder, onFolder),
-        XmbMethod("Add Android game", "Games installed on this phone, opened as normal Android apps", Icons.Filled.Android, onAndroid),
+        XmbMethod("添加游戏EXE", "选择一个游戏的.exe文件", Icons.Filled.InsertDriveFile, onExe),
+        XmbMethod("添加游戏文件夹", "Scan a folder that holds all your games for their .exe files", Icons.Filled.Folder, onFolder),
+        XmbMethod("添加 Android 游戏", "Games installed on this phone, opened as normal Android apps", Icons.Filled.Android, onAndroid),
         XmbMethod("Add Windows Steam client x64", "Valve's 64-bit Steam for Windows, downloaded from Steam", Icons.Filled.DesktopWindows, onWindowsSteam),
     )
     XmbDialogFrame(
-        title = "Add games",
+        title = "添加游戏",
         subtitle = "Choose what to add to your library",
         onDismiss = onDismiss,
         footer = { XmbDialogButton("Cancel", onDismiss) },
@@ -160,7 +160,7 @@ internal fun XmbContainerPickerDialog(
 }
 
 /**
- * "Confirm game": the game's name with Steam search beside it, the Steam results as radio cards (the linked one on top), and
+ * "确认游戏": the game's name with Steam search beside it, the Steam results as radio cards (the linked one on top), and
  * [components] (the recommended-components section) under them. Save is the main action. [onDismiss] (Back, B) closes the
  * dialog as the stock one does; the keyboard-less field is the usual tap-to-edit one (A starts typing, the XMB keyboard).
  */
@@ -180,12 +180,12 @@ internal fun XmbConfirmGameDialog(
     components: @Composable () -> Unit = {},
 ) {
     XmbDialogFrame(
-        title = "Confirm game",
+        title = "确认游戏",
         subtitle = "Check the name and link it to its Steam page for the cover art",
         onDismiss = onDismiss,
         wide = true,
         footer = {
-            XmbDialogButton("Skip", onSkip)
+            XmbDialogButton("跳过", onSkip)
             XmbDialogButton("Save", onSave, primary = true, modifier = Modifier.xmbInitialFocus())
         },
     ) {
@@ -199,12 +199,12 @@ internal fun XmbConfirmGameDialog(
                     OutlinedTextField(
                         value = name,
                         onValueChange = onNameChange,
-                        label = { Text("Game name") },
+                        label = { Text("游戏名称") },
                         singleLine = true,
                         trailingIcon = {
                             if (name.isNotEmpty()) {
                                 IconButton(onClick = onNameClear) {
-                                    Icon(Icons.Filled.Close, contentDescription = "Clear")
+                                    Icon(Icons.Filled.Close, contentDescription = "清除")
                                 }
                             }
                         },
@@ -235,7 +235,7 @@ internal fun XmbConfirmGameDialog(
                     )
                 }
             } else if (searching) {
-                XmbProgressCard("Searching Steam…")
+                XmbProgressCard("正在搜索Steam…")
             } else {
                 XmbDialogText(
                     "Not the right game? Edit the name and search Steam to pick the correct one.",
@@ -249,13 +249,13 @@ internal fun XmbConfirmGameDialog(
 }
 
 /**
- * "Scanning for games": an indeterminate progress card with the folder being scanned (the scan reports nothing finer than that)
+ * "正在扫描游戏": an indeterminate progress card with the folder being scanned (the scan reports nothing finer than that)
  * and Cancel, which stops waiting for it.
  */
 @Composable
 internal fun XmbScanProgressDialog(root: String, onCancel: () -> Unit) {
     XmbDialogFrame(
-        title = "Scanning for games",
+        title = "正在扫描游戏",
         subtitle = "Looking for each game's .exe",
         onDismiss = onCancel,
         footer = { XmbDialogButton("Cancel", onCancel, modifier = Modifier.xmbInitialFocus()) },
@@ -420,7 +420,7 @@ internal fun XmbExePickerDialog(
 }
 
 /**
- * "Add Android game": search and Games / All apps on one row, the apps as check cards with their icon, Add N / Cancel. [loading]
+ * "添加 Android 游戏": search and Games / All apps on one row, the apps as check cards with their icon, Add N / Cancel. [loading]
  * while the installed apps are read; [adding] swaps the list for a progress card. [subtitle] is the count line.
  */
 @Composable
@@ -441,8 +441,8 @@ internal fun XmbAndroidGamePickerDialog(
     onDismiss: () -> Unit,
 ) {
     XmbDialogFrame(
-        title = "Add Android game",
-        subtitle = if (loading) "Reading installed apps…" else subtitle,
+        title = "添加 Android 游戏",
+        subtitle = if (loading) "正在读取已安装的应用…" else subtitle,
         onDismiss = onDismiss,
         wide = true,
         dismissible = !adding,
@@ -472,11 +472,11 @@ internal fun XmbAndroidGamePickerDialog(
                     keyboardActions = xmbDoneActions(stopEditing),
                 )
             }
-            XmbChoiceChip("Games", selected = gamesOnly, onClick = { onGamesOnlyChange(true) }, enabled = !adding)
-            XmbChoiceChip("All apps", selected = !gamesOnly, onClick = { onGamesOnlyChange(false) }, enabled = !adding)
+            XmbChoiceChip("游戏", selected = gamesOnly, onClick = { onGamesOnlyChange(true) }, enabled = !adding)
+            XmbChoiceChip("所有应用", selected = !gamesOnly, onClick = { onGamesOnlyChange(false) }, enabled = !adding)
         }
         when {
-            loading -> XmbProgressCard("Reading installed apps…")
+            loading -> XmbProgressCard("正在读取已安装的应用…")
             adding -> XmbProgressCard(title = "Adding ${xmbCountLabel(chosenCount, "game")}…", detail = "Writing the shortcuts")
             else -> {
                 if (shown.isEmpty() && gamesOnly && query.isBlank()) {
@@ -637,7 +637,7 @@ internal fun XmbSteamUninstallDialog(
 }
 
 /**
- * A message with one or two buttons (the store flow's "Added to Shortcuts" / "Couldn't add shortcut"): [confirmText] is the
+ * A message with one or two buttons (the store flow's "已添加到快捷方式" / "无法添加快捷方式"): [confirmText] is the
  * main action, [dismissText] (null = none) the secondary one. Back and B call [onDismiss].
  */
 @Composable

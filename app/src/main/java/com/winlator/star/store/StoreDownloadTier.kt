@@ -57,9 +57,9 @@ object StoreDownloadTier {
         val name = when (tier) {
             DownloadSpeedConfig.TIER_SLOW -> "慢速"
             DownloadSpeedConfig.TIER_MEDIUM -> "中等"
-            DownloadSpeedConfig.TIER_FAST -> "Fast"
+            DownloadSpeedConfig.TIER_FAST -> "快速"
             DownloadSpeedConfig.TIER_BLAZING -> "极速"
-            else -> "Fast"
+            else -> "快速"
         }
         return "$name ($window in flight)"
     }

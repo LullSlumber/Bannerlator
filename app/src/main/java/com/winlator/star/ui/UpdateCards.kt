@@ -59,7 +59,7 @@ import java.util.Locale
  * The in-app update UI, three pieces that share one look (rounded, accent outline, raised card):
  *
  *  1. [UpdatePill]            — slides out of the right edge under the top bar when a newer
- *                                release is found. "Update available", Dismiss / View.
+ *                                release is found. "有可用更新", Dismiss / View.
  *  2. [UpdateHighlightsDialog] — the quick highlights of the release (five short lines, not the
  *                                GitHub page). Later / Update now.
  *  3. [UpdateDownloadCard]     — progress with size, speed and time left, Cancel; Retry on failure.
@@ -132,7 +132,7 @@ fun UpdatePill(
                     Icon(Icons.Filled.SystemUpdate, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 }
                 Column {
-                    Text("Update available", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.5.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                    Text("有可用更新", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.5.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                     val size = fmtSize(info.downloadSize)
                     Text(
                         "V ${info.versionName}" + (if (size.isNotEmpty()) " · $size" else ""),
@@ -211,7 +211,7 @@ fun UpdateHighlightsDialog(info: UpdateInfo, onLater: () -> Unit, onUpdate: () -
                 Spacer(Modifier.height(14.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "Your games, containers and settings are kept.",
+                        "您的游戏、容器和设置会保留。",
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp,
                         modifier = Modifier.weight(1f),
                     )

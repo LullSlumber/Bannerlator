@@ -84,7 +84,7 @@ object SteamCloudSaveManager {
             try {
                 val steamCloud = requireCloud() ?: run { cb.onError("未登录 Steam"); return@Thread }
 
-                cb.onStatus("Fetching cloud file list…")
+                cb.onStatus("正在获取云文件列表…")
                 val files = steamCloud.listFiles(appId)
                 // With the manifest in hand, move files the old Collect swept in (game data, logs)
                 // out of the Library so they are never applied or uploaded. Best-effort.

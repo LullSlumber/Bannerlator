@@ -166,7 +166,7 @@ object StoreFolderImport {
             EpicCancelPolicy.consumeDeleteOnCancel(game.id)   // the user's folder is never deleted
             return StoreDownloadHooks.markCancelled(Store.EPIC, game.id)
         }
-        if (!ok) return StoreDownloadHooks.markFailed(Store.EPIC, game.id, EpicDownloadManager.withFailureReason("Download failed"))
+        if (!ok) return StoreDownloadHooks.markFailed(Store.EPIC, game.id, EpicDownloadManager.withFailureReason("下载失败"))
         EpicInstallState.rememberVersion(app, game.id, manifest)
         val exe = bestExe(folder, eg.title) ?: return StoreDownloadHooks.markFailed(Store.EPIC, game.id, "No executable found")
         p.edit().putString("epic_exe_${game.id}", exe.absolutePath).apply()
@@ -189,7 +189,7 @@ object StoreFolderImport {
             }
         }, { cancelled.get() })
         if (cancelled.get()) return StoreDownloadHooks.markCancelled(Store.AMAZON, game.id)
-        if (!ok) return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "Download failed")
+        if (!ok) return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "下载失败")
         val exe = bestExe(folder, ag.title) ?: return StoreDownloadHooks.markFailed(Store.AMAZON, game.id, "No executable found")
         p.edit().putString("amazon_exe_${game.id}", exe.absolutePath).apply()
         StoreDownloadHooks.markInstalled(Store.AMAZON, game.id, folder.absolutePath, p.getLong("amazon_size_${game.id}", 0L))

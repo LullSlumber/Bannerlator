@@ -313,8 +313,8 @@ internal fun LabTopLine(portrait: Boolean, onMenu: () -> Unit, onBack: (() -> Un
         if (!portrait) Text(Build.MODEL ?: "", color = SimpleMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         LabTopIcon(Icons.Filled.Search, L("Search")) { onSearch?.invoke() ?: labOpenSearch() }
         if (!portrait) {
-            LabTopIcon(Icons.Filled.Public, L("Community configs")) { actions.showCommunityBrowser = true }
-            if (steam) LabTopIcon(Icons.Filled.People, L("Steam friends"), badge = rememberSteamUnread()) { labOpenFriends(context) }
+            LabTopIcon(Icons.Filled.Public, L("社区配置")) { actions.showCommunityBrowser = true }
+            if (steam) LabTopIcon(Icons.Filled.People, L("Steam好友"), badge = rememberSteamUnread()) { labOpenFriends(context) }
         }
         if (dev != null) {
             if (dev.battery >= 0) Text("${dev.battery}%", color = SimpleMuted, fontSize = 13.sp)
@@ -471,8 +471,8 @@ internal fun LabDrawer(current: Int, onSection: (Int) -> Unit, onClose: () -> Un
                             if (badge > 0) Text("$badge", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.background(MaterialTheme.colorScheme.error, CircleShape).padding(horizontal = 7.dp, vertical = 1.dp))
                         }
                     }
-                    extra(Icons.Filled.Public, L("Community configs")) { LabTopRequests.community = true; close() }
-                    if (steam) extra(Icons.Filled.People, L("Steam friends"), rememberSteamUnread()) { close(); labOpenFriends(context) }
+                    extra(Icons.Filled.Public, L("社区配置")) { LabTopRequests.community = true; close() }
+                    if (steam) extra(Icons.Filled.People, L("Steam好友"), rememberSteamUnread()) { close(); labOpenFriends(context) }
                     if (active != null) {
                         Spacer(Modifier.height(14.dp))
                         Text(L("Downloading %1\$s · %2\$s%%", active.title, (active.fraction * 100).roundToInt()), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 10.dp))

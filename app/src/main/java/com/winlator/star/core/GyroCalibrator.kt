@@ -88,7 +88,7 @@ object GyroCalibrator {
 
     /**
      * True when a bias measured on THIS device is stored. A calibrated device can still have a
-     * near-zero bias, so this is the only way to tell "calibrated" from "nothing to remove".
+     * near-zero bias, so this is the only way to tell "calibrated" 来自 "nothing to remove".
      */
     @JvmStatic
     fun isCalibrated(context: Context): Boolean {

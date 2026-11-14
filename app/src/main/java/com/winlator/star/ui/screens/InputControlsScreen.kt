@@ -240,7 +240,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
             try {
                 val json = FileUtils.readString(context, uri)
                 val imported = manager.importProfile(JSONObject(json))
-                    ?: throw IllegalArgumentException("Unsupported control profile version")
+                    ?: throw IllegalArgumentException("不支持的控制器配置版本")
                 importProfileCallback!!(imported)
             } catch (_: Exception) {
                 AppUtils.showToast(context, R.string.unable_to_import_profile)
@@ -267,13 +267,13 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         var name by remember { mutableStateOf("") }
         OutlinedAlertDialog(
             onDismissRequest = { promptCreateName = false },
-            title = { Text("Profile Name") },
+            title = { Text("配置名称") },
             text = {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     singleLine = true,
-                    placeholder = { Text("Enter profile name") },
+                    placeholder = { Text("输入配置名称") },
                     modifier = Modifier.fillMaxWidth()
                 )
             },
@@ -295,7 +295,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         var name by remember { mutableStateOf(promptRenameOldName ?: "") }
         OutlinedAlertDialog(
             onDismissRequest = { promptRenameOldName = null },
-            title = { Text("Profile Name") },
+            title = { Text("配置名称") },
             text = {
                 OutlinedTextField(
                     value = name,
@@ -355,7 +355,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                     ImportSourceRow(
                         icon = Icons.Default.FolderOpen,
                         title = stringResource(R.string.open_file),
-                        subtitle = "Browse with the in-app file manager (.icp / .icpx)",
+                        subtitle = "使用应用内文件管理器浏览 (.icp / .icpx)",
                     ) {
                         showImportChooser = false
                         (context as? Activity)?.let { act ->
@@ -373,7 +373,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                     ImportSourceRow(
                         icon = Icons.Default.PhoneAndroid,
                         title = stringResource(R.string.pick_via_system),
-                        subtitle = "Android document picker",
+                        subtitle = "Android document 选择器",
                     ) {
                         showImportChooser = false
                         armImport()
@@ -383,7 +383,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                     ImportSourceRow(
                         icon = Icons.Default.CloudDownload,
                         title = stringResource(R.string.download_file),
-                        subtitle = "Community profiles from the online list",
+                        subtitle = "来自在线列表的社区配置",
                     ) {
                         showImportChooser = false
                         showDownloadDialog = true
@@ -415,7 +415,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         if (isLoadingList) {
             OutlinedAlertDialog(
                 onDismissRequest = { showDownloadDialog = false },
-                title = { Text("Profiles") },
+                title = { Text("配置文件") },
                 text = { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { CircularProgressIndicator() } },
                 confirmButton = {},
                 dismissButton = { TextButton(onClick = { showDownloadDialog = false }) { Text("Cancel") } }
@@ -423,7 +423,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         } else {
             OutlinedAlertDialog(
                 onDismissRequest = { showDownloadDialog = false },
-                title = { Text("Download Profiles") },
+                title = { Text("下载配置") },
                 text = {
                     // Scroll the profile list inside the dialog: the list can be long
                     // (dozens of .icp files), so without this the bottom rows overflow
@@ -540,7 +540,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 text = {
                     // Scrollable + width-driven aspect box → fits portrait and landscape alike.
                     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                        Text("Preview — layout on the game screen (not imported yet)",
+                        Text("预览 — 游戏屏幕上的布局（尚未导入）",
                             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                         Spacer(Modifier.height(8.dp))
                         val pp = previewProfile
@@ -686,7 +686,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
     ) {
         // ── Pinned Profile bar ──────────────────────────────────────
         val displayText = if (selectedProfileIdx > 0 && selectedProfileIdx - 1 < profiles.size)
-            profiles[selectedProfileIdx - 1].getName() else "-- Select Profile --"
+            profiles[selectedProfileIdx - 1].getName() else "-- 选择配置 --"
         val hasProfile = currentProfile != null
         Box {
             // XMB interface: the bar is a glass card and one D-pad stop; A enters it (the picker, then the actions menu). A tap
@@ -755,7 +755,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 onDismissRequest = { showProfileDropdown = false },
                 modifier = Modifier.outlinedMenuCard().xmbMenuBack { showProfileDropdown = false },
             ) {
-                DropdownMenuItem(text = { Text("-- Select Profile --") }, onClick = {
+                DropdownMenuItem(text = { Text("-- 选择配置 --") }, onClick = {
                     selectedProfileIdx = 0; loadProfile(0); showProfileDropdown = false
                 })
                 profiles.forEachIndexed { i, p ->
@@ -773,7 +773,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 modifier = Modifier.outlinedMenuCard().xmbMenuBack { showOverflow = false },
             ) {
                 DropdownMenuItem(
-                    text = { Text("New profile") },
+                    text = { Text("新配置") },
                     leadingIcon = { Icon(Icons.Default.Add, null) },
                     onClick = { showOverflow = false; promptCreateName = true },
                 )
@@ -789,7 +789,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 )
                 MenuItemDivider()
                 DropdownMenuItem(
-                    text = { Text("Duplicate") },
+                    text = { Text("复制") },
                     leadingIcon = { Icon(Icons.Default.ContentCopy, null) },
                     onClick = {
                         showOverflow = false
@@ -805,7 +805,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 )
                 MenuItemDivider()
                 DropdownMenuItem(
-                    text = { Text("Delete") },
+                    text = { Text("删除") },
                     leadingIcon = { Icon(Icons.Default.Delete, null) },
                     onClick = {
                         showOverflow = false
@@ -825,7 +825,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                 DropdownMenuItem(
                     enabled = false,
                     text = {
-                        Text("Share / Transfer", fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                        Text("分享/传输", fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     onClick = {},
@@ -900,25 +900,25 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                                 )
                             } else AppUtils.showToast(context, R.string.no_profile_selected)
                         }
-                        Text("On-Screen Controls", color = MaterialTheme.colorScheme.onSurface,
+                        Text("屏幕控制", color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                        Text("Touch overlay drawn on top of the game.",
+                        Text("绘制在游戏上方的触摸覆盖层。",
                             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         Button(
                             onClick = openLayoutEditor,
                             // intentional: success green signals the primary "go/edit" action; kept off-theme by design
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             modifier = Modifier.fillMaxWidth().xmbBtn(CircleShape, tint = Color.White)
-                        ) { Text("Edit Layout", color = Color.White) } // intentional: white kept for contrast on the green fill
+                        ) { Text("编辑布局", color = Color.White) } // intentional: white kept for contrast on the green fill
 
                         // Live read-only preview — only when the selected profile actually has an overlay.
                         val cp = currentProfile
                         if (cp != null && profileHasLayout) {
-                            Text("Preview — your overlay on the game",
+                            Text("预览 — 您的覆盖层在游戏上",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                             OnScreenLayoutPreview(profileId = cp.id, refreshKey = layoutRev, onOpenEditor = openLayoutEditor)
                         } else if (cp != null) {
-                            Text("No on-screen layout — tap Edit Layout to add one.",
+                            Text("没有屏幕布局 — 点击编辑布局以添加一个。",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         }
                     }
@@ -938,13 +938,13 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                                 Icon(Icons.Default.Gamepad, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(32.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text("Test and Bind Physical Controllers", color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                                    Text("Visually remap buttons + verify every input registers", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f), fontSize = 12.sp)
+                                    Text("测试并绑定物理控制器", color = MaterialTheme.colorScheme.onPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                    Text("可视化重新映射按钮 + 验证每个输入是否注册", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f), fontSize = 12.sp)
                                 }
                             }
                         }
 
-                        Text("Connected controllers", color = MaterialTheme.colorScheme.onSurface,
+                        Text("已连接的控制器", color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 
                         // #333: the Default / Any Controller binding template — newly connected controllers inherit
@@ -971,15 +971,15 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                                 Icon(Icons.Default.Gamepad, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text("Default / Any Controller", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
-                                    Text("New controllers inherit these bindings", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                                    Text("默认 / 任何控制器", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                                    Text("新控制器继承这些绑定", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                             }
                         }
                         }
 
                         if (controllers.isEmpty()) {
-                            Text("No items to display", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp,
+                            Text("没有可显示的项目", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp))
                         } else {
                             for (controller in controllers) {
@@ -1050,7 +1050,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                                     // #333: copy bindings from the Default template or another controller onto this one.
                                     Box {
                                         IconButton(onClick = { copyMenuForId = controller.getId() }, modifier = Modifier.xmbBtn(CircleShape)) {
-                                            Icon(Icons.Default.ContentCopy, "Copy bindings", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Icon(Icons.Default.ContentCopy, "复制绑定", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         DropdownMenu(
                                             expanded = copyMenuForId == controller.getId(),
@@ -1092,7 +1092,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
                                                 currentProfile?.save()
                                                 refreshControllers()
                                             }
-                                        }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Default.Delete, "Remove", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                        }, modifier = Modifier.xmbBtn(CircleShape)) { Icon(Icons.Default.Delete, "移除", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                                     }
                                 }
                             }
@@ -1268,7 +1268,7 @@ internal fun pulsePad(device: android.view.InputDevice) {
 @Composable
 private fun InputControlsTabs(selected: Int, onSelect: (Int) -> Unit) {
     val cs = MaterialTheme.colorScheme
-    val labels = listOf("On-Screen", "Controller", "Assign", "Device")
+    val labels = listOf("屏幕", "Controller", "分配", "Device")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1311,7 +1311,7 @@ internal fun GyroscopeSection() {
     val context = LocalContext.current
     val sensor = remember { GyroCalibrator.getSensor(context) }
 
-    Text("Gyroscope", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+    Text("陀螺仪", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 
     if (sensor == null) {
         Text("No gyroscope on this device", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
@@ -1345,16 +1345,16 @@ internal fun GyroscopeSection() {
 
     FieldSet {
         Text(
-            "Rest the device on a flat surface and calibrate to remove the gyroscope's resting drift.",
+            "将设备放在平坦表面上并校准，以消除陀螺仪的静止漂移。",
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp
         )
         Spacer(Modifier.height(8.dp))
 
         val summary = when {
-            !calibrated -> "Not calibrated"
+            !calibrated -> "未校准"
             abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS ->
-                "Very little drift detected — your device already compensates"
-            else -> "Bias removed: x %.4f, y %.4f rad/s".format(biasX, biasY)
+                "检测到极轻微漂移 — 您的设备已有补偿"
+            else -> "已移除偏差：x %.4f，y %.4f 弧度/秒".format(biasX, biasY)
         }
         Text(summary, color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
 
@@ -1367,15 +1367,15 @@ internal fun GyroscopeSection() {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Button(
                 onClick = {
-                    status = "Hold still…"
+                    status = "请保持静止…"
                     activeRun = GyroCalibrator.calibrate(context) { result ->
                         activeRun = null
                         status = when (result) {
                             is GyroCalibrator.Result.Success ->
-                                if (result.negligible) "Calibrated — nothing to remove" else "Calibrated"
-                            GyroCalibrator.Result.Moved -> "Hold the device still and try again"
-                            GyroCalibrator.Result.NotEnoughSamples -> "Couldn't sample — try again"
-                            GyroCalibrator.Result.Unavailable -> "Gyroscope unavailable"
+                                if (result.negligible) "校准完成 — 无需移除偏差" else "校准完成"
+                            GyroCalibrator.Result.Moved -> "请保持设备静止并重试"
+                            GyroCalibrator.Result.NotEnoughSamples -> "无法采样 — 请重试"
+                            GyroCalibrator.Result.Unavailable -> "陀螺仪不可用"
                         }
                         refreshBias()
                     }
@@ -1383,17 +1383,17 @@ internal fun GyroscopeSection() {
                 enabled = activeRun == null,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
                 modifier = Modifier.weight(1f).xmbBtn(CircleShape)
-            ) { Text("Calibrate", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
+            ) { Text("校准", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
             Button(
                 onClick = {
                     GyroCalibrator.clearBias(context)
-                    status = "Calibration reset"
+                    status = "校准已重置"
                     refreshBias()
                 },
                 enabled = calibrated && activeRun == null,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
                 modifier = Modifier.weight(1f).xmbBtn(CircleShape)
-            ) { Text("Reset", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
+            ) { Text("重置", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
         }
     }
 }
@@ -1433,7 +1433,7 @@ internal fun SteamControllerSection() {
         Spacer(Modifier.height(8.dp))
         val onOff = listOf("On", "Off")
         LabeledDropdown(
-            label = "Steam Controller support",
+            label = "Steam控制器支持",
             options = onOff,
             selectedOption = if (enabled) onOff[0] else onOff[1],
             onSelect = {
@@ -1445,13 +1445,13 @@ internal fun SteamControllerSection() {
         if (enabled) {
             Spacer(Modifier.height(8.dp))
             // Order = the labels; values are SteamControllerBackend.TRACKPAD_MOUSE_*.
-            val trackpadLabels = listOf("Right trackpad", "Left trackpad", "Both trackpads", "Off")
+            val trackpadLabels = listOf("右触控板", "左触控板", "双触控板", "Off")
             val trackpadModes = listOf(
                 SteamControllerBackend.TRACKPAD_MOUSE_RIGHT, SteamControllerBackend.TRACKPAD_MOUSE_LEFT,
                 SteamControllerBackend.TRACKPAD_MOUSE_BOTH, SteamControllerBackend.TRACKPAD_MOUSE_OFF,
             )
             LabeledDropdown(
-                label = "Trackpad mouse",
+                label = "触控板鼠标",
                 options = trackpadLabels,
                 selectedOption = trackpadLabels[trackpadModes.indexOf(trackpadMode).coerceAtLeast(0)],
                 onSelect = {
@@ -1465,7 +1465,7 @@ internal fun SteamControllerSection() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp
             )
             Spacer(Modifier.height(12.dp))
-            Text("Extra buttons", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Text("额外按钮", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             Text(
                 "What the four back buttons and the … button do, in every game. To change what the other " +
                     "buttons do, bind them on the Controller tab under Default / Any Controller (the Steam " +
@@ -1493,7 +1493,7 @@ internal fun SteamControllerSection() {
             if (!bluetoothGranted) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Bluetooth permission is off, so only a USB-connected controller will work.",
+                    "蓝牙权限已关闭，因此仅USB连接的手柄可用。",
                     color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp
                 )
                 if (Build.VERSION.SDK_INT >= 31) {
@@ -1506,8 +1506,8 @@ internal fun SteamControllerSection() {
 
 // SteamControllerBackend's extra-button order.
 internal val STEAM_PADDLE_NAMES = listOf(
-    "L4 (upper left)", "L5 (lower left)", "R4 (upper right)", "R5 (lower right)",
-    "… button (between the trackpads)",
+    "L4（左上）", "L5（左下）", "R4（右上）", "R5（右下）",
+    "…按钮（触控板之间）",
 )
 
 /** Targets a back button can take: nothing, a gamepad button, a mouse click, or any keyboard key. */
@@ -1559,10 +1559,10 @@ internal fun GlobalPlayerSlotsSection() {
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Player Slots", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
+        Text("玩家槽位", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_player_slots }, modifier = Modifier.xmbBtn(CircleShape)) {
-            Icon(Icons.Default.Help, contentDescription = "What is this?",
+            Icon(Icons.Default.Help, contentDescription = "音频设置",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }
@@ -1573,9 +1573,9 @@ internal fun GlobalPlayerSlotsSection() {
             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp
         )
         Spacer(Modifier.height(8.dp))
-        val onScreenModeLabels = listOf("Keep on-screen player", "Yield Player 1 to pad", "Share the player")
+        val onScreenModeLabels = listOf("保持屏幕玩家", "将玩家1让给手柄", "共享该玩家")
         LabeledDropdown(
-            label = "On-screen priority",
+            label = "屏幕优先级",
             options = onScreenModeLabels,
             selectedOption = onScreenModeLabels.getOrElse(onScreenMode) { onScreenModeLabels[0] },
             onSelect = {
@@ -1587,7 +1587,7 @@ internal fun GlobalPlayerSlotsSection() {
         // #333 auto-hide default for new containers. On/Off dropdown (no Switch in this screen).
         val autoHideLabels = listOf("On", "Off")
         LabeledDropdown(
-            label = "Hide on-screen controls when a controller connects",
+            label = "当控制器连接时隐藏屏幕控制",
             options = autoHideLabels,
             selectedOption = if (autoHideOnPad) autoHideLabels[0] else autoHideLabels[1],
             onSelect = {
@@ -1625,10 +1625,10 @@ internal fun MenuButtonSection() {
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Menu button", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
+        Text("菜单按钮", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_menu_button }, modifier = Modifier.xmbBtn(CircleShape)) {
-            Icon(Icons.Default.Help, contentDescription = "What is this?",
+            Icon(Icons.Default.Help, contentDescription = "音频设置",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }
@@ -1646,7 +1646,7 @@ internal fun MenuButtonSection() {
                 onClick = { capturing = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
                 modifier = Modifier.weight(1f).xmbBtn(CircleShape)
-            ) { Text("Set button", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
+            ) { Text("设置按钮", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp) }
             Button(
                 onClick = { prefs.setMenuButtonKeyCode(context, 0); refresh() },
                 enabled = keyCode != 0,
@@ -1692,10 +1692,10 @@ internal fun MenuButtonCaptureDialog(onResult: (Int) -> Unit) {
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Press the button you want to open the menu", color = MaterialTheme.colorScheme.onSurface,
+                Text("按下您想用来打开菜单的按钮", color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(8.dp))
-                Text("Use your device's own controls. B and the volume keys can't be used.",
+                Text("使用您设备自身的控制。B 和音量键无法使用。",
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 Spacer(Modifier.height(12.dp))
                 TextButton(onClick = { onResult(-1) }) { Text(stringResource(R.string.cancel)) }

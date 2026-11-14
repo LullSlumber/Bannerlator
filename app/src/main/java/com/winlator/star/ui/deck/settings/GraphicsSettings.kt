@@ -244,7 +244,7 @@ internal object GraphicsRows {
         list: List<String>,
         current: String,
         loaded: Boolean,
-        label: (String) -> String = { it.ifEmpty { L("Not set") } },
+        label: (String) -> String = { it.ifEmpty { L("未设置") } },
         missing: (String) -> String = { "${label(it)} (not installed)" },
         disabledReason: (String) -> String? = { null },
     ): Control.Select {
@@ -290,7 +290,7 @@ internal object GraphicsRows {
         return c.hasBcnLayer && (imported(env, values) || !c.hasIcd)
     }
     private fun bcnLayerDriver(values: (String) -> String) = values(ID_GFX_DRIVER) in setOf("wrapper-bcn_layer", "wrapper-compat-bcn")
-    private fun adrenoNote(env: SettingsEnv): String? = if (env.graphics.qualcomm) L("No effect on Adreno, which decodes BCn itself.") else null
+    private fun adrenoNote(env: SettingsEnv): String? = if (env.graphics.qualcomm) L("对 Adreno 无效，Adreno 自行解码 BCn。") else null
 
     // ── DX wrapper config (DxvkConfigDialog, WineD3DConfigDialog) ────────────────────────────────
 
@@ -301,8 +301,8 @@ internal object GraphicsRows {
     fun dxDefs(): List<SettingDef> = listOf(
         // DXVK and VKD3D
         packedRow(
-            DX_CFG, ID_DXVK, "version", L("DXVK and VKD3D"), L("DXVK version"), ADVANCED,
-            hint = L("DirectX 8 to 11 through Vulkan. Builds named async or gplasync can compile shaders in the background."),
+            DX_CFG, ID_DXVK, "version", L("DXVK and VKD3D"), L("DXVK 版本"), ADVANCED,
+            hint = L("通过 Vulkan 的 DirectX 8 到 11。名为 async 或 gplasync 的构建可以在后台编译着色器。"),
             control = { env, values ->
                 val g = env.graphics
                 val withVkd3d = values(ID_VKD3D) != "None" && !relaxDxvk(values)
@@ -319,8 +319,8 @@ internal object GraphicsRows {
             getMore = "dxvk",
         ),
         packedRow(
-            DX_CFG, ID_VEGAS, "version", L("DXVK and VKD3D"), L("VEGAS version"), ADVANCED,
-            hint = L("The installed VEGAS builds, and the one bundled with the app."),
+            DX_CFG, ID_VEGAS, "version", L("DXVK and VKD3D"), L("VEGAS版本"), ADVANCED,
+            hint = L("已安装的 VEGAS 构建，以及与应用捆绑的那个。"),
             control = { env, values -> versions(env.graphics.vegas, values(ID_VEGAS), env.graphics.loaded) },
             also = { v, cfg -> asyncFor(v, cfg) },
             visible = { _, values -> vegas(values) },
@@ -332,28 +332,28 @@ internal object GraphicsRows {
             getMore = "vegas",
         ),
         packedRow(
-            DX_CFG, ID_VKD3D, "vkd3dVersion", L("DXVK and VKD3D"), L("VKD3D version"), ADVANCED,
-            hint = L("DirectX 12 through Vulkan. None turns DirectX 12 off."),
+            DX_CFG, ID_VKD3D, "vkd3dVersion", L("DXVK and VKD3D"), L("VKD3D 版本"), ADVANCED,
+            hint = L("通过 Vulkan 的 DirectX 12。None 会关闭 DirectX 12。"),
             control = { env, values -> versions(env.graphics.vkd3d, values(ID_VKD3D), env.graphics.loaded) },
             decode = { _, r -> r?.ifEmpty { null } ?: "None" },
             visible = { _, values -> dxvkLike(values) },
             getMore = "vkd3d",
         ),
         packedRow(
-            DX_CFG, "graphics.dx.async", "async", L("DXVK and VKD3D"), L("Async shaders"), ADVANCED,
-            hint = L("Compiles shaders in the background: less stutter, some objects may pop in."),
+            DX_CFG, "graphics.dx.async", "async", L("DXVK and VKD3D"), L("异步着色器"), ADVANCED,
+            hint = L("在后台编译着色器：减少卡顿，某些对象可能会突然出现。"),
             control = toggle(), decode = { _, r -> on(r) },
             visible = { _, values -> dxvkLike(values) && DXVKConfigDialog.getDXVKType(dxvkBuild(values)) != DXVKConfigDialog.DXVK_TYPE_NONE },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.asyncCache", "asyncCache", L("DXVK and VKD3D"), L("Async shader cache"), ADVANCED,
-            hint = L("Keeps the compiled shaders for the next start (gplasync builds)."),
+            DX_CFG, "graphics.dx.asyncCache", "asyncCache", L("DXVK and VKD3D"), L("异步着色器缓存"), ADVANCED,
+            hint = L("为下次启动保留已编译的着色器（gplasync 构建）。"),
             control = toggle(), decode = { _, r -> on(r) },
             visible = { _, values -> dxvkLike(values) && DXVKConfigDialog.getDXVKType(dxvkBuild(values)) == DXVKConfigDialog.DXVK_TYPE_GPLASYNC },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.framerate", "framerate", L("DXVK and VKD3D"), L("DXVK frame rate cap"), ADVANCED,
-            hint = L("DXVK's own limit (DXVK_FRAME_RATE). Off leaves pacing to the frame rate limiter."),
+            DX_CFG, "graphics.dx.framerate", "framerate", L("DXVK and VKD3D"), L("DXVK 帧率上限"), ADVANCED,
+            hint = L("DXVK 自身的限制 (DXVK_FRAME_RATE)。关闭则将节奏交给帧率限制器。"),
             control = { env, _ ->
                 Control.Select(env.graphics.framerates.map { n -> Opt(n, if (n == "0") L("Off") else "$n FPS") })
             },
@@ -362,8 +362,8 @@ internal object GraphicsRows {
             visible = { _, values -> dxvkLike(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.vkd3dLevel", "vkd3dLevel", L("DXVK and VKD3D"), L("DirectX 12 feature level"), EXPERT,
-            hint = L("The feature level VKD3D reports. Lower it only for a game that refuses to start."),
+            DX_CFG, "graphics.dx.vkd3dLevel", "vkd3dLevel", L("DXVK and VKD3D"), L("DirectX 12 功能级别"), EXPERT,
+            hint = L("VKD3D 报告的功能级别。仅对拒绝启动的游戏降低它。"),
             control = { _, _ -> Control.Select(DXVKConfigDialog.VKD3D_FEATURE_LEVEL.map { Opt(it, it.replace('_', '.')) }) },
             decode = { _, r -> r?.takeIf { it in DXVKConfigDialog.VKD3D_FEATURE_LEVEL } ?: DXVKConfigDialog.VKD3D_FEATURE_LEVEL.first() },
             visible = { _, values -> dxvkLike(values) },
@@ -371,15 +371,15 @@ internal object GraphicsRows {
 
         // Texture filtering (DXVK and VEGAS, DirectX 9 to 11)
         packedRow(
-            DX_CFG, "graphics.dx.anisotropy", "anisotropy", L("Texture filtering"), L("Anisotropic filtering"), ADVANCED,
-            hint = L("Sharper textures at an angle. DirectX 9 to 11 games."),
+            DX_CFG, "graphics.dx.anisotropy", "anisotropy", L("纹理过滤"), L("Anisotropic filtering"), ADVANCED,
+            hint = L("在角度下更清晰的纹理。DirectX 9 到 11 游戏。"),
             control = { _, _ -> Control.Segmented(DXVKConfigDialog.ANISOTROPY_VALUES.mapIndexed { i, v -> Opt(v, ANISOTROPY_LABELS[i]) }) },
             decode = { _, r -> r?.takeIf { it in DXVKConfigDialog.ANISOTROPY_VALUES } ?: "0" },
             visible = { _, values -> dxvkLike(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.lodBias", "lodBias", L("Texture filtering"), L("Texture sharpness"), ADVANCED,
-            hint = L("A negative mip bias: sharper textures, some shimmer. Auto follows the scaling the game starts with."),
+            DX_CFG, "graphics.dx.lodBias", "lodBias", L("纹理过滤"), L("Texture sharpness"), ADVANCED,
+            hint = L("负 mip 偏差：更清晰的纹理，有些闪烁。自动会跟随游戏启动时的缩放。"),
             control = { _, _ -> Control.Select(DXVKConfigDialog.LOD_BIAS_VALUES.mapIndexed { i, v -> Opt(v, LOD_BIAS_LABELS[i]) }) },
             decode = { _, r -> r?.takeIf { it in DXVKConfigDialog.LOD_BIAS_VALUES } ?: "0" },
             visible = { _, values -> dxvkLike(values) },
@@ -388,7 +388,7 @@ internal object GraphicsRows {
         // DirectDraw (both dialogs)
         packedRow(
             DX_CFG, ID_DDRAW, "ddrawrapper", L("DirectDraw"), L("DirectDraw wrapper"), ADVANCED,
-            hint = L("For DirectDraw and Direct3D 7 games. D7VK runs them on Vulkan."),
+            hint = L("适用于 DirectDraw 和 Direct3D 7 游戏。D7VK 在 Vulkan 上运行它们。"),
             control = { env, values ->
                 val ids = env.graphics.ddraw.map { StringUtils.parseIdentifier(it) to it }
                 val current = values(ID_DDRAW)
@@ -397,7 +397,7 @@ internal object GraphicsRows {
             decode = { _, r -> r?.ifEmpty { null } ?: Container.DEFAULT_DDRAWRAPPER },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.d7vkVersion", "d7vkVersion", L("DirectDraw"), L("D7VK version"), ADVANCED,
+            DX_CFG, "graphics.dx.d7vkVersion", "d7vkVersion", L("DirectDraw"), L("D7VK 版本"), ADVANCED,
             control = { env, values ->
                 versions(env.graphics.d7vk, values("graphics.dx.d7vkVersion"), env.graphics.loaded,
                     label = { if (it == DXVKConfigDialog.D7VK_BUNDLED) L("Bundled with the app") else it })
@@ -409,8 +409,8 @@ internal object GraphicsRows {
 
         // VEGAS config file: which one the game reads. Its keys are edited in the VEGAS config editor below the rows.
         packedRow(
-            DX_CFG, ID_VEGAS_CONFIG, "dxvkConfigFile", L("VEGAS config"), L("Config file"), ADVANCED,
-            hint = L("Which VEGAS config the game reads. A stock config stays untouched: the first edit makes your own copy."),
+            DX_CFG, ID_VEGAS_CONFIG, "dxvkConfigFile", L("VEGAS 配置"), L("配置文件"), ADVANCED,
+            hint = L("游戏读取哪个 VEGAS 配置。默认配置保持不变：首次编辑会创建您自己的副本。"),
             control = { env, values ->
                 val current = values(ID_VEGAS_CONFIG)
                 val opts = mutableListOf(Opt("", L("VEGAS built-in defaults (no file)")))
@@ -423,8 +423,8 @@ internal object GraphicsRows {
                 Control.Select(
                     options = if (shown.any { it.value == current }) shown
                               else shown + Opt(current, stockOf(env, current)?.let { "Stock · ${it.displayLabel()}" } ?: current),
-                    customLabel = L("Another file…"),
-                    customHint = L("The full path of a .conf file, e.g. /storage/emulated/0/Download/dxvk.conf"),
+                    customLabel = L("另一个文件…"),
+                    customHint = L(".conf 文件的完整路径，例如 /storage/emulated/0/Download/dxvk.conf"),
                     validateCustom = { if (it.trim().startsWith("/")) null else L("Type the full path, starting with /.") },
                 )
             },
@@ -438,30 +438,30 @@ internal object GraphicsRows {
 
         // WineD3D (WineD3DConfigDialog)
         packedRow(
-            DX_CFG, "graphics.wined3d.csmt", "csmt", L("WineD3D"), L("Command stream (CSMT)"), ADVANCED,
-            hint = L("Runs WineD3D's rendering on its own thread. Usually faster."),
+            DX_CFG, "graphics.wined3d.csmt", "csmt", L("WineD3D"), L("命令流 (CSMT)"), ADVANCED,
+            hint = L("在其自己的线程上运行 WineD3D 的渲染。通常更快。"),
             control = toggle(),
             decode = { _, r -> if (r == "3") "1" else "0" },
             encode = { v, _ -> if (v == "1") "3" else "0" },
             visible = { _, values -> wineD3D(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.wined3d.renderer", "renderer", L("WineD3D"), L("WineD3D renderer"), ADVANCED,
+            DX_CFG, "graphics.wined3d.renderer", "renderer", L("WineD3D"), L("WineD3D 渲染器"), ADVANCED,
             control = { _, _ -> seg("gl" to "OpenGL", "vulkan" to "Vulkan", "gdi" to L("GDI (software)")) },
             decode = { _, r -> r?.ifEmpty { null } ?: "gl" },
             visible = { _, values -> wineD3D(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.wined3d.gpuName", "gpuName", L("WineD3D"), L("GPU the game sees"), ADVANCED,
-            hint = L("The graphics card WineD3D reports to the game."),
+            DX_CFG, "graphics.wined3d.gpuName", "gpuName", L("WineD3D"), L("游戏看到的 GPU"), ADVANCED,
+            hint = L("WineD3D 向游戏报告的显卡。"),
             control = { env, values ->
-                versions(env.graphics.wined3dGpus, values("graphics.wined3d.gpuName"), env.graphics.loaded, missing = { it.ifEmpty { L("Not set") } })
+                versions(env.graphics.wined3dGpus, values("graphics.wined3d.gpuName"), env.graphics.loaded, missing = { it.ifEmpty { L("未设置") } })
             },
             visible = { _, values -> wineD3D(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.wined3d.videoMemory", "videoMemorySize", L("WineD3D"), L("Video memory"), ADVANCED,
-            hint = L("How much graphics memory WineD3D reports."),
+            DX_CFG, "graphics.wined3d.videoMemory", "videoMemorySize", L("WineD3D"), L("显存"), ADVANCED,
+            hint = L("WineD3D 报告多少显存。"),
             control = { env, values ->
                 val opts = env.graphics.videoMemory.map { Opt(StringUtils.parseNumber(it), it) }
                 val current = values("graphics.wined3d.videoMemory")
@@ -471,12 +471,12 @@ internal object GraphicsRows {
             visible = { _, values -> wineD3D(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.wined3d.strictShaderMath", "strict_shader_math", L("WineD3D"), L("Strict shader math"), EXPERT,
+            DX_CFG, "graphics.wined3d.strictShaderMath", "strict_shader_math", L("WineD3D"), L("严格着色器数学"), EXPERT,
             control = toggle(), decode = { _, r -> on(r) },
             visible = { _, values -> wineD3D(values) },
         ),
         packedRow(
-            DX_CFG, "graphics.wined3d.offscreen", L("OffscreenRenderingMode"), L("WineD3D"), L("Offscreen rendering"), EXPERT,
+            DX_CFG, "graphics.wined3d.offscreen", L("OffscreenRenderingMode"), L("WineD3D"), L("离屏渲染"), EXPERT,
             control = { _, _ -> seg("fbo" to "FBO", "backbuffer" to L("Back buffer")) },
             decode = { _, r -> r?.ifEmpty { null } ?: "fbo" },
             visible = { _, values -> wineD3D(values) },
@@ -484,7 +484,7 @@ internal object GraphicsRows {
 
         // The whole string, for the VEGAS config file editor (DeckGraphicsState). Never a row of its own.
         SettingDef(
-            id = ID_DX_CONFIG, category = "graphics", group = L("VEGAS config"), label = L("DX wrapper config"), level = EXPERT,
+            id = ID_DX_CONFIG, category = "graphics", group = L("VEGAS 配置"), label = L("DX wrapper 配置"), level = EXPERT,
             control = { _, _ -> Control.TextField() },
             vm = VmBinding(get = { _, vm -> vm.dxWrapperConfig }, set = { _, vm, v -> vm.dxWrapperConfig = v }),
             game = GameBinding(
@@ -561,8 +561,8 @@ internal object GraphicsRows {
     /** Rows of the X11 driver config, shown under the graphics driver choice. */
     fun driverDefs(): List<SettingDef> = listOf(
         gdcRow(
-            ID_DRIVER_VERSION, "version", L("GPU driver"), L("Driver version"), ADVANCED,
-            hint = L("The Turnip or Adreno driver the wrapper loads. Import more in Contents › GPU drivers."),
+            ID_DRIVER_VERSION, "version", L("虚幻引擎 HDR 修复"), L("驱动程序版本"), ADVANCED,
+            hint = L("包装器加载的 Turnip 或 Adreno 驱动程序。在内容 › GPU 驱动程序中导入更多。"),
             control = { env, values ->
                 val g = env.graphics
                 versions(
@@ -589,34 +589,34 @@ internal object GraphicsRows {
             },
         ),
         gdcRow(
-            "graphics.gdc.vulkanVersion", "vulkanVersion", L("GPU driver"), L("Vulkan version"), ADVANCED,
-            hint = L("The Vulkan version the driver reports to games."),
+            "graphics.gdc.vulkanVersion", "vulkanVersion", L("虚幻引擎 HDR 修复"), L("Vulkan 版本"), ADVANCED,
+            hint = L("驱动程序向游戏报告的 Vulkan 版本。"),
             control = { env, _ -> Control.Segmented(env.graphics.vulkanVersions.map { Opt(it, it) }) },
             decode = { _, r -> r?.ifEmpty { null } ?: "1.4" },
         ),
         gdcRow(
-            "graphics.gdc.extensions", "blacklistedExtensions", L("GPU driver"), L("Vulkan extensions"), EXPERT,
-            hint = L("Hide extensions a game trips over. Changing the driver version shows them all again."),
+            "graphics.gdc.extensions", "blacklistedExtensions", L("虚幻引擎 HDR 修复"), L("Vulkan 扩展"), EXPERT,
+            hint = L("隐藏游戏出问题的扩展。更改驱动程序版本会再次显示所有扩展。"),
             control = { env, values ->
                 val probe = env.graphics.extensions(values(ID_DRIVER_VERSION))
                 Control.Checklist(
                     items = probe?.list,
-                    title = L("Vulkan extensions"),
-                    waiting = L("Reading the driver's extensions…"),
-                    empty = L("None listed"),
+                    title = L("Vulkan 扩展"),
+                    waiting = L("正在读取驱动程序的扩展…"),
+                    empty = L("未列出任何扩展"),
                 )
             },
             decode = { _, r -> (r ?: "").split(",").filter { it.isNotEmpty() }.joinToString(",") },
             disabled = { env, values ->
                 val probe = env.graphics.extensions(values(ID_DRIVER_VERSION))
-                if (values(ID_DRIVER_VERSION).isEmpty()) L("Pick a driver version first.")
+                if (values(ID_DRIVER_VERSION).isEmpty()) L("请先选择驱动程序版本。")
                 else if (probe?.custom == true) L("A Qualcomm driver's extensions are only known once the game starts.")
                 else null
             },
         ),
         gdcRow(
-            "graphics.gdc.gpuName", "gpuName", L("GPU driver"), L("GPU name games see"), ADVANCED,
-            hint = L("Makes DirectX games see another graphics card. Device keeps the real one."),
+            "graphics.gdc.gpuName", "gpuName", L("虚幻引擎 HDR 修复"), L("游戏看到的 GPU 名称"), ADVANCED,
+            hint = L("使 DirectX 游戏看到另一块显卡。Device 保留真实的显卡。"),
             control = { env, values ->
                 versions(env.graphics.gpuNames, values("graphics.gdc.gpuName"), env.graphics.loaded,
                     label = { if (it == GpuSpoof.DEVICE) L("Device (the real GPU)") else it }, missing = { it })
@@ -626,8 +626,8 @@ internal object GraphicsRows {
             wayland = true,
         ),
         gdcRow(
-            "graphics.gdc.maxDeviceMemory", "maxDeviceMemory", L("GPU driver"), L("GPU memory games see"), ADVANCED,
-            hint = L("What DirectX games are told the GPU's memory is (dxgi.maxDeviceMemory)."),
+            "graphics.gdc.maxDeviceMemory", "maxDeviceMemory", L("虚幻引擎 HDR 修复"), L("游戏看到的 GPU 显存"), ADVANCED,
+            hint = L("告诉 DirectX 游戏 GPU 的显存是多少（dxgi.maxDeviceMemory）。"),
             control = { env, values ->
                 val opts = env.graphics.deviceMemory.map { e -> StringUtils.parseNumber(e).let { Opt(it, if (it == "0") L("Default") else e) } }
                 val current = values("graphics.gdc.maxDeviceMemory")
@@ -637,8 +637,8 @@ internal object GraphicsRows {
             wayland = true,
         ),
         gdcRow(
-            "graphics.gdc.presentMode", "presentMode", L("Driver tuning"), L("Driver present mode"), EXPERT,
-            hint = L("How the wrapper hands frames over. Not the screen renderer's setting."),
+            "graphics.gdc.presentMode", "presentMode", L("驱动程序调优"), L("驱动程序呈现模式"), EXPERT,
+            hint = L("包装器如何递交帧。不是屏幕渲染器的设置。"),
             control = { env, values ->
                 if (!waylandGame(env, values)) Control.Segmented(env.graphics.presentModes.map { Opt(it, it.replaceFirstChar(Char::uppercase)) })
                 else {
@@ -652,69 +652,69 @@ internal object GraphicsRows {
             },
             decode = { _, r -> r?.ifEmpty { null } ?: "mailbox" },
             note = { env, values ->
-                if (waylandGame(env, values)) L("Wayland offers mailbox and fifo only: immediate needs tearing, which the compositor doesn't allow.") else null
+                if (waylandGame(env, values)) L("Wayland 仅提供 mailbox 和 fifo：immediate 需要撕裂，而合成器不允许。") else null
             },
             wayland = true,
         ),
         gdcRow(
-            "graphics.gdc.resourceType", "resourceType", L("Driver tuning"), L("Resource type"), EXPERT,
+            "graphics.gdc.resourceType", "resourceType", L("驱动程序调优"), L("资源类型"), EXPERT,
             control = { env, _ -> Control.Segmented(env.graphics.resourceTypes.map { Opt(it, if (it == "auto") L("Auto") else it.uppercase()) }) },
             decode = { _, r -> r?.ifEmpty { null } ?: "auto" },
         ),
-        gdcToggle("graphics.gdc.syncFrame", "syncFrame", L("Driver tuning"), L("Sync every frame"), EXPERT,
-            hint = L("Waits for each frame to finish. Fixes flicker in a few games, costs speed.")),
-        gdcToggle("graphics.gdc.disablePresentWait", "disablePresentWait", L("Driver tuning"), L("Disable present wait"), EXPERT),
-        gdcToggle("graphics.gdc.fdDevFeatures", "fdDevFeatures", L("Driver tuning"), L("OneUI / HyperOS fix"), ADVANCED,
-            hint = L("For Samsung and Xiaomi phones whose games show corrupt textures. Leave off otherwise."), wayland = true),
+        gdcToggle("graphics.gdc.syncFrame", "syncFrame", L("驱动程序调优"), L("每帧同步"), EXPERT,
+            hint = L("等待每帧完成。修复少数游戏中的闪烁，但会降低速度。")),
+        gdcToggle("graphics.gdc.disablePresentWait", "disablePresentWait", L("驱动程序调优"), L("禁用呈现等待"), EXPERT),
+        gdcToggle("graphics.gdc.fdDevFeatures", "fdDevFeatures", L("驱动程序调优"), L("驱动程序调优"), ADVANCED,
+            hint = L("适用于游戏显示损坏纹理的三星和小米手机。否则保持关闭。"), wayland = true),
 
         // BCn textures
         gdcRow(
-            ID_BCN, "bcnEmulation", L("BCn textures"), L("BCn texture emulation"), ADVANCED,
-            hint = L("Decodes the compressed textures Windows games use, for GPUs that can't."),
+            ID_BCN, "bcnEmulation", L("BCn纹理"), L("BCn 纹理模拟"), ADVANCED,
+            hint = L("为无法解码的 GPU 解码 Windows 游戏使用的压缩纹理。"),
             control = { env, _ -> Control.Segmented(env.graphics.bcnEmulations.map { Opt(it, it.replaceFirstChar(Char::uppercase)) }) },
             decode = { _, r -> r?.ifEmpty { null } ?: "auto" },
             note = { env, _ ->
                 (if (env.graphics.gpuModel.isNotEmpty()) "GPU: ${env.graphics.gpuModel}. " else "") +
-                    (if (env.graphics.qualcomm) L("Adreno decodes BCn itself: these apply to Mali and other GPUs.") else L("BCn and compat layers apply to Mali and other non-Qualcomm GPUs."))
+                    (if (env.graphics.qualcomm) L("Adreno 自行解码 BCn：这些适用于 Mali 和其他 GPU。") else L("BCn 和 兼容层适用于 Mali 和其他非高通 GPU。"))
             },
         ),
         gdcRow(
-            ID_BCN_TYPE, "bcnEmulationType", L("BCn textures"), L("Emulation method"), EXPERT,
+            ID_BCN_TYPE, "bcnEmulationType", L("BCn纹理"), L("模拟方法"), EXPERT,
             control = { env, _ -> Control.Segmented(env.graphics.bcnTypes.map { Opt(it, it.replaceFirstChar(Char::uppercase)) }) },
             decode = { _, r -> r?.ifEmpty { null } ?: "software" },
         ),
         gdcRow(
-            "graphics.gdc.bcnEmulationCache", "bcnEmulationCache", L("BCn textures"), L("Cache decoded textures"), EXPERT,
+            "graphics.gdc.bcnEmulationCache", "bcnEmulationCache", L("BCn纹理"), L("缓存已解码的纹理"), EXPERT,
             control = { _, _ -> seg("0" to L("Off"), "1" to L("On")) },
             decode = { _, r -> on(r) },
         ),
-        gdcToggle("graphics.gdc.bcnEmulationAstc", "bcnEmulationAstc", L("BCn textures"), L("BCn to ASTC"), EXPERT,
+        gdcToggle("graphics.gdc.bcnEmulationAstc", "bcnEmulationAstc", L("BCn纹理"), L("BCn to ASTC"), EXPERT,
             visible = { env, values -> integratedBcn(env, values) }, note = { env, _ -> adrenoNote(env) }),
-        gdcToggle("graphics.gdc.bcnTranscodeAstc", "bcnTranscodeAstc", L("BCn textures"), L("Transcode BCn to ASTC"), EXPERT,
-            hint = L("With the compute method: the decoder writes ASTC instead."),
+        gdcToggle("graphics.gdc.bcnTranscodeAstc", "bcnTranscodeAstc", L("BCn纹理"), L("将 BCn 转码为 ASTC"), EXPERT,
+            hint = L("使用计算方法：解码器改为写入 ASTC。"),
             visible = { env, values ->
                 bcnLayerSettings(env, values) ||
                     (!bcnLayerDriver(values) && values(ID_BCN_TYPE) == "compute" && values(ID_BCN) in setOf("auto", "full"))
             },
             note = { env, _ -> adrenoNote(env) }),
-        gdcToggle("graphics.gdc.bcnLayerAuto", "bcnLayerAuto", L("BCn layer"), L("Force decode on every GPU"), EXPERT, default = true,
+        gdcToggle("graphics.gdc.bcnLayerAuto", "bcnLayerAuto", L("BCn layer"), L("在每个 GPU 上强制解码"), EXPERT, default = true,
             visible = { env, values -> bcnLayerSettings(env, values) }, note = { env, _ -> adrenoNote(env) }),
-        gdcToggle("graphics.gdc.bcnTranscodeEtc2", "bcnTranscodeEtc2", L("BCn layer"), L("Transcode BCn to ETC2"), EXPERT,
+        gdcToggle("graphics.gdc.bcnTranscodeEtc2", "bcnTranscodeEtc2", L("BCn layer"), L("将 BCn 转码为 ETC2"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.bcnImageView", "bcnImageView", L("BCn layer"), L("Storage image path"), EXPERT, default = true,
+        gdcToggle("graphics.gdc.bcnImageView", "bcnImageView", L("BCn layer"), L("存储图像路径"), EXPERT, default = true,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.bcnDebugLog", "bcnDebugLog", L("BCn layer"), L("BCn layer debug log"), EXPERT,
+        gdcToggle("graphics.gdc.bcnDebugLog", "bcnDebugLog", L("BCn layer"), L("BCn 层调试日志"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) }),
-        gdcToggle("graphics.gdc.compatUseGamenative", "compatUseGamenative", L("BCn layer"), L("Use the GameNative engine (DirectX 12)"), EXPERT,
-            hint = L("Needs a Valhall Mali GPU."),
+        gdcToggle("graphics.gdc.compatUseGamenative", "compatUseGamenative", L("BCn layer"), L("使用 GameNative 引擎（DirectX 12）"), EXPERT,
+            hint = L("需要 Valhall Mali GPU。"),
             visible = { env, values -> bcnLayerSettings(env, values) && values(ID_GFX_DRIVER) == "wrapper-compat-bcn" }),
-        gdcToggle("graphics.gdc.bcnCompatSparse", "bcnCompatSparse", L("BCn layer"), L("Emulate DirectX 12 sparse resources"), EXPERT,
+        gdcToggle("graphics.gdc.bcnCompatSparse", "bcnCompatSparse", L("BCn layer"), L("模拟 DirectX 12 稀疏资源"), EXPERT,
             visible = { env, values -> bcnLayerSettings(env, values) && values(ID_GFX_DRIVER) == "wrapper-compat-bcn" }),
 
         // Turnip (TU_DEBUG)
         gdcRow(
-            ID_GMEM, "turnipGmem", "Turnip", L("GMEM tiled rendering"), ADVANCED,
-            hint = L("Auto uses it on Adreno 710, 720 and 722 only. Change it only if a game misbehaves."),
+            ID_GMEM, "turnipGmem", "Turnip", L("GMEM 平铺渲染"), ADVANCED,
+            hint = L("自动仅在 Adreno 710、720 和 722 上使用它。仅在游戏出现异常时才更改它。"),
             control = { _, _ -> seg("auto" to L("Auto"), "on" to L("Force on"), "off" to L("Force off")) },
             decode = { _, r -> r?.takeIf { it == "on" || it == "off" } ?: "auto" },
             // Force on overrides sysmem, so the classic dialog doesn't keep that token with it.
@@ -723,11 +723,11 @@ internal object GraphicsRows {
                 if (v == "on" && "sysmem" in tokensOf(tokens)) mapOf("turnipTokens" to tokensWith(tokens, "sysmem", false)) else emptyMap()
             },
         ),
-        tokenRow("forcecb", L("Force concurrent binning (forcecb)"), null),
-        tokenRow("nocb", L("No concurrent binning (nocb)"), null),
-        tokenRow("sysmem", L("Force sysmem rendering (sysmem)"), L("Bypasses GMEM."),
+        tokenRow("forcecb", L("强制并发分箱 (forcecb)"), null),
+        tokenRow("nocb", L("无并发分箱 (nocb)"), null),
+        tokenRow("sysmem", L("强制系统内存渲染 (sysmem)"), L("绕过 GMEM。"),
             disabled = { _, values -> if (values(ID_GMEM) == "on") L("GMEM Force on overrides it.") else null }),
-        tokenRow("deck_emu", L("Report a Steam Deck (deck_emu)"), L("Banners-Turnip drivers only; stock Turnip ignores it.")),
+        tokenRow("deck_emu", L("报告为 Steam Deck (deck_emu)"), L("仅限 Banners-Turnip 驱动程序；原生 Turnip 忽略它。")),
     )
 
     // ── Wayland game driver and the Mali (PanVK) switches (WaylandDriverSettingsDialog) ──────────
@@ -768,7 +768,7 @@ internal object GraphicsRows {
     private fun mbRow(id: String, key: String, label: String, hint: String, min: Int, max: Int) = maliRow(
         id, key, label, EXPERT,
         control = { _, _ ->
-            Control.TextField(L("Auto / Default")) { t ->
+            Control.TextField(L("自动 / 默认")) { t ->
                 if (t.isBlank() || MaliPanvk.validMb(t, min, max) != null) null else "Out of range ($min to $max): not used."
             }
         },
@@ -794,10 +794,10 @@ internal object GraphicsRows {
 
     /** The adapter profiles' names, as the classic dialog shows them (WaylandAdapterSettings.profileLabel). */
     private fun profileName(p: String): String = when (WaylandAdapterSettings.normalizeProfile(p)) {
-        WaylandAdapterSettings.PROFILE_SMOOTH -> L("Smooth")
-        WaylandAdapterSettings.PROFILE_FAST -> L("Fast")
-        WaylandAdapterSettings.PROFILE_COMPAT -> L("Compatibility")
-        else -> L("Auto (recommended)")
+        WaylandAdapterSettings.PROFILE_SMOOTH -> L("流畅")
+        WaylandAdapterSettings.PROFILE_FAST -> L("快速")
+        WaylandAdapterSettings.PROFILE_COMPAT -> L("兼容性")
+        else -> L("自动（推荐）")
     }
 
     private fun adapterDefs(): List<SettingDef> = listOf(
@@ -815,32 +815,32 @@ internal object GraphicsRows {
             options = listOf("" to L("Default"), "mailbox" to "mailbox", "fifo" to "fifo"),
         ),
         adapterRow(
-            "graphics.wl.adapterAsyncCopy", WaylandAdapterSettings.KEY_ASYNC_COPY, L("Asynchronous copy"),
-            L("The compositor keeps frames in flight instead of waiting for each screen blit. Turn off if frames arrive out of order or a game stutters only on Wayland."),
+            "graphics.wl.adapterAsyncCopy", WaylandAdapterSettings.KEY_ASYNC_COPY, L("异步复制"),
+            L("合成器让帧保持传输中，而不是等待每次屏幕 blit。如果帧乱序到达或游戏仅在 Wayland 上卡顿，请关闭。"),
         ),
         adapterRow(
-            "graphics.wl.adapterZeroCopy", WaylandAdapterSettings.KEY_ZERO_COPY, L("Zero-copy presentation"),
-            L("The game's own buffer goes on screen without a copy (lowest latency, less heat). Needs sync-file fences in the driver (see the adapter report). Turn off if you see tearing or stale frames."),
+            "graphics.wl.adapterZeroCopy", WaylandAdapterSettings.KEY_ZERO_COPY, L("零拷贝呈现"),
+            L("游戏自身的缓冲区无需复制即可上屏（延迟最低、发热更少）。需要驱动程序支持同步文件栅栏（见适配器报告）。如果出现画面撕裂或残帧，请关闭此项。"),
         ),
         adapterRow(
-            "graphics.wl.adapterClientFence", WaylandAdapterSettings.KEY_CLIENT_FENCE, L("Client render fences"),
-            L("With zero-copy, the game's driver tells the compositor when a frame is finished. Turn off only to compare; off can show half-drawn frames."),
+            "graphics.wl.adapterClientFence", WaylandAdapterSettings.KEY_CLIENT_FENCE, L("客户端渲染栅栏"),
+            L("在零拷贝下，游戏的驱动程序会告诉合成器帧何时完成。仅在比较时关闭；关闭可能显示绘制一半的帧。"),
         ),
         adapterRow(
-            "graphics.wl.adapterUbwc", WaylandAdapterSettings.KEY_UBWC, L("UBWC / compressed buffers"),
-            L("Frames travel as compressed GPU buffers (less bandwidth). Turn off if the picture shows garbled blocks or stripes."),
+            "graphics.wl.adapterUbwc", WaylandAdapterSettings.KEY_UBWC, L("UBWC / 压缩缓冲区"),
+            L("帧以压缩 GPU 缓冲区传输（更少带宽）。如果画面显示乱码块或条纹，请关闭。"),
         ),
         adapterRow(
-            "graphics.wl.adapterModifiers", WaylandAdapterSettings.KEY_MODIFIERS, L("DRM format modifiers"),
-            L("Lets the game's driver and the compositor agree on buffer layouts. Off makes the game use plain linear buffers (BANNER_WSI_NO_MODIFIERS=1); try it for a black screen or corrupt frames."),
+            "graphics.wl.adapterModifiers", WaylandAdapterSettings.KEY_MODIFIERS, L("DRM 格式修饰符"),
+            L("让游戏的驱动程序和合成器就缓冲区布局达成一致。关闭会让游戏使用普通的线性缓冲区（BANNER_WSI_NO_MODIFIERS=1）；对于黑屏或损坏帧，可以尝试此选项。"),
         ),
         adapterRow(
-            "graphics.wl.adapterKgslShim", WaylandAdapterSettings.KEY_KGSL_SHIM, L("KGSL timing shim"),
-            L("Works around a Turnip bug where asking \"is the GPU done?\" waits for the whole frame (the report's timing bug). Default lets the adapter detect it; On forces it, Off disables it."),
+            "graphics.wl.adapterKgslShim", WaylandAdapterSettings.KEY_KGSL_SHIM, L("KGSL 时序垫片"),
+            L("绕过 Turnip 的一个 bug：询问 \"GPU 完成了吗？\" 会等待整个帧（报告中的时序 bug）。默认让适配器检测它；开启强制启用，关闭禁用它。"),
         ),
         adapterRow(
             "graphics.wl.adapterSubgroups", WaylandAdapterSettings.KEY_SUBGROUPS, L("Subgroups"),
-            L("Auto tells the game what subgroup operations your Mesa driver supports (DOOM Eternal and other games that need them start). Off hides them, as older adapters did; try it if a game shows glitches or crashes that it did not before."),
+            L("自动告诉游戏您的 Mesa 驱动程序支持哪些子组操作（DOOM Eternal 和其他需要它们的游戏可以启动）。关闭会隐藏它们，如同旧适配器所做；如果游戏出现以前没有的故障或崩溃，可以尝试此选项。"),
             options = listOf("auto" to L("Auto"), "0" to L("Off")),
             decode = { _, r -> if (r == "0") "0" else "auto" },
         ),
@@ -849,8 +849,8 @@ internal object GraphicsRows {
     /** Rows of the Wayland driver gear, shown under the compositor driver on Wayland. */
     fun waylandDefs(): List<SettingDef> = listOf(
         SettingDef(
-            id = ID_WL_GAME_DRIVER, category = "graphics", group = L("GPU driver"), level = ADVANCED,
-            label = L("Wayland game driver"), hint = L("The Vulkan driver the game itself renders on with Wayland."),
+            id = ID_WL_GAME_DRIVER, category = "graphics", group = L("虚幻引擎 HDR 修复"), level = ADVANCED,
+            label = L("Wayland游戏驱动程序"), hint = L("游戏自身在 Wayland 下渲染所使用的 Vulkan 驱动程序。"),
             help = WaylandGameDriver.HELP_TEXT + "\n\n" + WAYLAND_DRIVER_SETTINGS_HELP, tech = "waylandGameDriver",
             control = { env, values ->
                 val g = env.graphics
@@ -875,9 +875,9 @@ internal object GraphicsRows {
 
     ) + adapterDefs() + listOf(
         maliRow(
-            ID_MALI_MODE, MaliPanvk.KEY_MODE, L("Mali (PanVK) mode"), ADVANCED,
-            hint = L("PanVK tweaks in the Wayland adapter: hides present_id, present_wait and dynamic_rendering, plus two sync workarounds. On by default with a PanVK driver."),
-            help = L("For Arm Mali GPUs. Until it is switched, it follows the driver: on for a PanVK driver, off otherwise."),
+            ID_MALI_MODE, MaliPanvk.KEY_MODE, L("Mali (PanVK) 模式"), ADVANCED,
+            hint = L("Wayland 适配器中的 PanVK 调整：隐藏 present_id、present_wait 和 dynamic_rendering，以及两个同步变通方案。使用 PanVK 驱动程序时默认开启。"),
+            help = L("适用于 Arm Mali GPU。在切换之前，它跟随驱动程序：PanVK 驱动程序开启，否则关闭。"),
             control = toggle(),
             decodeConfig = { env, cfg -> if (maliModeOn(env, cfg)) "1" else "0" },
             // As the classic gear: on sets BCn emulation to None, off gives back the stored choice.
@@ -885,7 +885,7 @@ internal object GraphicsRows {
             modeOnly = false,
         ),
         maliRow(
-            "graphics.wl.bcnEmulation", "bcnEmulation", L("BCn texture emulation"), ADVANCED,
+            "graphics.wl.bcnEmulation", "bcnEmulation", L("BCn 纹理模拟"), ADVANCED,
             control = { env, _ -> Control.Segmented(env.graphics.bcnEmulations.map { Opt(it, it.replaceFirstChar(Char::uppercase)) }) },
             // With no stored switch a PanVK driver runs with None, which is what the launch applies.
             decodeConfig = { env, cfg ->
@@ -896,29 +896,29 @@ internal object GraphicsRows {
             also = { _, cfg -> if (DRIVER_CFG.raw(cfg, MaliPanvk.KEY_MODE).isNullOrEmpty()) mapOf(MaliPanvk.KEY_MODE to "1") else emptyMap() },
             note = { _, values ->
                 if (values("graphics.wl.bcnEmulation") == "none") null
-                else L("Converting BCn textures to ASTC can freeze or reboot the phone with this driver; only try it if a game shows broken or missing textures.")
+                else L("使用此驱动程序将 BCn 纹理转换为 ASTC 可能导致手机卡死或重启；仅在游戏显示损坏或缺失纹理时才尝试。")
             },
         ),
         maliRow(
-            "graphics.wl.maliHideExts", MaliPanvk.KEY_HIDE_EXTS, L("Hide present-wait / dynamic-rendering extensions"), EXPERT,
+            "graphics.wl.maliHideExts", MaliPanvk.KEY_HIDE_EXTS, L("隐藏 present-wait / dynamic-rendering 扩展"), EXPERT,
             control = toggle(), decode = { _, r -> if (r == "0") "0" else "1" },
         ),
         maliRow(
-            ID_MALI_SUBMIT, MaliPanvk.KEY_NO_SUBMIT_WAITS, L("Skip GPU submit waits"), EXPERT,
-            hint = L("For DXVK games: turn off if a DirectX 12 game misbehaves or you see tearing."),
+            ID_MALI_SUBMIT, MaliPanvk.KEY_NO_SUBMIT_WAITS, L("跳过 GPU 提交等待"), EXPERT,
+            hint = L("适用于 DXVK 游戏：如果 DirectX 12 游戏出现异常或出现撕裂，请关闭。"),
             control = toggle(), decode = { _, r -> if (r == "0") "0" else "1" },
         ),
         maliRow(
-            "graphics.wl.maliNoAcquireSignal", MaliPanvk.KEY_NO_ACQUIRE_SIGNAL, L("Skip frame-acquire signal"), EXPERT,
+            "graphics.wl.maliNoAcquireSignal", MaliPanvk.KEY_NO_ACQUIRE_SIGNAL, L("跳过帧获取信号"), EXPERT,
             control = toggle(), decode = { _, r -> if (r == "0") "0" else "1" },
             disabled = { _, values -> if (values(ID_MALI_SUBMIT) == "1") null else L("Needs Skip GPU submit waits on.") },
         ),
-        mbRow("graphics.wl.panvkHeap", MaliPanvk.KEY_HEAP, "PANVK_HEAP_MB", L("Default: a quarter of RAM, 1024 to 3072 MB."), MaliPanvk.HEAP_MIN, MaliPanvk.HEAP_MAX),
-        mbRow("graphics.wl.panvkTilerHeap", MaliPanvk.KEY_TILER_HEAP, "PANVK_TILER_HEAP_MB", L("Default: 512 MB."), MaliPanvk.TILER_HEAP_MIN, MaliPanvk.TILER_HEAP_MAX),
-        mbRow("graphics.wl.panvkPolyHeap", MaliPanvk.KEY_POLY_HEAP, "PANVK_POLY_HEAP_MB", L("Default: 16 MB."), MaliPanvk.POLY_HEAP_MIN, MaliPanvk.POLY_HEAP_MAX),
+        mbRow("graphics.wl.panvkHeap", MaliPanvk.KEY_HEAP, "PANVK_HEAP_MB", L("默认：RAM 的四分之一，1024 到 3072 MB。"), MaliPanvk.HEAP_MIN, MaliPanvk.HEAP_MAX),
+        mbRow("graphics.wl.panvkTilerHeap", MaliPanvk.KEY_TILER_HEAP, "PANVK_TILER_HEAP_MB", L("默认：512 MB。"), MaliPanvk.TILER_HEAP_MIN, MaliPanvk.TILER_HEAP_MAX),
+        mbRow("graphics.wl.panvkPolyHeap", MaliPanvk.KEY_POLY_HEAP, "PANVK_POLY_HEAP_MB", L("默认：16 MB。"), MaliPanvk.POLY_HEAP_MIN, MaliPanvk.POLY_HEAP_MAX),
         maliRow(
             "graphics.wl.panvkAtomStride", MaliPanvk.KEY_ATOM_STRIDE, "PANVK_ATOM_STRIDE", EXPERT,
-            hint = L("Only if auto-detection fails ([KFAULT] in the log)."),
+            hint = L("仅在自动检测失败时（日志中出现 [KFAULT]）。"),
             control = { _, _ -> Control.Segmented(listOf(Opt("", L("Auto"))) + MaliPanvk.ATOM_STRIDES.map { Opt(it, it) }) },
             decode = { _, r -> r?.takeIf { it in MaliPanvk.ATOM_STRIDES } ?: "" },
             modeOnly = false,
@@ -1025,7 +1025,7 @@ internal class GraphicsLists(private val context: Context) {
             blob -> L("Qualcomm's own driver can't put Wayland frames on screen, so the screen uses a bundled Turnip") +
                 if (adapter) L(" and the game renders on the bundled Wayland Turnip (the adapter needs a Turnip driver).") else "."
             runCatching { WaylandGameDriver.adapterActive(context, choice, compositor) }.getOrDefault(false) ->
-                L("The game renders on the graphics driver above, through the Wayland adapter.")
+                L("游戏通过 Wayland 适配器在上面的图形驱动程序上渲染。")
             else -> null
         }
     }
@@ -1289,17 +1289,17 @@ internal class DeckGraphicsState(
         // have no such links and keep the whole list.
         val downloads = !com.winlator.star.ui.theme.AppThemeState.deckXmbHome.value
         val actions = buildList {
-            if (downloads && dxvkLike() && !vegas()) add(Action("dxvk", Icons.Filled.CloudDownload, L("Download DXVK versions"), L("Builds from the catalog. Installed ones appear under DXVK version.")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_DXVK })
-            if (downloads && vegas()) add(Action("vegas", Icons.Filled.CloudDownload, L("Download VEGAS builds"), L("Releases of the VEGAS DXVK fork.")) { vegasSheet = true })
-            if (downloads && dxvkLike()) add(Action("vkd3d", Icons.Filled.CloudDownload, L("Download VKD3D versions"), L("DirectX 12 builds from the catalog.")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_VKD3D })
-            if (downloads && dxvkLike() && value(GraphicsRows.ID_DDRAW) == "d7vk") add(Action("d7vk", Icons.Filled.CloudDownload, L("Download D7VK versions"), L("DirectDraw and Direct3D 7 on Vulkan.")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_D7VK })
-            if (downloads && vegas()) add(Action("stock", Icons.Filled.CloudDownload, L("Download stock VEGAS configs"), L("The config files VEGAS releases ship. They appear under Config file.")) { stockSheet = true })
-            if (vegas()) add(Action("vegasEditor", Icons.Filled.Description, L("Edit the VEGAS config file"), L("Performance tier, each key of the file, backups, and deleting or installing VEGAS builds.")) { vegasEditor = true })
-            if (downloads && x11()) add(Action("wrappers", Icons.Filled.Inventory2, L("Manage graphics wrappers"), L("Download, import or delete the wrappers listed under Graphics driver.")) { wrappers = true })
-            if (downloads && !env.isLinuxEntry && env.wayland(this@DeckGraphicsState::value)) add(Action("turnip", Icons.Filled.CloudDownload, L("Download a Turnip driver"), L("Wayland needs an installed Turnip to put the game's frames on screen. New ones appear under Graphics driver.")) { turnipSheet = true })
+            if (downloads && dxvkLike() && !vegas()) add(Action("dxvk", Icons.Filled.CloudDownload, L("下载DXVK版本"), L("来自目录的构建。已安装的会出现在 DXVK 版本下。")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_DXVK })
+            if (downloads && vegas()) add(Action("vegas", Icons.Filled.CloudDownload, L("下载 VEGAS 构建"), L("VEGAS DXVK 分支的版本。")) { vegasSheet = true })
+            if (downloads && dxvkLike()) add(Action("vkd3d", Icons.Filled.CloudDownload, L("下载VKD3D版本"), L("来自目录的 DirectX 12 构建。")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_VKD3D })
+            if (downloads && dxvkLike() && value(GraphicsRows.ID_DDRAW) == "d7vk") add(Action("d7vk", Icons.Filled.CloudDownload, L("Download D7VK versions"), L("Vulkan 上的 DirectDraw 和 Direct3D 7。")) { sheet = ContentProfile.ContentType.CONTENT_TYPE_D7VK })
+            if (downloads && vegas()) add(Action("stock", Icons.Filled.CloudDownload, L("下载默认 VEGAS 配置"), L("VEGAS 版本附带的配置文件。它们出现在配置文件下。")) { stockSheet = true })
+            if (vegas()) add(Action("vegasEditor", Icons.Filled.Description, L("编辑 VEGAS 配置文件"), L("性能等级、文件的每个键、备份，以及删除或安装 VEGAS 构建。")) { vegasEditor = true })
+            if (downloads && x11()) add(Action("wrappers", Icons.Filled.Inventory2, L("管理图形包装器"), L("下载、导入或删除图形驱动程序下列出的包装器。")) { wrappers = true })
+            if (downloads && !env.isLinuxEntry && env.wayland(this@DeckGraphicsState::value)) add(Action("turnip", Icons.Filled.CloudDownload, L("下载 Turnip 驱动程序"), L("Wayland 需要已安装的 Turnip 来将游戏的帧放到屏幕上。新的会出现在图形驱动程序下。")) { turnipSheet = true })
         }
         if (actions.isEmpty()) return emptyList()
-        return listOf(PageExtra("graphics-tools-label") { GroupLabel(if (downloads) L("Downloads and tools") else L("Tools")) }) +
+        return listOf(PageExtra("graphics-tools-label") { GroupLabel(if (downloads) L("Downloads and tools") else L("工具")) }) +
             actions.mapIndexed { i, a ->
                 PageExtra("graphics-tool:${a.key}") {
                     GroupCard(first = i == 0, last = i == actions.lastIndex, highlight = false) { ActionRow(a) }
@@ -1347,7 +1347,7 @@ private fun WaylandAdapterReport(driverId: String) {
         if (report == null) note = L("The driver could not be checked.")
     }
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
-        Text(L("Adapter report"), fontWeight = FontWeight.Bold)
+        Text(L("适配器报告"), fontWeight = FontWeight.Bold)
         WaylandAdapterReportBlock(report = report, probing = probing, note = note, onRecheck = {
             WaylandDriverProbe.forget(context, driverId)
             report = null

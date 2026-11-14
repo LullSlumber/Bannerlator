@@ -173,7 +173,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
     private var dlcBaseInstalled by mutableStateOf(false)
 
     private var cloudSaveDir by mutableStateOf<String?>(null)
-    private var cloudSaveDirText by mutableStateOf("No save folder set")
+    private var cloudSaveDirText by mutableStateOf("未设置存档文件夹")
     private var cloudSaveDirColor by mutableIntStateOf(0xFF555577.toInt())
     private var cloudSaveStatusText by mutableStateOf("")
     private var cloudSaveStatusVisible by mutableStateOf(false)
@@ -227,7 +227,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
         initDlcStates()
         updateStatusText = prefs.getString("gog_build_$gameId", null)?.let {
             "Installed build: ${it.substring(0, minOf(12, it.length))}\u2026"
-        } ?: "Build ID not recorded \u2014 tap Check to verify"
+        } ?: "未记录Build ID — 点击检查以验证"
         updatesInstalled = prefs.getString("gog_exe_$gameId", null) != null
         if (!updatesInstalled) updateStatusText = ""
         checkUpdateEnabled = updatesInstalled
@@ -240,7 +240,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
         } else {
             // No manual pick — show the auto-resolved folder (GogCloudSavePaths), agreeing with the
             // Save Manager GOG tab. Resolved off-main; label updates when ready.
-            cloudSaveDirText = "No save folder set"
+            cloudSaveDirText = "未设置存档文件夹"
             cloudSaveDirColor = 0xFF555577.toInt()
             refreshResolvedSaveDirLabel()
         }
@@ -327,12 +327,12 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                     },
                     onUninstall = { confirmUninstall() },
                     onCopy = {
-                        resultBarMsg = "Copying\u2026"
+                        resultBarMsg = "正在复制…"
                         lifecycleScope.launch(Dispatchers.IO) {
                             val dest = GogDownloadManager.copyToDownloads(this@GogGameDetailActivity, gameId)
                             withContext(Dispatchers.Main) {
                                 resultBarMsg = if (dest != null) "Copied to: $dest"
-                                else "Copy failed \u2014 check storage permission"
+                                else "复制失败 — 检查存储权限"
                             }
                         }
                     },
@@ -340,7 +340,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                     onVerifyRepair = { doVerifyRepair() },
                     onUpdateNow = {
                         updateBtnVisible = false
-                        updateStatusText = "Updating\u2026"
+                        updateStatusText = "正在更新…"
                         startInstall()
                     },
                     onBrowseCloud = {
@@ -609,7 +609,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                 if (prefs.getString("gog_dir_$gameId", null)
                         ?.let { File(GogInstallPath.getInstallDir(this, it), SteamInstallPaths.ADOPTED_MARKER).exists() } == true)
                     "Your imported folder and its files stay."
-                else "This will delete all installed game files."
+                else "这将删除所有已安装的游戏文件。"
             )
             .setPositiveButton("Uninstall") { _, _ -> doUninstall() }
             .setNegativeButton("Cancel", null)
@@ -750,7 +750,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
     }
 
     private fun doCheckUpdate() {
-        updateStatusText = "Checking\u2026"
+        updateStatusText = "检查中…"
         checkUpdateEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -792,7 +792,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                 withContext(Dispatchers.Main) {
                     checkUpdateEnabled = true
                     if (latest == null) {
-                        updateStatusText = "Could not reach update server."
+                        updateStatusText = "无法访问更新服务器。"
                         return@withContext
                     }
                     val stored = prefs.getString("gog_build_$gameId", null)
@@ -801,7 +801,7 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
                         updateStatusText = "Up to date (build ${latest.substring(0, minOf(12, latest.length))}\u2026)"
                         updateBtnVisible = false
                     } else if (stored == latest) {
-                        updateStatusText = "Up to date \u2713"
+                        updateStatusText = "已是最新 ✓"
                         updateBtnVisible = false
                     } else {
                         updateStatusText = "Update available!\nInstalled: ${stored.substring(0, minOf(10, stored.length))}\u2026  \u2192  Latest: ${latest.substring(0, minOf(10, latest.length))}\u2026"
@@ -982,9 +982,9 @@ private fun GogGameDetailScreen(
         // onInstall doubles as Cancel while the button label reads "Cancel" (see onInstallClicked).
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstall))
         if (setExeVisible) add(StoreGearItem("🎯", "Set .exe…", onClick = onSetExe))
-        if (copyVisible) add(StoreGearItem("📁", "Copy to Downloads", onClick = onCopy))
+        if (copyVisible) add(StoreGearItem("📁", "复制到下载目录", onClick = onCopy))
         if (updatesInstalled) {
-            add(StoreGearItem("🔄", "Check for updates", enabled = checkUpdateEnabled, onClick = onCheckUpdate))
+            add(StoreGearItem("🔄", "检查更新", enabled = checkUpdateEnabled, onClick = onCheckUpdate))
             add(StoreGearItem("🩹", "Verify / repair files", enabled = checkUpdateEnabled, onClick = onVerifyRepair))
         }
         if (prereqsVisible) add(StoreGearItem("🧰", "Install prerequisites", onClick = onInstallPrereqs))
@@ -997,7 +997,7 @@ private fun GogGameDetailScreen(
     // "Media" is appended only once the fetch found any, so the fixed indices above stay valid.
     val mediaVisible = media?.isEmpty == false
     val tabs = buildList {
-        add("Details"); add("DLC"); add("Cloud saves")
+        add("Details"); add("DLC"); add("云存档")
         if (mediaVisible) add("Media")
     }
 
@@ -1051,7 +1051,7 @@ private fun GogGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "Updates") {
+                StoreSection(title = "更新") {
                     GogUpdatesContent(
                         installed = updatesInstalled,
                         updateStatusText = updateStatusText,
@@ -1090,7 +1090,7 @@ private fun GogGameDetailScreen(
             }
 
             2 -> Column(modifier = Modifier.padding(top = 6.dp, bottom = 8.dp)) {
-                StoreSection(title = "Cloud Saves") {
+                StoreSection(title = "云端存档") {
                     GogCloudSavesContent(
                         saveDirText = cloudSaveDirText,
                         saveDirColor = cloudSaveDirColor,
@@ -1129,7 +1129,7 @@ private fun GogUpdatesContent(
 ) {
     // Not installed yet — just the muted hint, no buttons.
     if (!installed) {
-        StoreStatusText("Install the game first to check for updates.")
+        StoreStatusText("请先安装游戏以检查更新。")
         return
     }
 
@@ -1137,14 +1137,14 @@ private fun GogUpdatesContent(
     Spacer(Modifier.height(8.dp))
     if (updateBtnVisible) {
         StoreActionButton(
-            text = "Update Now",
+            text = "立即更新",
             onClick = onUpdateNow,
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
     }
     StoreActionButton(
-        text = "Check for Updates",
+        text = "检查更新",
         onClick = onCheckUpdate,
         modifier = Modifier.fillMaxWidth(),
         enabled = checkUpdateEnabled,
@@ -1153,7 +1153,7 @@ private fun GogUpdatesContent(
     // Re-verify installed files against the manifest (size + MD5); re-downloads only the
     // missing/corrupt ones. Gated on the same installed+idle signal as Check for Updates.
     StoreActionButton(
-        text = "Verify / Repair Files",
+        text = "验证/修复文件",
         onClick = onVerifyRepair,
         modifier = Modifier.fillMaxWidth(),
         enabled = checkUpdateEnabled,
@@ -1172,7 +1172,7 @@ private fun GogDlcContent(
         else runCatching { org.json.JSONArray(dlcJson) }.getOrNull()
     }
     if (arr == null || arr.length() == 0) {
-        StoreStatusText("No DLCs in your library for this game")
+        StoreStatusText("您的库中没有此游戏的DLC")
         return
     }
 
@@ -1270,14 +1270,14 @@ private fun GogCloudSavesContent(
     }
     Spacer(Modifier.height(8.dp))
     StoreActionButton(
-        text = "Upload Saves",
+        text = "上传存档",
         onClick = onUpload,
         modifier = Modifier.fillMaxWidth(),
         enabled = btnsEnabled,
     )
     Spacer(Modifier.height(8.dp))
     StoreActionButton(
-        text = "Download Saves",
+        text = "下载存档",
         onClick = onDownload,
         modifier = Modifier.fillMaxWidth(),
         enabled = btnsEnabled,
@@ -1292,7 +1292,7 @@ private fun ExePickerDialogGame(
 ) {
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select game executable") },
+        title = { Text("选择游戏可执行文件") },
         text = {
             Column {
                 candidates.forEach { path ->

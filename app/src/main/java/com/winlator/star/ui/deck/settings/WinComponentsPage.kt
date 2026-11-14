@@ -157,12 +157,12 @@ internal class WinComponentsSection(
         val rest = WinComponentsLogic.restIds(order, shown)
         val byShownId = matching.associateBy { it.id }
         return buildList {
-            add(PageExtra("wincomp-label") { GroupLabel(L("Windows components"), top = 4.dp) })
+            add(PageExtra("wincomp-label") { GroupLabel(L("Windows 组件"), top = 4.dp) })
             add(PageExtra(SEARCH_ITEM_KEY) {
                 WinComponentsSearchBar(
                     query = query,
                     onQuery = { query = it },
-                    placeholder = L("Search components"),
+                    placeholder = L("搜索组件"),
                     modifier = Modifier.padding(bottom = 10.dp),
                     onOpenSearch = { openSearch = it },
                 )

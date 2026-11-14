@@ -35,7 +35,7 @@ internal object LabDownloads {
 
     /**
      * The Contents types (ContentsTypes names) [id]'s versions come from, or null when it has nothing to download.
-     * The X11 "Graphics driver" lists Vulkan wrappers, not drivers: its Turnip is "Driver version".
+     * The X11 "显卡驱动" lists Vulkan wrappers, not drivers: its Turnip is "驱动程序版本".
      */
     fun typesFor(id: String, env: SettingsEnv): List<String>? = when (id) {
         WINE -> listOf("Wine", "Proton")

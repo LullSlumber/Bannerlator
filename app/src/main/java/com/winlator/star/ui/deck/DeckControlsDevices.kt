@@ -96,7 +96,7 @@ private fun CtlHelpButton(onClick: () -> Unit) {
     IconButton(onClick = onClick, modifier = Modifier.size(36.dp).xmbBtn(CircleShape)) {
         Icon(
             Icons.Filled.Help,
-            contentDescription = "What is this?",
+            contentDescription = "音频设置",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp),
         )
@@ -172,11 +172,11 @@ internal fun DeckAssignTab(s: InputControlsDeckState) {
         right = {
             DeckCard {
                 Column(modifier = Modifier.padding(start = 14.dp, end = 8.dp, top = 8.dp)) {
-                    CtlCardTitle("New containers start with") { CtlHelpButton { helpRes = R.string.help_player_slots } }
+                    CtlCardTitle("新容器启动时使用") { CtlHelpButton { helpRes = R.string.help_player_slots } }
                 }
-                val modeLabels = listOf("Keep on-screen player", "Yield Player 1 to pad", "Share the player")
+                val modeLabels = listOf("保持屏幕玩家", "将玩家1让给手柄", "共享该玩家")
                 CtlChoiceRow(
-                    label = "On-screen priority",
+                    label = "屏幕优先级",
                     value = modeLabels.getOrElse(onScreenMode) { modeLabels[0] },
                     options = modeLabels,
                     onPick = { i ->
@@ -186,7 +186,7 @@ internal fun DeckAssignTab(s: InputControlsDeckState) {
                 )
                 DeckRowDivider()
                 CtlToggleRow(
-                    label = "Hide on-screen controls when a controller connects",
+                    label = "当控制器连接时隐藏屏幕控制",
                     checked = autoHide,
                     onChange = { on ->
                         autoHide = on
@@ -281,7 +281,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
     val pads = ExternalController.getControllers()
     DeckCard {
         Column(modifier = Modifier.padding(start = 14.dp, end = 14.dp, top = 12.dp)) {
-            CtlCardTitle("Connected controllers") { CtlChip("${pads.size}", MaterialTheme.colorScheme.primary) }
+            CtlCardTitle("已连接的控制器") { CtlChip("${pads.size}", MaterialTheme.colorScheme.primary) }
         }
         if (pads.isEmpty()) {
             CtlNote("No controller connected. Plug one in or pair it over Bluetooth.")
@@ -297,7 +297,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
                         Text(deviceLine(pad), color = cs.onSurfaceVariant, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
                     if (dev != null && pad.vibrator) {
-                        DeckButton("Rumble", Icons.Filled.Vibration, { pulsePad(dev) })
+                        DeckButton("震动", Icons.Filled.Vibration, { pulsePad(dev) })
                     }
                 }
             }
@@ -361,12 +361,12 @@ private fun GyroCard() {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val summary = when {
                 sensor == null -> "No gyroscope on this device"
-                !calibrated -> "Not calibrated"
+                !calibrated -> "未校准"
                 abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS ->
                     "Very little drift: the device already compensates"
-                else -> "Bias removed: x %.4f, y %.4f rad/s".format(biasX, biasY)
+                else -> "已移除偏差：x %.4f，y %.4f 弧度/秒".format(biasX, biasY)
             }
-            CtlCardTitle("Gyroscope")
+            CtlCardTitle("陀螺仪")
             Text(summary, color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
             if (sensor != null) {
                 Text(
@@ -376,24 +376,24 @@ private fun GyroCard() {
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (activeRun == null) {
-                        DeckButton("Calibrate", null, {
-                            status = "Hold still…"
+                        DeckButton("校准", null, {
+                            status = "请保持静止…"
                             activeRun = GyroCalibrator.calibrate(context) { result ->
                                 activeRun = null
                                 status = when (result) {
                                     is GyroCalibrator.Result.Success ->
-                                        if (result.negligible) "Calibrated: nothing to remove" else "Calibrated"
-                                    GyroCalibrator.Result.Moved -> "Hold the device still and try again"
+                                        if (result.negligible) "Calibrated: nothing to remove" else "校准完成"
+                                    GyroCalibrator.Result.Moved -> "请保持设备静止并重试"
                                     GyroCalibrator.Result.NotEnoughSamples -> "Couldn't sample, try again"
-                                    GyroCalibrator.Result.Unavailable -> "Gyroscope unavailable"
+                                    GyroCalibrator.Result.Unavailable -> "陀螺仪不可用"
                                 }
                                 refreshBias()
                             }
                         }, primary = true)
                         if (calibrated) {
-                            DeckButton("Reset", null, {
+                            DeckButton("重置", null, {
                                 GyroCalibrator.clearBias(context)
-                                status = "Calibration reset"
+                                status = "校准已重置"
                                 refreshBias()
                             })
                         }
@@ -420,7 +420,7 @@ private fun MenuButtonCard() {
 
     DeckCard {
         Column(modifier = Modifier.padding(start = 14.dp, end = 8.dp, top = 8.dp, bottom = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            CtlCardTitle("Menu button") {
+            CtlCardTitle("菜单按钮") {
                 CtlChip(prefs.menuButtonName(keyCode), MaterialTheme.colorScheme.primary)
                 CtlHelpButton { helpRes = R.string.help_menu_button }
             }
@@ -432,9 +432,9 @@ private fun MenuButtonCard() {
                 modifier = Modifier.padding(end = 6.dp),
             )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                DeckButton("Set button", null, { capturing = true }, primary = true)
+                DeckButton("设置按钮", null, { capturing = true }, primary = true)
                 if (keyCode != 0) {
-                    DeckButton("Clear", null, {
+                    DeckButton("清除", null, {
                         prefs.setMenuButtonKeyCode(context, 0)
                         keyCode = prefs.getMenuButtonKeyCode(context)
                     })
@@ -473,7 +473,7 @@ private fun SteamControllerCard() {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
     }
     // Order = the labels; values are SteamControllerBackend.TRACKPAD_MOUSE_*.
-    val trackpadLabels = listOf("Right trackpad", "Left trackpad", "Both trackpads", "Off")
+    val trackpadLabels = listOf("右触控板", "左触控板", "双触控板", "Off")
     val trackpadModes = listOf(
         SteamControllerBackend.TRACKPAD_MOUSE_RIGHT, SteamControllerBackend.TRACKPAD_MOUSE_LEFT,
         SteamControllerBackend.TRACKPAD_MOUSE_BOTH, SteamControllerBackend.TRACKPAD_MOUSE_OFF,
@@ -487,7 +487,7 @@ private fun SteamControllerCard() {
             CtlCardTitle("Steam Controller")
         }
         CtlToggleRow(
-            label = "Steam Controller support",
+            label = "Steam控制器支持",
             checked = enabled,
             sub = "Reads it directly, as Steam does. Pair it in Bluetooth settings or plug it in. Applies from the next game start.",
             onChange = { on ->
@@ -499,7 +499,7 @@ private fun SteamControllerCard() {
         if (enabled) {
             DeckRowDivider()
             CtlChoiceRow(
-                label = "Trackpad mouse",
+                label = "触控板鼠标",
                 value = trackpadLabels[trackpadModes.indexOf(trackpadMode).coerceAtLeast(0)],
                 options = trackpadLabels,
                 onPick = { i ->

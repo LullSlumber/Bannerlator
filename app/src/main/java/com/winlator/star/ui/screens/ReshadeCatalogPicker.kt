@@ -221,7 +221,7 @@ private fun ReshadeCatalogSheet(
                 if (offline && !loading) {
                     Text(
                         if (source == ReshadeCatalog.Source.CACHE)
-                            "Offline — showing a cached list. Connect to download new effects."
+                            "离线状态 — 显示缓存列表。连接网络以下载滤镜效果。"
                         else "离线状态 — 仅显示已安装的滤镜效果。请连接网络以浏览目录。",
                         color = cs.onSurfaceVariant, style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 2.dp),

@@ -56,9 +56,9 @@ internal fun LabStorageDialog(container: Container, onDismiss: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(container.name, color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            SizeLine(L("Drive C"), driveC)
-            SizeLine(L("Cache"), cache)
-            SizeLine(L("Total"), driveC + cache, strong = true)
+            SizeLine(L("驱动器 C"), driveC)
+            SizeLine(L("缓存"), cache)
+            SizeLine(L("总计"), driveC + cache, strong = true)
             Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
                 LabButton(L("Clear cache")) {
                     FileUtils.clear(File(container.getRootDir(), ".cache"))

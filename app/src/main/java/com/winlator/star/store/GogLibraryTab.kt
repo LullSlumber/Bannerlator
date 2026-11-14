@@ -75,7 +75,7 @@ fun rememberGogLibrary(onMessage: (String) -> Unit = {}): GogLibraryState {
     val sync: (Boolean) -> Unit = { force ->
         if (!syncing) {
             syncing = true
-            status = "Syncing library…"
+            status = "正在同步库…"
             scope.launch {
                 val result = GogLibraryRepo.sync(appCtx, force) { s -> status = s }
                 syncing = false
@@ -148,7 +148,7 @@ fun GogLibraryTab(
         header.Header {
             CatalogSearchField(
                 query = query,
-                placeholder = "Search your GOG library…",
+                placeholder = "搜索您的GOG库…",
                 onQueryChange = { query = it },
                 onClear = { query = ""; focusManager.clearFocus() },
                 onSearch = { focusManager.clearFocus() },
@@ -180,20 +180,20 @@ fun GogLibraryTab(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                StoreNotice(title = "Syncing your library", body = state.statusText.ifBlank { "Fetching your GOG games…" })
+                StoreNotice(title = "正在同步您的库", body = state.statusText.ifBlank { "Fetching your GOG games…" })
             }
 
             state.games.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(
-                    title = "Your GOG library is empty here",
-                    body = "Sync to pull your games from GOG, or open the full library screen.",
-                    actionLabel = "Sync now",
+                    title = "您的GOG库在此为空",
+                    body = "同步以从GOG拉取您的游戏，或打开完整库界面。",
+                    actionLabel = "立即同步",
                     onAction = { state.refresh(true) },
                 )
             }
 
             shown.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                StoreNotice(title = "No matches", body = "Nothing in your library matches that filter.")
+                StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")
             }
 
             else -> LazyVerticalGrid(

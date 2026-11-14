@@ -73,7 +73,7 @@ object NetworkProbe {
         /** Strict / blocked = worth the user's attention (amber in the UI). */
         val isWarning: Boolean get() = nat == Nat.SYMMETRIC || nat == Nat.UDP_BLOCKED
 
-        /** The `steamlite.txt` header line (after "Network: "). Masked IP only. */
+        /** The `steamlite.txt` header line (after "网络: "). Masked IP only. */
         fun logLine(): String =
             "$nat public=${maskedIp ?: "-"} ipv6=${if (ipv6) "yes" else "no"} ($ms ms)" +
                 (if (detail.isNotEmpty()) " — $detail" else "")

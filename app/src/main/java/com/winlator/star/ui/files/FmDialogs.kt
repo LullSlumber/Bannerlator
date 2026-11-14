@@ -368,7 +368,7 @@ internal fun SortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort) -
         title = { Text("Sort") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text("Folders", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("文件夹", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 listOf(FmSortKey.NAME, FmSortKey.DATE).forEach { k ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { s = s.copy(folders = k) }) {
                         RadioButton(selected = s.folders == k, onClick = { s = s.copy(folders = k) })
@@ -377,7 +377,7 @@ internal fun SortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort) -
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { s = s.copy(foldersDesc = !s.foldersDesc) }) {
                     Checkbox(checked = s.foldersDesc, onCheckedChange = { s = s.copy(foldersDesc = it) })
-                    Text("Reverse")
+                    Text("反转")
                 }
                 Spacer(Modifier.height(8.dp))
                 Text("文件", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
@@ -389,7 +389,7 @@ internal fun SortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort) -
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { s = s.copy(filesDesc = !s.filesDesc) }) {
                     Checkbox(checked = s.filesDesc, onCheckedChange = { s = s.copy(filesDesc = it) })
-                    Text("Reverse")
+                    Text("反转")
                 }
             }
         },

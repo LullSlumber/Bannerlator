@@ -158,7 +158,7 @@ import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.screens.UnsavedChangesDialog
 import kotlin.math.roundToInt
 
-/** One link of the "Inherits from" chain. A null [onClick] marks the level being edited. */
+/** One link of the "继承自" chain. A null [onClick] marks the level being edited. */
 internal class ChainLink(val label: String, val icon: ImageVector, val onClick: (() -> Unit)?)
 
 internal class EditorHeader(
@@ -195,7 +195,7 @@ internal const val LEVEL_PREF = "deck_settings_level"
  * The Deck settings editor: categories on the left, the chosen category's rows on the right (on a
  * phone the categories are a list that drills into one category). Every value goes through [source],
  * so the same screen edits a game, a container, All containers and the app's own settings. Edits
- * land in a draft with an "Unsaved changes" bar; leaving with unsaved changes asks first. Categories
+ * land in a draft with an "未保存的更改" bar; leaving with unsaved changes asks first. Categories
  * whose rows are all handed off still list them, each opening the classic editor via [onHandoff].
  *
  * [onExit] is null when the editor is a tab's root page; Back then belongs to the Deck shell.
@@ -409,7 +409,7 @@ internal fun DeckSettingsEditor(
         }
     }
 
-    // XMB: the page's header (back, name, "Inherits from" chain, level switch, Reset...) is the FIRST ITEM of the page's own list: it
+    // XMB: the page's header (back, name, "继承自" chain, level switch, Reset...) is the FIRST ITEM of the page's own list: it
     // scrolls away with the rows and comes back when scrolling up (or when the controller goes Up from the first row). The category rail
     // beside it keeps the full height. Only the phone's category list and an open search keep the big header pinned (see [editorTop]).
     // Outside the XMB ([scrollHeader] false) the header is pinned above everything, as it was.
@@ -426,7 +426,7 @@ internal fun DeckSettingsEditor(
             compact = compact,
             extra = headerExtra,
             inPage = inPage,
-            // XMB: no "Inherits from" chain (nor the Wine layer text) anywhere.
+            // XMB: no "继承自" chain (nor the Wine layer text) anywhere.
             showChain = !scrollHeader,
         )
     }
@@ -630,7 +630,7 @@ private fun EditorTop(
     extra: (@Composable () -> Unit)?,
     /** The first item of a page's list: the list's own padding is the gutter, and the block is tighter (it scrolls away). */
     inPage: Boolean = false,
-    /** False in the XMB: the "Inherits from" chain and the Wine layer text are not shown. */
+    /** False in the XMB: the "继承自" chain and the Wine layer text are not shown. */
     showChain: Boolean = true,
 ) {
     val cs = MaterialTheme.colorScheme
@@ -690,7 +690,7 @@ private fun EditorTop(
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(38.dp)) {
                         Icon(Icons.Filled.AccountTree, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("Inherits from", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text("继承自", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     }
                 }
                 header.chain.forEachIndexed { i, link ->
@@ -801,7 +801,7 @@ private fun SlimHeader(
 
 /**
  * The XMB rail's fixed top block (two-pane editors that have a back: a container, a game, the defaults, a new container): the back
- * arrow with the kicker ("Container settings", "Container defaults"...) and the name under it. It does not scroll; the name wraps to
+ * arrow with the kicker ("容器设置", "Container defaults"...) and the name under it. It does not scroll; the name wraps to
  * two lines at most and is cut with an ellipsis, so it never reaches into the page. A kicker that repeats the name (a new container)
  * is left out.
  */
@@ -1162,7 +1162,7 @@ private fun CategoryPage(
         }
         extra?.bottom?.invoke()?.forEach { add(ExtraItem(it)) }
         if (handoffs.isNotEmpty()) {
-            add(GroupItem(category.actionsLabel ?: if (rows.isEmpty()) "In the classic editor" else "More settings"))
+            add(GroupItem(category.actionsLabel ?: if (rows.isEmpty()) "在经典编辑器中" else "更多设置"))
             handoffs.forEachIndexed { i, h -> add(HandoffItem(h, first = i == 0, last = i == handoffs.lastIndex)) }
         }
     }
@@ -1493,7 +1493,7 @@ private fun RowInfo(
                         .clip(CircleShape)
                         .clickable(onClick = onHelp),
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "What is this?", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "音频设置", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
             // After the "?"; takes the Right-from-the-row request only when there is no "?".
@@ -1548,9 +1548,9 @@ private fun SourceLine(origin: Origin, baselineLabel: String?, scope: EditorScop
     when (origin) {
         Origin.NONE -> Unit
         Origin.DEFAULT -> SourcePill("Default")
-        Origin.FROM_CONTAINER -> SourcePill("From container")
-        Origin.FROM_APP -> SourcePill("App setting")
-        Origin.CONTAINER_ONLY -> SourcePill("Container setting · change it in the container")
+        Origin.FROM_CONTAINER -> SourcePill("来自容器")
+        Origin.FROM_APP -> SourcePill("应用设置")
+        Origin.CONTAINER_ONLY -> SourcePill("容器设置 · 在容器中更改")
         Origin.SET_HERE -> Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(8.dp).clip(CircleShape).background(cs.primary))
@@ -1563,7 +1563,7 @@ private fun SourceLine(origin: Origin, baselineLabel: String?, scope: EditorScop
             }
             val shape = deckShape(12.dp)
             Text(
-                text = if (shortcutPage) PageWording.resetLabel(inherit) else "Reset",
+                text = if (shortcutPage) PageWording.resetLabel(inherit) else "重置",
                 color = cs.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
@@ -2167,7 +2167,7 @@ private fun SearchPane(
             value = query,
             onValueChange = onQuery,
             singleLine = true,
-            placeholder = { Text("Search every setting") },
+            placeholder = { Text("搜索所有设置") },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             trailingIcon = {
                 Box(
@@ -2182,7 +2182,7 @@ private fun SearchPane(
         )
         Spacer(Modifier.height(12.dp))
         when {
-            words.isEmpty() -> Text("Type to search every setting, at every level.", color = cs.onSurfaceVariant, fontSize = 14.sp)
+            words.isEmpty() -> Text("输入以在每一层级搜索所有设置。", color = cs.onSurfaceVariant, fontSize = 14.sp)
             results.isEmpty() && handoffResults.isEmpty() -> Text("Nothing matches \"$query\".", color = cs.onSurfaceVariant, fontSize = 14.sp)
         }
         // XMB: the result cards cast a shadow ~10 dp round them, so they sit 12 dp apart and inside the list's edges.
@@ -2263,7 +2263,7 @@ private fun UnsavedBar(saving: Boolean, compact: Boolean, create: Boolean = fals
         Box(Modifier.size(9.dp).clip(CircleShape).background(cs.primary))
         Spacer(Modifier.width(10.dp))
         Text(
-            text = if (create) "New container, not created yet" else "Unsaved changes",
+            text = if (create) "New container, not created yet" else "未保存的更改",
             color = cs.onSurface,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,
@@ -2272,7 +2272,7 @@ private fun UnsavedBar(saving: Boolean, compact: Boolean, create: Boolean = fals
         // A new container has nothing to discard: leaving the page is the way out.
         if (!create) {
             TextButton(onClick = onDiscard, enabled = !saving) {
-                Text("Discard", color = cs.onSurfaceVariant, fontWeight = FontWeight.Bold)
+                Text("放弃", color = cs.onSurfaceVariant, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.width(8.dp))
         }

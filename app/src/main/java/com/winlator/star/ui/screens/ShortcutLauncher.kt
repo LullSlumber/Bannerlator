@@ -163,7 +163,7 @@ class ShortcutLauncher internal constructor(
             steamUpdateFor = null
             steamUpdateHandle = null
             // Every terminal result except a user cancel is worth a one-line toast (offline / failed /
-            // "Files verified" / "Updated" / "Already up to date"). A launch never follows.
+            // "Files verified" / "Updated" / "已是最新"). A launch never follows.
             if (result != SteamGameUpdater.Result.CANCELLED && msg.isNotBlank()) {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
@@ -788,7 +788,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
                 // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
-                // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
+                // Per-game "需要安全（VAC）启动" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
                 s.saveData()
                 launcher.launchChoiceFor = null
@@ -940,7 +940,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = {
                 Text(
-                    if (available) "Update available" else "Check online?",
+                    if (available) "有可用更新" else "Check online?",
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             },

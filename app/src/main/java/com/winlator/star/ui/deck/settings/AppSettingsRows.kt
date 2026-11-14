@@ -109,14 +109,14 @@ internal object AppSettingsRows {
     fun defs(): List<SettingDef> = listOf(
         // ── Appearance (Settings > Appearance; AppearanceScreen keeps serving the Classic shell) ──
         row(
-            ID_STYLE, CAT_APPEARANCE, T("Interface style"), T("Interface style"), SIMPLE,
+            ID_STYLE, CAT_APPEARANCE, T("界面风格"), T("界面风格"), SIMPLE,
             hint = T("Classic keeps the side menu, Deck is the console-style tab layout, XMB adds the full-screen home, Lab is the full-screen launcher."),
             help = T("Classic keeps the side menu. Deck is a console-style layout with tabs across the top, made for controllers. XMB is Deck with a full-screen XMB home: the tabs float over every page (switch them with L1/R1 or by touch). Lab is a full-screen launcher for controllers with your game art as the background. Your theme and accent apply to all four. The change applies at once."),
             control = { Control.Segmented(listOf(Opt(STYLE_CLASSIC, T("Classic")), Opt(STYLE_DECK, T("Deck")), Opt(STYLE_XMB, T("XMB")), Opt(STYLE_LAB, T("Lab")))) },
             binding = AppBinding(get = { _ -> styleNow() }, set = { _, v -> setStyle(v) }),
         ),
         row(
-            "app.appearance.labLook", CAT_APPEARANCE, T("Interface style"), T("Lab look"), ADVANCED,
+            "app.appearance.labLook", CAT_APPEARANCE, T("界面风格"), T("Lab look"), ADVANCED,
             hint = T("Dark or light for the Lab launcher."),
             control = { Control.Segmented(listOf(Opt("dark", T("Dark")), Opt("light", T("Light")))) },
             binding = AppBinding(
@@ -126,7 +126,7 @@ internal object AppSettingsRows {
             visible = { _, values -> values(ID_STYLE) == STYLE_LAB },
         ),
         row(
-            "app.appearance.preset", CAT_APPEARANCE, T("Theme"), T("Theme preset"), SIMPLE,
+            "app.appearance.preset", CAT_APPEARANCE, T("主题"), T("Theme preset"), SIMPLE,
             hint = T("The colours of every screen. Picking a colour under Custom accent colour switches to the Custom preset."),
             control = { Control.Select(themePresets.map { Opt(it.name, it.name) }) },
             binding = AppBinding(
@@ -140,7 +140,7 @@ internal object AppSettingsRows {
         row(
             "app.appearance.orientation", CAT_APPEARANCE, T("Size and orientation"), T("App orientation"), ADVANCED,
             hint = T("Applies to the app's own screens only: games keep their own orientation. Auto follows the device."),
-            control = { Control.Segmented(listOf(Opt(AppOrientation.AUTO, T("Auto")), Opt(AppOrientation.PORTRAIT, T("Portrait")), Opt(AppOrientation.LANDSCAPE, T("Landscape")))) },
+            control = { Control.Segmented(listOf(Opt(AppOrientation.AUTO, T("Auto")), Opt(AppOrientation.PORTRAIT, T("竖屏")), Opt(AppOrientation.LANDSCAPE, T("横屏")))) },
             binding = AppBinding(
                 get = { c -> AppOrientation.mode(c) },
                 set = { c, v ->
@@ -165,19 +165,19 @@ internal object AppSettingsRows {
             { AppThemeState.xmbFontScale.value }, { AppThemeState.setXmbFontScale(it) },
             visible = { _, values -> values(ID_STYLE) == STYLE_XMB }),
         row(
-            "app.appearance.showStores", CAT_APPEARANCE, T("Side menu and Stores"), T("Show game stores"), ADVANCED,
+            "app.appearance.showStores", CAT_APPEARANCE, T("Side menu and Stores"), T("显示游戏商店"), ADVANCED,
             hint = T("The GOG, Epic, Amazon and Steam shortcuts (the side menu, the Stores tab)."),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showStores.value) }, { _, v -> AppThemeState.setShowStores(v == "1") }),
         ),
         row(
-            "app.appearance.showInternal", CAT_APPEARANCE, T("Side menu and Stores"), T("Show internal storage"), ADVANCED,
+            "app.appearance.showInternal", CAT_APPEARANCE, T("Side menu and Stores"), T("显示内部存储"), ADVANCED,
             hint = T("The storage bar at the bottom of the side menu."),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showInternalStorage.value) }, { _, v -> AppThemeState.setShowInternalStorage(v == "1") }),
         ),
         row(
-            "app.appearance.showSd", CAT_APPEARANCE, T("Side menu and Stores"), T("Show SD card storage"), ADVANCED,
+            "app.appearance.showSd", CAT_APPEARANCE, T("Side menu and Stores"), T("显示 SD card 存储"), ADVANCED,
             hint = T("Only appears when a card is in the device."),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showSdStorage.value) }, { _, v -> AppThemeState.setShowSdStorage(v == "1") }),
@@ -193,7 +193,7 @@ internal object AppSettingsRows {
         ),
 
         // ── Download engines and speed (were inside the Log Manager) ──
-        switch("app.downloads.steamEngine", CAT_DOWNLOADS, T("Download engines"), T("Native Steam engine (restart required)"), ADVANCED,
+        switch("app.downloads.steamEngine", CAT_DOWNLOADS, T("Download engines"), T("原生Steam引擎（需要重启）"), ADVANCED,
             BlSteamEngineFlag.PREF_KEY, BlSteamEngineFlag.DEFAULT,
             hint = T("On by default: the whole Steam session (sign-in, library, downloads, cloud, achievements, friends) runs on the native engine. Off: the legacy Java engine."),
             help = LogCopy.RUST_ENGINE),
@@ -207,7 +207,7 @@ internal object AppSettingsRows {
             BlStoreEngineFlag.PREF_KEY_AMAZON, BlStoreEngineFlag.DEFAULT,
             hint = T("On by default. Applies to the next download. Off: the Java downloader."), help = LogCopy.RUST_STORE_ENGINES),
         row(
-            "app.downloads.speedTier", CAT_DOWNLOADS, T("Download engines"), T("Store download speed"), ADVANCED,
+            "app.downloads.speedTier", CAT_DOWNLOADS, T("Download engines"), T("商店下载速度"), ADVANCED,
             hint = T("The ceiling for the Epic, GOG and Amazon native engines. A weak connection settles below it. Applies to the next download."),
             help = LogCopy.RUST_STORE_ENGINES, tech = StoreDownloadTier.PREF_KEY,
             control = { Control.Select(StoreDownloadTier.ALL.map { Opt(it.toString(), StoreDownloadTier.label(it)) }) },

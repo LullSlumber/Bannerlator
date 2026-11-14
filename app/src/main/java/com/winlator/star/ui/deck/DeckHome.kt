@@ -143,15 +143,15 @@ import kotlinx.coroutines.withContext
 
 /** How the Deck library lays out games. Wall and console live in Big Picture, which the toolbar links to. */
 private enum class LibraryMode(val label: String, val icon: ImageVector) {
-    SHELF("Shelf", Icons.Filled.ViewDay),
-    GRID("Grid", Icons.Filled.GridView),
-    COMPACT("Compact", Icons.Filled.GridOn),
+    SHELF("板面", Icons.Filled.ViewDay),
+    GRID("网格", Icons.Filled.GridView),
+    COMPACT("紧凑", Icons.Filled.GridOn),
     LIST("List", Icons.AutoMirrored.Filled.List),
     // The Games screen's XMB (cover row + options column), drawn in Home's library area.
     XMB("XMB", Icons.Filled.ViewCarousel),
 }
 
-private enum class PlayedFilter(val label: String) { ANY("Any"), PLAYED("Played"), NEVER("Never played") }
+private enum class PlayedFilter(val label: String) { ANY("任意"), PLAYED("已玩"), NEVER("从未游玩") }
 
 private const val PREF_MODE = "deck_library_mode"
 private const val PREF_SORT = "deck_library_sort"
@@ -444,8 +444,8 @@ internal fun DeckHome(
                     shortcut = s,
                     eyebrow = when {
                         continuePlaying.firstOrNull() == s && (st.lastPlayed > 0L || st.ms > 0L) -> "Continue playing"
-                        st.ms > 0L || st.lastPlayed > 0L -> "In your library"
-                        else -> "Ready to play"
+                        st.ms > 0L || st.lastPlayed > 0L -> "在您的库中"
+                        else -> "可游玩"
                     },
                     meta = buildList {
                         add(Icons.Filled.Storefront to storeLabelOf(s))
@@ -589,7 +589,7 @@ internal fun DeckHome(
                     focusTick = if (xmbHome) deckActions.enterTick.intValue + tabsPageClosed else 0,
                     // The peek tabs highlight the one the page last showed; Down and a tap on one open the page (the tabs' own actions).
                     homeTabSel = tabsPageTab,
-                    // Start / the shell's "Add Game" hint work on the Home too (not while the tabs page is up: it has its own).
+                    // Start / the shell's "添加游戏" hint work on the Home too (not while the tabs page is up: it has its own).
                     onAddGame = if (xmbHome && !tabsPageOpen) ({ addGame() }) else null,
                 )
             }
@@ -657,9 +657,9 @@ private fun LibraryToolbar(
             }
             Spacer(Modifier.width(8.dp))
         }
-        DeckButton(if (filterCount > 0) "Filters · $filterCount" else "Filter & sort", Icons.Filled.FilterList, onFilter)
-        DeckButton("Add games", Icons.Filled.Add, onAddGame)
-        IconTile(Icons.Filled.Public, "Community configs", onCommunity)
+        DeckButton(if (filterCount > 0) "Filters · $filterCount" else "筛选与排序", Icons.Filled.FilterList, onFilter)
+        DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
+        IconTile(Icons.Filled.Public, "社区配置", onCommunity)
         // Steam friends and chat; renders only while signed in to Steam.
         Box(
             contentAlignment = Alignment.Center,
@@ -667,7 +667,7 @@ private fun LibraryToolbar(
         ) {
             SteamFriendsAction(tint = cs.onSurface)
         }
-        IconTile(Icons.Filled.Tv, "Big Picture", onBigPicture)
+        IconTile(Icons.Filled.Tv, "大屏幕模式", onBigPicture)
     }
 }
 
@@ -721,8 +721,8 @@ private fun FilteredEmpty(onClear: () -> Unit, onAddGame: () -> Unit) {
         Text("No games match these filters", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 19.sp)
         Text("Clear the filters to see your whole library.", color = cs.onSurfaceVariant, fontSize = 14.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            DeckButton("Clear filters", Icons.Filled.Close, onClear, primary = true)
-            DeckButton("Add games", Icons.Filled.Add, onAddGame)
+            DeckButton("清除筛选", Icons.Filled.Close, onClear, primary = true)
+            DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
         }
     }
 }
@@ -759,10 +759,10 @@ private fun LibraryFilterDialog(
                     .padding(22.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Filter & sort", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
+                    Text("筛选与排序", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp, modifier = Modifier.weight(1f))
                     Text("Showing $shown of $total", color = cs.onSurfaceVariant, fontSize = 13.5.sp)
                 }
-                DeckSectionLabel("Sort by", Modifier.padding(top = 8.dp))
+                DeckSectionLabel("排序方式", Modifier.padding(top = 8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     LibrarySort.entries.forEachIndexed { i, s ->
                         DeckChoiceChip(
@@ -781,14 +781,14 @@ private fun LibraryFilterDialog(
                         }
                     }
                 }
-                DeckSectionLabel("Played", Modifier.padding(top = 8.dp))
+                DeckSectionLabel("已玩", Modifier.padding(top = 8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     PlayedFilter.entries.forEach { p ->
                         DeckChoiceChip(p.label, selected = filter.played == p) { onChange(filter.copy(played = p)) }
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(top = 14.dp)) {
-                    DeckButton("Clear filters", Icons.Filled.Close, { onChange(LibraryFilter(sort = filter.sort)) })
+                    DeckButton("清除筛选", Icons.Filled.Close, { onChange(LibraryFilter(sort = filter.sort)) })
                     Spacer(Modifier.weight(1f))
                     DeckButton("Done", null, onDismiss, primary = true, glyph = "B")
                 }
@@ -905,7 +905,7 @@ private fun DeckHero(
                     .padding(6.dp),
             ) {
                 DeckButton("Play", Icons.Filled.PlayArrow, onPlay, primary = true, big = true, modifier = Modifier.focusRequester(playRequester))
-                DeckButton("Game page", Icons.Filled.Info, onGamePage)
+                DeckButton("游戏页面", Icons.Filled.Info, onGamePage)
                 if (onSettings != null) DeckButton("Settings", Icons.Filled.Tune, onSettings)
                 DeckButton("Options", Icons.Filled.MoreHoriz, onOptions, glyph = "X")
             }
@@ -1120,9 +1120,9 @@ private fun DeckEmptyLibrary(modifier: Modifier, addRequester: FocusRequester, o
                 .padding(28.dp),
         ) {
             Icon(Icons.Filled.SportsEsports, contentDescription = null, tint = cs.primary, modifier = Modifier.size(48.dp))
-            Text("Your library is empty", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Text("您的库为空", color = cs.onSurface, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
             Text(
-                "Add a game you already have on this device, or install one from a store on the Stores tab.",
+                "添加您已在此设备上拥有的游戏，或从商店选项卡中的商店安装游戏。",
                 color = cs.onSurfaceVariant,
                 fontSize = 14.sp,
             )

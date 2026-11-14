@@ -170,7 +170,7 @@ fun ContainerDetailScreen(
     val cpuListWoW64Ref     = remember { mutableStateOf<CPUListView?>(null)      }
     val colorPickerViewRef  = remember { mutableStateOf<ColorPickerView?>(null)  }
 
-    // DRIVES is per-container (letters map to real paths), so it's dropped in "New Container Defaults"
+    // DRIVES is per-container (letters map to real paths), so it's dropped in "新建容器默认值"
     // mode. Content is dispatched by TITLE below (not raw index) so removing a tab never misaligns.
     val tabTitles = if (viewModel.defaultsMode)
         listOf("GENERAL", "ENVIRONMENT", "WIN COMPONENTS", "ADVANCED")
@@ -246,7 +246,7 @@ fun ContainerDetailScreen(
 
         val activeTab = tabTitles.getOrNull(viewModel.selectedTab) ?: "GENERAL"
         val screenTitle = when {
-            viewModel.defaultsMode -> "New Container Defaults"
+            viewModel.defaultsMode -> "新建容器默认值"
             containerId <= 0 -> "新建容器"
             else -> "编辑容器"
         }
@@ -853,7 +853,7 @@ private fun TopLevelFields(
 
     Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
 
-        // Name — per-container identity, hidden in "New Container Defaults" mode (not templatable).
+        // Name — per-container identity, hidden in "新建容器默认值" mode (not templatable).
         if (!viewModel.defaultsMode) {
             OutlinedTextField(
                 value = viewModel.containerName,
@@ -1165,7 +1165,7 @@ private fun TopLevelFields(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { showWaylandDriverSettings = true }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Wayland adapter settings")
+                        Icon(Icons.Default.Settings, contentDescription = "Wayland 适配器设置")
                     }
                 }
                 TextButton(onClick = { advancedToggled = !advancedOpen }, modifier = Modifier.fillMaxWidth()) {
@@ -1255,7 +1255,7 @@ private fun TopLevelFields(
             }
             com.winlator.star.ui.components.OpenGLCard(onHelp = { helpRes = R.string.help_opengl_settings }) {
                 com.winlator.star.ui.components.OpenGLCardRow(
-                    com.winlator.star.ui.components.OPENGL_FAST_ICON, "Fast",
+                    com.winlator.star.ui.components.OPENGL_FAST_ICON, "快速",
                     com.winlator.star.ui.components.openGLFastNote(fastGlReason)
                 ) {
                     Switch(
@@ -2164,13 +2164,13 @@ private fun WineConfigTab(
             )
         }
 
-        // System section — "Run as administrator" (default ON) toggles UAC in the prefix. Backed by
+        // System section — "以管理员身份运行" (default ON) toggles UAC in the prefix. Backed by
         // EnableLUA in .wine/system.reg (source of truth): the VM reads it on load and writes it on
         // save/create (mirrors the DirectInput mouse-warp registry idiom above).
         SectionBox(title = "System") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Run as administrator")
+                    Text("以管理员身份运行")
                     Text(
                         "禁用UAC以使所有程序以提升权限运行（对需要管理员权限的安装程序和工具有帮助）",
                         style = MaterialTheme.typography.bodySmall,
@@ -2760,7 +2760,7 @@ private fun AdvancedTab(
         }
 
         // Player Slots section — manual controller->player-slot pins that the launch pre-assignment
-        // applies. Same JSON schema and editor the in-game "Players" drawer tab uses, but here it's a
+        // applies. Same JSON schema and editor the in-game "玩家" drawer tab uses, but here it's a
         // saved default (applied on next launch), not a live reassignment.
         SectionBox(title = "玩家槽位") {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -3393,7 +3393,7 @@ internal fun WaylandDriverSettingsDialog(
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Wayland adapter settings") },
+        title = { Text("Wayland 适配器设置") },
         text = {
             val maxContentHeight = (LocalConfiguration.current.screenHeightDp * 0.7f).dp
             Column(
@@ -3410,7 +3410,7 @@ internal fun WaylandDriverSettingsDialog(
                 Spacer(Modifier.height(10.dp))
 
                 // ── Adapter report ─────────────────────────────────────────────────────────────
-                Text("Adapter report", style = MaterialTheme.typography.titleSmall)
+                Text("适配器报告", style = MaterialTheme.typography.titleSmall)
                 WaylandAdapterReportBlock(
                     report = probe, probing = probing, note = probeNote,
                     onRecheck = {
@@ -3640,7 +3640,7 @@ private fun WaylandTriStateRow(
 }
 
 /**
- * The "Adapter report": what core.WaylandDriverProbe measured on the graphics driver, in plain words, with
+ * The "适配器报告": what core.WaylandDriverProbe measured on the graphics driver, in plain words, with
  * the progress row while it runs and a Re-check that drops the cache.
  */
 @Composable
@@ -3689,11 +3689,11 @@ internal fun WaylandAdapterReportBlock(
             )
         }
     }
-    TextButton(onClick = onRecheck, enabled = !probing) { Text("Re-check") }
+    TextButton(onClick = onRecheck, enabled = !probing) { Text("重新检查") }
 }
 
 /**
- * Notes under an "Unreal Engine HDR" picker set to DirectX 11: a hint to spoof an NVIDIA GPU while
+ * Notes under an "虚幻引擎 HDR" picker set to DirectX 11: a hint to spoof an NVIDIA GPU while
  * none is reported (UE4 takes its NVAPI path only on one; never forced), and a build that carries no
  * dxvk-nvapi. Both facts are read off the main thread.
  */
@@ -5032,7 +5032,7 @@ internal fun DxvkConfigDialog(
     var forkFilter by remember { mutableStateOf(forkFilterPrefs.getBoolean("forkFilter", false)) }
     // §6a.6 schema-aware editor: wrong-family key awaiting the block-with-explanation dialog.
     var pendingSchemaBlock by remember { mutableStateOf<String?>(null) }
-    // §6b.1 user-initiated "Check for new builds" (report only — observation, never mutation).
+    // §6b.1 user-initiated "检查新版本" (report only — observation, never mutation).
     var liveReport by remember { mutableStateOf<VegasLiveCheck.Report?>(null) }
     var liveChecking by remember { mutableStateOf(false) }
 
@@ -5251,7 +5251,7 @@ internal fun DxvkConfigDialog(
         }
     }
 
-    // §6b.1 user-initiated "Check for new builds" — report + heal catalog tail (so next open isn't "unverified").
+    // §6b.1 user-initiated "检查新版本" — report + heal catalog tail (so next open isn't "unverified").
     fun runLiveCheck() {
         if (liveChecking) return
         liveChecking = true
@@ -6123,7 +6123,7 @@ internal fun DxvkConfigDialog(
                                     Text("在构建时更新（助手侧维护）。\n检查新版本")
                                     Spacer(Modifier.height(6.dp))
                                     TextButton(onClick = { runLiveCheck() }, enabled = !liveChecking) {
-                                        Text(if (liveChecking) "Checking…" else "Check for new builds", style = MaterialTheme.typography.bodySmall)
+                                        Text(if (liveChecking) "Checking…" else "检查新版本", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             },
@@ -6794,7 +6794,7 @@ internal fun FpsCounterConfigDialog(
                     if (show("GPU model", rich)) add(Triple("GPU model", showGpuModel) { showGpuModel = !showGpuModel })
                     if (!fusion && gameHub) add(Triple("Dual battery", dualBattery) { dualBattery = !dualBattery })
                     // Global appearance control, shown for every style/size.
-                    add(Triple("Lock in place", hudLocked) { hudLocked = !hudLocked })
+                    add(Triple("锁定位置", hudLocked) { hudLocked = !hudLocked })
                 }
                 ModeChipGrid(metricChips, perRow = 3)
 

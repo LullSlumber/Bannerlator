@@ -53,7 +53,7 @@ public class PulseAudioComponent extends EnvironmentComponent {
 
     /**
      * Resolve the module-aaudio-sink argument string from the saved audio settings (written by the
-     * in-app audio presets/fine-tune UI). Defaults to the "Auto / Smart" preset: AAudio LOW_LATENCY
+     * in-app audio presets/fine-tune UI). Defaults to the "自动 / 智能" preset: AAudio LOW_LATENCY
      * start + adaptive buffer growth on underruns. Keys live in the PER-ENGINE "banner_audio_pulseaudio"
      * prefs (NOT the shared store) so Pulse settings can never bleed into/out of the ALSA path; the same
      * string is used for the initial default.pa load AND route-change recovery.

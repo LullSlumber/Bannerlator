@@ -28,7 +28,7 @@ object UbisoftDiagNet {
         "ubisoft-avatars.akamaized.net",
     )
 
-    /** A host that is not Ubisoft's, to tell "Ubisoft is unreachable" from "no network". */
+    /** A host that is not Ubisoft's, to tell "Ubisoft is unreachable" 来自 "no network". */
     const val CONTROL_HOST = "www.cloudflare.com"
 
     private const val STEP_TIMEOUT_MS = 4000

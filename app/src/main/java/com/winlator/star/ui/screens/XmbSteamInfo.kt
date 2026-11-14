@@ -75,7 +75,7 @@ internal fun XmbSteamInfo(
             if (spec.backendLabel.isNotEmpty()) add(spec.backendLabel to ChipCpuColor)
         }
     }
-    val played = playtime ?: "Not played yet"
+    val played = playtime ?: "尚未游玩"
     val genres = remember(details) { details.genres.take(3).joinToString(" · ") }
     val year = details.releaseYear?.takeIf { it.isNotBlank() }
     val score = details.metacritic

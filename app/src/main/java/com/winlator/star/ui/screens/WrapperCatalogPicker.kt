@@ -284,7 +284,7 @@ private fun WrapperCatalogRow(
             expanded = expanded,
             onToggleExpand = { expanded = !expanded },
             titleBadge = {
-                // #132: a durable "Update available" chip when the catalog carries a newer version than
+                // #132: a durable "有可用更新" chip when the catalog carries a newer version than
                 // what's installed (the download affordance below stays, to pull the update).
                 if (updateAvailable) {
                     Spacer(Modifier.height(3.dp))

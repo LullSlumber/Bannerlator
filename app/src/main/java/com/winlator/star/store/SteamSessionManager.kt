@@ -383,7 +383,7 @@ object SteamSessionManager {
                             step(Step.CLIENT, StepState.DONE, "Couldn't check for SteamLite updates — using installed $installed")
                         check.available -> {
                             step(Step.CLIENT, StepState.WARN,
-                                (if (check.required) "需要更新" else "Update available") +
+                                (if (check.required) "需要更新" else "有可用更新") +
                                     " ($installed → v${check.latestVersion})")
                             post { listener.onClientUpdateAvailable(check) }
                             return@Thread

@@ -176,7 +176,7 @@ private fun DeckGameSettings(path: String, navController: NavHostController) {
         }.getOrNull()
     }
     if (loaded == null) {
-        Loading(L("This game is no longer in your library."))
+        Loading(L("此游戏已不在您的库中。"))
         return
     }
     val shortcutState = remember(path) { mutableStateOf(loaded) }
@@ -241,7 +241,7 @@ private fun DeckGameSettings(path: String, navController: NavHostController) {
     // Only a Wine game follows a Wine container: the Linux Steam client entry and Android games are
     // never linked to the container editor. The XMB has no chain: its Game tab links to the container instead.
     val chain = if (xmb || env.world != World.WINE) emptyList() else listOf(
-        ChainLink(L("All containers"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+        ChainLink(L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
         ChainLink(containerName, Icons.Filled.Inventory2) { navController.navigate(DeckSettingsRoutes.container(containerId)) },
         ChainLink(L("This game"), Icons.Filled.SportsEsports, null),
     )
@@ -397,13 +397,13 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
     val extras = remember(components, graphics, sections) { categoryExtras(components, graphics, sections) }
 
     val header = if (createMode) {
-        EditorHeader(overline = L("New container"), title = L("New Container"), icon = Icons.Filled.Inventory2)
+        EditorHeader(overline = L("New container"), title = L("新建容器"), icon = Icons.Filled.Inventory2)
     } else if (defaultsMode) {
         EditorHeader(
-            overline = if (xmb) L("Container defaults") else L("Defaults for every container"),
-            title = if (xmb) L("Defaults for new containers") else L("All containers"),
+            overline = if (xmb) L("Container defaults") else L("每个容器的默认值"),
+            title = if (xmb) L("新容器默认值") else L("所有容器"),
             icon = Icons.Filled.Layers,
-            subtitle = L("New containers start from these values. Existing containers keep their own."),
+            subtitle = L("新容器从这些值开始。现有容器保留自己的值。"),
         )
     } else {
         EditorHeader(
@@ -411,8 +411,8 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
             title = vm.container?.name ?: vm.containerName,
             icon = Icons.Filled.Inventory2,
             chain = listOf(
-                ChainLink(if (xmb) L("New-container defaults") else L("All containers"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
-                ChainLink(L("This container"), Icons.Filled.Inventory2, null),
+                ChainLink(if (xmb) L("New-container defaults") else L("所有容器"), Icons.Filled.Layers) { navController.navigate(DeckSettingsRoutes.DEFAULTS) },
+                ChainLink(L("此容器"), Icons.Filled.Inventory2, null),
             ),
             meta = listOf(vm.selectedWineVersion, if (vm.isArm64EC) "arm64ec" else "x86_64").filter { it.isNotEmpty() }.joinToString(" · "),
         )
@@ -427,7 +427,7 @@ private fun DeckContainerSettings(id: Int, navController: NavHostController) {
         onHandoff = { h -> if (h.target == SettingsRegistry.TARGET_CLASSIC) navController.navigate("container_detail?id=$id") },
         onChainLink = { link -> link.onClick?.invoke() },
         createMode = createMode,
-        yAction = if (!defaultsMode) null else ("Switch architecture" to {
+        yAction = if (!defaultsMode) null else ("容器设置" to {
             val next = if (arch == NewContainerDefaults.ARCH_ARM64EC) NewContainerDefaults.ARCH_X86_64 else NewContainerDefaults.ARCH_ARM64EC
             if (source.dirty) Toast.makeText(context, L("Save or discard your changes first."), Toast.LENGTH_SHORT).show()
             else {
@@ -515,7 +515,7 @@ private fun ArchSwitch(arch: String, onArch: (String) -> Unit) {
     val slim = rememberXmbHome() && !isDeckCompact(LocalConfiguration.current)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(if (slim) 8.dp else 12.dp)) {
         // XMB two-pane: the switch sits in the tab's title line, between its hint and the Simple / Advanced switch; no room for a label.
-        if (!slim) Text(L("Container type"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        if (!slim) Text(L("容器类型"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
         DeckSegmented(
             options = listOf(Opt(NewContainerDefaults.ARCH_ARM64EC, "ARM64EC"), Opt(NewContainerDefaults.ARCH_X86_64, "x86-64")),
             value = arch,

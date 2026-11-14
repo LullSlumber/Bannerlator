@@ -232,7 +232,7 @@ object SteamGameUpdater {
             } catch (t: Throwable) {
                 Log.w(TAG, "downloadLanguage($appId) failed", t)
                 SteamGameLanguage.abandonSwitch(appId)
-                postDone(Result.FAILED, t.message ?: "Download failed")
+                postDone(Result.FAILED, t.message ?: "下载失败")
             }
         }, "steam-language-$appId").start()
 
@@ -445,7 +445,7 @@ object SteamGameUpdater {
         if (liveBuild > 0L && installedBuild > 0L && installedBuild == liveBuild &&
             row.isInstalled && filesPresent) {
             Log.i(TAG, "app $appId already on live build $liveBuild ($branch) — no update needed")
-            postDone(Result.CURRENT, "Already up to date"); return
+            postDone(Result.CURRENT, "已是最新"); return
         }
 
         if (handle.isCancelled) { postDone(Result.CANCELLED, "Cancelled"); return }

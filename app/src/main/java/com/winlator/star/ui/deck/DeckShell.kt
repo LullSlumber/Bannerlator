@@ -174,12 +174,12 @@ private const val DECK_WIDE_TABS_DP = 1100
 
 /** The seven Deck destinations, in L1/R1 order. [root] is the route the tab lands on. */
 internal enum class DeckTab(val label: String, val icon: ImageVector, val root: String) {
-    HOME("Home", Icons.Filled.Home, DeckRoutes.HOME),
-    STORES("Stores", Icons.Filled.Storefront, DeckRoutes.STORES),
-    CONTAINERS("Containers", Icons.Filled.Inventory2, Screen.Containers.route),
+    HOME("主页", Icons.Filled.Home, DeckRoutes.HOME),
+    STORES("商店", Icons.Filled.Storefront, DeckRoutes.STORES),
+    CONTAINERS("容器管理", Icons.Filled.Inventory2, Screen.Containers.route),
     COMPONENTS("Components", Icons.Filled.Extension, DeckRoutes.COMPONENTS),
     CONTROLS("Controls", Icons.Filled.SportsEsports, DeckRoutes.CONTROLS),
-    TOOLS("Tools", Icons.Filled.Build, DeckRoutes.TOOLS),
+    TOOLS("工具", Icons.Filled.Build, DeckRoutes.TOOLS),
     SETTINGS("Settings", Icons.Filled.Settings, DeckSettingsRoutes.APP),
 }
 
@@ -374,7 +374,7 @@ private fun DeckShellContent(
         }
     }
     // A route requested by a relaunch intent or the component-install resume.
-    // "Games" means the Deck home unless the Games screen has work waiting: the component-install return reopening a game's settings, or a queued request such as the first-run's "Add a game".
+    // "游戏" means the Deck home unless the Games screen has work waiting: the component-install return reopening a game's settings, or a queued request such as the first-run's "Add a game".
     LaunchedEffect(pendingRoute) {
         if (pendingRoute != null) {
             // The shell's own DeckGameActionsHost runs any queued request in place.
@@ -796,7 +796,7 @@ private fun DeckShellContent(
                                                 } else DeckHome(
                                                     onOpenGame = { shortcut -> nav.open(DeckRoutes.game(shortcut.file.path)) },
                                                     onOpenContainer = { id -> nav.open(DeckSettingsRoutes.containerEditorFor(id) ?: "container_detail?id=$id") },
-                                                    // "Add games" opens over Home (DeckGameActionsHost).
+                                                    // "添加游戏" opens over Home (DeckGameActionsHost).
                                                     onAddGame = {
                                                         GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME)
                                                     },
@@ -1921,7 +1921,7 @@ private fun DeckTitleLine(
                 XmbInk(infoItem) {
                     Icon(
                         Icons.Outlined.Info,
-                        contentDescription = if (infoOpen) "Hide description" else "About this page",
+                        contentDescription = if (infoOpen) "Hide description" else "关于此页面",
                         tint = if (infoOpen) cs.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(19.dp),
                     )

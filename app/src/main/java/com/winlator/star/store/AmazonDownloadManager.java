@@ -144,7 +144,7 @@ public class AmazonDownloadManager {
                     + manifest.totalInstallSize + " bytes total");
 
             if (progress != null) {
-                progress.onProgress(0, manifest.totalInstallSize, "Starting…");
+                progress.onProgress(0, manifest.totalInstallSize, "正在启动…");
             }
 
             // Step 4: Download all files — MAX_PARALLEL threads

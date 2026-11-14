@@ -429,7 +429,7 @@ private fun captionFor(
         }
         2 -> of("云存档", Step.CLOUD, HELP_CLOUD, "正在同步云存档…")
         else -> when {
-            launching -> Caption("Ready", "Launching $gameName…", Tone.OK, Trail.CHECK, HELP_PREFLIGHT)
+            launching -> Caption("就绪", "Launching $gameName…", Tone.OK, Trail.CHECK, HELP_PREFLIGHT)
             states.containsKey(Step.CLIENT) && appSteam -> of("Valve Steam 客户端", Step.CLIENT, HELP_CLIENT_APPSTEAM, "Checking Valve's Steam client…")
             states.containsKey(Step.CLIENT) -> of("SteamLite 客户端", Step.CLIENT, HELP_CLIENT, "Checking for SteamLite updates…")
             else -> of("游戏文件", Step.UPDATE, HELP_UPDATE, "正在检查更新…")
@@ -492,7 +492,7 @@ private fun failCardFor(
             help = HELP_OFFLINE,
             actions = listOf(
                 PreflightAction("Retry", true, retry),
-                PreflightAction("Launch anyway", false, launchAnyway),
+                PreflightAction("仍要启动", false, launchAnyway),
                 PreflightAction("Launch with Goldberg", false, onGoldberg),
             ),
         ) {
@@ -501,7 +501,7 @@ private fun failCardFor(
             TextButton(onClick = retry) { Text("Retry", color = cs.primary) }
         }
         updateOffer != null -> FailCardModel(
-            "Update available",
+            "有可用更新",
             if (updateOffer.installedBuild > 0L && updateOffer.liveBuild > 0L)
                 "Build ${updateOffer.installedBuild} → ${updateOffer.liveBuild}. Real Steam may refuse an out-of-date build online."
             else "A newer build of ${shortcut.name} is available.",
@@ -509,7 +509,7 @@ private fun failCardFor(
             help = HELP_UPDATE_OFFER,
             actions = listOf(
                 PreflightAction("Update", true, onUpdate),
-                PreflightAction("Launch anyway", false, launchThisBuild),
+                PreflightAction("仍要启动", false, launchThisBuild),
             ),
         ) {
             TextButton(onClick = launchThisBuild) { Text("仍要启动", color = cs.onSurfaceVariant) }
@@ -530,7 +530,7 @@ private fun failCardFor(
                 red = false,
                 help = HELP_CLIENT_OFFER,
                 actions = listOf(PreflightAction("Update", true, updateClient)) +
-                    (if (clientOffer.required) emptyList() else listOf(PreflightAction("Launch anyway", false, launchInstalledClient))),
+                    (if (clientOffer.required) emptyList() else listOf(PreflightAction("仍要启动", false, launchInstalledClient))),
             ) {
                 // Below MIN_AGENT_VERSION the only offered action is Update (a failed download
                 // still launches the installed package — see updateClientThenLaunch).
@@ -912,7 +912,7 @@ private fun PreflightHelpTip(text: String, onDismiss: () -> Unit) {
 private const val XMB_PREFLIGHT_PHOTO_ASPECT = 1.6f
 
 /**
- * "Getting Steam ready" for the XMB interface: a wide [XmbDialogFrame] with the game's name and "Getting Steam ready · client" as
+ * "正在准备Steam" for the XMB interface: a wide [XmbDialogFrame] with the game's name and "Getting Steam ready · client" as
  * its fixed header, Cancel (secondary glass) in its fixed footer, and as the body the slideshow photo with the live step caption
  * ([XmbPreflightPhoto], left in landscape, small on top in portrait) beside / above either the step list ([XmbPreflightSteps]) or,
  * once a step stops the pre-flight, the fail card with big buttons ([XmbPreflightFail]). State and handlers are the dialog's own.
@@ -929,7 +929,7 @@ private fun XmbPreflight(
 ) {
     XmbDialogFrame(
         title = gameName,
-        subtitle = (if (launching) "Launching…" else "Getting Steam ready") + " · " + clientLabel,
+        subtitle = (if (launching) "Launching…" else "正在准备Steam") + " · " + clientLabel,
         onDismiss = onDismiss,
         wide = true,
         // Back and B cancel; a stray tap outside must not (the old dialog was modal the same way).

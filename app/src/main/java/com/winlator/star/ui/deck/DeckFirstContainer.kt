@@ -124,10 +124,10 @@ internal class FirstContainerSetup(private val app: Application) {
     val fex = FcPick("FEXCore")
     val box64 = FcPick("Box64")
     val wowbox64 = FcPick("WOWBox64")
-    val driver = FcPick("Graphics driver")
-    val backend = FcPick("Display backend")
-    val fexPreset = FcPick("FEXCore preset")
-    val box64Preset = FcPick("Box64 preset")
+    val driver = FcPick("显卡驱动")
+    val backend = FcPick("显示后端")
+    val fexPreset = FcPick("FEXCore 预设")
+    val box64Preset = FcPick("Box64 预设")
     val audio = FcPick("Audio driver")
     var name by mutableStateOf("")
     var fpsLimiter by mutableStateOf(true)
@@ -451,7 +451,7 @@ internal fun FirstContainerStep(fc: FirstContainerSetup, scope: CoroutineScope) 
     }
     DeckCard {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
-            Text("Container name", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 13.5.sp)
+            Text("容器名称", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 13.5.sp)
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = fc.name,
@@ -498,11 +498,11 @@ internal fun FirstContainerStep(fc: FirstContainerSetup, scope: CoroutineScope) 
         DeckRowDivider()
         DeckRow(title = "Show FPS", trailing = { Switch(checked = fc.showFps, onCheckedChange = { fc.showFps = it }, enabled = !locked) })
         DeckRowDivider()
-        DeckRow(title = "Microphone", trailing = {
+        DeckRow(title = "麦克风", trailing = {
             Switch(checked = fc.microphone && fc.micPossible, onCheckedChange = { fc.microphone = it }, enabled = !locked && fc.micPossible)
         })
         DeckRowDivider()
-        DeckRow(title = "CPU cores", trailing = { Text("All ${fc.cores}", color = cs.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 15.sp) })
+        DeckRow(title = "CPU 核心", trailing = { Text("All ${fc.cores}", color = cs.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 15.sp) })
     }
     if (fc.loaded) {
         Spacer(Modifier.height(18.dp))
@@ -576,7 +576,7 @@ private fun PickField(pick: FcPick, enabled: Boolean, title: String? = null) {
                                 Text(o.label, modifier = Modifier.weight(1f, fill = false))
                                 if (o === pick.recommended) {
                                     Spacer(Modifier.width(10.dp))
-                                    Text("Recommended", color = cs.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text("推荐", color = cs.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 }
                             }
                         },

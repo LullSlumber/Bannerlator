@@ -348,7 +348,7 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     val context = LocalContext.current
     var shortcut by remember(path) { mutableStateOf(loadLabShortcut(context, path)) }
     val s = shortcut ?: run {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(L("This game is no longer in your library."), color = SimpleMuted) }
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(L("此游戏已不在您的库中。"), color = SimpleMuted) }
         return
     }
     LaunchedEffect(s.file.path) { LabArt.selected = s }
@@ -426,19 +426,19 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     }
     fun setGame(key: String, v: String?) = LabArt.putGame(s, key, v)
 
-    val notSet = L("Not set")
+    val notSet = L("未设置")
     val detailsRows = listOf(
         MenuEntry("d-name", L("Name"), s.name, icon = Icons.Filled.TextFields, onA = { textFor = "name" }),
         MenuEntry(
             "d-steam", L("Steam"), details.steamAppId?.let { L("Steam app %1\$s", it) } ?: L("Not linked to Steam"), icon = Icons.Filled.Link,
             actions = listOfNotNull(
-                MenuAction(L("Search Steam by name"), { textFor = "steam" }),
-                details.steamAppId?.let { MenuAction(L("Unlink"), { saveDetails(details.copy(steamAppId = null)) }) },
+                MenuAction(L("按名称搜索Steam"), { textFor = "steam" }),
+                details.steamAppId?.let { MenuAction(L("解除关联"), { saveDetails(details.copy(steamAppId = null)) }) },
             ),
         ),
-        MenuEntry("d-genres", L("Genres"), details.genres.joinToString(", ").ifBlank { notSet }, icon = Icons.Filled.Tag, onA = { textFor = "genres" }),
-        MenuEntry("d-year", L("Release year"), details.releaseYear ?: notSet, icon = Icons.Filled.CalendarMonth, onA = { textFor = "year" }),
-        MenuEntry("d-meta", L("Metacritic"), details.metacritic?.toString() ?: notSet, icon = Icons.Filled.Star, onA = { textFor = "meta" }),
+        MenuEntry("d-genres", L("类型"), details.genres.joinToString(", ").ifBlank { notSet }, icon = Icons.Filled.Tag, onA = { textFor = "genres" }),
+        MenuEntry("d-year", L("发行年份"), details.releaseYear ?: notSet, icon = Icons.Filled.CalendarMonth, onA = { textFor = "year" }),
+        MenuEntry("d-meta", L("Metacritic评分"), details.metacritic?.toString() ?: notSet, icon = Icons.Filled.Star, onA = { textFor = "meta" }),
         MenuEntry("d-desc", L("Description"), details.description ?: notSet, icon = Icons.Filled.Description, onA = { textFor = "desc" }),
     )
     val clipPick = s.getExtra(LabArt.K_CLIP, "")
@@ -501,7 +501,7 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
         ),
     )
     SimpleMenuPage(
-        overline = L("Game details"),
+        overline = L("游戏详情"),
         title = LabTitles.of(s),
         sections = listOf(
             MenuSection("details", L("Details"), Icons.Filled.Info, detailsRows),
@@ -515,14 +515,14 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     textFor?.let { f ->
         val (title, start) = when (f) {
             "name" -> L("Name") to s.name
-            "genres" -> L("Genres") to details.genres.joinToString(", ")
-            "year" -> L("Release year") to (details.releaseYear ?: "")
-            "meta" -> L("Metacritic") to (details.metacritic?.toString() ?: "")
-            "steam" -> L("Search Steam") to s.name
+            "genres" -> L("类型") to details.genres.joinToString(", ")
+            "year" -> L("发行年份") to (details.releaseYear ?: "")
+            "meta" -> L("Metacritic评分") to (details.metacritic?.toString() ?: "")
+            "steam" -> L("搜索 Steam") to s.name
             else -> L("Description") to (details.description ?: "")
         }
         LabTextDialog(
-            title, start, hint = when (f) { "genres" -> L("Action, RPG, Strategy"); "meta" -> "1–100"; else -> null }, multiline = f == "desc",
+            title, start, hint = when (f) { "genres" -> L("描述"); "meta" -> "1–100"; else -> null }, multiline = f == "desc",
             confirm = if (f == "steam") L("Search") else L("Save"), onDismiss = { textFor = null },
         ) { v ->
             textFor = null

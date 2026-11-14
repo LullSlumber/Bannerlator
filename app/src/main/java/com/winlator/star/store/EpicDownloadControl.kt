@@ -246,7 +246,7 @@ internal object EpicDownloadControl {
                     settleCancelled(ctx, appName, installDir.absolutePath, EpicCancelPolicy.consumeDeleteOnCancel(appName))
                     return@launch
                 }
-                if (!ok) { fail(ctx, appName, EpicDownloadManager.withFailureReason("Download failed")); return@launch }
+                if (!ok) { fail(ctx, appName, EpicDownloadManager.withFailureReason("下载失败")); return@launch }
 
                 EpicInstallState.rememberVersion(ctx, appName, manifestJson)
                 val exeFiles = mutableListOf<File>()

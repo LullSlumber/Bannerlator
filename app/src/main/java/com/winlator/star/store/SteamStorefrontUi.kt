@@ -487,14 +487,14 @@ fun StoreCapsule(
 // ── Price ─────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "Free to Play", or nothing when the endpoint gave us
+ * The price row: "-50%  $̶2̶4̶.̶9̶9̶  $12.49", or "免费开玩", or nothing when the endpoint gave us
  * no price at all. The discount chip and the free label are the ONLY non-scheme colours here.
  */
 @Composable
 fun StorePriceRow(item: SteamStoreCatalog.StoreItem, modifier: Modifier = Modifier) {
     when {
         item.isFree -> Text(
-            text = "Free to Play",
+            text = "免费开玩",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = StoreFreeGreen,
@@ -746,7 +746,7 @@ fun StoreHeroCard(
 fun StoreMessageBar(message: String, onTimeout: () -> Unit) = UninstallResultBar(message, onTimeout)
 
 /**
- * Free games the Store tab showed that the account does not own yet. A card no longer carries "Add to Library"; the
+ * Free games the Store tab showed that the account does not own yet. A card no longer carries "添加到库"; the
  * game's page reads this to offer it as its main button.
  */
 internal object SteamFreeOffers {

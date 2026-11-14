@@ -193,7 +193,7 @@ fun startContentDownload(appContext: Context, profile: ContentProfile) {
             ensureActive()
             if (uri == null) {
                 ContentDownloadRegistry.update(key) {
-                    it.copy(phase = ContentDownloadPhase.ERROR, error = "Download failed.")
+                    it.copy(phase = ContentDownloadPhase.ERROR, error = "下载失败。")
                 }
                 return@launch
             }

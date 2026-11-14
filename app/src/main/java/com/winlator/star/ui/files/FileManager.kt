@@ -567,7 +567,7 @@ fun FileManagerRoot(
         return buildList {
             if (dir) add(FmMenuEntry("Open", Icons.Filled.FolderOpen) { p.openDir(f) })
             if (isArchive) add(FmMenuEntry("Browse", Icons.Filled.FolderZip) { p.open(FmLoc.InArchive(f, "")) })
-            if (!dir && isRunnable(f.name)) add(FmMenuEntry("Run", Icons.Filled.PlayArrow) { runFile(f) })
+            if (!dir && isRunnable(f.name)) add(FmMenuEntry("运行", Icons.Filled.PlayArrow) { runFile(f) })
             if (!dir && f.extension.equals("exe", true)) add(FmMenuEntry("Add to Games", Icons.Filled.AddToHomeScreen) { addShortcut(f) })
             if (unpackable) {
                 add(FmMenuEntry("Fast Extract", Icons.Filled.Bolt) { fastExtract(f) })
@@ -576,24 +576,24 @@ fun FileManagerRoot(
                 })
             }
             if (!dir) {
-                add(FmMenuEntry(if (isTextFile(f)) "Edit" else "Open as text", Icons.Filled.TextSnippet) {
+                add(FmMenuEntry(if (isTextFile(f)) "编辑" else "Open as text", Icons.Filled.TextSnippet) {
                     context.startActivity(TextEditorActivity.intent(context, f))
                 })
                 add(FmMenuEntry("Open with…", Icons.AutoMirrored.Filled.OpenInNew) { openWith(f) })
             }
             add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-            add(FmMenuEntry("Copy", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
-            add(FmMenuEntry("Cut", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
+            add(FmMenuEntry("拷贝", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
+            add(FmMenuEntry("剪切", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
             add(FmMenuEntry("Rename", Icons.Filled.Edit) { renameTarget = f })
             add(FmMenuEntry("Compress", Icons.Filled.FolderZip) { compressTargets = listOf(f) })
-            if (!dir) add(FmMenuEntry("Share", Icons.Filled.Share) { share(listOf(f)) })
+            if (!dir) add(FmMenuEntry("分享", Icons.Filled.Share) { share(listOf(f)) })
             if (dir) {
                 val fav = FavoritesStore.isFavorite(context, f.absolutePath)
-                add(FmMenuEntry(if (fav) "Remove from Favorites" else "Add to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
+                add(FmMenuEntry(if (fav) "Remove from Favorites" else "添加到收藏夹", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
             }
             add(FmMenuEntry("Copy path", Icons.Filled.Link) { copyPath(f) })
-            add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
-            add(FmMenuEntry("Delete", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
+            add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
+            add(FmMenuEntry("删除", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
         }
     }
 
@@ -601,7 +601,7 @@ fun FileManagerRoot(
         add(FmMenuEntry("Open", if (item.isDir) Icons.Filled.FolderOpen else Icons.AutoMirrored.Filled.OpenInNew) { openItem(p, item) })
         add(FmMenuEntry("Extract…", Icons.Filled.Unarchive) { extractReq = p to listOf(item) })
         add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-        add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
+        add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
     }
 
     fun menuFor(p: FmPane, item: FmItem): (() -> List<FmMenuEntry>)? = when {
@@ -625,7 +625,7 @@ fun FileManagerRoot(
                 Triple("Downloads", HomeIcons.downloads, File(internal, "Download")),
                 Triple("Pictures", HomeIcons.pictures, File(internal, "Pictures")),
                 Triple("Documents", HomeIcons.documents, File(internal, "Documents")),
-                Triple("Games", HomeIcons.games, File(internal, "Winlator/Games")),
+                Triple("游戏", HomeIcons.games, File(internal, "Winlator/Games")),
                 Triple("Bannerlator", HomeIcons.folder, File(internal, "Bannerlator")),
             ).forEach { (t, icon, dir) ->
                 if (dir.isDirectory) add(FmHomeTile(t, icon, androidx.compose.ui.graphics.Color(0xFF2FA7A0), dir, countItems = t == "Downloads", subtitle = if (t == "Downloads") null else ""))
@@ -633,7 +633,7 @@ fun FileManagerRoot(
         }
         val drivesC = buildList {
             val seen = HashSet<String>()
-            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "This container")); seen.add(it.absolutePath) }
+            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "此容器")); seen.add(it.absolutePath) }
             containers.forEach { c ->
                 val dc = File(c.rootDir, ".wine/drive_c")
                 if (dc.isDirectory && seen.add(dc.absolutePath)) add(FmHomeTile(c.name, HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), dc, subtitle = "Drive C:"))
@@ -650,8 +650,8 @@ fun FileManagerRoot(
         return listOf(
             FmHomeSection("Storage", storage),
             FmHomeSection("Places", places),
-            FmHomeSection("Containers", drivesC),
-            FmHomeSection("Favorites", favorites),
+            FmHomeSection("容器管理", drivesC),
+            FmHomeSection("收藏夹", favorites),
         )
     }
 
@@ -719,8 +719,8 @@ fun FileManagerRoot(
             conflictAnswer = null
         }
     }
-    runChoice?.let { f -> ContainerChoiceDialog("Run in which container?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
-    shortcutChoice?.let { f -> ContainerChoiceDialog("Add to which container?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
+    runChoice?.let { f -> ContainerChoiceDialog("在哪个容器中运行?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
+    shortcutChoice?.let { f -> ContainerChoiceDialog("添加到哪个容器?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
     panes.forEach { p ->
         val unlistable = p.unlistable
         LaunchedEffect(unlistable) {
@@ -766,12 +766,12 @@ fun FileManagerRoot(
     /** [note] is an inert first line (the compact toolbar puts the free space there when the row is too narrow for it). */
     fun moreMenuEntries(dir: File?, note: String?): List<FmMenuEntry> = buildList {
         if (note != null) add(FmMenuEntry(note, Icons.Filled.Info) { })
-        add(FmMenuEntry(if (pane.showHidden) "Hide hidden files" else "Show hidden files", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
+        add(FmMenuEntry(if (pane.showHidden) "隐藏隐藏文件" else "显示隐藏文件", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
             val v = !pane.showHidden
             panes.forEach { it.applyShowHidden(v) }
         })
         if (pane.loc != FmLoc.Home) add(FmMenuEntry("Select all", Icons.Filled.SelectAll) { pane.selectAll() })
-        add(FmMenuEntry("Refresh", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
+        add(FmMenuEntry("刷新", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
         if (pick == null) add(FmMenuEntry(if (dualPref) "One pane" else "Two panes", Icons.Filled.ViewColumn) {
             dualPref = !dualPref
             FmPrefs.setDualPane(context, dualPref)
@@ -779,8 +779,8 @@ fun FileManagerRoot(
         })
         if (pick == null && dir != null) {
             val fav = FavoritesStore.isFavorite(context, dir.absolutePath)
-            add(FmMenuEntry(if (fav) "Remove folder from Favorites" else "Add folder to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
-            add(FmMenuEntry("Folder properties", Icons.Filled.Info) { propsTarget = diskItem(dir) })
+            add(FmMenuEntry(if (fav) "从收藏中移除文件夹" else "将文件夹添加到收藏", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
+            add(FmMenuEntry("文件夹属性", Icons.Filled.Info) { propsTarget = diskItem(dir) })
         }
         val l = pane.loc
         if (pick == null && l is FmLoc.InArchive) add(FmMenuEntry("Extract all…", Icons.Filled.Unarchive) { extractReq = pane to emptyList() })
@@ -855,7 +855,7 @@ fun FileManagerRoot(
                             }, modifier = Modifier.size(tb)) {
                                 Icon(
                                     when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                                    "View",
+                                    "查看",
                                     modifier = Modifier.size(tbIcon),
                                 )
                             }
@@ -878,7 +878,7 @@ fun FileManagerRoot(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp).fmGlass(RoundedCornerShape(28.dp)).padding(horizontal = 4.dp),
             ) {
                 IconButton(onClick = { pane.clearSelection(); pane.open(FmLoc.Home) }, enabled = pane.loc != FmLoc.Home) {
-                    Icon(Icons.Filled.Home, "Home", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
+                    Icon(Icons.Filled.Home, "主页", tint = if (pane.loc != FmLoc.Home) cs.primary else cs.onSurfaceVariant)
                 }
                 IconButton(onClick = { pane.goBack() }, enabled = pane.canGoBack) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = if (pane.canGoBack) cs.primary else cs.onSurfaceVariant)
@@ -896,7 +896,7 @@ fun FileManagerRoot(
                 }) {
                     Icon(
                         when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                        "View",
+                        "查看",
                     )
                 }
                 IconButton(onClick = { sortFor = pane }) { Icon(Icons.Filled.Sort, "Sort") }
@@ -920,7 +920,7 @@ fun FileManagerRoot(
                             value = pane.query,
                             onValueChange = { pane.query = it },
                             singleLine = true,
-                            placeholder = { Text("Search this folder", fontSize = 13.sp) },
+                            placeholder = { Text("搜索此文件夹", fontSize = 13.sp) },
                             leadingIcon = { Icon(Icons.Filled.Search, null) },
                             keyboardActions = xmbDoneActions(stopEditing),
                             modifier = fieldModifier,
@@ -996,20 +996,20 @@ fun FileManagerRoot(
                     FmSelAction("Extract", Icons.Filled.Unarchive, entries.isNotEmpty()) { extractReq = pane to entries },
                     FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() },
                 ) else buildList {
-                    add(FmSelAction("Copy", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
-                    add(FmSelAction("Cut", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
+                    add(FmSelAction("拷贝", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
+                    add(FmSelAction("剪切", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
                     if (otherDir != null) {
                         add(FmSelAction("Copy over", Icons.Filled.ContentCopy, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, false) })
                         add(FmSelAction("Move over", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, true) })
                     } else {
                         add(FmSelAction("Copy to", Icons.Filled.Folder, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Copy to") { paste(d, it, false) } })
-                        add(FmSelAction("Move to", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Move to") { paste(d, it, true) } })
+                        add(FmSelAction("移动到", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("移动到") { paste(d, it, true) } })
                     }
                     add(FmSelAction("Compress", Icons.Filled.FolderZip, disk.isNotEmpty()) { compressTargets = disk })
-                    add(FmSelAction("Share", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
+                    add(FmSelAction("分享", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
                     if (disk.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { renameTarget = disk[0]; pane.clearSelection() })
                     add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
-                    add(FmSelAction("Delete", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
+                    add(FmSelAction("删除", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
                 }
                 FmSelectionBar(pane.selected.size, actions) { pane.clearSelection() }
             }
@@ -1150,7 +1150,7 @@ private fun PaneView(
 /** Path segments for a pane: storage or container name first, then the folders, all clickable. */
 private fun crumbsFor(pane: FmPane, containers: List<Container>, imagefsDir: File, driveCPath: File?): List<Pair<String, () -> Unit>> {
     val out = ArrayList<Pair<String, () -> Unit>>()
-    out.add("Home" to { pane.open(FmLoc.Home) })
+    out.add("主页" to { pane.open(FmLoc.Home) })
     fun dirCrumbs(dir: File) {
         val roots = buildList {
             add(File("/storage/emulated/0") to "Internal")

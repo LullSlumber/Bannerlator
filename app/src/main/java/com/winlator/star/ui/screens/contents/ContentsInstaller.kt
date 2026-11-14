@@ -133,7 +133,7 @@ object ContentsInstaller {
             } catch (e: Exception) {
                 Log.w(TAG, "install failed for $key", e)
                 ContentDownloadRegistry.update(key) {
-                    it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.")
+                    it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。")
                 }
             } finally {
                 // Best-effort cancel still deletes the temp archive and closes the FGS bracket.
@@ -315,7 +315,7 @@ object ContentsInstaller {
                 throw c // user Cancel — requestCancel already set the cancelled-terminal state; keep it.
             } catch (e: Exception) {
                 Log.w(TAG, "install-from-file failed for $key", e)
-                ContentDownloadRegistry.update(key) { it.copy(phase = ContentDownloadPhase.ERROR, error = "Install failed.") }
+                ContentDownloadRegistry.update(key) { it.copy(phase = ContentDownloadPhase.ERROR, error = "安装失败。") }
             } finally {
                 runCatching { onDone(ok) }
                 DownloadForegroundService.finish(key)
@@ -377,7 +377,7 @@ object ContentsInstaller {
         if (ok) st.copy(phase = ContentDownloadPhase.DONE, fraction = 1f,
             note = driver?.takeIf { it.place != DriverInstaller.Place.ANDROID }?.let { DriverInstaller.message(it) })
         else st.copy(phase = ContentDownloadPhase.ERROR,
-            error = driver?.let { DriverInstaller.message(it) } ?: "Install failed.",
+            error = driver?.let { DriverInstaller.message(it) } ?: "安装失败。",
             replaceable = driver?.sameName == true)
 
     private suspend fun installComponentBlocking(

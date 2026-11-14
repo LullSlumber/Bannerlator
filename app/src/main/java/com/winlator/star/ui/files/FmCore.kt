@@ -125,7 +125,7 @@ internal fun List<FmItem>.sortedFor(sort: FmSort): List<FmItem> {
 
 internal fun FmSortKey.label(): String = when (this) {
     FmSortKey.NAME -> "Name"
-    FmSortKey.DATE -> "Date"
+    FmSortKey.DATE -> "日期"
     FmSortKey.SIZE -> "Size"
     FmSortKey.TYPE -> "Type"
 }

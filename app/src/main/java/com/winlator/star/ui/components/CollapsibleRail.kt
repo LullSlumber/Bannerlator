@@ -173,7 +173,7 @@ fun CollapsibleRail(
     // Used by the container editors to show the wine-glass container icon; other rails leave it null.
     @DrawableRes headerIcon: Int? = null,
     // When true each item gets a rounded outlined-button look (the selected one takes the accent
-    // border + accent-dim fill), matching the File Manager's "New Folder" button. Off by default so
+    // border + accent-dim fill), matching the File Manager's "新建文件夹" button. Off by default so
     // the container/save rails keep their lighter flat rows (5 stacked outlined tabs read too heavy).
     outlinedItems: Boolean = false,
     // The open width. The File Manager narrows it to its labels in the Deck XMB home; everyone else keeps 190dp.

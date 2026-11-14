@@ -119,7 +119,7 @@ private fun StoreImportList(store: StoreInstallLocations.Store, dir: File, r: St
                         }
                     }.start()
                 },
-            ) { Text(if (adding) "Adding…" else "Add ${toAdd.size}") }
+            ) { Text(if (adding) "正在添加…" else "Add ${toAdd.size}") }
         },
         dismissButton = { TextButton(enabled = !adding, onClick = onClose) { Text("Cancel") } },
         title = { Text("Import game library") },

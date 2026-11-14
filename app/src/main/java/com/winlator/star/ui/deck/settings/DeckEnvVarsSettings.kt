@@ -76,7 +76,7 @@ import java.util.Locale
 // As in the classic game editor, a Wine game's sync variables (WINEESYNC / WINENTSYNC / WINEFSYNC) are
 // not listed: Performance › Sync owns them. A game whose own string still carries them from before that
 // row existed keeps them as they are here; the Sync row reads them and clears them when it is set.
-// "Prefer game-folder DLLs" is the classic view over WINEDLLOVERRIDES (DllOverrides). Wine games, the
+// "优先使用游戏文件夹中的 DLL" is the classic view over WINEDLLOVERRIDES (DllOverrides). Wine games, the
 // Linux Steam client entry (whose string is the session's environment), containers and All containers.
 
 internal object EnvVarRows {
@@ -133,7 +133,7 @@ private val SYNC_VARS = setOf("WINEESYNC", "WINENTSYNC", "WINEFSYNC")
 /** The audio cog's own keys (audioConfigToEnv), one set per sound engine. */
 private val AUDIO_OWNED = Regex("""^BANNER_AUDIO_(ALSA|PULSE|DIRECT)_(PRESET|PERF|ADAPTIVE|LAT|BF|MBF)$""")
 
-/** The Expert page's (XMB: Advanced tab's) variables and "Prefer game-folder DLLs", for a game, a container and All containers. */
+/** The Expert page's (XMB: Advanced tab's) variables and "优先使用游戏文件夹中的 DLL", for a game, a container and All containers. */
 internal class DeckEnvVarsSection(
     val env: SettingsEnv,
     val source: SettingsSource,
@@ -242,10 +242,10 @@ internal class DeckEnvVarsSection(
         }
     }
 
-    /** What "Edit as text" starts from: the listed variables. */
+    /** What "以文本形式编辑" starts from: the listed variables. */
     fun rawVisible(): String = renderEnv(listed(all()).map { it.first })
 
-    /** "Edit as text": stored as typed, as the classic text box does, with a Wine game's kept sync variables after it. */
+    /** "以文本形式编辑": stored as typed, as the classic text box does, with a Wine game's kept sync variables after it. */
     fun setRaw(text: String) {
         val typed = text.replace('\n', ' ')
         val kept = all().filter { hidden(it) }
@@ -313,12 +313,12 @@ internal class DeckEnvVarsSection(
             })
         }
 
-        add(PageExtra("env-compat-label") { GroupLabel(L("Compatibility")) })
+        add(PageExtra("env-compat-label") { GroupLabel(L("兼容性")) })
         add(PageExtra("env-compat") {
             LaunchedEffect(Unit) { scanGameDir() }
             GroupCard(first = true, last = found.isEmpty(), highlight = false) {
                 DeckLine(
-                    L("Prefer game-folder DLLs"),
+                    L("优先使用游戏文件夹中的 DLL"),
                     hint = (if (linux) L("用于客户端启动的游戏，而非客户端本身，并且对每个游戏都适用：会话只有一个环境。 ")
                         else "") +
                         L("加载游戏自带的 ") + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
@@ -341,7 +341,7 @@ internal class DeckEnvVarsSection(
             })
         }
 
-        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) L("此游戏的变量") else L("Environment variables")) })
+        add(PageExtra("env-vars-label") { GroupLabel(if (game && !linux) L("此游戏的变量") else L("环境变量")) })
         val shown = listed(vars)
         if (shown.isEmpty()) {
             add(PageExtra("env-none") {
@@ -389,7 +389,7 @@ internal class DeckEnvVarsSection(
         })
         add(PageExtra("env-raw") {
             GroupCard(first = false, last = true, highlight = false) {
-                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, L("Edit as text"), L("整个列表为 NAME=VALUE，以空格分隔。")) { rawText = true })
+                DeckActionRow(DeckAction("raw", Icons.Filled.Edit, L("以文本形式编辑"), L("整个列表为 NAME=VALUE，以空格分隔。")) { rawText = true })
             }
         })
 
@@ -548,7 +548,7 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
     )
 }
 
-/** "Edit as text": the whole list in one box, stored as typed. */
+/** "以文本形式编辑": the whole list in one box, stored as typed. */
 @Composable
 private fun EnvRawDialog(s: DeckEnvVarsSection) {
     val context = LocalContext.current
@@ -557,7 +557,7 @@ private fun EnvRawDialog(s: DeckEnvVarsSection) {
     val malformed = text.replace('\n', ' ').split(" ").filter { it.isNotBlank() && it.indexOf('=') <= 0 }
     OutlinedAlertDialog(
         onDismissRequest = { s.rawText = false },
-        title = { Text(L("Edit as text")) },
+        title = { Text(L("以文本形式编辑")) },
         text = {
             OutlinedTextField(
                 value = text,

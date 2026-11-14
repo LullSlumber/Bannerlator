@@ -452,7 +452,7 @@ private fun StatusReadout(
             )
         }
         // The clock: a first run is minutes of nothing on screen, and a number that keeps
-        // moving is what separates "still working" from "hung" for the person watching.
+        // moving is what separates "still working" 来自 "hung" for the person watching.
         AnimatedVisibility(visible = !elapsed.isNullOrEmpty()) {
             Text(
                 text = elapsed ?: "",

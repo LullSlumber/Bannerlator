@@ -104,7 +104,7 @@ data class DownloadEntry(
     val error: String? = null,
     /**
      * True when an INSTALLED game has a newer version available from its store. Store-agnostic
-     * so the Manager card can render one amber "Update available" marker for any store. Derived
+     * so the Manager card can render one amber "有可用更新" marker for any store. Derived
      * per store at seed/produce time (Amazon: cached versionId carries an "_UPDATE_AVAILABLE"
      * suffix; Steam leaves it false for now — no Steam update detection exists yet). Transient:
      * NOT persisted to the durable library (the library writer serializes only name/store/

@@ -160,11 +160,11 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     )
                 }
                 // The view model posts "Container duplicated" or "Couldn't duplicate container" itself.
-                add(MenuAction(L("Duplicate"), guarded(L("Duplicating %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
+                add(MenuAction(L("复制"), guarded(L("Duplicating %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
                 add(MenuAction(L("Back up saves…"), guarded { saveFlow = SaveFlow.BackupScope(c) }))
                 add(MenuAction(L("Restore a save…"), guarded { saveFlow = SaveFlow.RestoreSource(c) }))
                 add(
-                    MenuAction(L("Export"), guarded(L("Exporting %1\$s…", c.name)) {
+                    MenuAction(L("导出"), guarded(L("Exporting %1\$s…", c.name)) {
                         vm.exportContainer(c) { path ->
                             (context as? Activity)?.runOnUiThread {
                                 toast(context, when {
@@ -180,7 +180,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                 add(MenuAction(L("Storage info"), { storageFor = c }))
                 add(
                     MenuAction(
-                        L("Remove"), guarded(L("Removing %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
+                        L("移除"), guarded(L("Removing %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
                         danger = true, confirm = L("Remove %1\$s and everything in it? Its games' shortcuts go too.", c.name),
                     ),
                 )
@@ -189,10 +189,10 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
     }
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Containers"),
+        title = L("容器管理"),
         sections = listOf(
             MenuSection(
-                "containers", L("Containers"), Icons.Filled.Inventory2, entries,
+                "containers", L("容器管理"), Icons.Filled.Inventory2, entries,
                 empty = L("No containers yet."),
                 primary = MenuAction(L("New container"), {
                     if (com.winlator.star.xenvironment.ImageFs.find(context).isValid()) onNavigate(DeckSettingsRoutes.container(DeckSettingsRoutes.NEW_CONTAINER_ID))
@@ -200,7 +200,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                 }),
             ),
             MenuSection(
-                "import", L("Backups"), Icons.Filled.Restore,
+                "import", L("备份"), Icons.Filled.Restore,
                 backups.map { f ->
                     MenuEntry(
                         "b${f.absolutePath}", f.name, f.parent, icon = Icons.Filled.Restore,
@@ -218,18 +218,18 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             ),
             MenuSection(
                 "defaults", L("Defaults"), Icons.Filled.Tune,
-                listOf(MenuEntry("defaults", L("New container defaults"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
+                listOf(MenuEntry("defaults", L("新容器默认值"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
             ),
         ),
         onBack = onBack,
-        banner = if (isLoading) working ?: L("Working…") else null,
+        banner = if (isLoading) working ?: L("正在处理…") else null,
     )
 
     // ── Backup / Restore save: Classic's steps (SaveFlow), as Lab lists where it is a choice ──
     when (val flow = saveFlow) {
         null, is SaveFlow.Fork -> {}
         is SaveFlow.BackupScope -> SimpleActionSheet(
-            title = L("Back up saves"),
+            title = L("备份存档"),
             message = L("Some games keep saves elsewhere (the install folder, the registry, Steam Cloud). Check a backup before you delete anything."),
             actions = listOf(
                 MenuAction(L("All game saves (whole profile)"), { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) }),
@@ -282,8 +282,8 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             fun backup(layout: GameSaveBackup.BackupLayout) =
                 runScopedBackup(context, flow, layout, { saveFlow = null }, { saveBusy = it }, { r -> r?.let { toast(context, it) } })
             SimpleActionSheet(
-                title = L("Backup format"),
-                message = L("Which tool is this backup for?"),
+                title = L("备份格式"),
+                message = L("此备份用于哪个工具?"),
                 actions = listOf(
                     MenuAction(L("GameHub-compatible .zip (default)"), { backup(GameSaveBackup.BackupLayout.GAMEHUB) }),
                     MenuAction(L("Winlator-native .zip"), { backup(GameSaveBackup.BackupLayout.WINLATOR) }),
@@ -299,7 +299,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     saveFlow = null
                     restoreInApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, L("Select backup (.zip)")))
                 }),
-                MenuAction(L("Pick via system…"), {
+                MenuAction(L("从系统选取…"), {
                     restoreTarget = flow.container
                     saveFlow = null
                     restoreSystem.launch("application/zip")
@@ -308,7 +308,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             onDismiss = { saveFlow = null },
         ) { it.run() }
         is SaveFlow.Confirm -> SimpleConfirm(
-            title = L("Restore"),
+            title = L("恢复"),
             body = L("Restore the backup of %1\$s into %2\$s? This may overwrite save data there.", flow.gameName, flow.container.name),
             danger = false,
             onDismiss = { saveFlow = null },

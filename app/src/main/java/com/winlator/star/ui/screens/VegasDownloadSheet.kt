@@ -272,7 +272,7 @@ Column(modifier = Modifier.weight(1f)) {
                                                     }
                                                 }
                                             } else {
-                                                errorMsg = "Download failed."
+                                                errorMsg = "下载失败。"
                                             }
                                         }
                                     }

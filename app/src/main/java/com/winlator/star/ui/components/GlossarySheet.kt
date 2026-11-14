@@ -154,7 +154,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
     GlossarySection("底层原理", listOf(
         GlossaryEntry("glibc vs bionic",
             "两种不同的 C 库。Android 使用 'bionic'，桌面 Linux 使用 'glibc'。Bannerlator 的 Wine 和驱动程序是为 bionic 构建的 — 无论看起来多好，glibc 构建都无法加载。"),
-        GlossaryEntry("Environment variables",
+        GlossaryEntry("环境变量",
             "高级每个容器的开关（例如 DXVK_FRAME_RATE=60 或 BCN_TRANSCODE_TO_ASTC=1）。大多数人从不需要它们，但它们允许高级用户对游戏进行微调。"),
         GlossaryEntry("Sync同步（esync / ntsync / fsync / wineserver）",
             "游戏的线程如何相互等待（'等到这个加载完成'、'帧准备好时发出信号'）。Wine 有几种处理方式；较快的那些意味着更少的卡顿和 CPU 开销。在容器的常规选项卡（兼容层下）或按游戏选择一种 — 除非您另行选择，否则游戏遵循其容器。层无法执行的选项会置灰。"),

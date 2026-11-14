@@ -147,7 +147,7 @@ fun VisualControllerBinder(
                 }
             }
             Spacer(Modifier.width(8.dp))
-            TextButton(onClick = { showNew = !showNew }) { Text("+ New", fontSize = 12.sp) }
+            TextButton(onClick = { showNew = !showNew }) { Text("+ 新建", fontSize = 12.sp) }
             Spacer(Modifier.weight(1f))
             if (onOpenAllBindings != null) {
                 TextButton(onClick = onOpenAllBindings) { Text("所有绑定", fontSize = 12.sp) }

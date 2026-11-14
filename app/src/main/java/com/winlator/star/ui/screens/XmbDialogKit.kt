@@ -77,7 +77,7 @@ import kotlin.math.roundToInt
 // gliding highlight), big footer buttons and a progress card. Built for the XMB interface ONLY: callers branch on
 // `rememberXmbHome()` and keep their stock AlertDialog for Classic, Lab and plain Deck.
 //
-//   XmbDialogFrame(title = "Select container", subtitle = "...", onDismiss = ::close,
+//   XmbDialogFrame(title = "选择容器", subtitle = "...", onDismiss = ::close,
 //       footer = { XmbDialogButton("Cancel", ::close); XmbDialogButton("Add", ::add, primary = true) },
 //   ) {
 //       XmbOptionRow("Name", onClick = ..., subtitle = "...", icon = Icons.Filled.Folder, modifier = Modifier.xmbInitialFocus())
@@ -154,9 +154,9 @@ internal fun xmbPercent(fraction: Float): Int = (fraction.coerceIn(0f, 1f) * 100
 /** "1 game" / "3 games". */
 internal fun xmbCountLabel(n: Int, noun: String): String = "$n $noun${if (n == 1) "" else "s"}"
 
-/** The confirm button of a bulk add: "Add", "Add 3", or "Adding…" while the write runs. */
+/** The confirm button of a bulk add: "Add", "Add 3", or "正在添加…" while the write runs. */
 internal fun xmbAddLabel(count: Int, running: Boolean): String = when {
-    running -> "Adding…"
+    running -> "正在添加…"
     count <= 0 -> "Add"
     else -> "Add $count"
 }

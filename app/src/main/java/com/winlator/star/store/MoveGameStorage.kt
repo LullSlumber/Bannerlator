@@ -117,7 +117,7 @@ object MoveGameStorage {
     }
 
     /**
-     * The gear row's wording for this game — "Move to SD card" / "Move to internal storage" / "Move to
+     * The gear row's wording for this game — "移动到 SD 卡" / "移动到内部存储" / "Move to
      * <library>" when exactly one place is on offer, "Move to another location…" when several are — or
      * null when a move can't be offered: not installed, the folder isn't really there, or there is
      * nowhere else to put it (internal storage and no card or library).
@@ -432,8 +432,8 @@ object MoveGameStorage {
     fun menuLabel(ctx: Context, targets: List<SteamLibraryLocations.Location>): String {
         val only = targets.singleOrNull() ?: return ctx.getString(R.string.steam_lib_move_another)
         return when (only.kind) {
-            SteamLibraryLocations.Kind.INTERNAL -> "Move to internal storage"
-            SteamLibraryLocations.Kind.SD -> "Move to SD card"
+            SteamLibraryLocations.Kind.INTERNAL -> "移动到内部存储"
+            SteamLibraryLocations.Kind.SD -> "移动到 SD 卡"
             SteamLibraryLocations.Kind.LIBRARY -> "Move to ${only.label}"
         }
     }

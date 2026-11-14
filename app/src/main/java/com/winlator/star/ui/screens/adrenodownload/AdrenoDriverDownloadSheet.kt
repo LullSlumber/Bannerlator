@@ -107,7 +107,7 @@ fun AdrenoDriverDownloadSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Download GPU drivers",
+                        text = "下载GPU驱动",
                         style = MaterialTheme.typography.titleLarge,
                         color = cs.onSurface,
                         modifier = Modifier.weight(1f),
@@ -273,7 +273,7 @@ fun ColumnScope.AdrenoDriverListPane(
         if (!downloading) {
             OutlinedAlertDialog(
                 onDismissRequest = { pendingEntry = null },
-                title = { Text("Download driver?") },
+                title = { Text("下载驱动?") },
                 text = {
                     Column {
                         Text(entry.displayName, style = MaterialTheme.typography.bodyMedium)
@@ -285,7 +285,7 @@ fun ColumnScope.AdrenoDriverListPane(
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "The driver will be downloaded and installed automatically.",
+                            "驱动程序将自动下载并安装。",
                             style = MaterialTheme.typography.bodySmall,
                             color = cs.onSurfaceVariant,
                         )
@@ -482,7 +482,7 @@ private fun CenteredLoading() {
             CircularProgressIndicator()
             Spacer(Modifier.height(8.dp))
             Text(
-                "Loading drivers…",
+                "加载驱动…",
                 color = cs.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -582,7 +582,7 @@ private fun ManageSourcesDialog(
                                 Text(feedSummary(src), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                             }
                             IconButton(onClick = { mutate { store.removeCustom(src.name) } }) {
-                                Icon(Icons.Filled.Delete, contentDescription = "Remove", tint = cs.error)
+                                Icon(Icons.Filled.Delete, contentDescription = "移除", tint = cs.error)
                             }
                         }
                     }
@@ -591,7 +591,7 @@ private fun ManageSourcesDialog(
                 Spacer(Modifier.height(12.dp))
                 Divider(color = cs.outline.copy(alpha = 0.3f))
                 Spacer(Modifier.height(8.dp))
-                Text("Add source", style = MaterialTheme.typography.labelLarge, color = cs.onSurfaceVariant)
+                Text("添加源", style = MaterialTheme.typography.labelLarge, color = cs.onSurfaceVariant)
                 Spacer(Modifier.height(6.dp))
                 OutlinedTextField(
                     value = newName,
@@ -656,7 +656,7 @@ private fun ManageSourcesDialog(
                 }) {
                     Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Add source")
+                    Text("添加源")
                 }
             }
         },

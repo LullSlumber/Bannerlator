@@ -317,7 +317,7 @@ private fun SlotPicker(row: XServerDialogState.PlayerSlotRow, state: XServerDial
         buildList {
             add("Auto" to XServerDialogState.SLOT_AUTO)
             for (i in 0 until 4) add("Player ${i + 1}" to i)
-            add("Ignore" to XServerDialogState.SLOT_IGNORE)
+            add("忽略" to XServerDialogState.SLOT_IGNORE)
         }
     }
     val selectedLabel = options.firstOrNull { it.second == row.override }?.first ?: "Auto"

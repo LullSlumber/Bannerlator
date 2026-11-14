@@ -50,7 +50,7 @@ object StoreUninstaller {
 
     /**
      * Like [run], but [onResult] also learns whether the folder was KEPT (a library container, or one another game uses) rather than
-     * deleted, so a caller can tell "this game's files are gone" from "its folder still stands" (e.g. to leave shortcuts that point
+     * deleted, so a caller can tell "this game's files are gone" 来自 "its folder still stands" (e.g. to leave shortcuts that point
      * into a folder that is still there).
      * @param onResult invoked on the MAIN thread with `(ok, kept)`; `ok` = dir fully removed, kept, or nothing to remove.
      */

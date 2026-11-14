@@ -93,24 +93,24 @@ internal data class SearchDestination(
 
 /** Everything the search lists besides games. Keywords widen the match beyond the title. */
 private val DESTINATIONS = listOf(
-    SearchDestination("Home", "Library", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
-    SearchDestination("Stores", "Steam, Epic, GOG, Amazon, Xbox", Icons.Filled.Storefront, "store sign in library download", route = DeckRoutes.STORES),
-    SearchDestination("Steam", "Stores › Steam", Icons.Filled.Storefront, "steam valve store friends", store = Screen.Steam),
-    SearchDestination("Epic Games", "Stores › Epic Games", Icons.Filled.Storefront, "epic store free games", store = Screen.Epic),
-    SearchDestination("GOG", "Stores › GOG", Icons.Filled.Storefront, "gog galaxy store", store = Screen.Gog),
-    SearchDestination("Amazon Games", "Stores › Amazon Games", Icons.Filled.Storefront, "amazon prime store", store = Screen.Amazon),
-    SearchDestination("Xbox", "Stores › Xbox", Icons.Filled.Storefront, "xbox microsoft store game pass pc", store = Screen.Xbox),
-    SearchDestination("Containers", "Wine prefixes and their settings", Icons.Filled.Inventory2, "container wine prefix drive c new container", route = Screen.Containers.route),
+    SearchDestination("主页", "Library", Icons.Filled.SportsEsports, "library games shelf continue playing all games shortcuts add game import folder", route = DeckRoutes.HOME),
+    SearchDestination("商店", "Steam, Epic, GOG, Amazon, Xbox", Icons.Filled.Storefront, "store sign in library download", route = DeckRoutes.STORES),
+    SearchDestination("Steam", "商店 › Steam", Icons.Filled.Storefront, "steam valve store friends", store = Screen.Steam),
+    SearchDestination("Epic Games", "商店 › Epic Games", Icons.Filled.Storefront, "epic store free games", store = Screen.Epic),
+    SearchDestination("GOG", "商店 › GOG", Icons.Filled.Storefront, "gog galaxy store", store = Screen.Gog),
+    SearchDestination("Amazon Games", "商店 › Amazon Games", Icons.Filled.Storefront, "amazon prime store", store = Screen.Amazon),
+    SearchDestination("Xbox", "商店 › Xbox", Icons.Filled.Storefront, "xbox microsoft store game pass pc", store = Screen.Xbox),
+    SearchDestination("容器管理", "Wine prefixes and their settings", Icons.Filled.Inventory2, "container wine prefix drive c new container", route = Screen.Containers.route),
     SearchDestination("Components", "Wine, Proton, DXVK, VKD3D, Box64, FEX, drivers", Icons.Filled.Extension, "components contents dxvk vkd3d proton wine box64 fex fexcore wowbox64 d7vk wcp driver turnip install", route = DeckRoutes.COMPONENTS),
     SearchDestination("Controls", "On-screen profiles, bindings, controller test", Icons.Filled.SportsEsports, "controls input controller gamepad bindings on-screen touch profile test", route = DeckRoutes.CONTROLS),
-    SearchDestination("Tools", "Files, saves, logs", Icons.Filled.Build, "tools", route = DeckRoutes.TOOLS),
-    SearchDestination("File Manager", "Tools › Files", Icons.Filled.FolderOpen, "files folders browse unpack archive 7z zip", route = Screen.FileManager.route),
-    SearchDestination("Save Manager", "Tools › Saves", Icons.Filled.Save, "saves backup restore cloud sync", route = Screen.SaveManager.route),
+    SearchDestination("工具", "Files, saves, logs", Icons.Filled.Build, "tools", route = DeckRoutes.TOOLS),
+    SearchDestination("文件管理器", "工具 › 文件", Icons.Filled.FolderOpen, "files folders browse unpack archive 7z zip", route = Screen.FileManager.route),
+    SearchDestination("存档管理器", "工具 › 存档", Icons.Filled.Save, "saves backup restore cloud sync", route = Screen.SaveManager.route),
     SearchDestination("Wrappers", "Components › Wrappers", Icons.Filled.Layers, "wrapper vulkan graphics", route = Screen.Wrappers.route),
     SearchDestination("Adrenotools", "Components › Adrenotools", Icons.Filled.Memory, "gpu driver adreno turnip mesa", route = Screen.AdrenoTools.route),
-    SearchDestination("Settings", "App settings", Icons.Filled.Settings, "settings preferences appearance theme accent interface style font performance network storage backup advanced", route = DeckSettingsRoutes.APP),
-    SearchDestination("Logs", "Tools › Logs", Icons.Filled.Description, "logs log manager debug wine dxvk", route = DeckRoutes.TOOLS, toolsTab = DeckToolsTabs.LOGS),
-    SearchDestination("About", "Version, updates and credits", Icons.Filled.Info, "about version update credits license", about = true),
+    SearchDestination("Settings", "应用设置", Icons.Filled.Settings, "settings preferences appearance theme accent interface style font performance network storage backup advanced", route = DeckSettingsRoutes.APP),
+    SearchDestination("日志", "工具 › 日志", Icons.Filled.Description, "logs log manager debug wine dxvk", route = DeckRoutes.TOOLS, toolsTab = DeckToolsTabs.LOGS),
+    SearchDestination("关于", "版本、更新和鸣谢", Icons.Filled.Info, "about version update credits license", about = true),
 )
 
 /**
@@ -188,7 +188,7 @@ private fun DeckSearchPanel(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "Search everything",
+                            "搜索所有内容",
                             color = cs.onSurface,
                             fontFamily = SoraFamily,
                             fontWeight = FontWeight.Bold,
@@ -212,7 +212,7 @@ private fun DeckSearchPanel(
                         value = query,
                         onValueChange = { query = it },
                         singleLine = true,
-                        placeholder = { Text("Games, screens and tools") },
+                        placeholder = { Text("游戏、屏幕和工具") },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = {
@@ -228,7 +228,7 @@ private fun DeckSearchPanel(
                     LazyColumn(modifier = Modifier.heightIn(max = 560.dp)) {
                         if (games.isNotEmpty()) {
                             item(key = "h-games") {
-                                DeckSectionLabel(if (q.isEmpty()) "Recently played" else "Games · ${games.size}")
+                                DeckSectionLabel(if (q.isEmpty()) "最近游玩" else "Games · ${games.size}")
                             }
                             items(games, key = { "g:" + it.file.path }) { s ->
                                 SearchResultRow(

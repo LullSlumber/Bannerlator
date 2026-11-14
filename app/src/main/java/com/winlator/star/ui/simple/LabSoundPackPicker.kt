@@ -96,7 +96,7 @@ internal fun SoundPackPicker(onDismiss: () -> Unit) {
                         modifier = if (isFirst) Modifier.focusRequester(first) else Modifier,
                     ) { actionsFor = p }
                 }
-                item { Heading(L("Available"), available.size) }
+                item { Heading(L("可用"), available.size) }
                 items(available, key = { "a-" + it.id }) { a ->
                     val isFirst = installed.isEmpty() && a === available.firstOrNull()
                     val busy = state.busy == a.id
@@ -143,13 +143,13 @@ internal fun SoundPackPicker(onDismiss: () -> Unit) {
     }
 
     actionsFor?.let { p ->
-        val preview = remember(p.id) { MenuAction(L("Preview"), { UiSoundPacks.preview(context, p.id) }) }
+        val preview = remember(p.id) { MenuAction(L("预览"), { UiSoundPacks.preview(context, p.id) }) }
         SimpleActionSheet(
             title = p.name,
             actions = listOf(
                 preview,
                 MenuAction(L("Apply"), { UiSoundPacks.select(context, p.id) }),
-                MenuAction(L("Delete"), { UiSoundPacks.delete(context, p.id) }, danger = true),
+                MenuAction(L("删除"), { UiSoundPacks.delete(context, p.id) }, danger = true),
             ),
             onDismiss = { actionsFor = null },
         ) { a ->

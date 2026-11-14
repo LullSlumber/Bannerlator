@@ -6,10 +6,10 @@ import com.winlator.star.container.Shortcut
 // drift; the comparisons work on plain keys, so they don't need a Shortcut.
 
 internal enum class LibrarySort(val label: String) {
-    NAME("Name A–Z"),
-    NAME_DESC("Name Z–A"),
+    NAME("名称 A–Z"),
+    NAME_DESC("名称 Z–A"),
     RECENT("Last played"),
-    PLAYTIME("Most played"),
+    PLAYTIME("最多游玩"),
     CONTAINER("Container"),
     STORE("Store"),
 }
@@ -30,7 +30,7 @@ internal class GameSortKey(
 }
 
 // The Stores tab's order, then the entries no store owns. The labels are the ones storeLabelOf returns.
-private val STORE_ORDER = listOf("Windows Steam", "Steam", "Epic Games", "GOG", "Amazon Games", "Xbox", "Android", "Linux", "Added by me")
+private val STORE_ORDER = listOf("Windows Steam", "Steam", "Epic Games", "GOG", "Amazon Games", "Xbox", "Android", "Linux", "由我添加")
 
 /** Where a [storeLabelOf] label sorts; a label nobody knows goes last. */
 internal fun storeRank(label: String): Int = STORE_ORDER.indexOf(label).let { if (it < 0) STORE_ORDER.size else it }

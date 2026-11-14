@@ -40,7 +40,7 @@ internal class StoreChipStyle(val fill: Color, val line: Color, val ink: Color, 
 internal fun storeTabIcon(label: String): ImageVector = when (label) {
     "Achievements" -> Icons.Filled.EmojiEvents
     "DLC" -> Icons.Filled.Extension
-    "Cloud", "Cloud saves" -> Icons.Filled.Cloud
+    "Cloud", "云存档" -> Icons.Filled.Cloud
     "Media" -> Icons.Filled.PhotoLibrary
     else -> Icons.Filled.Info
 }

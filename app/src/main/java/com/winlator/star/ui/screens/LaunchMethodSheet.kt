@@ -311,7 +311,7 @@ fun LaunchMethodSheet(
     var steamInput by remember(shortcut) { mutableStateOf(shortcut.getExtra("steamInput", "") == "1") }
     val onPassthroughToggle: (Boolean) -> Unit = { controllerPassthrough = it; if (it) steamInput = false }
     val onSteamInputToggle: (Boolean) -> Unit = { steamInput = it; if (it) controllerPassthrough = false }
-    // "Requires secure (VAC) launch" (SteamLite only). Seeded from the saved override, else from the
+    // "需要安全（VAC）启动" (SteamLite only). Seeded from the saved override, else from the
     // VAC marker the library sync recorded from PICS app-info (loaded off-main). Persisted only once the
     // user touches it, so an untouched toggle keeps following the detection.
     val vacOverride = remember(shortcut) { shortcut.getExtra("steamVacLaunch", "").trim() }
@@ -1073,7 +1073,7 @@ private fun DeckLandscapeCard(
                                     ) { DeckPill(steamInput, accent) }
                                     if (raised) Spacer(Modifier.height(8.dp))
                                     DeckOptionRow(
-                                        title = "Requires secure (VAC) launch", badge = "NEW",
+                                        title = "需要安全（VAC）启动", badge = "NEW",
                                         subtitle = vacSubtitle(detectedVac),
                                         accent = accent, onHelp = { toggleHelp(HELP_VAC) }, onClick = { onSecureLaunch(!secureLaunch) },
                                     ) { DeckPill(secureLaunch, accent) }
@@ -1543,7 +1543,7 @@ private fun ColumnScope.OptionsBlock(
             trailing = { PillSwitch(steamInput, accent, onSteamInput) },
         )
         OptionRow(
-            title = "Requires secure (VAC) launch",
+            title = "需要安全（VAC）启动",
             badge = "NEW",
             subtitle = if (compact) null else vacSubtitle(detectedVac),
             accent = accent,
@@ -1652,7 +1652,7 @@ private fun footerLaunch(
 
 /**
  * Under the App Steam chip: the Valve client set's status — not downloaded yet (fetched by the launch,
- * ~18 MB from Valve) / checking / couldn't check / installed build / "Update available" — with a "?"
+ * ~18 MB from Valve) / checking / couldn't check / installed build / "有可用更新" — with a "?"
  * bubble. Absent for the other methods.
  */
 @Composable
@@ -1793,7 +1793,7 @@ private fun SteamLiteClientBlock(
                 val tint = if (check.required) cs.error else accent
                 val shape = RoundedCornerShape(999.dp)
                 Text(
-                    (if (check.required) "需要更新" else "Update available") +
+                    (if (check.required) "需要更新" else "有可用更新") +
                         " ($installed → v${check.latestVersion})",
                     style = lineStyle, color = tint, fontWeight = FontWeight.SemiBold,
                     modifier = Modifier

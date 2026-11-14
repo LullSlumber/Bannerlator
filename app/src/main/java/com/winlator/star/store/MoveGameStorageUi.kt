@@ -55,9 +55,9 @@ internal fun MoveStorageDialog(
         title = {
             Text(
                 when {
-                    toSd -> "Move to SD card"
+                    toSd -> "移动到 SD 卡"
                     toLibrary -> "Move to ${plan.to.label}"
-                    else -> "Move to internal storage"
+                    else -> "移动到内部存储"
                 }
             )
         },
@@ -77,7 +77,7 @@ internal fun MoveStorageDialog(
                 if (!plan.fitsOnTarget) {
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        text = "⛔ There isn't enough free space for this game.",
+                        text = "⛔ 此游戏没有足够的可用空间。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -132,7 +132,7 @@ internal fun MoveStorageDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm, enabled = plan.fitsOnTarget) {
-                Text(if (toSd) "Move to SD card" else if (toLibrary) "Move here" else "Move to internal")
+                Text(if (toSd) "移动到 SD 卡" else if (toLibrary) "Move here" else "Move to internal")
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },

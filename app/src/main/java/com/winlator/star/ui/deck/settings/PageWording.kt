@@ -10,7 +10,7 @@ import com.winlator.star.ui.simple.L
  */
 internal object PageWording {
     /** The kicker over the container's name in the XMB rail (and the other interfaces' header). */
-    fun containerKicker(): String = L("Container settings")
+    fun containerKicker(): String = L("容器设置")
 
     /** The kicker over a game's name: "Shortcut settings" for every kind of game in the XMB; the other interfaces say what kind it is. */
     fun shortcutKicker(xmb: Boolean, world: World): String = when {

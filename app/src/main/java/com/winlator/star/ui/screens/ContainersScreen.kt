@@ -206,7 +206,7 @@ fun ContainersScreen(
             // the field state as the seed for future new containers) via the EDIT_DEFAULTS_ID sentinel.
             // Containers screen only. Sits next to the import action.
             IconButton(onClick = { onNavigateToDetail(ContainerDetailViewModel.EDIT_DEFAULTS_ID) }) {
-                Icon(Icons.Filled.Settings, contentDescription = "Defaults for new containers", tint = androidx.compose.ui.graphics.Color.White)
+                Icon(Icons.Filled.Settings, contentDescription = "新容器默认值", tint = androidx.compose.ui.graphics.Color.White)
             }
             IconButton(onClick = { showImportPicker = true }) {
                 Icon(Icons.Filled.FileDownload, contentDescription = "Import container", tint = androidx.compose.ui.graphics.Color.White)
@@ -217,7 +217,7 @@ fun ContainersScreen(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
         if (containers.isEmpty() && !isLoading) {
             Text(
-                text = "No containers yet. Tap + to create one.",
+                text = "还没有容器，点击 + 新建一个。",
                 color = OnSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center),
             )
@@ -319,10 +319,10 @@ fun ContainersScreen(
         val backups = remember { vm.availableBackups() }
         OutlinedAlertDialog(
             onDismissRequest = { showImportPicker = false },
-            title = { Text("Import Container") },
+            title = { Text("导入容器") },
             text = {
                 if (backups.isEmpty()) {
-                    Text("No exported containers found in Downloads/Winlator/Backups/Containers/.")
+                    Text("在 Downloads/Winlator/Backups/Containers/ 中未找到导出的容器。")
                 } else {
                     androidx.compose.foundation.layout.Column(
                         modifier = Modifier
@@ -357,13 +357,13 @@ fun ContainersScreen(
             is ConfirmAction.Duplicate -> {
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("Duplicate container?") },
+                    title = { Text("复制 容器?") },
                     text = { Text("Duplicate \"${action.container.name}\"?") },
                     confirmButton = {
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.duplicate(action.container) {}
-                        }) { Text("Duplicate") }
+                        }) { Text("复制") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -373,13 +373,13 @@ fun ContainersScreen(
             is ConfirmAction.Remove -> {
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("Remove container?") },
+                    title = { Text("移除容器?") },
                     text = { Text("Remove \"${action.container.name}\" permanently?") },
                     confirmButton = {
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.remove(action.container, context) {}
-                        }) { Text("Remove") }
+                        }) { Text("移除") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -398,7 +398,7 @@ fun ContainersScreen(
                             "\"${action.container.name}\" moves from ${action.container.wineVersion} to ${action.target}.\n\n" +
                                 (if (remote != null)
                                     "The $newLabel layer is not on this device yet: it is downloaded from the catalog" +
-                                        layerSizeHint(remote) + " and installed first, then the container is updated.\n\n"
+                                        layerSizeHint(remote) + " 并首先安装，然后容器更新。\n\n"
                                 else "") +
                                 "What changes: the Wine/Proton layer files (system32/syswow64 builtin DLLs are refreshed; " +
                                 "DXVK, FEX/Box64 and game-installed files are left as they are). Wine finishes its own " +
@@ -410,7 +410,7 @@ fun ContainersScreen(
                                 else
                                     "The $oldLabel layer is no longer installed on this device, so this update cannot be " +
                                         "reverted afterwards (a registry backup is still taken). ") +
-                                "Make sure nothing is running in this container."
+                                "请确保此容器中没有正在运行的程序。"
                         )
                     },
                     confirmButton = {
@@ -429,7 +429,7 @@ fun ContainersScreen(
                 val newLabel = ContainerLayerUpdater.layerLabel(action.target, action.container.wineVersion)
                 OutlinedAlertDialog(
                     onDismissRequest = { confirmDialog = null },
-                    title = { Text("About layer updates") },
+                    title = { Text("关于兼容层更新") },
                     text = {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             Text(
@@ -438,8 +438,8 @@ fun ContainersScreen(
                                     (if (newLabel == ContainerLayerUpdater.codeLabel(action.target)) "a newer build of the same layer, "
                                     else "a newer DroidDeck-Proton version, ") + "${action.target}, is " +
                                     (if (action.remote != null) "available in the catalog. The $newLabel layer will be " +
-                                        "downloaded" + layerSizeHint(action.remote) + " first."
-                                    else "installed.") + "\n\n" +
+                                        "downloaded" + layerSizeHint(action.remote) + " 首先。"
+                                    else "已安装。") + "\n\n" +
                                     "What the update changes: only Wine's own files inside the container are refreshed to " +
                                     "the new version. DXVK, FEX/Box64 and anything a game installed are left as they are; " +
                                     "Wine finishes its own prefix update on the next launch.\n\n" +
@@ -492,7 +492,7 @@ fun ContainersScreen(
                         TextButton(onClick = {
                             confirmDialog = null
                             vm.revertLayer(action.container, action.snapshot)
-                        }) { Text("Revert") }
+                        }) { Text("还原") }
                     },
                     dismissButton = {
                         TextButton(onClick = { confirmDialog = null }) { Text("Cancel") }
@@ -565,7 +565,7 @@ fun ContainersScreen(
                             restorePickerLauncher.launch("application/zip")
                         },
                         modifier = Modifier.fillMaxWidth().xmbStop(CircleShape),
-                    ) { Text("Pick via system…", modifier = Modifier.weight(1f)) }
+                    ) { Text("从系统选取…", modifier = Modifier.weight(1f)) }
                 }
             },
             confirmButton = { TextButton(onClick = { saveFlow = SaveFlow.Fork(flow.container) }) { Text("Back") } },
@@ -592,7 +592,7 @@ fun ContainersScreen(
                         else "Restore failed: ${r.error ?: "unknown error"}"
                         emuConflicts = r.emuConflicts
                     }
-                }) { Text("Restore") }
+                }) { Text("恢复") }
             },
             dismissButton = { TextButton(onClick = { saveFlow = null }) { Text("Cancel") } },
         )
@@ -804,7 +804,7 @@ private fun ContainerItem(
                             if (layerNeedsDownload) {
                                 Icon(
                                     imageVector = Icons.Filled.CloudDownload,
-                                    contentDescription = "Download needed",
+                                    contentDescription = "需要下载",
                                     modifier = Modifier.size(14.dp),
                                 )
                                 Spacer(Modifier.width(4.dp))
@@ -823,7 +823,7 @@ private fun ContainerItem(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.HelpOutline,
-                                contentDescription = "About layer updates",
+                                contentDescription = "关于兼容层更新",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp),
                             )
@@ -854,7 +854,7 @@ private fun ContainerItem(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_popup_menu_run),
-                    contentDescription = "Run",
+                    contentDescription = "运行",
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(26.dp),
                 )
@@ -878,31 +878,31 @@ private fun ContainerItem(
                     modifier = Modifier.xmbMenuBack { menuExpanded = false },
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Edit") },
+                        text = { Text("编辑") },
                         leadingIcon = { Icon(Icons.Filled.Edit, null) },
                         onClick = { menuExpanded = false; onEdit() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("Duplicate") },
+                        text = { Text("复制") },
                         leadingIcon = { Icon(Icons.Filled.ContentCopy, null) },
                         onClick = { menuExpanded = false; onDuplicate() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("Remove") },
+                        text = { Text("移除") },
                         leadingIcon = { Icon(Icons.Filled.Delete, null) },
                         onClick = { menuExpanded = false; onRemove() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("Export") },
+                        text = { Text("导出") },
                         leadingIcon = { Icon(Icons.Filled.FileUpload, null) },
                         onClick = { menuExpanded = false; onExport() },
                     )
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("Backup / Restore save") },
+                        text = { Text("备份/恢复存档") },
                         leadingIcon = { Icon(Icons.Filled.SettingsBackupRestore, null) },
                         onClick = { menuExpanded = false; onBackupRestore() },
                     )
@@ -928,7 +928,7 @@ private fun ContainerItem(
                     }
                     MenuItemDivider()
                     DropdownMenuItem(
-                        text = { Text("Info") },
+                        text = { Text("信息") },
                         leadingIcon = { Icon(Icons.Filled.Info, null) },
                         onClick = { menuExpanded = false; onInfo() },
                     )
@@ -1394,7 +1394,7 @@ internal fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
 
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Storage Info") },
+        title = { Text("存储信息") },
         text = {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -1405,13 +1405,13 @@ internal fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                     modifier = androidx.compose.ui.Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    Text("Drive C", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("驱动器 C", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(driveCSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
-                    Text("Cache", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("缓存", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(cacheSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
-                    Text("Total", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("总计", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(StringUtils.formatBytes(totalSize), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
                 // Right column — circular progress + label
@@ -1431,7 +1431,7 @@ internal fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                     }
                     Spacer(modifier = androidx.compose.ui.Modifier.size(6.dp))
                     Text(
-                        "Estimated used space",
+                        "已用空间估算",
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -1445,7 +1445,7 @@ internal fun StorageInfoDialog(container: Container, onDismiss: () -> Unit) {
                 container.putExtra("desktopTheme", null)
                 container.saveData()
                 onDismiss()
-            }) { Text("Clear Cache") }
+            }) { Text("清除缓存") }
         },
     )
 }

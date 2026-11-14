@@ -70,7 +70,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var isSaving by mutableStateOf(false); private set
     private var initialized = false
 
-    // "New Container Defaults" mode: the SAME container form, but ✓ saves the field state as the
+    // "新建容器默认值" mode: the SAME container form, but ✓ saves the field state as the
     // user's new-container defaults profile (NewContainerDefaults) instead of creating a container.
     // Entered via the EDIT_DEFAULTS_ID sentinel (see init); container stays null (it's a template).
     var defaultsMode by mutableStateOf(false); private set
@@ -83,9 +83,9 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var defaultsArch by mutableStateOf(NewContainerDefaults.ARCH_ARM64EC); private set
 
     companion object {
-        // Sentinel containerId that opens the editor in "New Container Defaults" mode. Negative like
+        // Sentinel containerId that opens the editor in "新建容器默认值" mode. Negative like
         // the create sentinel (-1) so getContainerById is never consulted; distinct so init can tell
-        // "edit the defaults" from "create a new container".
+        // "edit the defaults" 来自 "create a new container".
         const val EDIT_DEFAULTS_ID = -2
     }
 
@@ -434,7 +434,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     var gyroInvertX by mutableStateOf(Container.GYRO_INVERT_X_DEFAULT)
     var gyroInvertY by mutableStateOf(Container.GYRO_INVERT_Y_DEFAULT)
 
-    // "Run as administrator" (default ON): ON -> EnableLUA=0 (UAC off / full admin),
+    // "以管理员身份运行" (default ON): ON -> EnableLUA=0 (UAC off / full admin),
     // OFF -> EnableLUA=1. Stored in the container's .wine/system.reg (source of truth); on
     // create it's threaded through the createContainerAsync data flag, on edit it's read/written
     // here directly (mirrors saveMouseWarp, but against system.reg).
@@ -602,7 +602,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * A transient, in-memory template container built from the saved "New Container Defaults" profile,
+     * A transient, in-memory template container built from the saved "新建容器默认值" profile,
      * or null when no profile is set (or we're editing a real container). It is NEVER persisted — it
      * exists only so loadContainerData() can read the user's saved preferences back through the exact
      * same Container getters a real container uses (round-tripped via loadData, extras included).
@@ -1311,7 +1311,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
     /**
      * Write EVERY field this editor can set onto [c]. The ONE place the form becomes container
      * config: the edit path calls it on the real container, the create path on the throwaway
-     * container it serializes into createContainerAsync's payload, and the "New Container Defaults"
+     * container it serializes into createContainerAsync's payload, and the "新建容器默认值"
      * path on the profile template. A field added here therefore sticks in all three.
      *
      * It exists because those three used to be hand-maintained lists that drifted: create put a
@@ -1320,7 +1320,7 @@ class ContainerDetailViewModel(app: Application) : AndroidViewModel(app) {
      * so a container created on Wayland was born on X11 — and the defaults profile could not hold a
      * Wayland default at all.
      *
-     * NOT here: mouse warp and "Run as administrator". Both live in the prefix's registry rather than
+     * NOT here: mouse warp and "以管理员身份运行". Both live in the prefix's registry rather than
      * the config, so they need a container that exists on disk — saveMouseWarp/saveRunAsAdmin on
      * edit, and on create the registry stamp ContainerManager applies from the runAsAdmin data flag.
      *

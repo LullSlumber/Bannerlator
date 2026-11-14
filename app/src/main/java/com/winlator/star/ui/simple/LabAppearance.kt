@@ -23,11 +23,11 @@ internal fun labDrawerEntries(): List<MenuEntry> {
     val showSd by AppThemeState.showSdStorage.collectAsState()
     return listOf(
         MenuEntry(
-            "drawer-internal", L("Show internal storage"), icon = Icons.Filled.Storage, group = L("Side menu"),
+            "drawer-internal", L("显示内部存储"), icon = Icons.Filled.Storage, group = L("Side menu"),
             toggle = showInternal, onA = { AppThemeState.setShowInternalStorage(!showInternal) },
         ),
         MenuEntry(
-            "drawer-sd", L("Show SD card storage"), icon = Icons.Filled.SdCard, group = L("Side menu"),
+            "drawer-sd", L("显示 SD card 存储"), icon = Icons.Filled.SdCard, group = L("Side menu"),
             toggle = showSd, onA = { AppThemeState.setShowSdStorage(!showSd) },
         ),
     )

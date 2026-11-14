@@ -269,10 +269,10 @@ val themePresets: List<ThemePreset> = listOf(
 val CUSTOM_PRESET_INDEX = themePresets.size - 1
 
 /** The preset anyone who never picked one (an update, or a saved choice that no longer exists) is on. */
-const val DEFAULT_PRESET_NAME = "AMOLED"
+const val DEFAULT_PRESET_NAME = "深邃黑"
 
 /** The preset a fresh install starts on (an update keeps [DEFAULT_PRESET_NAME] until its user picks another). */
-const val NEW_INSTALL_PRESET_NAME = "Carbon & Ember"
+const val NEW_INSTALL_PRESET_NAME = "炭烬色"
 
 /** Where [DEFAULT_PRESET_NAME] sits in [themePresets]. */
 val DEFAULT_PRESET_INDEX = themePresets.indexOfFirst { it.name == DEFAULT_PRESET_NAME }.coerceAtLeast(0)
@@ -281,8 +281,8 @@ val DEFAULT_PRESET_INDEX = themePresets.indexOfFirst { it.name == DEFAULT_PRESET
 // make a saved choice point at another one. Before names were saved, `preset_index` held the position, in this order (Custom
 // last); that order is frozen here only to read those old values back.
 internal val LEGACY_PRESET_NAMES: List<String> = listOf(
-    "Classic Dark", "AMOLED", "Ocean", "Forest", "Sunset", "Rose", "Steel",
-    "Midnight Cobalt", "Phosphor", "Carbon & Ember", "Amethyst", "Crimson", "Synthwave", "Royal Gold", "Frost", "Monochrome",
+    "经典深色", "深邃黑", "海洋蓝", "森系绿", "落日橙", "玫瑰粉", "金属灰",
+    "深夜钴蓝", "荧光绿", "炭烬色", "紫晶色", "绯红", "复古霓虹紫", "华贵鎏金", "冰霜浅蓝", "极简单色",
     "Custom",
 )
 

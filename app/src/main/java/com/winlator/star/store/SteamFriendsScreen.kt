@@ -1118,7 +1118,7 @@ private fun ConnectState() {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Not connected to Steam",
+            text = "未连接到Steam",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
         )

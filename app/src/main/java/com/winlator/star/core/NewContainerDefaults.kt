@@ -4,7 +4,7 @@ import android.content.Context
 import org.json.JSONObject
 
 /**
- * User-configurable "New Container Defaults" — the seed a brand-new container is built from.
+ * User-configurable "新建容器默认值" — the seed a brand-new container is built from.
  *
  * Stored as TWO INDEPENDENT profiles, one per architecture (x86-64 and arm64ec), because the
  * emulator/box64/wowbox64/FEXCore fields are arch-coupled (refreshWineDependent swaps the

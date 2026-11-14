@@ -183,7 +183,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 onA = { onNavigate(SimpleRoutes.componentSource(i)) },
                 actions = buildList {
                     add(MenuAction(L("Browse"), { onNavigate(SimpleRoutes.componentSource(i)) }))
-                    if (vm.browseUrl(s).isNotBlank()) add(MenuAction(L("Open source page"), { openPage(s) }))
+                    if (vm.browseUrl(s).isNotBlank()) add(MenuAction(L("打开来源页面"), { openPage(s) }))
                     add(
                         MenuAction(
                             if (s.removeIsHide) L("Hide this repository") else L("Remove this repository"),
@@ -207,16 +207,16 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 ),
             ),
             MenuEntry(
-                "location", L("Save location"), baseDisplay, icon = Icons.Filled.FolderSpecial, group = L("Manage"),
+                "location", L("保存位置"), baseDisplay, icon = Icons.Filled.FolderSpecial, group = L("Manage"),
                 actions = listOf(
-                    MenuAction(L("Downloads › bannerlator (default)"), { vm.library.setDefaultBase(); vm.refreshBase(); vm.refreshFolders() }),
-                    MenuAction(L("App-private storage"), { vm.library.setFileBase(vm.library.appPrivateBasePath()); vm.refreshBase(); vm.refreshFolders() }),
-                    MenuAction(L("Choose another folder…"), {
+                    MenuAction(L("Downloads › bannerlator（默认）"), { vm.library.setDefaultBase(); vm.refreshBase(); vm.refreshFolders() }),
+                    MenuAction(L("应用私有存储"), { vm.library.setFileBase(vm.library.appPrivateBasePath()); vm.refreshBase(); vm.refreshFolders() }),
+                    MenuAction(L("选择其他文件夹…"), {
                         folderPicker.launch(InAppFilePicker.buildDirIntent(context, title = L("Select save folder"), initialDir = vm.library.currentFileBasePath()))
                     }),
                 ),
             ),
-            MenuEntry("restore", L("Restore default repositories"), icon = Icons.Filled.Restore, group = L("Manage"), onA = { restoreAsk = true }),
+            MenuEntry("restore", L("恢复默认仓库"), icon = Icons.Filled.Restore, group = L("Manage"), onA = { restoreAsk = true }),
         )
     }
 
@@ -241,7 +241,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Memory,
                         actions = listOf(
                             MenuAction(L("Set as default…"), { defaultItem = item }),
-                            MenuAction(L("Remove"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
+                            MenuAction(L("移除"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
                         ),
                     ),
                 )
@@ -255,7 +255,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         key = "w$id", title = name, group = L("Wayland game drivers"),
                         subtitle = listOfNotNull(wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, if (noWsi) L("No Wayland WSI detected") else null).joinToString(" · ").ifBlank { null },
                         icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
@@ -267,7 +267,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         key = "l$id", title = name, group = L("Linux runtime drivers"),
                         subtitle = listOfNotNull(linux?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, glibc?.let { "glibc $it+" }).joinToString(" · ").ifBlank { null },
                         icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
@@ -284,7 +284,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                             icon = Icons.Filled.Extension,
                             actions = buildList {
                                 if (item != null) add(MenuAction(L("Set as default…"), { defaultItem = item }))
-                                add(MenuAction(L("Remove"), {
+                                add(MenuAction(L("移除"), {
                                     runCatching { cm?.removeContent(p); cm?.syncContents() }
                                     vm.refreshStatus(); tick++
                                     toast(context, L("Removed %1\$s %2\$s", label, p.verName))
@@ -314,7 +314,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 onA = reinstall, play = reinstall, playIcon = Icons.Filled.Download, playLabel = L("Reinstall"),
                 actions = listOf(
                     MenuAction(L("Reinstall"), reinstall),
-                    MenuAction(L("Share"), { shareArchive(context, f) }),
+                    MenuAction(L("分享"), { shareArchive(context, f) }),
                     MenuAction(L("Delete the saved file"), { vm.deleteSaved(f) }, danger = true, confirm = L("Delete %1\$s?", f.name)),
                 ),
             )
@@ -323,7 +323,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
 
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Contents"),
+        title = L("内容管理"),
         sections = listOf(
             MenuSection("download", L("Download components"), Icons.Filled.Download, download, empty = L("No repositories."), primary = MenuAction(L("Add a repository"), { addRepo = true })),
             MenuSection("installed", L("Installed"), Icons.Filled.CheckCircle, installed, empty = L("Only the built-in components so far."), primary = MenuAction(L("Install content from file"), { fromFile() })),
@@ -341,7 +341,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     // What Set as default did (running containers skipped, failures), with Classic's Undo.
     outcome?.let { o ->
         SimpleActionSheet(
-            title = L("Set as default"),
+            title = L("设为默认"),
             actions = listOfNotNull(
                 MenuAction(L("OK"), {}),
                 if (o.canUndo) MenuAction(L("Undo"), {
@@ -359,7 +359,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     if (addRepo) AddRepoDialog(vm, onDismiss = { addRepo = false })
     if (searchOpen) SearchDialog(query, onDismiss = { searchOpen = false }) { q -> searchOpen = false; vm.setQuery(q) }
     if (restoreAsk) {
-        SimpleConfirm(L("Restore default repositories"), L("Hidden built-in repositories come back. Yours stay."), danger = false, onDismiss = { restoreAsk = false }) {
+        SimpleConfirm(L("恢复默认仓库"), L("Hidden built-in repositories come back. Yours stay."), danger = false, onDismiss = { restoreAsk = false }) {
             restoreAsk = false
             vm.restoreDefaultSources()
         }

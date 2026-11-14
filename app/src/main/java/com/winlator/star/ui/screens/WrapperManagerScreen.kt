@@ -183,7 +183,7 @@ fun WrapperManagerBody(modifier: Modifier = Modifier) {
     // When non-null, the catalog browser is open in "replace this slot" mode (installs as an override).
     var catalogTargetSlot by remember { mutableStateOf<WrapperManager.WrapperSlot?>(null) }
     // #132: the live catalog entries (loaded once, off-main). Used to detect when a catalog-installed
-    // wrapper has a newer version than what's on device -> an "Update available" badge + one-tap update.
+    // wrapper has a newer version than what's on device -> an "有可用更新" badge + one-tap update.
     // Empty/offline/bad-JSON simply yields no badges (WrapperCatalog.loadCached never throws).
     var catalogEntries by remember { mutableStateOf<List<WrapperCatalogEntry>>(emptyList()) }
     // The imported wrapper currently being updated from the catalog (null = none) + its 0..100 progress.
@@ -890,7 +890,7 @@ private fun CapabilityChips(labels: List<String>) {
 
 /**
  * The shared per-wrapper detail box (Part 1) rendered inside an expanded card. Below the capability
- * chips it carries a NESTED, independently-expandable "Environment variables" section that lists the
+ * chips it carries a NESTED, independently-expandable "环境变量" section that lists the
  * full set of env-var names the wrapper references (issue #132) — read-only, informational.
  *
  * [manager] + [isImported] + [envSourceId] drive that env-var list: for an imported wrapper the keys
@@ -934,7 +934,7 @@ private fun WrapperDetailBox(
 }
 
 /**
- * A nested, independently-expandable "Environment variables" row inside [WrapperDetailBox]. Default
+ * A nested, independently-expandable "环境变量" row inside [WrapperDetailBox]. Default
  * collapsed; opening it triggers the (bounded, off-main) scan ONLY when the user asks. Each entry
  * shows the friendly dictionary label ([WrapperSettingsDictionary.defFor]) plus the raw env key in a
  * dim monospace face. Read-only.
@@ -975,7 +975,7 @@ private fun EnvVarSection(
             .padding(vertical = 4.dp),
     ) {
         Text(
-            text = keys?.let { "Environment variables (${it.size})" } ?: "Environment variables",
+            text = keys?.let { "Environment variables (${it.size})" } ?: "环境变量",
             style = MaterialTheme.typography.labelMedium,
             color = cs.onSurfaceVariant,
             modifier = Modifier.weight(1f),

@@ -68,13 +68,13 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 // ─────────────────────────────────────────────────────────────────────────────────────────────────
-// "View logs" as XMB columns: Logs (run + files) › one file (follow / wrap / find / copy / share) ›
+// "查看日志" as XMB columns: Logs (run + files) › one file (follow / wrap / find / copy / share) ›
 // View (the tail in a scrollable panel). Reads the same tail LogViewerScreen does — the last
 // TAIL_BYTES, never the whole file (a Wine debug log can pass 1 GB) — with the same colouring.
 // ─────────────────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * "View logs": straight to this game's logs, like the dialog. Three outcomes read differently, as
+ * "查看日志": straight to this game's logs, like the dialog. Three outcomes read differently, as
  * there: per-game folders off, nothing captured yet, or the logs themselves.
  */
 internal fun xmbLogsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
@@ -267,7 +267,7 @@ private class XmbLogPanel(private val v: XmbLogView, private val xmb: XmbScope) 
                 )
                 Spacer(Modifier.width(14.dp))
                 Text(
-                    "▲▼ line · L1 R1 page · ◀▶ scroll · A follow",
+                    "▲▼ 行 · L1 R1 页 · ◀▶ 滚动 · A 跟随",
                     color = Color(0xFF7A7A7A), fontSize = 10.5.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )

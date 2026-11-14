@@ -51,8 +51,8 @@ import androidx.compose.ui.input.key.type
 //       Column {
 //           Text(name)                                              // turns accent-coloured while the card is hot
 //           Row {
-//               Button(onClick = edit, modifier = Modifier.deckFocusRing(btnShape).xmbInner(group, first = true)) { Text("Edit") }
-//               Button(onClick = delete, modifier = Modifier.deckFocusRing(btnShape).xmbInner(group)) { Text("Delete") }
+//               Button(onClick = edit, modifier = Modifier.deckFocusRing(btnShape).xmbInner(group, first = true)) { Text("编辑") }
+//               Button(onClick = delete, modifier = Modifier.deckFocusRing(btnShape).xmbInner(group)) { Text("删除") }
 //           }
 //       }
 //   }

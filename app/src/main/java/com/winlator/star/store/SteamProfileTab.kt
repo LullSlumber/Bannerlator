@@ -194,7 +194,7 @@ fun SteamProfileTab(
             onMessage("Status set to ${state.name}")
         } else {
             StorefrontLog.w(StorefrontLog.PROFILE, "setPersonaState(${state.name}) FAILED — no live session")
-            onMessage("Couldn't change your status — not connected to Steam.")
+            onMessage("无法更改您的状态 — 未连接到Steam。")
         }
     }
 
@@ -205,7 +205,7 @@ fun SteamProfileTab(
         ) {
             StoreNotice(
                 title = "Not signed in",
-                body = "Sign in to Steam to see your profile, level and playtime.",
+                body = "登录Steam以查看您的个人资料、等级和游戏时间。",
             )
         }
         return
@@ -430,7 +430,7 @@ private fun IdentityCard(c: ProfileTabContent) {
                                 LevelChip(lvl)
                             }
                             Spacer(Modifier.width(8.dp))
-                            MiniButton("Edit", first = true) { editing = true }
+                            MiniButton("编辑", first = true) { editing = true }
                         }
                     }
                     Text(
@@ -600,7 +600,7 @@ private fun SteamIdRow(steamId: Long, onCopy: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "Copy",
+            text = "拷贝",
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -670,7 +670,7 @@ private fun StatusChip(label: String, selected: Boolean, onClick: () -> Unit) {
  * Four tiles: Games / Played / Achievements / Friends. The Friends tile is tappable and jumps to
  * the Friends tab, as the prototype does.
  *
- * "Played" is null when the account's *game details* are private — it renders "—" rather than "0h",
+ * "已玩" is null when the account's *game details* are private — it renders "—" rather than "0h",
  * because zero hours and hidden hours are different facts. "Achievements" has no cheap global
  * source in this build ([SteamAchievementStore] is per-app), so it is honestly "—".
  */
@@ -685,17 +685,17 @@ private fun StatTiles(c: ProfileTabContent, columns: Int = 4) {
     val stats = listOf(
         ProfileStat(
             value = (c.profile?.gamesCount ?: c.libraryCount.takeIf { it > 0 })?.let { fmtCount(it) } ?: "—",
-            label = "Games",
+            label = "游戏",
         ),
         ProfileStat(
             value = c.profile?.hoursTotal?.let { "${fmtCount(it.roundToInt())}h" } ?: "—",
-            label = "Played",
+            label = "已玩",
         ),
         ProfileStat(
             // No global achievement total is exposed anywhere in this build — SteamAchievementStore
             // is per-app. An honest dash beats an invented number.
             value = "—",
-            label = "Achiev.",
+            label = "成就.",
         ),
         ProfileStat(
             value = if (c.friendsCount > 0) fmtCount(c.friendsCount) else "—",
@@ -941,7 +941,7 @@ private fun RecentlyPlayedList(c: ProfileTabContent, fillsPane: Boolean = false)
         return
     }
 
-    StoreSectionHeader("Recently Played", "By playtime")
+    StoreSectionHeader("最近游玩", "按游玩时间")
     Column(
         modifier = Modifier
             .fillMaxWidth()

@@ -61,7 +61,7 @@ import com.winlator.star.ui.simple.T
  *
  * Hand-offs: the game page's "Game actions" (registry category "game": Game Details, Change program, Copy to drive C, Move to
  * another container and the link to the container's Edit page) stay on tab.game, at its end; the launch info line and the
- * "Windows components" link (same tab now) are dropped.
+ * "Windows 组件" link (same tab now) are dropped.
  */
 
 /** The pure id -> tab rules of [ContainerLayout], with no Compose in them, so they can be unit-tested. */
@@ -180,7 +180,7 @@ internal object ContainerLayout {
         extraLevel = { old, tab -> extraLevelOf(scope, old, tab) },
     )
 
-    /** The Turnip driver's "present mode" row (registry label "Driver present mode"). */
+    /** The Turnip driver's "present mode" row (registry label "驱动程序呈现模式"). */
     private const val ID_TURNIP_PRESENT_MODE = "graphics.gdc.presentMode"
 
     /** The group header a row sits under in its tab. */

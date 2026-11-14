@@ -88,10 +88,10 @@ fun ContainerPickerDialog(
             )
         }
         XmbContainerPickerDialog(
-            title = title ?: "Select container",
+            title = title ?: "选择容器",
             subtitle = if (title == null) "Adding \"$gameName\"" else null,
             choices = choices,
-            emptyText = "No containers yet — create one in the Containers screen first.",
+            emptyText = "暂无容器 — 请先在“容器”界面创建一个。",
             onPick = { index -> containers.getOrNull(index)?.let(onSelected) },
             onDismiss = onDismiss,
         )
@@ -169,16 +169,16 @@ fun AddResultDialog(
     if (rememberXmbHome()) {
         if (result.success) {
             XmbMessageDialog(
-                title = "Added to Shortcuts",
+                title = "已添加到快捷方式",
                 message = "\"${result.gameName}\" is ready in Shortcuts." + (result.note?.let { "\n\n$it" } ?: ""),
-                confirmText = "Open Shortcuts",
+                confirmText = "打开快捷方式",
                 onConfirm = onOpenShortcuts,
                 onDismiss = onDismiss,
                 dismissText = "Close",
             )
         } else {
             XmbMessageDialog(
-                title = "Couldn't add shortcut",
+                title = "无法添加快捷方式",
                 message = result.message,
                 confirmText = "OK",
                 onConfirm = onDismiss,

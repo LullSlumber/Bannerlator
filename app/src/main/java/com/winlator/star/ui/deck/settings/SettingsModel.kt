@@ -29,7 +29,7 @@ import java.io.File
  * rows are filed into its tabs ([EditorLayout.apply]) and where its level choice is read and written.
  */
 internal enum class SettingLevel(val label: String) {
-    SIMPLE("Simple"), ADVANCED("Advanced"), EXPERT("Expert");
+    SIMPLE("简单"), ADVANCED("Advanced"), EXPERT("专家");
 
     /** XMB: this level with EXPERT folded into ADVANCED, the only two levels its editor works with. */
     val effective: SettingLevel get() = if (this == EXPERT) ADVANCED else this
@@ -43,7 +43,7 @@ internal enum class SettingLevel(val label: String) {
     }
 }
 
-/** What one editor edits. DEFAULTS is "All containers", i.e. the New Container Defaults profile. */
+/** What one editor edits. DEFAULTS is "所有容器", i.e. the New Container Defaults profile. */
 internal enum class EditorScope { DEFAULTS, CONTAINER, GAME, APP }
 
 /**
@@ -63,7 +63,7 @@ internal class SettingsCategory(
     val label: String,
     val desc: String,
     val icon: ImageVector,
-    /** The group label over this page's hand-off rows. Null keeps "More settings" ("In the classic editor" on a page with no rows). */
+    /** The group label over this page's hand-off rows. Null keeps "更多设置" ("在经典编辑器中" on a page with no rows). */
     val actionsLabel: String? = null,
 )
 

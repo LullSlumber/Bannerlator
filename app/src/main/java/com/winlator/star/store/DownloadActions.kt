@@ -56,7 +56,7 @@ internal class DownloadActions(
     var notice by mutableStateOf<String?>(null)
         private set
 
-    /** Draws the dialogs and the bar of the flows below. [onOpenShortcuts]: the "Open Shortcuts" button of the success dialog. */
+    /** Draws the dialogs and the bar of the flows below. [onOpenShortcuts]: the "打开快捷方式" button of the success dialog. */
     @Composable
     fun Dialogs(onOpenShortcuts: () -> Unit = { openShortcutsScreen(activity) }) {
         showExePicker?.let { data ->
@@ -184,7 +184,7 @@ internal class DownloadActions(
     fun launch(entry: DownloadEntry) {
         val dir = entry.installPath
         if (dir.isNullOrEmpty()) {
-            notice = "Install directory not set"
+            notice = "未设置安装目录"
             return
         }
         if (entry.store == Store.XBOX) {
@@ -344,18 +344,18 @@ internal class DownloadActions(
             entry.cancel?.invoke()
         } else if (entry.store == Store.EPIC) {
             AlertDialog.Builder(activity)
-                .setTitle("Cancel download?")
+                .setTitle("取消下载?")
                 .setMessage("Keep the partial download so you can resume later, or delete all " +
                         "downloaded files for this game?")
-                .setPositiveButton("Keep files") { _, _ ->
+                .setPositiveButton("保留文件") { _, _ ->
                     EpicCancelPolicy.setDeleteOnCancel(entry.id, false)
                     entry.cancel?.invoke()
                 }
-                .setNegativeButton("Delete files") { _, _ ->
+                .setNegativeButton("删除文件") { _, _ ->
                     EpicCancelPolicy.setDeleteOnCancel(entry.id, true)
                     entry.cancel?.invoke()
                 }
-                .setNeutralButton("Keep downloading", null)
+                .setNeutralButton("继续下载", null)
                 .show()
         } else if (entry.store == Store.STEAM) {
             // By appId through the queue, not the row's handles (those die with the run that attached them).

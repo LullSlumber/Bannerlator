@@ -15,7 +15,7 @@ import java.io.File
  * chunk already on disk, keeps the ones that match and downloads only what is missing or broken; the game is
  * marked installed when that finishes.
  *
- * The folder stays the user's: [SteamInstallPaths.ADOPTED_MARKER] in it makes "Cancel & delete download" keep its
+ * The folder stays the user's: [SteamInstallPaths.ADOPTED_MARKER] in it makes "取消并删除下载" keep its
  * files, and the import flag ([SteamLibraryImport.markImported]) makes uninstall keep the folder. Files the game's
  * manifest does not list are never touched.
  */

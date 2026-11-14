@@ -246,7 +246,7 @@ internal object KnownEnvVars {
 }
 
 /**
- * Helpers for the "Prefer game-folder DLLs" toggle, which is a *view* over the
+ * Helpers for the "优先使用游戏文件夹中的 DLL" toggle, which is a *view* over the
  * WINEDLLOVERRIDES environment variable rather than a field of its own — there is
  * exactly one source of truth and hand-editing the variable keeps working.
  *
@@ -427,7 +427,7 @@ internal fun EnvVarsEditor(
     modifier: Modifier = Modifier,
     gameDir: File? = null,
     /**
-     * Help text for the "Prefer game-folder DLLs" toggle, shown behind a "?" beside it. Null (every
+     * Help text for the "优先使用游戏文件夹中的 DLL" toggle, shown behind a "?" beside it. Null (every
      * caller but the Linux-entry shortcut editor) draws no button, so the toggle reads as it always has.
      * Passed as text rather than a resource id because what it has to say depends on the caller.
      */
@@ -510,7 +510,7 @@ internal fun EnvVarsEditor(
         // Hidden while the raw text editor is open: there the user is authoring the
         // whole string by hand, and a helper that rewrites it under them would fight
         // the cursor.
-        if (!rawMode) SectionBox(title = "Compatibility") {
+        if (!rawMode) SectionBox(title = "兼容性") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Switch(
                     // Master = select-all/none over whatever is in scope. "On" only when every
@@ -527,7 +527,7 @@ internal fun EnvVarsEditor(
                 )
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Prefer game-folder DLLs")
+                    Text("优先使用游戏文件夹中的 DLL")
                     Text(
                         "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
                             " instead of Wine's. Needed by many wrappers and mod loaders. Graphics DLLs are " +
@@ -659,7 +659,7 @@ internal fun EnvVarsEditor(
                 Text("添加变量")
             }
             TextButton(onClick = { rawMode = !rawMode }) {
-                Text(if (rawMode) "Done" else "Edit as text")
+                Text(if (rawMode) "Done" else "以文本形式编辑")
             }
         }
     }

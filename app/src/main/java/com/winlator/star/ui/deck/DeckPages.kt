@@ -97,7 +97,7 @@ internal fun DeckComponentsPage() {
     val tabs = buildList {
         add(DeckTabItem("Browse", Icons.Filled.Download))
         add(DeckTabItem("Installed", Icons.Filled.CheckCircle))
-        add(DeckTabItem("Saved archives", Icons.Filled.Folder))
+        add(DeckTabItem("已保存的压缩包", Icons.Filled.Folder))
         add(DeckTabItem("Linux runtime", Icons.Filled.DeveloperBoard))
         if (xmb) {
             add(DeckTabItem("Wrappers", Icons.Filled.Layers))
@@ -112,7 +112,7 @@ internal fun DeckComponentsPage() {
         tabs = tabs,
         selected = tab,
         onSelect = { tab = it },
-        tabLabel = "View",
+        tabLabel = "查看",
     ) {
         when {
             xmb && tab == DeckComponentsTabs.WRAPPERS -> WrapperManagerScreen()
@@ -143,7 +143,7 @@ internal fun DeckControlsPageHosted() {
     }
 }
 
-/** A Tools tab another page asked for (the search's "Logs" entry); the page picks it up once. */
+/** A Tools tab another page asked for (the search's "日志" entry); the page picks it up once. */
 internal object DeckToolsTabs {
     const val LOGS = 2
 
@@ -157,7 +157,7 @@ internal object DeckToolsTabs {
  * rail or strip), there is no More tab (Wrappers / Adrenotools are Components tabs, the rest lives in Settings), Files uses its
  * slim one-row toolbar, and Logs carries every recording option (a collapsible "Recording options" section) with nothing about
  * them in Settings. The plain Deck keeps the header, the full toolbar, the whole Logs screen and More, which holds the drawer's
- * leftovers and "Run setup again" ([DeckMoreTools]); its three callbacks are the shell's. Unpacking an archive starts from a
+ * leftovers and "再次运行设置" ([DeckMoreTools]); its three callbacks are the shell's. Unpacking an archive starts from a
  * file's menu in the File Manager, since it needs a picked archive.
  */
 @Composable
@@ -176,15 +176,15 @@ internal fun DeckToolsPage(
         }
     }
     val tabs = buildList {
-        add(DeckTabItem("Files", Icons.Filled.FolderOpen))
+        add(DeckTabItem("文件", Icons.Filled.FolderOpen))
         add(DeckTabItem("Saves", Icons.Filled.Save))
-        add(DeckTabItem("Logs", Icons.Filled.Description))
+        add(DeckTabItem("日志", Icons.Filled.Description))
         // Plain Deck only: the drawer's leftovers.
         if (!xmb) add(DeckTabItem("More", Icons.Filled.GridView))
     }
     DeckHostedPage(
         icon = Icons.Filled.Build,
-        title = "Tools",
+        title = "工具",
         description = "Files, saves, logs and archive unpacking — everything that used to live in separate drawer entries.",
         tabs = tabs,
         selected = tab,
@@ -192,7 +192,7 @@ internal fun DeckToolsPage(
         tabLabel = "Tool",
         // Files and Saves bring their own side list, so the page tabs stay an icon rail on every Tools tab.
         compactTabs = true,
-        // XMB only: no "Tools" title row (nor its info button), the tabs and the screen under them are all there is. The plain
+        // XMB only: no "工具" title row (nor its info button), the tabs and the screen under them are all there is. The plain
         // Deck keeps its header.
         showHeader = !xmb,
     ) {

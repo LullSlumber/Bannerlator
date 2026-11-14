@@ -10,7 +10,7 @@ import android.content.Context
  * ([AmazonLibrarySync]). So every uninstall — from the store list, the detail page, OR the
  * cross-store Download Manager — must clear the SAME keys, or a surface goes stale (the
  * device-observed bug: files deleted from the Manager, but the store list still showed
- * "✓ Installed" because only the Steam DB was cleared, never Amazon's prefs).
+ * "✓ 已安装" because only the Steam DB was cleared, never Amazon's prefs).
  *
  * This is the Amazon-side analogue of Steam clearing its DB (`SteamRepository.markUninstalled`).
  * It lives on the Amazon side ON PURPOSE so the store-agnostic `download` package keeps

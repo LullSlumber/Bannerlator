@@ -92,7 +92,7 @@ val AUDIO_PRESETS = listOf(
         "以低延迟启动，仅在检测到爆音时增大缓冲区。",
         AudioConfig(PRESET_AUTO, 1, true, 0, 0, 100), 0.46f,
         "力求达到您的设备在无爆音情况下的最低延迟。", R.string.help_audio_preset_auto),
-    AudioPreset(PRESET_LOW, "⚡", "Low latency", null,
+    AudioPreset(PRESET_LOW, "⚡", "低延迟", null,
         "最紧密同步。在重负载下可能出现爆音。",
         // adaptive TRUE. This rung pinned the buffer with no way to grow, so a title that
         // could not hold it crackled for the whole session with nothing to recover it -
@@ -307,7 +307,7 @@ fun audioConfigFromEnv(env: String, driverId: String = ""): AudioConfig {
 }
 
 /**
- * The audio popup. `scopeLabel` names the target ("此容器" / "this game" / "live · this
+ * The audio popup. `scopeLabel` names the target ("此容器" / "此游戏" / "live · this
  * session"). `latencyLive`=false shows the guest-buffer row tagged "next launch" (in-game).
  */
 @Composable

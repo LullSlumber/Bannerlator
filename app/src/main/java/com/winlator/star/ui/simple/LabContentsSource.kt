@@ -107,7 +107,7 @@ internal fun SimpleComponentSourcePage(index: Int, onBack: () -> Unit, vm: Conte
     val source = sources.getOrNull(index)
     LaunchedEffect(source?.name) { if (source != null) vm.selectSource(source) }
     // As Classic's refresh: drops the cached lists and loads this one again.
-    val refresh = MenuAction(L("Refresh"), { vm.refreshSelected() })
+    val refresh = MenuAction(L("刷新"), { vm.refreshSelected() })
     val sections = items.groupBy { it.type }.entries.map { (type, list) ->
         MenuSection(
             key = "t$type", title = type, icon = if (type == ContentsTypes.GPU_DRIVERS) Icons.Filled.Memory else Icons.Filled.Extension,
@@ -125,7 +125,7 @@ internal fun SimpleComponentSourcePage(index: Int, onBack: () -> Unit, vm: Conte
         )
     }
     SimpleMenuPage(
-        overline = L("Contents"),
+        overline = L("内容管理"),
         title = source?.name ?: L("Source"),
         sections = sections.ifEmpty {
             listOf(MenuSection("none", L("Components"), Icons.Filled.Extension, emptyList(), empty = if (loading) L("Loading the list…") else L("Nothing to download here."), primary = refresh))

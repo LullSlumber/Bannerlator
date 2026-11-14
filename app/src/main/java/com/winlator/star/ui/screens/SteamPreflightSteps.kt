@@ -3,7 +3,7 @@ package com.winlator.star.ui.screens
 import com.winlator.star.store.SteamSessionManager.Step
 import com.winlator.star.store.SteamSessionManager.StepState
 
-// The pure parts of the XMB "Getting Steam ready" dialog (SteamPreflightDialog): the step list it draws and the few sizes it
+// The pure parts of the XMB "正在准备Steam" dialog (SteamPreflightDialog): the step list it draws and the few sizes it
 // derives from the dialog's room. No Compose in here, so JVM tests cover them (SteamPreflightStepsTest).
 
 /** The rows of the pre-flight list, in the order the pre-flight runs them, ending with the launch itself. */
@@ -36,7 +36,7 @@ private fun markOf(state: StepState?, launching: Boolean): PreflightMark = when 
 
 /**
  * The step list for the live [states] (what [com.winlator.star.store.SteamSessionManager.PreflightListener.onStep] reported: state and
- * text per step). [appSteam] names the client row "Valve Steam client" (Headless Steam) instead of "SteamLite client". [launching]:
+ * text per step). [appSteam] names the client row "Valve Steam 客户端" (Headless Steam) instead of "SteamLite 客户端". [launching]:
  * every step is done and the game is starting, so the last row runs with "Launching [gameName]…".
  *
  * The current row is the first one running; else the first that warned (the pre-flight stopped there); else the first still
@@ -55,9 +55,9 @@ internal fun preflightRows(
     val rows = listOf(
         row(PreflightRowId.SIGN_IN, "Sign in", Step.SESSION),
         row(PreflightRowId.NETWORK, "Network", Step.NETWORK),
-        row(PreflightRowId.CLOUD, "Cloud saves", Step.CLOUD),
+        row(PreflightRowId.CLOUD, "云存档", Step.CLOUD),
         row(PreflightRowId.UPDATE, "Update check", Step.UPDATE),
-        row(PreflightRowId.CLIENT, if (appSteam) "Valve Steam client" else "SteamLite client", Step.CLIENT),
+        row(PreflightRowId.CLIENT, if (appSteam) "Valve Steam 客户端" else "SteamLite 客户端", Step.CLIENT),
         PreflightRow(
             PreflightRowId.LAUNCH, "Launch",
             if (launching) PreflightMark.RUNNING else PreflightMark.PENDING,

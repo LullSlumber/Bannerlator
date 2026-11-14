@@ -217,7 +217,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
             // The Deck shell's landscape frame shows the title, and its tabs replace Close.
             if (!com.winlator.star.ui.LocalHostedInDeck.current && !inDeckTools) Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    "Log Manager",
+                    "日志管理器",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
@@ -236,12 +236,12 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
             }
 
             // ── Where logs go ────────────────────────────────────────────
-            if (showOptions && optionsVisible) SectionLabel("Where logs go")
+            if (showOptions && optionsVisible) SectionLabel("日志存放位置")
             if (showOptions && optionsVisible) LogCard {
                 PickRow(
                     label = when (locationMode) {
                         LogLocation.MODE_DOWNLOAD -> "Download"
-                        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) "Custom folder" else "Choose folder…"
+                        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) "自定义文件夹" else "选择文件夹…"
                         // MODE_DOCUMENTS (default) and the retired MODE_APP_DATA both resolve to Documents.
                         else -> "Documents"
                     },
@@ -265,26 +265,26 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                             saveMode(LogLocation.MODE_DOCUMENTS); showLocationMenu = false
                         }
                         MenuItemDivider()
-                        MenuRow("Choose folder…", Icons.Default.FolderOpen) {
+                        MenuRow("选择文件夹…", Icons.Default.FolderOpen) {
                             showLocationMenu = false
-                            dirLauncher.launch(InAppFilePicker.buildDirIntent(context, "Select log folder"))
+                            dirLauncher.launch(InAppFilePicker.buildDirIntent(context, "选择日志文件夹"))
                         }
                     }
                 }
-                LogToggle("Folder for each game", perGame,
-                    hint = "Each game keeps its own folder",
-                    onInfo = { info = "Folder for each game" to LogCopy.PER_GAME }) {
+                LogToggle("每个游戏独立文件夹", perGame,
+                    hint = "每个游戏都有自己的文件夹",
+                    onInfo = { info = "每个游戏独立文件夹" to LogCopy.PER_GAME }) {
                     perGame = it; putBool(LogLocation.PREF_PER_GAME, it); refreshTick++
                 }
             }
 
             // ── What to record ───────────────────────────────────────────
-            if (optionsVisible) SectionLabel(if (showOptions) "What to record" else "Diagnostics")
+            if (optionsVisible) SectionLabel(if (showOptions) "要记录的内容" else "诊断")
             if (optionsVisible) LogCard {
               if (showOptions) {
-                LogToggle("Wine debug", wineDebug,
-                    hint = "Slows games down — for diagnosing a problem",
-                    onInfo = { info = "Wine debug" to LogCopy.WINE }) {
+                LogToggle("Wine 调试", wineDebug,
+                    hint = "会拖慢游戏运行速度 — 用于诊断问题",
+                    onInfo = { info = "Wine 调试" to LogCopy.WINE }) {
                     wineDebug = it; putBool("enable_wine_debug", it)
                 }
                 if (wineDebug) {
@@ -295,28 +295,28 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                     )
                 }
                 LogToggle("Box64 / FEXCore", box64Logs,
-                    hint = "Slows games down at higher verbosity",
+                    hint = "详细程度较高时会拖慢游戏运行速度",
                     onInfo = { info = "Box64 / FEXCore" to LogCopy.BOX64 }) {
                     box64Logs = it; putBool("enable_box64_logs", it)
                 }
                 LogToggle("DXVK & VKD3D", dxvkLogs,
-                    hint = "Safe to leave on — mostly written at startup",
+                    hint = "保持开启是安全的 — 主要在启动时写入",
                     onInfo = { info = "DXVK & VKD3D" to LogCopy.DXVK }) {
                     dxvkLogs = it; putBool("enable_dxvk_logs", it)
                 }
-                LogToggle("Controller input", controllerLogs,
-                    hint = "For controls that don't work — written when the game exits",
-                    onInfo = { info = "Controller input" to LogCopy.CONTROLLER }) {
+                LogToggle("控制器输入", controllerLogs,
+                    hint = "适用于控制不起作用时 — 在游戏退出时写入",
+                    onInfo = { info = "控制器输入" to LogCopy.CONTROLLER }) {
                     controllerLogs = it; putBool(com.winlator.star.core.ControllerLog.PREF_KEY, it)
                 }
-                LogToggle("SteamLite (Steam client)", steamLite,
-                    hint = "Only when a game launches through SteamLite",
-                    onInfo = { info = "SteamLite (Steam client)" to LogCopy.STEAMLITE }) {
+                LogToggle("SteamLite（Steam客户端）", steamLite,
+                    hint = "仅当游戏通过SteamLite启动时",
+                    onInfo = { info = "SteamLite（Steam客户端）" to LogCopy.STEAMLITE }) {
                     steamLite = it; putBool("enable_steamlite_logs", it)
                 }
-                LogToggle("Headless Steam (app session host)", headlessSteam,
-                    hint = "Only when a game launches through Headless Steam",
-                    onInfo = { info = "Headless Steam (app session host)" to LogCopy.HEADLESS_STEAM }) {
+                LogToggle("无窗口Steam（应用会话主机）", headlessSteam,
+                    hint = "仅当游戏通过无窗口Steam启动时",
+                    onInfo = { info = "无窗口Steam（应用会话主机）" to LogCopy.HEADLESS_STEAM }) {
                     headlessSteam = it; putBool("enable_headless_steam_logs", it)
                 }
                 LogToggle(context.getString(R.string.ubisoft_diag_report_title), ubisoftReport,
@@ -332,13 +332,13 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                     ubisoftDeep = it; putBool(UbisoftDiag.PREF_DEEP_TRACE, it)
                 }
                 LogToggle("Android logcat", logcat,
-                    hint = "Bannerlator's own output only",
+                    hint = "仅包含 Bannerlator 自身的输出",
                     onInfo = { info = "Android logcat" to LogCopy.LOGCAT }) {
                     logcat = it; putBool("enable_logcat", it)
                 }
-                LogToggle("Crash reports", crashReports,
-                    hint = "Nothing runs until something crashes",
-                    onInfo = { info = "Crash reports" to LogCopy.CRASH }) {
+                LogToggle("崩溃报告", crashReports,
+                    hint = "仅在崩溃时运行，无性能开销",
+                    onInfo = { info = "崩溃报告" to LogCopy.CRASH }) {
                     crashReports = it; putBool("enable_crash_reports", it)
                 }
                 // Exit reasons: reads Android's own record of why the process last died — the only way
@@ -346,12 +346,12 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                 // Java crash reporter) on an unrooted device. Toggle only auto-saves on launch; the
                 // system keeps the record either way, so the manual button below works even when off.
                 LogToggle(
-                    if (ExitReasonReporter.isSupported()) "Exit reasons (auto-save on launch)"
-                    else "Exit reasons (needs Android 11+)",
+                    if (ExitReasonReporter.isSupported()) "退出原因（启动时自动保存）"
+                    else "退出原因（需要Android 11+）",
                     exitAutosave,
-                    hint = "Records native crashes without root",
+                    hint = "无root记录原生崩溃",
                     enabled = ExitReasonReporter.isSupported(),
-                    onInfo = { info = "Exit reasons" to LogCopy.EXIT_REASONS }) {
+                    onInfo = { info = "退出原因" to LogCopy.EXIT_REASONS }) {
                     exitAutosave = it; putBool(ExitReasonReporter.PREF_AUTOSAVE, it)
                 }
                 // The Deck's Tools > Logs leaves the download-engine switches and the speed tier out: they live in Settings > Storage & data.
@@ -361,30 +361,30 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                 // next app start. OFF = JavaSteam as today; ON = the full Steam stack (auth, session,
                 // library, downloads, cloud, achievements, social, presence) runs on libblsteam.so and
                 // the engine's steam_engine.txt is folded into the SteamLite log bundle (Phase 3b-4).
-                LogToggle("Native Steam engine (restart required)", rustSteamEngine,
-                    hint = "On by default — the whole Steam session (sign-in, library, downloads, cloud, achievements, friends) runs on the native engine; its log joins the SteamLite bundle. Off = legacy Java engine",
-                    onInfo = { info = "Rust Steam engine" to LogCopy.RUST_ENGINE }) {
+                LogToggle("原生Steam引擎（需要重启）", rustSteamEngine,
+                    hint = "默认开启 — 整个Steam会话（登录、库、下载、云、成就、好友）在原生引擎上运行；其日志会加入SteamLite捆绑包。关闭 = 旧版Java引擎",
+                    onInfo = { info = "Rust Steam 引擎" to LogCopy.RUST_ENGINE }) {
                     rustSteamEngine = it
                     putBool(com.winlator.star.store.blsteam.BlSteamEngineFlag.PREF_KEY, it)
                 }
                 // Per-store switches for the native download engines (docs/RUST_STORE_ENGINES.md).
                 // Read at download start by each store's Java manager, so a flip applies to the next
                 // download — no restart. OFF = that manager's existing Java fetch loop.
-                LogToggle("Rust engine: Epic downloads", rustEpicEngine,
-                    hint = "On by default — Epic file chunks are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：Epic下载", rustEpicEngine,
+                    hint = "默认开启 — Epic文件块由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustEpicEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_EPIC, it)
                 }
-                LogToggle("Rust engine: GOG downloads", rustGogEngine,
-                    hint = "On by default — GOG depot chunks are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：GOG下载", rustGogEngine,
+                    hint = "默认开启 — GOG仓库块由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustGogEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_GOG, it)
                 }
-                LogToggle("Rust engine: Amazon downloads", rustAmazonEngine,
-                    hint = "On by default — Amazon Games files are fetched by the native engine; takes effect on the next download. Off = Java downloader",
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES }) {
+                LogToggle("Rust引擎：Amazon下载", rustAmazonEngine,
+                    hint = "默认开启 — Amazon游戏文件由原生引擎获取；在下次下载时生效。关闭 = Java下载器",
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES }) {
                     rustAmazonEngine = it
                     putBool(com.winlator.star.store.blsteam.BlStoreEngineFlag.PREF_KEY_AMAZON, it)
                 }
@@ -393,10 +393,10 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                 // adaptive window may ramp to, so a weak link still settles below it. Next download.
                 Spacer(Modifier.height(4.dp))
                 PickRow(
-                    "Store download speed",
-                    "Ceiling for the Rust Epic / GOG / Amazon engines. Tap to change; applies to the next download.",
+                    "商店下载速度",
+                    "Rust Epic / GOG / Amazon引擎的上限。点击更改；在下次下载时生效。",
                     action = com.winlator.star.store.StoreDownloadTier.label(storeDlTier),
-                    onInfo = { info = "Rust store engines" to LogCopy.RUST_STORE_ENGINES },
+                    onInfo = { info = "Rust商店引擎" to LogCopy.RUST_STORE_ENGINES },
                 ) {
                     storeDlTier = com.winlator.star.store.StoreDownloadTier.next(storeDlTier)
                     com.winlator.star.store.StoreDownloadTier.set(context, storeDlTier)
@@ -409,7 +409,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     CardAction(
-                        "Capture logcat now",
+                        "立即捕获 logcat",
                         modifier = Modifier.weight(1f).alpha(if (logcat) 1f else 0.4f)
                     ) {
                         if (!logcat) return@CardAction
@@ -422,12 +422,12 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                             refreshTick++
                         }
                     }
-                    InfoDot { info = "Capture logcat now" to LogCopy.CAPTURE_NOW }
+                    InfoDot { info = "立即捕获 logcat" to LogCopy.CAPTURE_NOW }
                 }
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     CardAction(
-                        "Read last crash",
+                        "读取上次崩溃",
                         modifier = Modifier.weight(1f).alpha(if (ExitReasonReporter.isSupported()) 1f else 0.4f)
                     ) {
                         if (!ExitReasonReporter.isSupported()) return@CardAction
@@ -442,20 +442,20 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                             refreshTick++
                         }
                     }
-                    InfoDot { info = "Exit reasons" to LogCopy.EXIT_REASONS }
+                    InfoDot { info = "退出原因" to LogCopy.EXIT_REASONS }
                 }
             }
 
             // ── Housekeeping ─────────────────────────────────────────────
-            SectionLabel("Housekeeping")
+            SectionLabel("日志维护")
             LogCard {
                 if (showOptions && optionsVisible) Box {
                     PickRow(
-                        label = "Keep last",
+                        label = "保留最近",
                         sub = if (keepLast == 0) "No history — each run replaces the last"
                               else "$keepLast launch${if (keepLast == 1) "" else "es"} per game",
                         action = "▾",
-                        onInfo = { info = "Keep last launches" to LogCopy.KEEP_LAST },
+                        onInfo = { info = "保留最近运行次数" to LogCopy.KEEP_LAST },
                         onClick = { showKeepMenu = true }
                     )
                     DropdownMenu(
@@ -479,7 +479,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Total size", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                        Text("总大小", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
                         Text(
                             LogInventory.humanBytes(LogInventory.totalBytes(entries)) +
                                 " across ${entries.size} " + if (entries.size == 1) "folder" else "folders",
@@ -491,7 +491,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                             .xmbStop(RoundedCornerShape(8.dp))
                             .clickable { browseDir = LogLocation.resolveLogDir(context) }
                             .padding(horizontal = 8.dp, vertical = 6.dp))
-                    Text("Clear all", color = DangerRed, fontSize = 12.sp,
+                    Text("全部清除", color = DangerRed, fontSize = 12.sp,
                         modifier = Modifier
                             .xmbStop(RoundedCornerShape(8.dp))
                             .clickable { if (entries.isNotEmpty()) confirmClearAll = true }
@@ -501,10 +501,10 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
             }
 
             // ── Logs by game ─────────────────────────────────────────────
-            SectionLabel("Logs by game")
+            SectionLabel("按游戏查看日志")
             if (entries.isEmpty()) {
                 LogCard {
-                    Text("No logs yet.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    Text("暂无日志。", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 }
             } else if (inDeckTools) {
                 // Two equal tiles per row; a long game name is cut to one line, so it never makes its tile bigger.
@@ -537,7 +537,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
 
             Spacer(Modifier.height(10.dp))
             Text(
-                "Explain the log types",
+                "了解日志类型",
                 color = MaterialTheme.colorScheme.primary, fontSize = 12.sp,
                 modifier = Modifier
                     .xmbStop(RoundedCornerShape(8.dp))
@@ -597,7 +597,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
     exitReport?.let { report ->
         OutlinedAlertDialog(
             onDismissRequest = { exitReport = null },
-            title = { Text("Last crash / exit reasons") },
+            title = { Text("上次崩溃/退出原因") },
             text = {
                 Column(modifier = Modifier.heightIn(max = 440.dp).verticalScroll(rememberScrollState())) {
                     Text(
@@ -623,12 +623,12 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
         val count = remember(entry.dir) { LogInventory.deletableCount(entry) }
         OutlinedAlertDialog(
             onDismissRequest = { confirmDelete = null },
-            // The loose bucket is already named "Older logs"/"All logs", so "Delete ${name} logs?"
+            // The loose bucket is already named "更早的日志"/"所有日志", so "Delete ${name} logs?"
             // read "Delete Older logs logs?". Only a game name needs the word appending.
             title = {
                 Text(
                     when {
-                        entry.isAppBucket -> "Delete app & crash logs?"
+                        entry.isAppBucket -> "删除应用与崩溃日志?"
                         entry.isLooseBucket -> "Delete ${entry.name.replaceFirstChar { it.lowercase() }}?"
                         else -> "Delete ${entry.name} logs?"
                     }
@@ -658,7 +658,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                             context, "Deleted $n file${if (n == 1) "" else "s"}",
                             android.widget.Toast.LENGTH_SHORT
                         ).show()
-                    }) { Text("Delete", color = DangerRed) }
+                    }) { Text("删除", color = DangerRed) }
                 }
             },
             dismissButton = {
@@ -673,7 +673,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
         val count = remember(refreshTick) { entries.sumOf { LogInventory.deletableCount(it) } }
         OutlinedAlertDialog(
             onDismissRequest = { confirmClearAll = false },
-            title = { Text("Clear all logs?") },
+            title = { Text("清除所有日志?") },
             text = {
                 Text(
                     "Deletes $count log file${if (count == 1) "" else "s"} across ${entries.size} " +
@@ -692,7 +692,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
                         context, "Deleted $n file${if (n == 1) "" else "s"}",
                         android.widget.Toast.LENGTH_SHORT
                     ).show()
-                }) { Text("Delete all", color = DangerRed) }
+                }) { Text("全部删除", color = DangerRed) }
             },
             dismissButton = { TextButton(onClick = { confirmClearAll = false }) { Text("Cancel") } }
         )
@@ -700,7 +700,7 @@ fun LogManagerScreen(onClose: () -> Unit, showOptions: Boolean = true, inDeckToo
 
     info?.let { (title, body) -> PerfInfoDialog(title = title, body = body, onDismiss = { info = null }) }
     if (showExplainAll) {
-        PerfInfoDialog(title = "What each log is for", body = LogCopy.explainAll(),
+        PerfInfoDialog(title = "每个日志的用途", body = LogCopy.explainAll(),
             onDismiss = { showExplainAll = false })
     }
 }
@@ -830,7 +830,7 @@ private fun WineChannelGroup(
             modifier = Modifier.fillMaxWidth().xmbStop(RoundedCornerShape(8.dp)).clickable { expanded = !expanded }
         ) {
             Text(
-                "Channels",
+                "频道",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
@@ -909,7 +909,7 @@ private fun WineChannelGroup(
         }
 
         Text(
-            "Reset to defaults",
+            "重置为默认值",
             color = MaterialTheme.colorScheme.primary, fontSize = 12.sp,
             modifier = Modifier
                 .xmbStop(RoundedCornerShape(8.dp))
@@ -938,8 +938,8 @@ private fun WineChannelGroup(
  * who doesn't know what exists.
  *
  * Grouped by family rather than listed alphabetically: 521 names in one column is technically "all
- * of them" and practically unreadable, whereas "Sound" holding 15 entries is something a user can
- * actually shop from. "What's this?" turns on a one-line explanation under every row, which is the
+ * of them" and practically unreadable, whereas "声音" holding 15 entries is something a user can
+ * actually shop from. "这是什么?" turns on a one-line explanation under every row, which is the
  * difference between a list of names and a reference — it is off by default because with it on each
  * row is three lines tall and scanning gets slower.
  */
@@ -1011,7 +1011,7 @@ private fun AllChannelsDialog(
                 Column(modifier = Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 10.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("All Wine channels", style = MaterialTheme.typography.titleMedium)
+                            Text("所有 Wine 频道", style = MaterialTheme.typography.titleMedium)
                             Text(
                                 "${all.size} available · ${selected.size} on",
                                 fontSize = 11.sp,
@@ -1022,7 +1022,7 @@ private fun AllChannelsDialog(
                             selected = showHelp,
                             onClick = { showHelp = !showHelp },
                             modifier = Modifier.xmbBtn(RoundedCornerShape(8.dp)),
-                            label = { Text("What's this?", fontSize = 11.sp) },
+                            label = { Text("这是什么?", fontSize = 11.sp) },
                             leadingIcon = {
                                 Icon(Icons.Outlined.HelpOutline, null, modifier = Modifier.size(14.dp))
                             },
@@ -1032,7 +1032,7 @@ private fun AllChannelsDialog(
                             selected = selectedOnly,
                             onClick = { selectedOnly = !selectedOnly },
                             modifier = Modifier.xmbBtn(RoundedCornerShape(8.dp)),
-                            label = { Text("On only", fontSize = 11.sp) },
+                            label = { Text("仅开启", fontSize = 11.sp) },
                         )
                         IconButton(onClick = onDismiss, modifier = Modifier.xmbBtn(CircleShape)) {
                             Icon(Icons.Default.Close, "Close", tint = MaterialTheme.colorScheme.onSurface)
@@ -1219,9 +1219,9 @@ private fun GameLogCard(
             horizontalArrangement = Arrangement.spacedBy(if (tile) 4.dp else 6.dp),
             modifier = Modifier.fillMaxWidth().padding(top = 9.dp)
         ) {
-            CardAction("View", modifier = Modifier.weight(1f), primary = true, small = tile, onClick = onView)
-            CardAction("Share", modifier = Modifier.weight(1f), small = tile, onClick = onShare)
-            CardAction("Delete", modifier = Modifier.weight(1f), danger = true, small = tile, onClick = onDelete)
+            CardAction("查看", modifier = Modifier.weight(1f), primary = true, small = tile, onClick = onView)
+            CardAction("分享", modifier = Modifier.weight(1f), small = tile, onClick = onShare)
+            CardAction("删除", modifier = Modifier.weight(1f), danger = true, small = tile, onClick = onDelete)
         }
     }
 }
@@ -1343,7 +1343,7 @@ private fun LogToggle(
 @Composable
 private fun InfoDot(onClick: () -> Unit) {
     IconButton(onClick = onClick, modifier = Modifier.size(28.dp).xmbBtn(CircleShape)) {
-        Icon(Icons.Outlined.HelpOutline, "What's this?",
+        Icon(Icons.Outlined.HelpOutline, "这是什么?",
             tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
     }
 }

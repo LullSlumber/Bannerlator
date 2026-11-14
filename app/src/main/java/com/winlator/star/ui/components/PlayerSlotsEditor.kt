@@ -29,7 +29,7 @@ import com.winlator.star.inputcontrols.ExternalController
 import com.winlator.star.winhandler.WinHandler
 
 // ───── Out-of-game Player Slots editor — shared by the Container editor and the per-game Shortcut editor ─────
-// Mirrors the in-game "Players" sub-tab (XServerDrawer.PlayerSlotRowItem) but writes a SAVED preference
+// Mirrors the in-game "玩家" sub-tab (XServerDrawer.PlayerSlotRowItem) but writes a SAVED preference
 // applied on the NEXT launch instead of reassigning a live session. The persisted value is the exact same
 // controllerSlotOverrides JSON the in-game tab and launch pre-assignment use — parsed/serialized only via
 // WinHandler.parseSlotOverridesJson / buildSlotOverridesJson, never hand-rolled here — so a pin set here is
@@ -125,7 +125,7 @@ private fun PlayerSlotEditorRowItem(row: PlayerSlotEditorRow, onChange: (Int) ->
         buildList {
             add("Auto" to SLOT_AUTO)
             for (i in 0 until 4) add("Player ${i + 1}" to i)
-            add("Ignore" to SLOT_IGNORE)
+            add("忽略" to SLOT_IGNORE)
         }
     }
     val selectedLabel = options.firstOrNull { it.second == row.override }?.first ?: "Auto"

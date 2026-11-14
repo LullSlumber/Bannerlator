@@ -119,8 +119,8 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
     }
     val deckActions = LocalDeckActions.current
     DisposableEffect(deckActions, picking) {
-        val legend = if (picking) listOf("B" to L("Done"), "A" to L("Pick"), "X" to L("Game menu"))
-        else listOf("B" to L("Back"), "A" to L("Open"), "X" to L("Game menu"), "L1 R1" to L("Section"))
+        val legend = if (picking) listOf("B" to L("Done"), "A" to L("Pick"), "X" to L("游戏菜单"))
+        else listOf("B" to L("Back"), "A" to L("Open"), "X" to L("游戏菜单"), "L1 R1" to L("Section"))
         deckActions.ownLegend.value = legend
         onDispose { if (deckActions.ownLegend.value === legend) deckActions.ownLegend.value = null }
     }
@@ -138,7 +138,7 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
             val buttons: @Composable () -> Unit = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
                     if (picking) {
-                        LabButton(L("Remove"), icon = Icons.Filled.Delete, danger = true) {
+                        LabButton(L("移除"), icon = Icons.Filled.Delete, danger = true) {
                             if (picked.isEmpty()) toast(context, L("Pick the games to remove first")) else confirmRemove = true
                         }
                         LabButton(L("Done"), icon = Icons.Filled.Close) { endPicking() }
@@ -228,7 +228,7 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
         SimpleActionSheet(
             if (targets.size == 1) L("Remove 1 game?") else L("Remove %1\$s games?", targets.size),
             listOf(
-                MenuAction(L("Remove"), {
+                MenuAction(L("移除"), {
                     val ok = targets.count { vm.remove(it, context) }
                     toast(
                         context,
@@ -290,9 +290,9 @@ internal fun LabStoresPage(onLaunchStore: (Screen) -> Unit, onBack: () -> Unit, 
         )
     }
     SimpleMenuPage(
-        overline = L("Stores"),
+        overline = L("商店"),
         title = L("Your stores"),
-        sections = listOf(MenuSection("stores", L("Stores"), Icons.Filled.Storefront, entries)),
+        sections = listOf(MenuSection("stores", L("商店"), Icons.Filled.Storefront, entries)),
         onBack = onBack,
     )
 }

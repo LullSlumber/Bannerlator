@@ -1052,7 +1052,7 @@ fun BigPictureScreen(navController: NavController) {
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
                 // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
-                // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
+                // Per-game "需要安全（VAC）启动" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
                 s.saveData()
                 launchChoiceFor = null

@@ -105,15 +105,15 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
     var searching by mutableStateOf(false)
     fun details(): GameDetails = GameDetails.from(s)
     fun write(d: GameDetails) { runCatching { d.writeTo(s) }; xmb.saved(); xmb.refresh() }
-    // Opens on the name, not on "Unlink from Steam" (a stray A must not unlink).
-    return XmbMenu("Game Details", Icons.Filled.Edit, initialKey = "name") {
+    // Opens on the name, not on "从Steam解除关联" (a stray A must not unlink).
+    return XmbMenu("游戏详情", Icons.Filled.Edit, initialKey = "name") {
         val d = details()
         val rows = mutableListOf<XmbRow>()
         d.steamAppId?.takeIf { it > 0 }?.let { id ->
             rows += XmbRow.Info("app", "Steam App ID", Icons.Filled.Star, id.toString())
-            rows += XmbRow.Action("unlink", "Unlink from Steam", Icons.Filled.LinkOff) { write(d.copy(steamAppId = null)) }
+            rows += XmbRow.Action("unlink", "从Steam解除关联", Icons.Filled.LinkOff) { write(d.copy(steamAppId = null)) }
         }
-        rows += XmbRow.Text("name", "Game name", Icons.Filled.ShortText, s.name) { v ->
+        rows += XmbRow.Text("name", "游戏名称", Icons.Filled.ShortText, s.name) { v ->
             val nb = xmbSafeName(v)
             if (nb.isNotEmpty() && nb != s.name) renameAndReturn(xmb, s, nb)
         }
@@ -125,16 +125,16 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
             rows += XmbRow.Action("coverRemove", coverCtx.getString(R.string.xmb_cover_remove), Icons.Filled.Delete,
                 subtitle = coverCtx.getString(R.string.xmb_cover_remove_hint)) { removeCustomCover(xmb, s) }
         }
-        rows += XmbRow.Link("search", "Search Steam", Icons.Filled.Search, subtitle = "Pick a result to fill every field") {
+        rows += XmbRow.Link("search", "搜索 Steam", Icons.Filled.Search, subtitle = "选择一个结果以填充所有字段") {
             results = emptyList(); searching = true
             val q = s.name
             xmb.scope.launch {
                 val r = withContext(Dispatchers.IO) { runCatching { SteamStoreSearch.searchByName(q) }.getOrDefault(emptyList()) }
                 results = r; searching = false
             }
-            XmbMenu("Search Steam", Icons.Filled.Search) {
+            XmbMenu("搜索 Steam", Icons.Filled.Search) {
                 when {
-                    searching -> listOf(XmbRow.Info("busy", "Searching Steam…", Icons.Filled.Search))
+                    searching -> listOf(XmbRow.Info("busy", "正在搜索Steam…", Icons.Filled.Search))
                     results.isEmpty() -> listOf(XmbRow.Info("none", "No results found for “$q”", Icons.Filled.Search))
                     else -> results.mapIndexed { i, r ->
                         XmbRow.Action("r$i", r.name, Icons.Filled.Search, subtitle = "App ID: ${r.appId}") {
@@ -158,16 +158,16 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
                 }
             }
         }
-        rows += XmbRow.Text("genres", "Genres", Icons.Filled.Label, d.genres.joinToString(", "), subtitle = "Comma-separated", placeholder = "e.g. Action, RPG, Strategy") { v ->
+        rows += XmbRow.Text("genres", "类型", Icons.Filled.Label, d.genres.joinToString(", "), subtitle = "用逗号分隔", placeholder = "例如：动作, 角色扮演, 策略") { v ->
             write(d.copy(genres = v.split(",").map { it.trim() }.filter { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("desc", "Description", Icons.Filled.Description, d.description ?: "", subtitle = "Shown on the launch screen") { v ->
+        rows += XmbRow.Text("desc", "Description", Icons.Filled.Description, d.description ?: "", subtitle = "显示在启动屏幕上") { v ->
             write(d.copy(description = v.trim().takeIf { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("year", "Release year", Icons.Filled.Event, d.releaseYear ?: "", numeric = true, placeholder = "e.g. 2023") { v ->
+        rows += XmbRow.Text("year", "发行年份", Icons.Filled.Event, d.releaseYear ?: "", numeric = true, placeholder = "例如 2023") { v ->
             write(d.copy(releaseYear = v.trim().take(4).takeIf { it.isNotBlank() }))
         }
-        rows += XmbRow.Text("mc", "Metacritic", Icons.Filled.Star, d.metacritic?.toString() ?: "", subtitle = "1–100, leave blank to hide", numeric = true) { v ->
+        rows += XmbRow.Text("mc", "Metacritic评分", Icons.Filled.Star, d.metacritic?.toString() ?: "", subtitle = "1–100，留空则隐藏", numeric = true) { v ->
             write(d.copy(metacritic = v.trim().toIntOrNull()?.takeIf { it in 1..100 }))
         }
         rows
@@ -176,8 +176,8 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
 
 // ── Properties ──────────────────────────────────────────────────────────────────────────────────────
 
-// Opens on the play count, not on "Reset properties".
-internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("Properties", Icons.Filled.Info, initialKey = "plays") {
+// Opens on the play count, not on "重置属性".
+internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("属性", Icons.Filled.Info, initialKey = "plays") {
     val prefs = xmb.context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE)
     val tKey = "${s.name}_playtime"
     val cKey = "${s.name}_play_count"
@@ -187,10 +187,10 @@ internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("P
     val hr = (totalMs / 3600000) % 24
     val days = totalMs / 86400000
     listOf(
-        XmbRow.Info("plays", "Number of times played", Icons.Filled.Star, prefs.getInt(cKey, 0).toString()),
-        XmbRow.Info("time", "Playtime", Icons.Filled.Timer, String.format("%dd %02dh %02dm %02ds", days, hr, min, sec)),
-        XmbRow.Action("reset", "Reset properties", Icons.Filled.Refresh, danger = true) {
-            xmb.confirm(XmbConfirm("Reset properties", "Clear times played and playtime for “${s.name}”?", "Reset", danger = true)) {
+        XmbRow.Info("plays", "游玩次数", Icons.Filled.Star, prefs.getInt(cKey, 0).toString()),
+        XmbRow.Info("time", "游玩时间", Icons.Filled.Timer, String.format("%dd %02dh %02dm %02ds", days, hr, min, sec)),
+        XmbRow.Action("reset", "重置属性", Icons.Filled.Refresh, danger = true) {
+            xmb.confirm(XmbConfirm("重置属性", "Clear times played and playtime for “${s.name}”?", "重置", danger = true)) {
                 prefs.edit().remove(tKey).remove(cKey).apply()
                 xmb.saved(); xmb.refresh()
             }
@@ -200,7 +200,7 @@ internal fun xmbPropertiesMenu(xmb: XmbScope, s: Shortcut): XmbMenu = XmbMenu("P
 
 // ── Clone / Remove ──────────────────────────────────────────────────────────────────────────────────
 
-internal fun xmbCloneMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu = XmbMenu("Select container", Icons.Filled.ContentCopy) {
+internal fun xmbCloneMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu = XmbMenu("选择容器", Icons.Filled.ContentCopy) {
     val others = host.containers().filter { it.id != s.container.id }
     if (others.isEmpty()) XmbTools.para("none", NO_OTHER_CONTAINER_XMB, Icons.Filled.Info, context)
     else others.mapIndexed { i, c ->
@@ -224,12 +224,12 @@ private fun xmbMoveGame(xmb: XmbScope, s: Shortcut, c: Container, keepCopy: Bool
 }
 
 internal fun xmbRemoveMenu(xmb: XmbScope, s: Shortcut, host: XmbGameHost): XmbMenu =
-    XmbMenu("Remove shortcut?", Icons.Filled.Delete, initialKey = "cancel") {
+    XmbMenu("移除快捷方式?", Icons.Filled.Delete, initialKey = "cancel") {
         listOf(
             XmbRow.Info("msg", "Remove “${s.name}”?", Icons.Filled.Info),
-            XmbRow.Action("remove", "Remove", Icons.Filled.Delete, danger = true) {
+            XmbRow.Action("remove", "移除", Icons.Filled.Delete, danger = true) {
                 val ok = host.remove(s)
-                xmb.toast(if (ok) "Shortcut removed." else "Failed to remove shortcut.")
+                xmb.toast(if (ok) "快捷方式已删除。" else "移除快捷方式失败。")
                 xmb.popToRoot()
                 xmb.reloadGames()
             },

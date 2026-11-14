@@ -103,7 +103,7 @@ internal fun DeckControlsPage() {
     val tabs = listOf(
         DeckTabItem("On-screen", Icons.Filled.TouchApp),
         DeckTabItem("Controller", Icons.Filled.Gamepad),
-        DeckTabItem("Assign", Icons.Filled.People),
+        DeckTabItem("分配", Icons.Filled.People),
         DeckTabItem("Device", Icons.Filled.PhoneAndroid),
     )
     if (deckRails()) {
@@ -347,8 +347,8 @@ private fun DeckOnScreenTab(s: InputControlsDeckState) {
     CtlPanes(
         left = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DeckButton("New profile", Icons.Filled.Add, s.newProfile)
-                DeckButton("Import", Icons.Filled.FileDownload, s.importProfile)
+                DeckButton("新配置", Icons.Filled.Add, s.newProfile)
+                DeckButton("导入", Icons.Filled.FileDownload, s.importProfile)
             }
             DeckCard {
                 if (s.profiles.isEmpty()) {
@@ -459,10 +459,10 @@ private fun ProfileDetailCard(s: InputControlsDeckState) {
                 ) {
                     DeckButton("Edit layout", Icons.Filled.Edit, { s.editLayout(p) }, primary = true)
                     DeckButton("Rename", null, { s.rename(p) })
-                    DeckButton("Duplicate", Icons.Filled.ContentCopy, { s.duplicate(p) })
-                    DeckButton("Delete", Icons.Filled.Delete, { s.delete(p) })
+                    DeckButton("复制", Icons.Filled.ContentCopy, { s.duplicate(p) })
+                    DeckButton("删除", Icons.Filled.Delete, { s.delete(p) })
                     Box {
-                        DeckButton("Export", Icons.Filled.FileUpload, { exportOpen = true })
+                        DeckButton("导出", Icons.Filled.FileUpload, { exportOpen = true })
                         DropdownMenu(
                             expanded = exportOpen,
                             onDismissRequest = { exportOpen = false },
@@ -539,7 +539,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
             DeckCard {
                 Spacer(Modifier.height(4.dp))
                 CtlChoiceRow(
-                    label = "Profile",
+                    label = "配置",
                     value = s.current?.getName() ?: "None",
                     options = s.profiles.map { it.getName() },
                     onPick = { i -> s.select(s.profiles.getOrNull(i)) },
@@ -610,7 +610,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                             DeckButton("Edit bindings", Icons.Filled.Edit, { s.openBindings(activeId) }, primary = true)
                             val dev = pad?.device
                             if (pad != null && dev != null && pad.vibrator) {
-                                DeckButton("Rumble", Icons.Filled.Vibration, { pulsePad(dev) })
+                                DeckButton("震动", Icons.Filled.Vibration, { pulsePad(dev) })
                             }
                             if (target != null && !isDefault) {
                                 Box {
@@ -634,7 +634,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                                         }
                                     }
                                 }
-                                if (count > 0) DeckButton("Remove", Icons.Filled.Delete, { s.removeController(target) })
+                                if (count > 0) DeckButton("移除", Icons.Filled.Delete, { s.removeController(target) })
                             }
                         }
                         if (target == null || count == 0) {

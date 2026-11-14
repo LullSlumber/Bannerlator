@@ -80,12 +80,12 @@ import kotlinx.coroutines.launch
 
 /** The game page's quick settings: the first of each group that applies to this game (X11 or Wayland driver ...). */
 private val QUICK = listOf(
-    listOf("graphics.driver", "graphics.compositorDriver") to L("GPU driver"),
+    listOf("graphics.driver", "graphics.compositorDriver") to L("虚幻引擎 HDR 修复"),
     listOf("graphics.dxWrapper") to L("DX wrapper"),
     listOf("display.resolution") to L("Resolution"),
     listOf("hud.show") to L("FPS overlay"),
     listOf("performance.frameGen") to L("Frame gen"),
-    listOf("performance.fpsLimiter") to L("FPS limiter"),
+    listOf("performance.fpsLimiter") to L("FPS 限制器"),
     listOf("performance.syncMode") to L("Sync"),
     listOf("input.controlsProfile") to L("Controls"),
 )
@@ -132,7 +132,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
     if (loaded == null) {
         // Shown only while the list still has it (it is being re-read); otherwise the page follows the rename or goes back.
         if (shortcuts?.any { it.file.path == current } == true) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(L("This game is no longer in your library."), color = SimpleMuted) }
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(L("此游戏已不在您的库中。"), color = SimpleMuted) }
         }
         return
     }
@@ -277,9 +277,9 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                         leave()
                         GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.MOVE_TO_CONTAINER, shortcut.file.path)
                     } else null,
-                    mods?.let { g -> NavTile(L("Mods"), g.enabledNames().ifEmpty { "—" }, 2) { modsOpen = true } },
-                    NavTile(L("Game details"), L("Details, artwork, background ›"), 2) { onNavigate(LabRoutes.details(shortcut.file.path)) },
-                    NavTile(L("Everything else"), L("All settings ›"), 1) { onNavigate(DeckSettingsRoutes.game(shortcut.file.path)) },
+                    mods?.let { g -> NavTile(L("浏览文件"), g.enabledNames().ifEmpty { "—" }, 2) { modsOpen = true } },
+                    NavTile(L("游戏详情"), L("Details, artwork, background ›"), 2) { onNavigate(LabRoutes.details(shortcut.file.path)) },
+                    NavTile(L("其他所有"), L("All settings ›"), 1) { onNavigate(DeckSettingsRoutes.game(shortcut.file.path)) },
                 )
                 nav.chunked(cols).forEach { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -307,7 +307,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                             )
                             LabSparkline(fps.history, Modifier.fillMaxWidth().weight(1f))
                         } else {
-                            LabTileLabel(L("Playtime"))
+                            LabTileLabel(L("游玩时间"))
                             Text(
                                 (stats?.count ?: 0).let { n -> if (n == 1) L("%1\$s · 1 session", playtimeLabel(stats?.ms ?: 0L)) else L("%1\$s · %2\$s sessions", playtimeLabel(stats?.ms ?: 0L), n) },
                                 color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1,
@@ -326,7 +326,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.fillMaxWidth().labPanel().labTile(onClick = { onNavigate(LabRoutes.details(shortcut.file.path)) }).padding(12.dp),
                     ) {
-                        LabTileLabel(L("About this game"))
+                        LabTileLabel(L("关于此游戏"))
                         if (facts.isNotEmpty()) Text(facts, color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         details.description?.let { Text(it, color = SimpleMuted, fontSize = 13.sp, maxLines = 4, overflow = TextOverflow.Ellipsis) }
                     }

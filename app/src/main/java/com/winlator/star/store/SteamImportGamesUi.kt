@@ -130,7 +130,7 @@ private fun ImportList(dir: File, r: SteamFolderAdopt.Result, onClose: () -> Uni
                         }
                     }.start()
                 },
-            ) { Text(if (adding) "Adding…" else "Add ${toAdd.size}") }
+            ) { Text(if (adding) "正在添加…" else "Add ${toAdd.size}") }
         },
         dismissButton = { TextButton(enabled = !adding, onClick = onClose) { Text("Cancel") } },
         title = { Text("Import game library") },

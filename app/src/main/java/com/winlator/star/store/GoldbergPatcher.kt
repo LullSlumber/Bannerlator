@@ -852,7 +852,7 @@ object GoldbergPatcher {
     /**
      * Goldberg's steam_api dlls (gbe_fork and the original) read their config from a `steam_settings` folder
      * and carry their own name; a genuine Valve steam_api dll has none of these strings. Used to tell "this dll
-     * is the one we swapped in" from "this dll is the game's own (possibly newer) original".
+     * is the one we swapped in" 来自 "this dll is the game's own (possibly newer) original".
      */
     private fun looksLikeGoldbergDll(dll: File): Boolean {
         return try {

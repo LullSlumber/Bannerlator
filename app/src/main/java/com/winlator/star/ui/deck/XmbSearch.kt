@@ -248,7 +248,7 @@ private fun XmbSearchBar(
         Spacer(Modifier.width(s.dp(8f)))
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (query.isEmpty()) {
-                Text("Games, screens and tools", fontSize = s.sp(13f), color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text("游戏、屏幕和工具", fontSize = s.sp(13f), color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             BasicTextField(
                 value = query,
@@ -301,7 +301,7 @@ private fun XmbSearchResults(
     ) {
         if (games.isNotEmpty()) {
             item(key = "h-games") {
-                DeckSectionLabel(if (typed.isEmpty()) "Recently played" else "Games · ${games.size}")
+                DeckSectionLabel(if (typed.isEmpty()) "最近游玩" else "Games · ${games.size}")
             }
             items(games, key = { "g:" + it.file.path }) { game ->
                 val subtitle = storeLabelOf(game) + " · " + playtimeLabel(stats[game.file.path]?.ms ?: 0L)

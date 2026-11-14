@@ -744,7 +744,7 @@ private fun PresetValuesDialog(s: DeckPerformanceSection, edit: DeckPerformanceS
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    L("Environment variables"),
+                    L("环境变量"),
                     color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, fontSize = 12.5.sp,
                     modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
                 )

@@ -217,7 +217,7 @@ internal class DeckAudioSection(
             AudioSettingsDialog(
                 initial = audioConfigFromEnv(AudioRows.effectiveEnv(source, driver), driver),
                 scopeLabel = when (env.scope) {
-                    EditorScope.GAME -> L("this game")
+                    EditorScope.GAME -> L("此游戏")
                     EditorScope.DEFAULTS -> L("新容器")
                     else -> L("此容器")
                 },
