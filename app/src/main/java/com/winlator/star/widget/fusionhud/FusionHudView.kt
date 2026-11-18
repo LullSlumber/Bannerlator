@@ -1213,23 +1213,44 @@ class FusionHudView(
     override fun onDraw(canvas: Canvas) {
         if (contentW <= 0f || contentH <= 0f) { lockController.drawBadge(canvas); return }
 
-        // The Pill is a capsule — its background must use the SAME height/2 radius as the outline, or the
-        // boxier 8sp background corners poke out past the accent border (the "bg larger than outline" bug).
-        val pill = pillBorder
-        val radius = if (pill != null) height / 2f else sp(8f)
-        bgPaint.color = Color.argb((bgOpacity.coerceIn(0f, 1f) * 255f).roundToInt(), 0, 0, 0)
-        canvas.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), radius, radius, bgPaint)
+        if (size == FusionSize.STRIP) {
+            // Strip background — DroidDeck stripFrame() replica (DroidDeckHudView.kt:1126): a flat,
+            // square-cornered bar flush against the screen edge. No outline ring here; the outline
+            // settings only drive a SINGLE line on the inner edge (under the bar when snapped to the
+            // top, over it when snapped to the bottom) — the edge touching the screen stays bare and
+            // flush, so there is no gap between the bar and the screen edge.
+            bgPaint.color = Color.argb((bgOpacity.coerceIn(0f, 1f) * 255f).roundToInt(), 0, 0, 0)
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), bgPaint)
+            val strokeW = if (outlineIntensity > 0f) outlineIntensity * sp(3.5f) else 0f
+            if (strokeW > 0f) {
+                val p = parent as? View
+                val atBottom = p != null && p.height > 0 && y + height / 2f > p.height / 2f
+                val line = maxOf(strokeW / 2f, density)
+                val base = if (outlineFollowAccent) AppThemeState.getCurrentAccentArgb()
+                           else Color.rgb(200, 200, 200)
+                bgPaint.color = withAlpha(base, (110 + 145 * outlineIntensity).roundToInt().coerceAtMost(255))
+                if (atBottom) canvas.drawRect(0f, 0f, width.toFloat(), line, bgPaint)
+                else canvas.drawRect(0f, height - line, width.toFloat(), height.toFloat(), bgPaint)
+            }
+        } else {
+            // The Pill is a capsule — its background must use the SAME height/2 radius as the outline, or the
+            // boxier 8sp background corners poke out past the accent border (the "bg larger than outline" bug).
+            val pill = pillBorder
+            val radius = if (pill != null) height / 2f else sp(8f)
+            bgPaint.color = Color.argb((bgOpacity.coerceIn(0f, 1f) * 255f).roundToInt(), 0, 0, 0)
+            canvas.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), radius, radius, bgPaint)
 
-        // Outline follows the settings for EVERY size (incl. the Pill): width from the outline slider
-        // (0 = none), colour = accent or grey per the "Outline color" toggle. The Pill only differs in
-        // its capsule radius (height/2), which is baked into `radius` above.
-        val strokeW = if (outlineIntensity > 0f) outlineIntensity * sp(3.5f) else 0f
-        if (strokeW > 0f) {
-            strokePaint.strokeWidth = strokeW
-            strokePaint.color = if (outlineFollowAccent) AppThemeState.getCurrentAccentArgb()
-                                else Color.rgb(200, 200, 200)
-            val h = strokeW / 2f
-            canvas.drawRoundRect(h, h, width - h, height - h, radius, radius, strokePaint)
+            // Outline follows the settings for EVERY other size (incl. the Pill): width from the outline
+            // slider (0 = none), colour = accent or grey per the "Outline color" toggle. The Pill only
+            // differs in its capsule radius (height/2), which is baked into `radius` above.
+            val strokeW = if (outlineIntensity > 0f) outlineIntensity * sp(3.5f) else 0f
+            if (strokeW > 0f) {
+                strokePaint.strokeWidth = strokeW
+                strokePaint.color = if (outlineFollowAccent) AppThemeState.getCurrentAccentArgb()
+                                    else Color.rgb(200, 200, 200)
+                val h = strokeW / 2f
+                canvas.drawRoundRect(h, h, width - h, height - h, radius, radius, strokePaint)
+            }
         }
 
         // Tile backings
