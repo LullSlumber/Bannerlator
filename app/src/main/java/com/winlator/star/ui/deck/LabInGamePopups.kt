@@ -238,7 +238,7 @@ private fun LabPopCtlScaffold(state: XServerDialogState, bindMode: Boolean, onBi
                 Spacer(Modifier.width(8.dp))
                 Box(Modifier.focusRequester(toggleFocus)) {
                     IgSegmented(
-                        options = listOf(false to L("Test"), true to L("Bind")),
+                        options = listOf(false to L("Test"), true to L("绑定")),
                         selected = bindMode,
                     ) { onBindModeChange(it) }
                 }
@@ -287,9 +287,9 @@ private fun LabPopCtlRail(
     modifier: Modifier,
 ) {
     Column(modifier) {
-        IgSectionLabel(L("Player slots"))
+        IgSectionLabel(L("玩家槽位"))
         Text(
-            L("Pads emulate as Xbox 360 to the game; the picture shows the physical pad you're holding."),
+            L("手柄在游戏中模拟为Xbox 360；图片显示的是您握持的物理手柄。"),
             color = SimpleMuted,
             fontFamily = NunitoSansFamily,
             fontSize = 12.5.sp,
@@ -309,7 +309,7 @@ private fun LabPopCtlRail(
         Spacer(Modifier.height(6.dp))
         // Rebuild the whole fake-input transport in place (the existing recovery), then re-read the list.
         IgButton(
-            L("Reset Input"),
+            L("重置输入"),
             Icons.Outlined.RestartAlt,
             {
                 state.onResetInput?.run()
@@ -318,7 +318,7 @@ private fun LabPopCtlRail(
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            L("Re-handshake controllers & on-screen if input stops responding."),
+            L("如果输入停止响应，重新连接控制器和屏幕控制。"),
             color = SimpleMuted,
             fontFamily = NunitoSansFamily,
             fontSize = 12.sp,
@@ -339,8 +339,8 @@ private fun LabPopCtlPlayerCard(
     val subtitle = when {
         row.currentSlot >= 0 -> L("Currently Player %1\$s", row.currentSlot + 1)
         row.override == XServerDialogState.SLOT_IGNORE -> L("Ignored")
-        else -> L("Unassigned")
-    } + if (row.isOnScreen) L(" · on-screen") else ""
+        else -> L("未分配")
+    } + if (row.isOnScreen) L(" · 屏幕") else ""
 
     Column(
         Modifier
@@ -368,14 +368,14 @@ private fun LabPopCtlPlayerCard(
                 Spacer(Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     IgButton(
-                        L("Identify"),
+                        L("识别"),
                         null,
                         { state.onControllerIdentify?.invoke(row.currentSlot) },
                         modifier = Modifier.weight(1f),
                         enabled = row.currentSlot >= 0 && row.hasVibrator,
                     )
                     IgButton(
-                        L("Reset"),
+                        L("重置"),
                         null,
                         {
                             // This device back to Auto, then rebuild the pipeline.
@@ -397,15 +397,15 @@ private fun LabPopCtlSlotPicker(row: XServerDialogState.PlayerSlotRow, state: XS
         buildList {
             add(L("Auto") to XServerDialogState.SLOT_AUTO)
             for (i in 0 until 4) add(L("Player %1\$s", i + 1) to i)
-            add(L("Ignore") to XServerDialogState.SLOT_IGNORE)
+            add(L("忽略") to XServerDialogState.SLOT_IGNORE)
         }
     }
     // An override the list doesn't know shows as Auto, as Classic.
     val current = options.indexOfFirst { it.second == row.override }.let { if (it < 0) 0 else it }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Text(L("Slot"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontWeight = FontWeight.Bold, fontSize = 12.5.sp)
+        Text(L("槽位"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontWeight = FontWeight.Bold, fontSize = 12.5.sp)
         Spacer(Modifier.weight(1f))
-        IgPickButton(L("Slot"), options.map { it.first }, current) { i ->
+        IgPickButton(L("槽位"), options.map { it.first }, current) { i ->
             val v = options[i].second
             if (v != row.override) state.onPlayerSlotChanged?.invoke(row.descriptor, v)
         }
@@ -465,7 +465,7 @@ private fun LabPopCtlTestPanel(
                 Box(Modifier.size(8.dp).background(if (live) LabPopLive else cs.onSurfaceVariant, CircleShape))
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    if (live) L("Live input") else L("Press a button on the pad…"),
+                    if (live) L("实时输入") else L("按手柄上的一个按钮…"),
                     color = if (live) LabPopLive else cs.onSurfaceVariant,
                     fontFamily = NunitoSansFamily,
                     fontWeight = FontWeight.SemiBold,
@@ -481,10 +481,10 @@ private fun LabPopCtlTestPanel(
             val rs = s?.let { labPopFmt2(it.thumbRX) + ", " + labPopFmt2(it.thumbRY) } ?: "0.00, 0.00"
             val tr = s?.let { labPopPct(it.triggerL) + " · " + labPopPct(it.triggerR) } ?: "0% · 0%"
             val readouts = listOf(
-                L("Last input") to lastInput,
-                L("Left stick") to ls,
-                L("Right stick") to rs,
-                L("Triggers L·R") to tr,
+                L("最后输入") to lastInput,
+                L("左摇杆") to ls,
+                L("右摇杆") to rs,
+                L("扳机 L·R") to tr,
             )
             val tiles: @Composable (Modifier) -> Unit = { m ->
                 Column(m, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -527,7 +527,7 @@ private fun LabPopCtlTestPanel(
             )
             Spacer(Modifier.width(8.dp))
             IgButton(
-                L("Identify"),
+                L("识别"),
                 Icons.Outlined.Vibration,
                 { state.onControllerIdentify?.invoke(selectedRow?.currentSlot ?: -1) },
                 primary = true,
@@ -634,7 +634,7 @@ private fun LabPopCtlBindPanel(state: XServerDialogState, modifier: Modifier) {
         IgConfirmDialog(
             title = L("Delete profile"),
             body = L("Delete \"%1\$s\"? This can't be undone.", p?.name ?: ""),
-            confirmLabel = L("Delete"),
+            confirmLabel = L("删除"),
             confirmIcon = Icons.Outlined.Delete,
             onConfirm = {
                 if (p != null) {
@@ -686,10 +686,10 @@ private fun LabPopBinder(
     Column(modifier) {
         IgCard {
             val shown = (profile?.name ?: L("— none —")).let { if (it.length > 24) it.take(23) + "…" else it }
-            IgRow(L("Profile")) {
+            IgRow(L("配置")) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     IgButton("$shown  ▾", null, { profMenu = true })
-                    IgButton(L("+ New"), null, { showNew = !showNew })
+                    IgButton(L("+ 新建"), null, { showNew = !showNew })
                 }
             }
             if (showNew) {
@@ -698,7 +698,7 @@ private fun LabPopBinder(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
                 ) {
-                    IgTextField(newName, { newName = it }, modifier = Modifier.weight(1f), placeholder = L("New profile name"))
+                    IgTextField(newName, { newName = it }, modifier = Modifier.weight(1f), placeholder = L("新配置名称"))
                     Spacer(Modifier.width(8.dp))
                     IgButton(L("Create"), null, {
                         if (newName.isNotBlank()) {
@@ -711,7 +711,7 @@ private fun LabPopBinder(
         Spacer(Modifier.height(10.dp))
 
         if (profile == null || controller == null) {
-            IgInfo(L("Select or create a profile to bind this controller."))
+            IgInfo(L("选择或创建一个配置以绑定此控制器。"))
         } else {
             if (boundN > 0) {
                 IgCard {
@@ -795,11 +795,11 @@ private fun LabPopBinder(
                 add(MenuAction(if (profile != null && p.id == profile.id) p.name + "  ✓" else p.name, { onSelectProfile(p) }))
             }
             if (profile != null) {
-                add(MenuAction(L("Rename…"), onRenameProfile))
+                add(MenuAction(L("重命名…"), onRenameProfile))
                 add(MenuAction(L("Delete…"), onDeleteProfile, danger = true))
             }
         }
-        SimpleActionSheet(title = L("Profile"), actions = actions, onDismiss = { profMenu = false }) { a ->
+        SimpleActionSheet(title = L("配置"), actions = actions, onDismiss = { profMenu = false }) { a ->
             profMenu = false
             a.run()
         }
@@ -902,7 +902,7 @@ private fun LabPopBindEditor(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 val nativeName = t?.name
                 if (t?.native != null && nativeName != null) IgButton(L("Native (%1\$s)", nativeName), null, onNative)
-                IgButton(L("Clear"), null, onClear, danger = true)
+                IgButton(L("清除"), null, onClear, danger = true)
             }
         }
     }
@@ -943,14 +943,14 @@ internal fun LabCastDialog(state: XServerDialogState) {
     var selected by remember { mutableStateOf<String?>(null) }
 
     LabInGameDialog(
-        title = if (showHelp) L("Casting — options & tips") else L("Cast to a TV (wireless)"),
+        title = if (showHelp) L("投屏 — 选项与提示") else L("投屏到电视TV （无线）"),
         onDismiss = { state.dismiss() },
         maxWidth = 640.dp,
         actions = {
             if (!showHelp) {
                 if (scanning) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = MaterialTheme.colorScheme.primary, strokeWidth = 2.dp)
                 IgButton(null, Icons.AutoMirrored.Outlined.HelpOutline, { showHelp = true })
-                IgButton(L("Refresh"), Icons.Outlined.Refresh, { state.onCastRefresh?.run() })
+                IgButton(L("刷新"), Icons.Outlined.Refresh, { state.onCastRefresh?.run() })
             }
         },
         footer = {
@@ -962,7 +962,7 @@ internal fun LabCastDialog(state: XServerDialogState) {
             LabPopCastHelp()
         } else {
             Text(
-                L("Google TV / Chromecast devices on your Wi-Fi. Nothing to install on the TV. Tap the “?” for how casting works and the trade-offs."),
+                L("您 Wi‑Fi 上的 Google TV / Chromecast投屏器 设备。电视TV上无需安装任何内容。点击“？”了解投屏工作原理及其取舍。"),
                 color = SimpleMuted,
                 fontFamily = NunitoSansFamily,
                 fontSize = 12.5.sp,
@@ -973,7 +973,7 @@ internal fun LabCastDialog(state: XServerDialogState) {
                 IgCard {
                     IgInfo(
                         if (scanning) L("Searching…")
-                        else L("No devices found. Make sure your TV is on the same Wi-Fi, then tap Refresh.")
+                        else L("未找到设备。请确保您的电视TV连接同一 Wi‑Fi，然后点击刷新。")
                     )
                 }
             } else {
@@ -1027,7 +1027,7 @@ private fun LabPopCastDevice(
             Column(Modifier.fillMaxWidth().padding(start = 14.dp, end = 14.dp, bottom = 12.dp)) {
                 if (active) {
                     val label = when (status) {
-                        XServerDialogState.CastStatus.CONNECTING -> L("Connecting…")
+                        XServerDialogState.CastStatus.CONNECTING -> L("正在连接…")
                         XServerDialogState.CastStatus.CONNECTED -> L("Connected")
                         XServerDialogState.CastStatus.FAILED -> L("Failed to connect")
                         else -> ""
@@ -1059,32 +1059,32 @@ private fun LabPopCastDevice(
 @Composable
 private fun LabPopCastHelp() {
     LabPopCastHelpBlock(
-        title = L("Cast — no app on the TV (this screen) · EXPERIMENTAL"),
-        body = L("Pick a Google TV or Chromecast from the list — nothing to install on the TV."),
-        pros = listOf(L("Nothing to set up on the TV"), L("Uses devices you already have")),
+        title = L("投屏 — 电视TV上无应用（此屏幕）· 实验性"),
+        body = L("从列表中选择一个 Google TV 或 Chromecast投屏器 — TV上无需安装任何内容。"),
+        pros = listOf(L("电视TV上无需设置任何内容"), L("使用您已有的设备")),
         cons = listOf(
-            L("A few seconds of lag (video is buffered) — good for slower games, not fast ones"),
-            L("Video only for now — the game's sound stays on this device"),
-            L("Google TV / Chromecast only — Roku isn't listed here"),
+            L("几秒延迟（视频缓冲）— 适合慢速游戏，不适合快节奏游戏"),
+            L("目前仅支持视频 — 游戏声音保留在此设备上"),
+            L("仅支持 Google TV / Chromecast投屏器 — Roku 不在此列表中"),
         ),
     )
     LabPopCastHelpBlock(
-        title = L("Cast — with a receiver app (coming later)"),
-        body = L("Install our small app on the Google TV once, then cast from this same list."),
-        pros = listOf(L("Crisp, low-lag — good for any game"), L("Phone stays free (blank phone, game on TV)")),
-        cons = listOf(L("Needs a one-time install on the Google TV"), L("Won't work on Roku (closed device)")),
+        title = L("投屏 — 使用接收端应用（即将推出）"),
+        body = L("在 Google TV 上安装一次我们的小应用，然后从此同一列表投屏。"),
+        pros = listOf(L("清晰、低延迟 — 适合任何游戏"), L("手机保持空闲（手机黑屏，游戏在TV上）")),
+        cons = listOf(L("需要在 Google TV 上一次性安装"), L("不适用于 Roku（封闭设备）")),
     )
     LabPopCastHelpBlock(
-        title = L("Wired cable — lowest lag today"),
-        body = L("A USB-C→HDMI cable moves the game to the TV with almost no lag."),
-        pros = listOf(L("Best quality and responsiveness"), L("No Wi-Fi needed")),
-        cons = listOf(L("Needs a cable and an HDMI port")),
+        title = L("有线线缆 — 目前最低延迟"),
+        body = L("USB‑C→HDMI 线缆可将游戏移至电视TV，几乎无延迟。"),
+        pros = listOf(L("最佳质量和响应性"), L("无需 Wi‑Fi")),
+        cons = listOf(L("需要线缆和 HDMI 端口")),
     )
     LabPopCastHelpBlock(
-        title = L("Roku TVs"),
-        body = L("Roku can't run our app and can't take our stream. Use Android's built-in Screen Mirroring (in Settings) with the Roku's Screen-mirroring turned on."),
-        pros = listOf(L("No app needed")),
-        cons = listOf(L("Uses Android's system screen, not this in-app list"), L("Depends on your phone's Miracast")),
+        title = L("Roku 电视TV"),
+        body = L("Roku 无法运行我们的应用，也无法接收我们的流。请使用 Android 内置的屏幕镜像（在“设置”中），并打开 Roku 的屏幕镜像功能。"),
+        pros = listOf(L("无需应用")),
+        cons = listOf(L("使用 Android 的系统屏幕，而非此应用内列表"), L("取决于您手机的 Miracast")),
     )
 }
 
@@ -1108,7 +1108,7 @@ private fun LabPopCastHelpBlock(title: String, body: String, pros: List<String>,
 internal fun LabActiveWindowsDialog(state: XServerDialogState) {
     val windows by state.awWindows.collectAsState()
     LabInGameDialog(
-        title = L("Active Windows"),
+        title = L("活动窗口"),
         onDismiss = { state.dismiss() },
         maxWidth = 720.dp,
         footer = { IgButton(L("Close"), null, { state.dismiss() }) },
@@ -1199,18 +1199,18 @@ internal fun LabDebugDialog(state: XServerDialogState) {
     }
 
     LabInGameDialog(
-        title = L("Logs"),
+        title = L("日志"),
         onDismiss = { state.dismiss() },
         maxWidth = 1000.dp,
         tall = true,
         scroll = false,
         footer = {
-            IgButton(L("Copy"), null, {
+            IgButton(L("拷贝"), null, {
                 // The whole accumulated log (incl. BCn transfer stats).
                 clipboard.setText(AnnotatedString(logLines.joinToString("\n")))
                 Toast.makeText(context, L("Log copied"), Toast.LENGTH_SHORT).show()
             })
-            IgButton(L("Clear"), null, { state.clearLog() })
+            IgButton(L("清除"), null, { state.clearLog() })
             IgButton(if (logPaused) L("Resume") else L("Pause"), null, { state.setLogPaused(!logPaused) })
             Spacer(Modifier.weight(1f))
             IgButton(L("Close"), null, { state.dismiss() })
@@ -1237,7 +1237,7 @@ internal fun LabDebugDialog(state: XServerDialogState) {
             if (logLines.isEmpty()) {
                 item {
                     Text(
-                        text = L("No log output yet."),
+                        text = L("还没有日志输出。"),
                         fontFamily = NunitoSansFamily,
                         fontSize = 12.5.sp,
                         color = SimpleMuted,
@@ -1328,7 +1328,7 @@ internal fun LabRunProgramDialog(state: XServerDialogState) {
                     }
                     if (entries.isEmpty()) item(key = "empty") {
                         IgDivider()
-                        IgInfo(L("Nothing here"))
+                        IgInfo(L("这里什么都没有"))
                     }
                 }
             }
@@ -1413,7 +1413,7 @@ internal fun LabProcessorAffinityDialog(proc: XServerDialogState.TmProcess, onDi
     val allChecked = (mask and allMask) == allMask
 
     LabInGameDialog(
-        title = L("Processor Affinity"),
+        title = L("核心关联"),
         onDismiss = onDismiss,
         subtitle = L("Which processors are allowed to run \"%1\$s\"?", proc.name),
         footer = {
@@ -1431,7 +1431,7 @@ internal fun LabProcessorAffinityDialog(proc: XServerDialogState.TmProcess, onDi
         },
     ) {
         IgCard {
-            IgToggleRow(L("<All Processors>"), checked = allChecked) { mask = if (allChecked) 0 else allMask }
+            IgToggleRow(L("<所有处理器>"), checked = allChecked) { mask = if (allChecked) 0 else allMask }
         }
         Spacer(Modifier.height(10.dp))
         IgCard {

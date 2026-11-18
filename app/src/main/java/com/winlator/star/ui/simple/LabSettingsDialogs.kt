@@ -147,7 +147,7 @@ internal fun LabSetInfo(title: String, body: String, onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp).labSetScrollKeys(scroll).verticalScroll(scroll).padding(4.dp),
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                LabButton(L("Got it"), primary = true, requester = ok, onClick = onDismiss)
+                LabButton(L("知道了"), primary = true, requester = ok, onClick = onDismiss)
             }
         }
     }
@@ -186,7 +186,7 @@ internal fun LabSetGate(
                 body, color = SimpleInk, fontSize = 14.sp,
                 modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp).focusRequester(start).labSetScrollKeys(scroll).verticalScroll(scroll).padding(4.dp),
             )
-            if (!reached) Text(L("Scroll to the end to continue."), color = SimpleMuted, fontSize = 12.sp)
+            if (!reached) Text(L("滚动到底部以继续。"), color = SimpleMuted, fontSize = 12.sp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -275,7 +275,7 @@ internal fun LabAboutDialog(onDismiss: () -> Unit) {
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 )
-                Text("Bannerlator Bionic", color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text("Bannerlator Bionic\n由B站狂犬不语汉化", color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 val newer = update?.takeIf { it.isNewer }
                 Text(
                     "V ${BuildConfig.VERSION_NAME}" + (newer?.let { " · " + L("latest") + " V " + it.versionName } ?: ""),
@@ -301,7 +301,7 @@ internal fun LabAboutDialog(onDismiss: () -> Unit) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
                 val newer = update?.takeIf { it.isNewer }
                 if (newer != null) {
-                    LabButton(L("Update now"), onClick = { context.labSetActivity()?.let { UpdateManager.downloadAndInstall(it, newer) {} } })
+                    LabButton(L("立即更新"), onClick = { context.labSetActivity()?.let { UpdateManager.downloadAndInstall(it, newer) {} } })
                 }
                 LabButton(L("Close"), primary = true, requester = close, onClick = onDismiss)
             }

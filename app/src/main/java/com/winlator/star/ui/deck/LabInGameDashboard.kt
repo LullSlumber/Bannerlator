@@ -177,12 +177,12 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
     LabInGameDialog(
         title = L("Performance"),
         onDismiss = onDismiss,
-        subtitle = L("Applies live to this session · auto-reverts on exit"),
+        subtitle = L("实时应用于本次会话 · 退出时自动恢复"),
         maxWidth = 900.dp,
         tall = true,
         // Panel opacity stays on screen (outside the scroll), as in Classic.
         footer = {
-            Text(L("Panel opacity"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+            Text(L("面板不透明度"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
             Box(Modifier.weight(1f)) {
                 IgSlider(
                     value = opacity,
@@ -211,9 +211,9 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         }
 
         // ── Power profile ──
-        IgSectionLabel(L("Power profile"))
+        IgSectionLabel(L("电源配置"))
         IgCard {
-            IgRow(L("Profile"), scopes = perfScopes, wideControl = true) {
+            IgRow(L("配置"), scopes = perfScopes, wideControl = true) {
                 IgChips(
                     options = listOf(
                         "Off" to L("Off"),
@@ -238,7 +238,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             IgCard {
                 // The switch persists device-wide (GalaxyPerfManager prefs); the preset goes to the running container.
                 IgToggleRow(
-                    L("Enable Galaxy Performance"),
+                    L("启用Galaxy性能"),
                     checked = galaxyEnabled,
                     hint = L("No-root CPU/GPU/RAM control via Samsung's SDK. Off by default."),
                     scopes = listOf(SaveScope.ALL),
@@ -252,7 +252,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
                     IgDivider()
                     IgRow(
                         L("Galaxy preset"),
-                        hint = L("Tip: set the Power profile above to \"Off\" so Galaxy alone controls the clocks (they otherwise conflict)."),
+                        hint = L("提示：将上述电源配置设置为“关闭”，以便仅由Galaxy控制频率（否则它们会冲突）。"),
                         scopes = listOf(SaveScope.CONTAINER),
                         wideControl = true,
                     ) {
@@ -275,7 +275,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         Spacer(Modifier.height(12.dp))
         IgCard {
             IgRow(
-                if (granted) L("Root granted") else L("No root"),
+                if (granted) L("已授予root") else L("无 root"),
                 hint = if (granted) L("Full CPU/GPU control unlocked.") else L("No-root controls still available."),
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -298,12 +298,12 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         }
 
         // ── Quick controls (no root) ──
-        IgSectionLabel(L("Quick controls · no root"))
+        IgSectionLabel(L("快速控制 · 无需root"))
         IgCard {
             LabDashToggleRow(
-                L("Sustained Performance Mode"),
-                L("Holds a stable clock to avoid thermal throttling."),
-                info = L("Holds a stable clock so the SoC doesn't spike-and-throttle. No root required."),
+                L("持续性能模式"),
+                L("保持稳定时钟以避免热调节降频。"),
+                info = L("保持稳定时钟，使SoC不会突增和降频。无需root。"),
                 checked = sustained, enabled = true,
                 overridden = "sustainedPerfMode" in overridden,
                 scopes = perfScopes,
@@ -311,9 +311,9 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             ) { setSustained(it) }
             IgDivider()
             LabDashToggleRow(
-                L("Thread Priority Boost"),
-                L("Raises emulator thread priority so the scheduler favours the game."),
-                info = L("Raises the emulator's thread priority so the CPU scheduler favours the game over background work."),
+                L("线程优先级提升"),
+                L("提高模拟器线程优先级，使调度器优先处理游戏。"),
+                info = L("提高模拟器的线程优先级，使CPU调度器优先处理游戏而非后台任务。"),
                 checked = priority, enabled = true,
                 overridden = "perfPriorityBoost" in overridden,
                 scopes = perfScopes,
@@ -321,9 +321,9 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             ) { setPriority(it) }
             IgDivider()
             LabDashToggleRow(
-                L("Prefer Big Cores"),
-                L("Routes emulator threads onto the big / prime cluster."),
-                info = L("Pins the emulator's hot threads onto the big / prime CPU cluster instead of the efficiency cores."),
+                L("优先使用大核"),
+                L("将模拟器线程路由到大核/首要核心集群。"),
+                info = L("将模拟器的热线程固定到大核/首要CPU集群，而非能效核心。"),
                 checked = bigCores, enabled = true,
                 overridden = "preferBigCores" in overridden,
                 scopes = perfScopes,
@@ -334,10 +334,10 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             val gpuKey = PerfRootApplier.KEY_GPU_CLOCK_LOCK
             val gpuEnabled = granted || PerfGpuTurbo.isSupported
             LabDashToggleRow(
-                L("Lock GPU to max clock"),
-                if (gpuEnabled) L("Adreno: pinned via /dev/kgsl-3d0 — works without root.")
-                else L("Needs an Adreno GPU, or root on other GPUs."),
-                info = L("Pins the GPU to its top power level. On Adreno this uses the app-owned KGSL turbo property (no root); other GPUs use the root sysfs pin."),
+                L("锁定 GPU 最高频率"),
+                if (gpuEnabled) L("Adreno：通过/dev/kgsl-3d0固定 — 无需root即可工作。")
+                else L("需要Adreno GPU，或其他GPU上的root权限。"),
+                info = L("将GPU固定到其最高功率级别。在Adreno上，这使用应用拥有的KGSL加速属性（无需root）；其他GPU使用root sysfs固定。"),
                 checked = toggles[gpuKey] ?: false, enabled = gpuEnabled,
                 overridden = gpuKey in overridden,
                 scopes = perfScopes,
@@ -346,20 +346,20 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         }
 
         // ── Root & danger ──
-        IgSectionLabel(L("Root & danger"))
+        IgSectionLabel(L("Root与危险"))
         IgCard {
             if (!granted) {
                 IgNote(
                     "🔒 " + when (rootState) {
-                        RootManager.RootState.UNAVAILABLE -> L("No root manager detected (Magisk / KernelSU / APatch).")
+                        RootManager.RootState.UNAVAILABLE -> L("未检测到root管理器（Magisk / KernelSU / APatch）。")
                         else -> L("Grant root above to unlock CPU governor, frequency, cores, thermal & fan.")
                     },
                     modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
                 )
             }
             LabDashRootRow(
-                L("CPU governor → performance"), PerfRootApplier.KEY_CPU_GOVERNOR,
-                info = L("Forces every CPU cluster onto the performance governor for the session."),
+                L("CPU 调度器 → 性能模式"), PerfRootApplier.KEY_CPU_GOVERNOR,
+                info = L("强制每个CPU集群在本次会话中使用性能调度器。"),
                 toggles = toggles, overridden = overridden, granted = granted, harnessProven = harnessProven,
                 scopes = perfScopes,
                 onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_GOVERNOR) },
@@ -367,8 +367,8 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             )
             IgDivider()
             LabDashRootRow(
-                L("Lock CPU frequency to max"), PerfRootApplier.KEY_CPU_FREQ_LOCK,
-                info = L("Sets scaling_min_freq = scaling_max_freq on every cluster."),
+                L("锁定 CPU 最高频率"), PerfRootApplier.KEY_CPU_FREQ_LOCK,
+                info = L("在每个集群上设置scaling_min_freq = scaling_max_freq。"),
                 toggles = toggles, overridden = overridden, granted = granted, harnessProven = harnessProven,
                 scopes = perfScopes,
                 onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CPU_FREQ_LOCK) },
@@ -376,8 +376,8 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             )
             IgDivider()
             LabDashRootRow(
-                L("Keep all cores online"), PerfRootApplier.KEY_CORES_ONLINE,
-                info = L("Prevents the kernel from hot-plugging CPU cores offline."),
+                L("保持所有核心在线"), PerfRootApplier.KEY_CORES_ONLINE,
+                info = L("阻止内核热拔插CPU核心离线。"),
                 toggles = toggles, overridden = overridden, granted = granted, harnessProven = harnessProven,
                 scopes = perfScopes,
                 onReset = { state.onResetPerfKey?.accept(PerfRootApplier.KEY_CORES_ONLINE) },
@@ -387,7 +387,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             val thermalLabel = L("Disable thermal throttling")
             LabDashRootRow(
                 thermalLabel, PerfRootApplier.KEY_THERMAL_DISABLE,
-                info = L("Stops the thermal engine from clamping clocks. The temperature watchdog stays armed and can revert it."),
+                info = L("阻止热引擎限制频率。温度看门狗保持启用并可以恢复它。"),
                 toggles = toggles, overridden = overridden, granted = granted, harnessProven = harnessProven,
                 danger = true,
                 scopes = perfScopes,
@@ -396,10 +396,10 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
                 setRoot = { k, v -> setRoot(k, v) },
             )
             IgDivider()
-            val fanLabel = L("Fan to maximum")
+            val fanLabel = L("风扇最大转速")
             LabDashRootRow(
                 fanLabel, PerfRootApplier.KEY_FAN_MAX,
-                info = L("Forces active cooling to full speed for the session."),
+                info = L("强制主动散热在本次会话中全速运行。"),
                 toggles = toggles, overridden = overridden, granted = granted, harnessProven = harnessProven,
                 danger = true,
                 scopes = perfScopes,
@@ -417,32 +417,32 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
 
         // ── Free memory (root) ──
         if (granted) {
-            IgSectionLabel(L("Free memory"))
+            IgSectionLabel(L("释放内存"))
             IgCard {
-                IgRow(L("Drop file caches"), hint = L("Frees cached files. The system reclaims cache automatically.")) {
-                    IgButton(L("Run"), null, { state.onFreeMemory?.run() }, primary = true)
+                IgRow(L("清除文件缓存"), hint = L("Frees cached files. The system reclaims cache automatically.")) {
+                    IgButton(L("运行"), null, { state.onFreeMemory?.run() }, primary = true)
                 }
                 IgDivider()
-                IgRow(L("Deep clean (free app memory)"), hint = L("Force-closes background apps. Won't touch your game or system.")) {
-                    IgButton(L("Run"), null, { state.onDeepClean?.run() }, primary = true)
+                IgRow(L("深度清理（释放应用内存）"), hint = L("Force-closes background apps. Won't touch your game or system.")) {
+                    IgButton(L("运行"), null, { state.onDeepClean?.run() }, primary = true)
                 }
             }
         }
 
         // ── Temperature watchdog (device-wide, the same TempWatchdog singleton App Settings uses) ──
-        IgSectionLabel(L("Temperature watchdog"))
+        IgSectionLabel(L("温度看门狗"))
         LabDashWatchdog()
 
         // ── Always-on auto-revert note ──
         Spacer(Modifier.height(10.dp))
         IgCard {
-            IgInfo("🛡 " + L("Auto-revert on exit / background / crash — always on, can't be disabled."))
+            IgInfo("🛡 " + L("退出/后台/崩溃时自动恢复 — 始终开启，无法禁用。"))
         }
 
         // ── Reset all per-game overrides ──
         if (overridden.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
-            IgButton(L("↺ Reset all game overrides to global"), null, { state.onResetAllPerf?.run() })
+            IgButton(L("↺ 将所有游戏覆盖重置为全局"), null, { state.onResetAllPerf?.run() })
         }
         Spacer(Modifier.height(6.dp))
     }
@@ -452,14 +452,14 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         LabDashDisclaimerDialog(
             title = pd.label,
             body = PerfDisclaimerCopy.ROOT_RISK,
-            confirmLabel = L("Enable"),
+            confirmLabel = L("启用"),
             onConfirm = { pd.enable(); pendingDanger = null },
             onDismiss = { pendingDanger = null },
         )
     }
     if (showGrantGate) {
         LabDashDisclaimerDialog(
-            title = L("Power-user performance — read first"),
+            title = L("高级性能设置 — 请先阅读"),
             body = PerfDisclaimerCopy.ROOT_RISK,
             confirmLabel = L("Grant Root"),
             onConfirm = { showGrantGate = false; scope.launch { RootManager.requestGrant() } },
@@ -472,7 +472,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
             title = L("Let Galaxy control performance?"),
             actions = listOf(
                 MenuAction(L("Set Power profile to Off"), { applyProfile("Off"); showGalaxyOffPrompt = false }),
-                MenuAction(L("Keep both"), { showGalaxyOffPrompt = false }),
+                MenuAction(L("保留两者"), { showGalaxyOffPrompt = false }),
             ),
             onDismiss = { showGalaxyOffPrompt = false },
             message = L("Galaxy Performance and the Power profile above both drive the CPU/GPU clocks, by different mechanisms (Samsung's SDK vs. the root perf tier). Running both at once lets them fight, so clock behaviour can be inconsistent.") +
@@ -535,7 +535,7 @@ private fun LabDashGauge(
 }
 
 /**
- * One perf toggle: label (⚠ when [danger]), hint, the per-game override line, "Reset to global" while overridden, the
+ * One perf toggle: label (⚠ when [danger]), hint, the per-game override line, "重置为全局默认值" while overridden, the
  * "?" explainer and the switch. Disabled rows grey out and drop the override line, as in Classic.
  */
 @Composable
@@ -549,14 +549,14 @@ private fun LabDashToggleRow(
         hint = sub,
         note = when {
             !enabled -> null
-            overridden -> L("● Per-game override")
-            else -> L("○ Using global default")
+            overridden -> L("● 每个游戏的覆盖设置")
+            else -> L("○ 使用全局默认值")
         },
         scopes = scopes,
         enabled = enabled,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (enabled && overridden) IgButton(L("Reset to global"), null, onReset)
+            if (enabled && overridden) IgButton(L("重置为全局默认值"), null, onReset)
             IgHelpButton(label, info)
             IgSwitch(checked, enabled = enabled, onChange = onToggle)
         }
@@ -577,7 +577,7 @@ private fun LabDashRootRow(
     val enabled = granted && !gated
     LabDashToggleRow(
         label = label,
-        sub = if (danger) L("Root · dangerous — auto-reverts on exit.") else L("Root control."),
+        sub = if (danger) L("Root · 危险 — 退出时自动恢复。") else L("Root控制。"),
         info = info,
         checked = toggles[key] ?: false, enabled = enabled,
         overridden = key in overridden, danger = danger,
@@ -627,7 +627,7 @@ private fun LabDashWatchdog() {
             scopes = listOf(SaveScope.ALL),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                IgHelpButton(L("What is the Temperature Watchdog?"), com.winlator.star.ui.screens.WATCHDOG_WHATS_THIS)
+                IgHelpButton(L("什么是温度看门狗?"), com.winlator.star.ui.screens.WATCHDOG_WHATS_THIS)
                 IgSwitch(enabled) { on -> if (on) TempWatchdog.setWatchdogEnabled(true) else showOffDisclaimer = true }
             }
         }
@@ -678,9 +678,9 @@ private fun LabDashWatchdog() {
     // Hard disclaimer to disarm the watchdog.
     if (showOffDisclaimer) {
         LabDashDisclaimerDialog(
-            title = L("Disable thermal safety?"),
+            title = L("禁用温度保护?"),
             body = PerfDisclaimerCopy.WATCHDOG_OFF,
-            confirmLabel = L("Turn watchdog OFF"),
+            confirmLabel = L("关闭看门狗"),
             onDismiss = { showOffDisclaimer = false },
             onConfirm = { showOffDisclaimer = false; TempWatchdog.setWatchdogEnabled(false) },
         )
@@ -688,15 +688,15 @@ private fun LabDashWatchdog() {
 }
 
 private fun labDashModeLabel(mode: ThresholdMode): String = when (mode) {
-    ThresholdMode.CONSERVATIVE -> L("Conservative")
+    ThresholdMode.CONSERVATIVE -> L("保守")
     ThresholdMode.BALANCED -> L("Balanced")
-    ThresholdMode.AGGRESSIVE -> L("Aggressive")
-    ThresholdMode.MANUAL -> L("Manual")
+    ThresholdMode.AGGRESSIVE -> L("激进")
+    ThresholdMode.MANUAL -> L("手动")
 }
 
 /**
  * Lab variant of [com.winlator.star.ui.screens.PerfDisclaimerDialog]: the risk text must be scrolled to its end AND
- * "I understand and accept all risk" switched on before [confirmLabel] works. With a controller the text box takes
+ * "我理解并承担所有风险" switched on before [confirmLabel] works. With a controller the text box takes
  * focus and d-pad up / down scrolls it; at the end, down moves on to the switch.
  */
 @Composable
@@ -753,11 +753,11 @@ private fun LabDashDisclaimerDialog(
             Text(body, color = SimpleStrong, fontFamily = NunitoSansFamily, fontSize = 14.sp, lineHeight = 20.sp)
         }
         if (!reachedBottom) {
-            IgNote(L("Scroll to the end to continue."), modifier = Modifier.padding(top = 4.dp))
+            IgNote(L("滚动到底部以继续。"), modifier = Modifier.padding(top = 4.dp))
         }
         Spacer(Modifier.height(8.dp))
         IgCard {
-            IgRow(L("I understand and accept all risk"), enabled = reachedBottom) {
+            IgRow(L("我理解并承担所有风险"), enabled = reachedBottom) {
                 IgSwitch(accepted, enabled = reachedBottom) { accepted = it }
             }
         }
@@ -803,7 +803,7 @@ internal fun LabAudioSettingsDialog(
     }
 
     LabInGameDialog(
-        title = L("Audio settings"),
+        title = L("音频设置"),
         onDismiss = onDismiss,
         subtitle = L("Balance crackle-free vs low delay") + "  ·  " + scopeLabel,
         maxWidth = 680.dp,
@@ -819,8 +819,8 @@ internal fun LabAudioSettingsDialog(
         IgCard {
             Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp)) {
                 Row(Modifier.fillMaxWidth()) {
-                    Text(L("◀ Lower delay"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.sp, modifier = Modifier.weight(1f))
-                    Text(L("Fewer crackles ▶"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.sp)
+                    Text(L("◀ 降低延迟"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                    Text(L("减少爆音 ▶"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.sp)
                 }
                 Box(Modifier.fillMaxWidth().padding(top = 8.dp).height(8.dp).clip(deckShape(6.dp)).background(cs.surfaceContainerHighest)) {
                     Box(Modifier.fillMaxWidth(curPreset.pos).height(8.dp).clip(deckShape(6.dp)).background(cs.primary))
@@ -830,7 +830,7 @@ internal fun LabAudioSettingsDialog(
         }
 
         // ── Presets ──
-        IgSectionLabel(L("Preset"))
+        IgSectionLabel(L("预设"))
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             AUDIO_PRESETS.forEach { p ->
                 LabAudioPresetTile(p, selected = p.id == cfg.preset, help = labDashHelpText(p.helpRes)) { applyPreset(p) }
@@ -838,25 +838,25 @@ internal fun LabAudioSettingsDialog(
         }
 
         // ── Fine-tune ──
-        IgSectionLabel(if (custom) L("Fine-tune") else L("Fine-tune — what this preset applies (Custom to edit)"))
+        IgSectionLabel(if (custom) L("微调") else L("Fine-tune — what this preset applies (Custom to edit)"))
         // Greyed rows show what the engine will really use (effectiveConfigFor); edits still go to cfg, and the two are
         // equal whenever the rows are editable.
         val shown = effectiveConfigFor(cfg, driverId)
         IgCard {
             // Output mode. DirectAudio offers no Power: its AAudio power-saving stream reopens ~1/s under box64/FEX.
             val perfOpts = if (driverId == "directaudio")
-                listOf(0 to L("None"), 1 to L("Low lat."))
-            else listOf(0 to L("None"), 1 to L("Low lat."), 2 to L("Power"))
-            IgRow(L("Output mode"), hint = L("AAudio performance mode"), enabled = custom, wideControl = true) {
+                listOf(0 to L("None"), 1 to L("低延迟。"))
+            else listOf(0 to L("None"), 1 to L("低延迟。"), 2 to L("Power"))
+            IgRow(L("输出模式"), hint = L("AAudio性能模式"), enabled = custom, wideControl = true) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    IgHelpButton(L("Output mode"), labDashHelpText(R.string.help_audio_perf_mode))
+                    IgHelpButton(L("输出模式"), labDashHelpText(R.string.help_audio_perf_mode))
                     IgSegmented(perfOpts, shown.perfMode, enabled = custom) { v -> cfg = cfg.copy(perfMode = v) }
                 }
             }
             IgDivider()
-            IgRow(L("Adaptive buffer"), hint = L("Auto-grow only if it hears crackle"), enabled = custom) {
+            IgRow(L("自适应缓冲区"), hint = L("仅在检测到爆音时自动增长"), enabled = custom) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    IgHelpButton(L("Adaptive buffer"), labDashHelpText(R.string.help_audio_adaptive))
+                    IgHelpButton(L("自适应缓冲区"), labDashHelpText(R.string.help_audio_adaptive))
                     IgSwitch(shown.adaptive, enabled = custom) { cfg = cfg.copy(adaptive = it) }
                 }
             }
@@ -864,8 +864,8 @@ internal fun LabAudioSettingsDialog(
             // DirectAudio: the driver's own buffer (reaches the one-burst floor, label states the total with Android's
             // ~21 ms). PulseAudio: the guest winepulse buffer. ALSA: not used.
             val latencyUsed = latencyUsedBy(driverId)
-            val latTitle = if (directBuffer) L("Audio buffer") else L("Guest buffer")
-            val latHint = if (!latencyUsed) L("not used by ALSA — set the buffer rows below")
+            val latTitle = if (directBuffer) L("音频缓冲区") else L("客户缓冲区")
+            val latHint = if (!latencyUsed) L("ALSA不使用 — 请在下方设置缓冲区行数")
             else (if (directBuffer) L("≈%1\$s ms total · %2\$s ms buffer", shown.latencyMsec + ANDROID_OUTPUT_MS, shown.latencyMsec)
                   else L("winepulse · %1\$s ms", shown.latencyMsec)) +
                 if (!latencyLive) "  " + L("· next launch") else ""
@@ -904,14 +904,14 @@ internal fun LabAudioSettingsDialog(
             }
             IgDivider()
             LabAudioStepperRow(
-                L("Initial sink buffer"), L("frames · 0 = auto"),
+                L("初始sink缓冲区"), L("帧数 · 0 = 自动"),
                 if (shown.bufferFrames > 0) "${shown.bufferFrames}" else L("auto"), custom,
                 help = labDashHelpText(R.string.help_audio_buffer_frames),
             ) { cfg = cfg.copy(bufferFrames = (cfg.bufferFrames + it * 256).coerceAtLeast(0)) }
             IgDivider()
             LabAudioStepperRow(
-                L("Max sink buffer"), L("growth cap · 0 = device max"),
-                if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else L("device max"), custom,
+                L("最大sink缓冲区"), L("增长上限 · 0 = 设备最大值"),
+                if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else L("设备最大值"), custom,
                 help = labDashHelpText(R.string.help_audio_max_buffer_frames),
             ) { cfg = cfg.copy(maxBufferFrames = (cfg.maxBufferFrames + it * 256).coerceAtLeast(0)) }
         }

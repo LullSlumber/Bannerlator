@@ -76,7 +76,7 @@ private fun partLabel(p: Place): String = when (p) {
 }
 
 private fun partList(p: Place): String = when (p) {
-    Place.ANDROID -> L("Graphics Driver")
+    Place.ANDROID -> L("图形驱动程序")
     Place.LINUX -> L("Linux runtime drivers")
     Place.WAYLAND -> L("Wayland game drivers")
 }

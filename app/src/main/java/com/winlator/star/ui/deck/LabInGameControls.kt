@@ -85,7 +85,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
     // The Classic sub-tab list. "Pad" (live controller settings) exists only where LiveControllerSession runs.
     val subTab by state.controlsSubTab.collectAsState()
     val subTabs = listOf(
-        0 to L("Touch"), 1 to L("Mouse"), 2 to L("Vibration"), 3 to L("Gyro"), 4 to L("Players"),
+        0 to L("触摸"), 1 to L("Mouse"), 2 to L("震动"), 3 to L("陀螺仪"), 4 to L("玩家"),
         5 to stringResource(R.string.swipe_tab), 6 to L("Pad"),
     ).filter { (i, _) -> pad.supported || i != 6 }
     // A sub-tab this session doesn't offer falls back to the first one it does.
@@ -106,7 +106,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
     var showTouchscreen by remember(initTouchscreen) { mutableStateOf(initTouchscreen) }
     var timeoutEnabled by remember(initTimeout) { mutableStateOf(initTimeout) }
     var hapticsEnabled by remember(initHaptics) { mutableStateOf(initHaptics) }
-    val allItems = listOf(L("-- Disabled --")) + profiles
+    val allItems = listOf(L("-- 已禁用 --")) + profiles
     val confirm: () -> Unit = {
         XServerDialogState.onInputControlsConfirm?.invoke(selectedIdx, showTouchscreen, timeoutEnabled, hapticsEnabled)
     }
@@ -117,14 +117,14 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
             IgSectionLabel(L("Input controls"))
             IgCard {
                 // A layout applies for this session; choosing none is remembered (smart_default_touch_optout).
-                IgRow(L("Profile"), scopes = listOf(if (selectedIdx == 0) SaveScope.ALL else SaveScope.SESSION), wideControl = true) {
-                    IgPickButton(L("Profile"), allItems, if (selectedIdx in allItems.indices) selectedIdx else 0) { i ->
+                IgRow(L("配置"), scopes = listOf(if (selectedIdx == 0) SaveScope.ALL else SaveScope.SESSION), wideControl = true) {
+                    IgPickButton(L("配置"), allItems, if (selectedIdx in allItems.indices) selectedIdx else 0) { i ->
                         selectedIdx = i
                         confirm()
                     }
                 }
                 IgDivider()
-                IgToggleRow(L("Touch Controls"), showTouchscreen, scopes = listOf(SaveScope.SESSION)) {
+                IgToggleRow(L("触摸控件"), showTouchscreen, scopes = listOf(SaveScope.SESSION)) {
                     showTouchscreen = it
                     confirm()
                     // The confirm callback doesn't echo the flag; mirror it so the Quick page's switch agrees (as that one does).
@@ -136,7 +136,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
                     confirm()
                 }
                 IgDivider()
-                IgToggleRow(L("Haptics"), hapticsEnabled, scopes = listOf(SaveScope.ALL)) {
+                IgToggleRow(L("触觉反馈"), hapticsEnabled, scopes = listOf(SaveScope.ALL)) {
                     hapticsEnabled = it
                     confirm()
                 }
@@ -144,7 +144,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
                 // Live: applied to the visible overlay as it moves.
                 var overlayOpacity by remember(initOverlayOpacity) { mutableFloatStateOf(initOverlayOpacity) }
                 IgSliderRow(
-                    title = L("Overlay Opacity"),
+                    title = L("覆盖层透明度"),
                     value = overlayOpacity,
                     range = 0f..1f,
                     step = 0.05f,
@@ -160,10 +160,10 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
             }
 
             // Per-profile accent: follow the app theme (default) or a custom accent for the active profile.
-            val accentScope = SaveScope.other(L("Saved in the controls profile"))
-            IgSectionLabel(L("Controls accent"))
+            val accentScope = SaveScope.other(L("保存在控制配置中"))
+            IgSectionLabel(L("控制强调色"))
             IgCard {
-                IgToggleRow(L("App Theme"), controlsFollowTheme, scopes = listOf(accentScope)) {
+                IgToggleRow(L("应用主题"), controlsFollowTheme, scopes = listOf(accentScope)) {
                     state.setControlsFollowTheme(it)
                     state.onControlsColorChange?.run()
                 }
@@ -179,7 +179,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 IgButton(
-                    L("Profile Settings…"), null,
+                    L("配置文件设置…"), null,
                     {
                         confirm()
                         XServerDialogState.onInputControlsSettings?.invoke(selectedIdx)
@@ -188,7 +188,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
                     enabled = selectedIdx > 0,
                 )
                 IgButton(
-                    L("Apply & Close"), null,
+                    L("应用并关闭"), null,
                     {
                         // state.onClose is the activity's closeInGameMenu (closes the drawer and this menu); closing
                         // this menu first is a no-op for it.
@@ -236,24 +236,24 @@ private fun LabCtlMouseSection(state: XServerDrawerState) {
     IgSectionLabel(L("Mouse & cursor"))
     IgCard {
         // Touch and Aim mode are saved for this game (TouchAimSettings); they apply at once.
-        IgRow(L("Touch"), scopes = listOf(game), wideControl = true) {
+        IgRow(L("触摸"), scopes = listOf(game), wideControl = true) {
             IgSegmented(listOf("touchpad" to L("Touchpad"), "direct" to L("Direct"), "touchscreen" to L("Touchscreen")), touchMode) {
                 state.onTouchMode?.accept(it)
             }
         }
         IgDivider()
-        IgRow(L("Aim"), scopes = listOf(game), wideControl = true) {
+        IgRow(L("瞄准"), scopes = listOf(game), wideControl = true) {
             IgSegmented(listOf("auto" to L("Auto"), "on" to L("On"), "off" to L("Off")), aimMode) {
                 state.onAimMode?.accept(it)
             }
         }
         IgDivider()
         // The activity flips its own flag (onDisableMouse toggles), as the Classic chip does.
-        IgToggleRow(L("Disable Mouse"), isMouseDisabled, scopes = listOf(SaveScope.SESSION)) {
+        IgToggleRow(L("禁用鼠标"), isMouseDisabled, scopes = listOf(SaveScope.SESSION)) {
             state.onDisableMouse?.run()
         }
         IgDivider()
-        IgToggleRow(L("Auto-hide Cursor"), cursorAutoHide, scopes = listOf(SaveScope.ALL)) {
+        IgToggleRow(L("自动隐藏光标"), cursorAutoHide, scopes = listOf(SaveScope.ALL)) {
             state.setCursorAutoHide(it); state.onCursorAutoHideChange?.run()
         }
         if (cursorAutoHide) {
@@ -262,7 +262,7 @@ private fun LabCtlMouseSection(state: XServerDrawerState) {
             IgDivider()
             // Classic: 500..10000 in 19 steps of 500.
             IgSliderRow(
-                title = L("Hide After (ms)"),
+                title = L("隐藏延迟 (ms)"),
                 value = hideMs.toFloat(),
                 range = 500f..10000f,
                 step = 500f,
@@ -274,7 +274,7 @@ private fun LabCtlMouseSection(state: XServerDrawerState) {
         }
         if (isWaylandSession) {
             IgNote(
-                L("Wayland: mouse deltas go to the compositor; a game that locks the pointer receives them as relative motion"),
+                L("Wayland：鼠标增量发送到合成器；锁定指针的游戏会将其作为相对运动接收"),
                 modifier = Modifier.padding(bottom = 8.dp),
             )
         }
@@ -289,15 +289,15 @@ private fun LabCtlTouchGestures(state: XServerDrawerState) {
     val dragSelect by state.gestureDragSelect.collectAsState()
     val longPress by state.gestureLongPressRightClick.collectAsState()
 
-    IgSectionLabel(L("Touch gestures"))
+    IgSectionLabel(L("触摸手势"))
     IgCard {
-        IgInfo(L("Drag to box-select, hold for right click. Two-finger drag scrolls the wheel."))
+        IgInfo(L("拖拽以框选，长按为右键。双指拖拽可滚动滚轮。"))
         IgDivider()
-        IgToggleRow(L("Box Select"), dragSelect, scopes = listOf(SaveScope.ALL)) {
+        IgToggleRow(L("框选"), dragSelect, scopes = listOf(SaveScope.ALL)) {
             state.setGestureDragSelect(it); state.onGestureConfigChange?.run()
         }
         IgDivider()
-        IgToggleRow(L("Hold = Right"), longPress, scopes = listOf(SaveScope.ALL)) {
+        IgToggleRow(L("长按 = 右键"), longPress, scopes = listOf(SaveScope.ALL)) {
             state.setGestureLongPressRightClick(it); state.onGestureConfigChange?.run()
         }
         if (longPress) {
@@ -305,7 +305,7 @@ private fun LabCtlTouchGestures(state: XServerDrawerState) {
             var holdMs by remember(initHoldMs) { mutableIntStateOf(initHoldMs) }
             IgDivider()
             IgSliderRow(
-                title = L("Hold Delay"),
+                title = L("长按延迟"),
                 value = holdMs.toFloat(),
                 range = 150f..800f,
                 step = 32f,
@@ -327,7 +327,7 @@ private fun LabCtlVibrationSection() {
     val vibrationMasterOn by XServerDialogState.vibrationMasterEnabled.collectAsState()
     val vibrationSlots by XServerDialogState.vibrationSlots.collectAsState()
 
-    IgSectionLabel(L("Vibration"))
+    IgSectionLabel(L("震动"))
     IgCard {
         IgToggleRow(L("Enabled"), vibrationMasterOn, scopes = listOf(SaveScope.ALL)) {
             XServerDialogState.setVibrationMasterEnabled(it)
@@ -337,7 +337,7 @@ private fun LabCtlVibrationSection() {
             val initVibrationMode by XServerDialogState.vibrationMode.collectAsState()
             var vibrationMode by remember(initVibrationMode) { mutableIntStateOf(initVibrationMode) }
             IgDivider()
-            IgRow(L("Rumble Target"), scopes = listOf(padScope), wideControl = true) {
+            IgRow(L("震动目标"), scopes = listOf(padScope), wideControl = true) {
                 IgSegmented(listOf(0 to L("Off"), 1 to L("Controller"), 2 to L("Device"), 3 to L("Both")), vibrationMode) {
                     vibrationMode = it
                     XServerDialogState.setVibrationMode(it)
@@ -350,7 +350,7 @@ private fun LabCtlVibrationSection() {
                 var vibrationIntensity by remember(initVibrationIntensity) { mutableIntStateOf(initVibrationIntensity) }
                 IgDivider()
                 IgSliderRow(
-                    title = L("Intensity"),
+                    title = L("强度"),
                     value = vibrationIntensity.toFloat(),
                     range = 0f..100f,
                     step = 5f,
@@ -618,18 +618,18 @@ private fun LabCtlPlayersSection() {
     // Devices hot-plug, so pull a fresh snapshot whenever this sub-tab is shown.
     LaunchedEffect(Unit) { XServerDialogState.onPlayerSlotsRefresh?.run() }
 
-    IgSectionLabel(L("Player slots"))
+    IgSectionLabel(L("玩家槽位"))
     IgCard {
         IgRow(
-            L("Physical Controller Test / Bind"),
-            hint = L("Test each physical controller, remap its buttons, and confirm every input registers."),
+            L("物理控制器测试/绑定"),
+            hint = L("测试每个物理控制器，重新映射其按钮，并确认每个输入均已注册。"),
         ) {
             IgButton(L("Test / Bind"), Icons.Outlined.SportsEsports, { XServerDialogState.show(XServerDialogState.ActiveDialog.CONTROLLER_TEST) })
         }
     }
     Spacer(Modifier.height(10.dp))
     IgCard {
-        IgInfo(L("Assign each device to a player, or ignore it. Applied immediately and saved for this container."))
+        IgInfo(L("将每个设备分配给一个玩家，或将其忽略。立即应用并为此容器保存。"))
         if (rows.isEmpty()) {
             IgDivider()
             IgInfo(L("No input devices detected."))
@@ -643,8 +643,8 @@ private fun LabCtlPlayersSection() {
     Spacer(Modifier.height(10.dp))
     IgCard {
         // Rebuilds the fake-input transport in place (no relaunch), then re-reads the slots.
-        IgRow(L("Reset Input"), hint = L("Re-handshake controllers & on-screen if input stops responding.")) {
-            IgButton(L("Reset Input"), Icons.Outlined.Refresh, {
+        IgRow(L("重置输入"), hint = L("如果输入停止响应，重新连接控制器和屏幕控制。")) {
+            IgButton(L("重置输入"), Icons.Outlined.Refresh, {
                 XServerDialogState.onResetInput?.run()
                 XServerDialogState.onPlayerSlotsRefresh?.run()
             })
@@ -658,18 +658,18 @@ private fun LabCtlPlayerSlotRow(row: XServerDialogState.PlayerSlotRow, scope: Sa
     val options = buildList {
         add(XServerDialogState.SLOT_AUTO to L("Auto"))
         for (i in 0 until 4) add(i to L("Player %1\$s", i + 1))
-        add(XServerDialogState.SLOT_IGNORE to L("Ignore"))
+        add(XServerDialogState.SLOT_IGNORE to L("忽略"))
     }
     // Classic shows "Auto" for an override it doesn't list.
     val selected = if (options.any { it.first == row.override }) row.override else XServerDialogState.SLOT_AUTO
     val subtitle = when {
         row.currentSlot >= 0 -> L("Currently Player %1\$s", row.currentSlot + 1)
         row.override == XServerDialogState.SLOT_IGNORE -> L("Ignored")
-        else -> L("Unassigned")
+        else -> L("未分配")
     }
     IgRow(
         row.displayName,
-        hint = subtitle + if (row.isOnScreen) L(" · on-screen controls") else "",
+        hint = subtitle + if (row.isOnScreen) L(" · 屏幕控制") else "",
         scopes = listOf(scope),
         wideControl = true,
     ) {
@@ -689,7 +689,7 @@ private fun LabCtlSwipeSection(state: XServerDrawerState) {
 
     IgSectionLabel(stringResource(R.string.swipe_tab))
     IgCard {
-        IgInfo(L("Slide a finger onto a control to press it — chain buttons and roll the d-pad without lifting."))
+        IgInfo(L("将手指滑动到控件上即可按下——可连续操作按钮和方向键，无需抬起手指。"))
         IgDivider()
         IgToggleRow(stringResource(R.string.swipe_buttons), swipeButtons, scopes = listOf(SaveScope.ALL)) {
             state.setSwipeButtons(it)
@@ -714,12 +714,12 @@ private fun LabCtlSwipeSection(state: XServerDrawerState) {
 private enum class LabCtlPadApply { LIVE, RECONNECT, RESTART }
 
 private fun LabCtlPadApply.label(): String = when (this) {
-    LabCtlPadApply.LIVE -> L("Live")
-    LabCtlPadApply.RECONNECT -> L("Reconnects controller")
-    LabCtlPadApply.RESTART -> L("Restart required")
+    LabCtlPadApply.LIVE -> L("实时")
+    LabCtlPadApply.RECONNECT -> L("重新连接控制器")
+    LabCtlPadApply.RESTART -> L("需要重启")
 }
 
-/** Where Pad and the rumble rows save: the "Save for" choice (ControllerSaveTarget in the activity). */
+/** Where Pad and the rumble rows save: the "保存用于" choice (ControllerSaveTarget in the activity). */
 @Composable
 private fun labCtlPadScope(): SaveScope {
     val s by XServerDialogState.controllerSaveScope.collectAsState()
@@ -744,9 +744,9 @@ private fun LabCtlPadSection() {
         val choices = remember { ControllerIdentity.wineChoices() }
         val identityApply = if (pad.nextLaunchOnly.contains("identity")) LabCtlPadApply.RESTART else LabCtlPadApply.RECONNECT
         val identityLocked = pad.identityLockedReason != null
-        LabCtlPadRow(L("Controller type"), identityApply, R.string.help_controller_identity, listOf(padScope), enabled = !identityLocked) {
+        LabCtlPadRow(L("控制器类型"), identityApply, R.string.help_controller_identity, listOf(padScope), enabled = !identityLocked) {
             LabCtlPickButton(
-                title = L("Controller type"),
+                title = L("控制器类型"),
                 label = ControllerIdentity.label(pad.identity),
                 options = choices.map { it.label },
                 selected = choices.indexOfFirst { it.value == pad.identity },
@@ -763,7 +763,7 @@ private fun LabCtlPadSection() {
         if (pad.xinputAvailable) {
             IgDivider()
             LabCtlPadRow(
-                L("XInput source"),
+                L("XInput 源"),
                 if (pad.xinputSwitchable) LabCtlPadApply.RECONNECT else LabCtlPadApply.RESTART,
                 R.string.help_bannerin_xinput,
                 listOf(padScope),
@@ -772,14 +772,14 @@ private fun LabCtlPadSection() {
                     if (v != pad.xinputDirect) XServerDialogState.onPadXInputDirect?.invoke(v)
                 }
             }
-            if (!pad.xinputSwitchable) IgNote(L("Restart to apply. Turn on \"Allow in-game switching\" to switch without restarting."))
+            if (!pad.xinputSwitchable) IgNote(L("重启以应用。打开“允许游戏内切换”以在不重启的情况下切换。"))
         }
 
         // DirectInput visibility.
         IgDivider()
         val dinputOpen = pad.dinputLockedReason == null
         LabCtlPadRow(stringResource(R.string.dinput_visible), LabCtlPadApply.RECONNECT, R.string.help_dinput_visible, listOf(padScope), enabled = dinputOpen) {
-            IgSegmented(listOf(false to L("Hidden"), true to L("Visible")), pad.dinputVisible, enabled = dinputOpen) { v ->
+            IgSegmented(listOf(false to L("隐藏"), true to L("可见")), pad.dinputVisible, enabled = dinputOpen) { v ->
                 if (v != pad.dinputVisible) XServerDialogState.onPadDInputVisible?.invoke(v)
             }
         }
@@ -799,7 +799,7 @@ private fun LabCtlPadSection() {
         IgDivider()
         val pacing = StickPacing.parse(pad.pacing) ?: StickPacing.DEFAULT
         val pacingLocked = pad.pacingLockedReason != null
-        LabCtlPadRow(L("Stick updates"), LabCtlPadApply.LIVE, R.string.help_stick_pacing, listOf(padScope), enabled = !pacingLocked) {
+        LabCtlPadRow(L("摇杆更新"), LabCtlPadApply.LIVE, R.string.help_stick_pacing, listOf(padScope), enabled = !pacingLocked) {
             IgSegmented(
                 listOf(StickPacing.MODE_AUTO to L("Auto"), StickPacing.MODE_FIXED to L("Fixed"), StickPacing.MODE_OFF to L("Unpaced")),
                 pacing.mode,
@@ -828,7 +828,7 @@ private fun LabCtlPadSection() {
                 }
             }
         }
-        IgNote(if (pad.nowHz > 0) L("Now: %1\$s Hz", pad.nowHz) else L("Now: no game reading the pad yet"))
+        IgNote(if (pad.nowHz > 0) L("Now: %1\$s Hz", pad.nowHz) else L("当前：尚无游戏读取手柄"))
         pad.pacingLockedReason?.let { IgNote(it) }
         Spacer(Modifier.height(6.dp))
     }
@@ -900,7 +900,7 @@ private fun LabCtlSaveForRows() {
     val scope by XServerDialogState.controllerSaveScope.collectAsState()
     val s = scope
     if (s.gameName != null) {
-        IgRow(L("Save for"), wideControl = true) {
+        IgRow(L("保存用于"), wideControl = true) {
             IgSegmented(listOf(true to L("This game"), false to L("All games in container")), s.toGame) {
                 XServerDialogState.onControllerSaveScope?.invoke(it)
             }
@@ -987,16 +987,16 @@ private fun LabCtlColorPicker(initialColor: Color, onColorChanged: (Color) -> Un
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text(L("Preview"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.5.sp)
+                Text(L("预览"), color = cs.onSurfaceVariant, fontFamily = NunitoSansFamily, fontSize = 12.5.sp)
                 Text(hexInput, color = cs.onSurface, fontFamily = FontFamily.Monospace, fontSize = 14.sp)
             }
         }
         LabCtlGradientBar(
-            L("Hue"), hue, 0f..360f,
+            L("色相"), hue, 0f..360f,
             Brush.horizontalGradient((0..12).map { i -> Color(android.graphics.Color.HSVToColor(floatArrayOf(i * 30f, 1f, 1f))) }),
         ) { hue = it; notifyChange() }
         LabCtlGradientBar(
-            L("Saturation"), saturation, 0f..1f,
+            L("饱和度"), saturation, 0f..1f,
             Brush.horizontalGradient(
                 listOf(
                     Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, 0f, brightness))),
@@ -1005,7 +1005,7 @@ private fun LabCtlColorPicker(initialColor: Color, onColorChanged: (Color) -> Un
             ),
         ) { saturation = it; notifyChange() }
         LabCtlGradientBar(
-            L("Brightness"), brightness, 0f..1f,
+            L("亮度"), brightness, 0f..1f,
             Brush.horizontalGradient(listOf(Color.Black, Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, saturation, 1f))))),
         ) { brightness = it; notifyChange() }
         IgTextField(
@@ -1029,7 +1029,7 @@ private fun LabCtlColorPicker(initialColor: Color, onColorChanged: (Color) -> Un
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = L("Hex color (#RRGGBB)"),
+            placeholder = L("十六进制颜色代码 (#RRGGBB)"),
             monospace = true,
         )
         if (hexError) IgNote(L("Enter a valid 6-digit hex color"), error = true)

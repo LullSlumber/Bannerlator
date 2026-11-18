@@ -81,11 +81,11 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
     val harnessProven by PerformanceSettings.harnessProven.collectAsState()
     val granted = rootState == RootManager.RootState.GRANTED
     val rootKeys = listOf(
-        PerfRootApplier.KEY_CPU_GOVERNOR to (L("CPU governor → performance") to PerfCopy.CPU_GOV),
-        PerfRootApplier.KEY_CPU_FREQ_LOCK to (L("Lock CPU frequency to max") to PerfCopy.CPU_FREQ),
-        PerfRootApplier.KEY_CORES_ONLINE to (L("Keep all cores online") to PerfCopy.CORES_ONLINE),
+        PerfRootApplier.KEY_CPU_GOVERNOR to (L("CPU 调度器 → 性能模式") to PerfCopy.CPU_GOV),
+        PerfRootApplier.KEY_CPU_FREQ_LOCK to (L("锁定 CPU 最高频率") to PerfCopy.CPU_FREQ),
+        PerfRootApplier.KEY_CORES_ONLINE to (L("保持所有核心在线") to PerfCopy.CORES_ONLINE),
         PerfRootApplier.KEY_THERMAL_DISABLE to (L("Disable thermal throttling") to PerfCopy.THERMAL),
-        PerfRootApplier.KEY_FAN_MAX to (L("Fan to maximum") to PerfCopy.FAN),
+        PerfRootApplier.KEY_FAN_MAX to (L("风扇最大转速") to PerfCopy.FAN),
     )
     val on = (rootKeys.map { it.first } + PerfRootApplier.KEY_AUTO_DEEP_CLEAN).associateWith { k ->
         PerformanceSettings.rootDefaultFlow(k).collectAsState().value
@@ -110,7 +110,7 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
     var info by remember { mutableStateOf<Pair<String, String>?>(null) }
     var grantGate by remember { mutableStateOf(false) }
     var offGate by remember { mutableStateOf(false) }
-    fun explain(title: String, body: String) = MenuAction(L("What's this?"), { info = title to L(body) })
+    fun explain(title: String, body: String) = MenuAction(L("这是什么?"), { info = title to L(body) })
 
     val root = buildList {
         add(MenuEntry(
@@ -132,7 +132,7 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
             }
             val v = on[key] == true
             add(MenuEntry(
-                "root:$key", copy.first, subtitle = reason, toggle = v, group = L("Root performance controls"),
+                "root:$key", copy.first, subtitle = reason, toggle = v, group = L("Root 性能控制"),
                 onA = {
                     if (reason != null) toast(context, reason)
                     else {
@@ -144,28 +144,28 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
             ))
         }
         add(MenuEntry(
-            "drop", L("Drop file caches"), L("Frees cached files. Little visible RAM; the system reclaims cache automatically."),
-            icon = Icons.Filled.Memory, group = L("Free memory"),
+            "drop", L("清除文件缓存"), L("释放缓存文件。可见 RAM 变化很小；系统会自动回收缓存。"),
+            icon = Icons.Filled.Memory, group = L("释放内存"),
             onA = { if (granted) PerfRootApplier.freeMemoryNow() else toast(context, L("Needs root.")) },
-            actions = listOf(explain(L("Free memory"), PerfCopy.FREE_MEM_SECTION)),
+            actions = listOf(explain(L("释放内存"), PerfCopy.FREE_MEM_SECTION)),
         ))
         add(MenuEntry(
-            "deep", L("Deep clean (free app memory)"), L("Force-closes background apps to free real memory. Won't touch your game or system."),
-            icon = Icons.Filled.Memory, group = L("Free memory"),
+            "deep", L("深度清理（释放应用内存）"), L("强制关闭后台应用以释放真正的内存。不会影响您的游戏或系统。"),
+            icon = Icons.Filled.Memory, group = L("释放内存"),
             onA = { if (granted) PerfRootApplier.deepCleanMemory() else toast(context, L("Needs root.")) },
-            actions = listOf(explain(L("Free memory"), PerfCopy.FREE_MEM_SECTION)),
+            actions = listOf(explain(L("释放内存"), PerfCopy.FREE_MEM_SECTION)),
         ))
         val auto = on[PerfRootApplier.KEY_AUTO_DEEP_CLEAN] == true
         add(MenuEntry(
-            "autoclean", L("Auto deep-clean on launch"), subtitle = if (granted) null else L("Needs root."), toggle = auto, group = L("Free memory"),
+            "autoclean", L("启动时自动深度清理"), subtitle = if (granted) null else L("Needs root."), toggle = auto, group = L("释放内存"),
             onA = { if (granted) PerformanceSettings.setRootDefault(PerfRootApplier.KEY_AUTO_DEEP_CLEAN, !auto) else toast(context, L("Needs root.")) },
-            actions = listOf(explain(L("Auto deep-clean on launch"), PerfCopy.AUTO_DEEP_CLEAN)),
+            actions = listOf(explain(L("启动时自动深度清理"), PerfCopy.AUTO_DEEP_CLEAN)),
         ))
         add(MenuEntry("always", L("Undone on game exit, app background and crash"), L("Always on; it cannot be turned off."), icon = Icons.Filled.Restore, group = L("Help")))
-        add(MenuEntry("explain", L("Explain toggles"), icon = Icons.Filled.HelpOutline, group = L("Help"),
-            onA = { info = L("What the toggles do") to explainAllBody() }))
+        add(MenuEntry("explain", L("开关说明"), icon = Icons.Filled.HelpOutline, group = L("Help"),
+            onA = { info = L("各开关功能说明") to explainAllBody() }))
         if (!granted && !PerfGpuTurbo.isSupported) {
-            add(MenuEntry("gpunote", L("Lock GPU to max clock"), L("Needs an Adreno (Qualcomm) GPU, or root on other GPUs."), icon = Icons.Filled.Info, group = L("Help")))
+            add(MenuEntry("gpunote", L("锁定 GPU 最高频率"), L("需要 Adreno (Qualcomm) GPU，或其他 GPU 上的 root 权限。"), icon = Icons.Filled.Info, group = L("Help")))
         }
     }
 
@@ -177,7 +177,7 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
             trailing = "~$ceiling °C · " + L(modeLabel(mode)), toggle = wdOn, icon = Icons.Outlined.Thermostat,
             // Turning it off needs the hard warning; turning it on does not.
             onA = { if (wdOn) offGate = true else TempWatchdog.setWatchdogEnabled(true) },
-            actions = listOf(MenuAction(L("What's this?"), { info = L("What is the Temperature Watchdog?") to L(WATCHDOG_WHATS_THIS) })),
+            actions = listOf(MenuAction(L("这是什么?"), { info = L("什么是温度看门狗?") to L(WATCHDOG_WHATS_THIS) })),
         ))
         add(MenuEntry(
             "temps", L("Now"), trailing = "CPU ${cpuTemp?.let { "$it °C" } ?: "—"} · GPU ${gpuTemp?.let { "$it °C" } ?: "—"}",
@@ -209,18 +209,18 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings › Performance"),
-        title = L("Root controls and heat safety"),
+        title = L("Root 控制与散热保护"),
         sections = listOf(
             MenuSection("root", L("Root and memory"), Icons.Filled.Speed, root),
-            MenuSection("heat", L("Temperature watchdog"), Icons.Outlined.Thermostat, heat),
+            MenuSection("heat", L("温度看门狗"), Icons.Outlined.Thermostat, heat),
         ),
         onBack = onBack,
     )
     info?.let { (t, b) -> LabSetInfo(t, b) { info = null } }
     if (grantGate) {
         LabSetGate(
-            title = L("Power-user performance — read first"), body = PerfDisclaimerCopy.ROOT_RISK,
-            checkLabel = L("I understand and accept all risk"), confirmLabel = L("Grant Root"),
+            title = L("高级性能设置 — 请先阅读"), body = PerfDisclaimerCopy.ROOT_RISK,
+            checkLabel = L("我理解并承担所有风险"), confirmLabel = L("Grant Root"),
             requireScroll = true, danger = true,
             onConfirm = { grantGate = false; scope.launch { RootManager.requestGrant() } },
             onDismiss = { grantGate = false },
@@ -228,8 +228,8 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
     }
     if (offGate) {
         LabSetGate(
-            title = L("Disable thermal safety?"), body = PerfDisclaimerCopy.WATCHDOG_OFF,
-            checkLabel = L("I understand and accept all risk"), confirmLabel = L("Turn watchdog OFF"),
+            title = L("禁用温度保护?"), body = PerfDisclaimerCopy.WATCHDOG_OFF,
+            checkLabel = L("我理解并承担所有风险"), confirmLabel = L("关闭看门狗"),
             requireScroll = true, danger = true,
             onConfirm = { offGate = false; TempWatchdog.setWatchdogEnabled(false) },
             onDismiss = { offGate = false },
@@ -256,12 +256,12 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
     val building = remember { AtomicBoolean(false) }
     fun ready() = dll.isFile && dll.length() > 0
     fun statusText(): String {
-        if (!ready()) return L("Not set: LSFG Native stays off")
+        if (!ready()) return L("未设置：LSFG Native 保持关闭")
         val mb = dll.length() / (1024 * 1024)
         return when (prefs.getString("lsfg_dll_source", null)) {
-            "store" -> L("Imported from the Steam store (Lossless Scaling)") + " · " + mb + " MB"
-            "manual" -> L("Imported manually") + " · " + mb + " MB"
-            else -> L("Imported") + " · " + mb + " MB"
+            "store" -> L("从 Steam 商店导入（Lossless Scaling）") + " · " + mb + " MB"
+            "manual" -> L("手动导入") + " · " + mb + " MB"
+            else -> L("已导入") + " · " + mb + " MB"
         }
     }
     var status by remember { mutableStateOf(statusText()) }
@@ -272,15 +272,15 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
         if (!ready()) { shaders = ""; return }
         if (!building.compareAndSet(false, true)) return
         val appCtx = context.applicationContext
-        shaders = L("Preparing shaders for LSFG Native (one time, can take a minute)")
+        shaders = L("正在为 LSFG Native 准备着色器（仅需一次，可能需要一分钟）")
         Thread({
             val started = System.currentTimeMillis()
             val st = try { com.winlator.star.core.LsfgNative.ensureCache(appCtx, false) } catch (e: Throwable) { -1 }
             val took = (System.currentTimeMillis() - started) / 1000
             val text = when (st) {
                 com.winlator.star.core.LsfgNative.STATUS_OK ->
-                    if (took >= 2) L("Shaders ready for LSFG Native") + " (" + took + " s)" else L("Shaders ready for LSFG Native")
-                -1 -> L("Shader preparation failed; it is retried when a game launches")
+                    if (took >= 2) L("着色器已为LSFG Native就绪") + " (" + took + " s)" else L("着色器已为LSFG Native就绪")
+                -1 -> L("着色器准备失败；游戏启动时会重试")
                 else -> com.winlator.star.core.LsfgNative.explain(st)
             }
             perfMain.post { shaders = text; building.set(false) }
@@ -294,7 +294,7 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
             status = statusText()
             buildCache()
         } catch (e: Exception) {
-            status = L("Import failed") + ": " + e.message
+            status = L("导入失败") + ": " + e.message
         }
     }
     // A Lossless.dll from a Steam-store install (Lossless Scaling lands under imagefs/steam_games/<name>); the newest wins.
@@ -304,7 +304,7 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
             .filter { it.isFile && it.name.equals("Lossless.dll", ignoreCase = true) && it.length() > 0 }
             .maxByOrNull { it.lastModified() }
         if (src == null) {
-            toast(context, L("No Steam-store Lossless Scaling found: download it from the store or import it manually."))
+            toast(context, L("未在 Steam 商店找到 Lossless Scaling：请从商店下载或手动导入。"))
             return
         }
         try {
@@ -315,8 +315,8 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
             buildCache()
             toast(context, L("Lossless.dll set from the Steam store install."))
         } catch (e: Exception) {
-            status = L("Detect failed") + ": " + e.message
-            toast(context, L("Detect failed") + ": " + e.message)
+            status = L("检测失败") + ": " + e.message
+            toast(context, L("检测失败") + ": " + e.message)
         }
     }
     fun remove() {
@@ -335,26 +335,26 @@ internal fun LabLosslessPage(onBack: () -> Unit) {
     val entries = buildList {
         add(MenuEntry("status", L("Lossless.dll"), subtitle = status + if (shaders.isNotEmpty()) "\n" + shaders else "", icon = Icons.Filled.Info,
             onA = { about = true }))
-        add(MenuEntry("detect", L("Detect from the Steam store"), L("Download Lossless Scaling in the in-app Steam store first."),
+        add(MenuEntry("detect", L("从 Steam 商店检测"), L("Download Lossless Scaling in the in-app Steam store first."),
             icon = Icons.Filled.Download, onA = { detect() }))
-        add(MenuEntry("import", L("Import Lossless.dll"), L("Pick a Lossless.dll yourself."), icon = Icons.Filled.FileDownload,
+        add(MenuEntry("import", L("导入 Lossless.dll"), L("Pick a Lossless.dll yourself."), icon = Icons.Filled.FileDownload,
             actions = listOf(
-                MenuAction(L("Browse files"), { inApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("Select Lossless.dll"))) }),
-                MenuAction(L("Pick via system…"), { system.launch(arrayOf("*/*")) }),
+                MenuAction(L("浏览文件"), { inApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("选择 Lossless.dll"))) }),
+                MenuAction(L("从系统选取…"), { system.launch(arrayOf("*/*")) }),
             )))
         if (dll.isFile) {
-            add(MenuEntry("remove", L("Remove Lossless.dll"), L("Deletes the copy and its shader cache; LSFG Native stays off."),
+            add(MenuEntry("remove", L("Remove Lossless.dll"), L("删除副本及其着色器缓存；LSFG Native 保持关闭。"),
                 icon = Icons.Filled.Delete, onA = { remove() }))
         }
         add(MenuEntry("about", L("About LSFG Native"), icon = Icons.Filled.HelpOutline, onA = { about = true }))
     }
     SimpleMenuPage(
         overline = L("Settings › Performance"),
-        title = L("Frame generation: LSFG Native"),
+        title = L("帧生成：LSFG Native"),
         sections = listOf(MenuSection("lsfg", L("Lossless.dll"), Icons.Filled.Speed, entries)),
         onBack = onBack,
     )
-    if (about) LabSetInfo(L("Frame generation: LSFG Native"), L(LSFG_ABOUT)) { about = false }
+    if (about) LabSetInfo(L("帧生成：LSFG Native"), L(LSFG_ABOUT)) { about = false }
 }
 
 // ───────────────────────────── Translator presets ─────────────────────────────
@@ -414,14 +414,14 @@ internal fun LabPresetsPage(open: (String) -> Unit, onBack: () -> Unit) {
                 actions = listOfNotNull(
                     MenuAction(labSetMark(L("Use for new containers"), id == default), { prefs.edit().putString(prefKey(kind), id).apply(); tick++ }),
                     MenuAction(L("Edit values"), { open(LabSettingsRoutes.presetEdit(kind, id)) }),
-                    MenuAction(L("Duplicate"), {
+                    MenuAction(L("复制"), {
                         if (fex) FEXCorePresetManager.duplicatePreset(context, id) else Box64PresetManager.duplicatePreset("box64", context, id)
                         tick++
                     }, confirm = context.getString(R.string.do_you_want_to_duplicate_this_preset)),
-                    if (custom) MenuAction(L("Export"), {
+                    if (custom) MenuAction(L("导出"), {
                         if (fex) FEXCorePresetManager.exportPreset(context, id) else Box64PresetManager.exportPreset("box64", context, id)
                     }) else null,
-                    if (custom) MenuAction(L("Remove"), {
+                    if (custom) MenuAction(L("移除"), {
                         if (fex) FEXCorePresetManager.removePreset(context, id) else Box64PresetManager.removePreset("box64", context, id)
                         tick++
                     }, danger = true, confirm = context.getString(R.string.do_you_want_to_remove_this_preset)) else null,
@@ -431,11 +431,11 @@ internal fun LabPresetsPage(open: (String) -> Unit, onBack: () -> Unit) {
             "$label:import", L("Import a preset"), L("A .wbp preset file. It joins the list every container and game picks from."),
             icon = Icons.Filled.FileDownload,
             actions = listOf(
-                MenuAction(L("Browse files"), {
+                MenuAction(L("浏览文件"), {
                     importKind = kind
                     inApp.launch(InAppFilePicker.buildIntent(context, emptyArray(), L("Select %1\$s preset", label)))
                 }),
-                MenuAction(L("Pick via system…"), { importKind = kind; system.launch(arrayOf("*/*")) }),
+                MenuAction(L("从系统选取…"), { importKind = kind; system.launch(arrayOf("*/*")) }),
             ),
         )
         return MenuSection(
@@ -516,7 +516,7 @@ internal fun LabPresetEditPage(kind: PresetKind, presetId: String?, onBack: () -
         onBack()
     }
     val helpOf = remember(specs) { specs.associate { it.name to varHelp(context, kind, it.name) } }
-    fun helpAction(spec: VarSpec): MenuAction? = helpOf[spec.name]?.let { h -> MenuAction(L("What's this?"), { info = spec.name to h }) }
+    fun helpAction(spec: VarSpec): MenuAction? = helpOf[spec.name]?.let { h -> MenuAction(L("这是什么?"), { info = spec.name to h }) }
     val entries = buildList {
         add(MenuEntry(
             "name", L("Name"), subtitle = if (builtIn) L("Built-in names can't be changed.") else null, trailing = name, icon = Icons.Filled.Tune,

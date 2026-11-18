@@ -1372,6 +1372,14 @@
     <string name="xmb_cover_add_hint">从存储中选择一张图片</string>
     <string name="xmb_cover_browser_title">选择封面图片</string>
     <string name="xmb_cover_applied">封面已更新。</string>
+    <string name="xmb_backdrop_add">添加自定义背景</string>
+    <string name="xmb_backdrop_add_hint">选择一张宽幅横版大图</string>
+    <string name="xmb_backdrop_browser_title">选择背景图片</string>
+    <string name="xmb_backdrop_yours">你的图片</string>
+    <string name="xmb_backdrop_failed">无法使用该图片。</string>
+    <string name="xmb_wide_add">添加自定义宽幅封面</string>
+    <string name="xmb_wide_add_hint">选择一张宽幅胶囊图</string>
+    <string name="xmb_wide_browser_title">选择宽幅封面图片</string>
     <string name="xmb_cover_unreadable">无法读取该图片。</string>
     <string name="xmb_cover_remove">移除自定义封面</string>
     <string name="xmb_cover_remove_hint">恢复为游戏原来的封面</string>

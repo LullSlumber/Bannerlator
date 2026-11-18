@@ -298,7 +298,7 @@ internal fun LabActionField(
                     inner()
                 }
                 if (onClear != null && value.isNotEmpty()) {
-                    Icon(Icons.Filled.Close, contentDescription = L("Clear"), tint = SimpleMuted, modifier = Modifier.size(20.dp).simpleTap(onClear))
+                    Icon(Icons.Filled.Close, contentDescription = L("清除"), tint = SimpleMuted, modifier = Modifier.size(20.dp).simpleTap(onClear))
                 }
             }
         },
@@ -342,7 +342,7 @@ internal fun LabContainerPickerDialog(
         }
         if (systemPickerChecked != null && containers.isNotEmpty()) {
             Spacer(Modifier.height(4.dp))
-            LabActionRow(L("Use the system file picker"), switch = systemPickerChecked, onClick = { onSystemPickerChange(!systemPickerChecked) })
+            LabActionRow(L("使用系统文件选择器"), switch = systemPickerChecked, onClick = { onSystemPickerChange(!systemPickerChecked) })
         }
     }
 }
@@ -364,13 +364,13 @@ internal fun LabShortcutActionDialogs(actions: ShortcutActions, runBackup: (Shor
     actions.confirmRemove?.let { s ->
         val close = { actions.confirmRemove = null }
         SimpleActionSheet(
-            title = L("Remove shortcut?"),
+            title = L("移除快捷方式?"),
             message = L("Remove \"%1\$s\"?", s.name),
             actions = listOf(
-                MenuAction(L("Remove"), {
+                MenuAction(L("移除"), {
                     val ok = vm.remove(s, context)
                     actions.confirmRemove = null
-                    Toast.makeText(context, if (ok) L("Shortcut removed.") else L("Failed to remove shortcut."), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, if (ok) L("快捷方式已删除。") else L("移除快捷方式失败。"), Toast.LENGTH_SHORT).show()
                 }, danger = true),
                 MenuAction(L("Cancel"), close),
             ),
@@ -382,7 +382,7 @@ internal fun LabShortcutActionDialogs(actions: ShortcutActions, runBackup: (Shor
     actions.cloneTarget?.let { s ->
         val containers = remember(s) { vm.containers().filter { it.id != s.container.id } }
         LabContainerPickerDialog(
-            title = L("Select container"),
+            title = L("选择容器"),
             subtitle = L("A copy of \"%1\$s\" goes into it", s.name),
             containers = containers,
             emptyText = L(NO_OTHER_CONTAINER),
@@ -412,10 +412,10 @@ internal fun LabShortcutActionDialogs(actions: ShortcutActions, runBackup: (Shor
     actions.restoreZipUri?.let { uri ->
         val containers = remember(uri) { vm.containers() }
         LabContainerPickerDialog(
-            title = L("Select container"),
+            title = L("选择容器"),
             subtitle = L("The saves of \"%1\$s\" are restored into it", actions.restoreForName),
             containers = containers,
-            emptyText = L("No containers yet — create one in the Containers screen first."),
+            emptyText = L("暂无容器 — 请先在“容器”界面创建一个。"),
             onPick = { i ->
                 val chosen = containers[i]
                 actions.restoreZipUri = null
@@ -424,7 +424,7 @@ internal fun LabShortcutActionDialogs(actions: ShortcutActions, runBackup: (Shor
                     Toast.makeText(
                         context,
                         if (r.ok) L("Restored %1\$s files to \"%2\$s\"", r.filesWritten, chosen.name)
-                        else L("Restore failed: %1\$s", r.error ?: "unknown error"),
+                        else L("恢复失败：%1\$s", r.error ?: "未知错误"),
                         Toast.LENGTH_LONG,
                     ).show()
                     actions.emuConflicts = r.emuConflicts
@@ -480,19 +480,19 @@ private fun LabPropertiesDialog(s: Shortcut, onDismiss: () -> Unit) {
     )
     val close = rememberLabFirstFocus()
     LabActionDialog(
-        title = L("Properties"),
+        title = L("属性"),
         subtitle = s.name,
         onDismiss = onDismiss,
         buttons = {
-            LabActionButton(L("Reset Properties"), danger = true) {
+            LabActionButton(L("重置属性"), danger = true) {
                 prefs.edit().remove(playtimeKey).remove(playCountKey).apply()
                 tick++
             }
             LabActionButton(L("Close"), primary = true, requester = close, onClick = onDismiss)
         },
     ) {
-        LabValueLine(L("Number of times played"), playCount.toString())
-        LabValueLine(L("Playtime"), formatted)
+        LabValueLine(L("游玩次数"), playCount.toString())
+        LabValueLine(L("游玩时间"), formatted)
     }
 }
 
@@ -616,10 +616,10 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
                 onSuccess = { phase = LabCopyPhase.DELETE_ORIGINAL },
                 onFailure = { e ->
                     if (e is CopyGameToDriveC.CancelledException) {
-                        Toast.makeText(context, L("Copy cancelled — nothing was changed."), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, L("复制已取消 — 未做任何更改。"), Toast.LENGTH_SHORT).show()
                     } else {
                         android.util.Log.e("CopyToDriveC", "copy/repoint failed for ${target.name}", e)
-                        Toast.makeText(context, L("Copy failed: %1\$s. Nothing was changed.", e.message ?: "unknown error"), Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, L("Copy failed: %1\$s. Nothing was changed.", e.message ?: "未知错误"), Toast.LENGTH_LONG).show()
                     }
                     onFinished()
                 },
@@ -645,11 +645,11 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
                 onDismiss = onFinished,
                 buttons = {
                     LabActionButton(L("Cancel"), onClick = onFinished)
-                    LabActionButton(L("Copy"), primary = true, enabled = validationError == null && sourceSize != null, requester = first) { confirmAndCopy() }
+                    LabActionButton(L("拷贝"), primary = true, enabled = validationError == null && sourceSize != null, requester = first) { confirmAndCopy() }
                 },
             ) {
-                LabActionText(L("Copies the game onto this container's C: drive (native app storage) and points the shortcut there. Fixes games that stall streaming from shared storage."), small = true)
-                LabDialogGroup(L("Folder to copy"))
+                LabActionText(L("将游戏复制到此容器的C盘（原生应用存储）并将快捷方式指向那里。修复从共享存储流式传输时卡顿的游戏。"), small = true)
+                LabDialogGroup(L("要复制的文件夹"))
                 LabActionRow(
                     sourceRoot.absolutePath,
                     subtitle = when {
@@ -657,7 +657,7 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
                         sourceSize == null -> L("Calculating size…")
                         else -> L("Size: %1\$s", fmt(sourceSize!!))
                     },
-                    note = L("Change folder…"),
+                    note = L("更改文件夹…"),
                     noteColor = MaterialTheme.colorScheme.primary,
                     icon = Icons.Filled.Folder,
                 ) {
@@ -666,18 +666,18 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
                         InAppFilePicker.buildDirIntent(context, "Select the game's folder", initialDir = sourceRoot.absolutePath, driveCPath = driveC?.absolutePath)
                     )
                 }
-                LabActionText(L("Pick the folder that holds everything the game needs, not just the .exe."), small = true)
+                LabActionText(L("选择包含游戏所需所有内容的文件夹，而不仅仅是.exe文件。"), small = true)
                 validationError?.let { LabActionText(it, error = true, small = true) }
             }
         }
         LabCopyPhase.OVERWRITE -> SimpleActionSheet(
-            title = L("Already on Drive C"),
+            title = L("已在C盘"),
             message = L("A folder named \"%1\$s\" already exists under C:\\%2\$s. Overwrite it, or keep both by copying to a new folder?", sourceRoot.name, CopyGameToDriveC.GAMES_SUBDIR),
             actions = listOf(
                 MenuAction(L("Keep both (new folder)"), {
                     startCopy(CopyGameToDriveC.autoRenamedDest(CopyGameToDriveC.destRootFor(target.container, sourceRoot.name)), cleanFirst = false)
                 }),
-                MenuAction(L("Overwrite"), { startCopy(CopyGameToDriveC.destRootFor(target.container, sourceRoot.name), cleanFirst = true) }, danger = true),
+                MenuAction(L("覆盖"), { startCopy(CopyGameToDriveC.destRootFor(target.container, sourceRoot.name), cleanFirst = true) }, danger = true),
                 MenuAction(L("Cancel"), onFinished),
             ),
             onDismiss = onFinished,
@@ -694,7 +694,7 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
                 buttons = { LabActionButton(L("Cancel"), requester = first) { cancelFlag.set(true) } },
             ) {
                 LabProgressLine(
-                    text = if (total > 0L) "${fmt(done)} / ${fmt(total)}" else L("Copying…"),
+                    text = if (total > 0L) "${fmt(done)} / ${fmt(total)}" else L("正在复制…"),
                     fraction = if (total > 0L) (done.toFloat() / total.toFloat()).coerceIn(0f, 1f) else null,
                     detail = p?.currentFile?.takeIf { it.isNotEmpty() },
                 )
@@ -702,19 +702,19 @@ private fun LabCopyToDriveC(target: Shortcut?, onFinished: () -> Unit) {
         }
         LabCopyPhase.DELETE_ORIGINAL -> {
             val keep = {
-                Toast.makeText(context, L("Copied to Drive C — original kept."), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, L("已复制到C盘 — 原始文件已保留。"), Toast.LENGTH_SHORT).show()
                 onFinished()
             }
             SimpleActionSheet(
-                title = L("Copied to Drive C"),
+                title = L("已复制到C盘"),
                 message = L("\"%1\$s\" now runs from Drive C. Delete the original folder to free %2\$s, or keep it as a backup?", target.name, sourceSize?.let { fmt(it) } ?: L("space")),
                 actions = listOf(
-                    MenuAction(L("Keep original"), keep),
-                    MenuAction(L("Delete original"), {
+                    MenuAction(L("保留原始文件"), keep),
+                    MenuAction(L("删除原始文件"), {
                         val src = sourceRoot
                         scope.launch {
                             withContext(Dispatchers.IO) { runCatching { src.deleteRecursively() } }
-                            Toast.makeText(context, L("Moved to Drive C — original deleted."), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, L("已移动到C盘 — 原始文件已删除。"), Toast.LENGTH_SHORT).show()
                             onFinished()
                         }
                     }, danger = true),
@@ -835,7 +835,7 @@ private fun LabMoveToContainer(
         val p = plan ?: return
         val copy = keepCopy
         val opts = options
-        stage = if (copy) L("Copying…") else L("Moving…")
+        stage = if (copy) L("正在复制…") else L("Moving…")
         scope.launch {
             val r = withContext(Dispatchers.IO) { MoveGameToContainer.run(context, target, c, copy, opts, p) { s -> stage = s } }
             stage = null
@@ -858,7 +858,7 @@ private fun LabMoveToContainer(
         buttons = {
             LabActionButton(L("Cancel"), enabled = !busy, requester = if (others.isEmpty()) first else null, onClick = onFinished)
             if (chosen != null) {
-                LabActionButton(if (keepCopy) L("Copy") else L("Move"), primary = true, enabled = !busy && !checking && plan != null && problem == null) { go() }
+                LabActionButton(if (keepCopy) L("拷贝") else L("Move"), primary = true, enabled = !busy && !checking && plan != null && problem == null) { go() }
             }
         },
     ) {
@@ -866,7 +866,7 @@ private fun LabMoveToContainer(
             LabActionText(L(NO_OTHER_CONTAINER))
             return@LabActionDialog
         }
-        LabDialogGroup(L("Move to"))
+        LabDialogGroup(L("移动到"))
         others.forEachIndexed { i, c ->
             LabActionRow(c.name, subtitle = c.wineVersion, selected = chosen?.id == c.id, enabled = !busy, requester = if (i == 0) first else null) { chosen = c }
         }

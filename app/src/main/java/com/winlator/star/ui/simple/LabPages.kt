@@ -124,8 +124,8 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
     }
     val deckActions = LocalDeckActions.current
     DisposableEffect(deckActions, picking) {
-        val legend = if (picking) listOf("B" to L("Done"), "A" to L("Pick"), "X" to L("Game menu"))
-        else listOf("B" to L("Back"), "A" to L("Open"), "X" to L("Game menu"), "L1 R1" to L("Section"))
+        val legend = if (picking) listOf("B" to L("Done"), "A" to L("Pick"), "X" to L("游戏菜单"))
+        else listOf("B" to L("Back"), "A" to L("Open"), "X" to L("游戏菜单"), "L1 R1" to L("Section"))
         deckActions.ownLegend.value = legend
         onDispose { if (deckActions.ownLegend.value === legend) deckActions.ownLegend.value = null }
     }
@@ -135,7 +135,7 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
                 Column {
                     Text(L("Library"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     Text(
-                        if (picking) L("%1\$s picked", picked.size) else if (games.size == 1) L("1 game") else L("%1\$s games", games.size),
+                        if (picking) L("已选择 %1\$s", picked.size) else if (games.size == 1) L("1 game") else L("%1\$s games", games.size),
                         color = SimpleMuted, fontSize = 13.sp,
                     )
                 }
@@ -143,8 +143,8 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
             val buttons: @Composable () -> Unit = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
                     if (picking) {
-                        LabButton(L("Remove"), icon = Icons.Filled.Delete, danger = true) {
-                            if (picked.isEmpty()) toast(context, L("Pick the games to remove first")) else confirmRemove = true
+                        LabButton(L("移除"), icon = Icons.Filled.Delete, danger = true) {
+                            if (picked.isEmpty()) toast(context, L("先选择要移除的游戏")) else confirmRemove = true
                         }
                         LabButton(L("Done"), icon = Icons.Filled.Close) { endPicking() }
                     } else {
@@ -223,7 +223,7 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
         "view" -> SimpleActionSheet(
             L("Library cards"),
             LabArt.CARDS.map { (v, l) -> MenuAction(mark(L(l), LabArt.cards == v), { LabArt.chooseCards(v) }) } +
-                LabArt.SIZES.map { (v, l) -> MenuAction(mark(L("Card size · %1\$s", L(l)), LabArt.cardSize == v), { LabArt.chooseCardSize(v) }) },
+                LabArt.SIZES.map { (v, l) -> MenuAction(mark(L("卡片大小 · %1\$s", L(l)), LabArt.cardSize == v), { LabArt.chooseCardSize(v) }) },
             onDismiss = { sheet = null },
         ) { a -> sheet = null; a.run() }
     }
@@ -233,14 +233,14 @@ internal fun LabLibraryPage(onNavigate: (String) -> Unit, vm: ShortcutsViewModel
         SimpleActionSheet(
             if (targets.size == 1) L("Remove 1 game?") else L("Remove %1\$s games?", targets.size),
             listOf(
-                MenuAction(L("Remove"), {
+                MenuAction(L("移除"), {
                     val ok = targets.count { vm.remove(it, context) }
                     toast(
                         context,
                         when {
                             ok != targets.size -> L("Removed %1\$s of %2\$s; the rest could not be deleted", ok, targets.size)
                             ok == 1 -> L("Removed 1 game")
-                            else -> L("Removed %1\$s games", ok)
+                            else -> L("已移除 %1\$s 个游戏", ok)
                         },
                     )
                     endPicking()
@@ -297,10 +297,10 @@ internal fun LabStoresPage(onLaunchStore: (Screen) -> Unit, onBack: () -> Unit, 
         )
     }
     SimpleMenuPage(
-        overline = L("Stores"),
+        overline = L("商店"),
         title = L("Your stores"),
         sections = listOf(MenuSection(
-            "stores", L("Stores"), Icons.Filled.Storefront, entries,
+            "stores", L("商店"), Icons.Filled.Storefront, entries,
             empty = L("Game stores are hidden. Turn on Show game stores in Settings › Appearance to list them here."),
         )),
         onBack = onBack,

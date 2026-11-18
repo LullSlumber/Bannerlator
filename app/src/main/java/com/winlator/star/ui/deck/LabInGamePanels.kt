@@ -105,67 +105,67 @@ internal fun LabSteamClientPanel(state: XServerDrawerState) {
     val game = listOf(SaveScope.GAME)
 
     IgCard {
-        IgRow(L("Steam menus"), hint = L("Presses the Steam button, or opens Steam's Quick Access Menu, on player one's controller.")) {
+        IgRow(L("Steam menus"), hint = L("在玩家一的手柄上按下 Steam 按钮，或打开 Steam 的快速访问菜单。")) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                IgButton(L("Steam menu"), null, { state.onLinuxSteamGuide?.run() })
-                IgButton(L("Quick Access"), null, { state.onLinuxSteamQam?.run() })
+                IgButton(L("Steam 菜单"), null, { state.onLinuxSteamGuide?.run() })
+                IgButton(L("快速访问"), null, { state.onLinuxSteamQam?.run() })
             }
         }
         IgDivider()
         IgRow(
-            L("Touch"),
-            hint = L("Touchscreen: fingers reach Steam as real touches (Big Picture scrolls under one). Touchpad: a drag moves the pointer, a tap clicks. App setting follows the Touchscreen switch every container uses. In Touchpad, Touch: Direct (Controls > Mouse) puts the pointer under the finger instead. Applies now."),
+            L("触摸"),
+            hint = L("触摸屏：手指以真实触摸的方式作用于 Steam（大屏幕模式下可单指滚动）。触摸板：拖动移动指针，点按单击。应用设置跟随每个容器使用的「触摸屏」开关。触摸板模式下，「触摸：直接」（控制 > 鼠标）会把指针置于手指下方。立即生效。"),
             scopes = game,
             wideControl = true,
         ) {
-            IgSegmented(listOf("" to L("App setting"), "1" to L("Touchscreen"), "0" to L("Touchpad")), touch) { v ->
+            IgSegmented(listOf("" to L("应用设置"), "1" to L("Touchscreen"), "0" to L("Touchpad")), touch) { v ->
                 state.setLinuxTouch(v)
                 state.onLinuxTouch?.accept(v)
             }
         }
         IgDivider()
-        IgToggleRow(L("On-screen Steam and Quick Access buttons"), on(LinuxTuning.EXTRA_STEAM_BUTTONS), hint = L("Applies now."), scopes = game) {
+        IgToggleRow(L("屏幕上的 Steam 和快速访问按钮"), on(LinuxTuning.EXTRA_STEAM_BUTTONS), hint = L("Applies now."), scopes = game) {
             flip(LinuxTuning.EXTRA_STEAM_BUTTONS, it)
         }
         IgDivider()
-        IgToggleRow(L("Double Back opens Quick Access"), on(LinuxTuning.EXTRA_DOUBLE_BACK_QAM), hint = L("One Back press still opens this menu. Applies now."), scopes = game) {
+        IgToggleRow(L("双击返回打开快速访问"), on(LinuxTuning.EXTRA_DOUBLE_BACK_QAM), hint = L("One Back press still opens this menu. Applies now."), scopes = game) {
             flip(LinuxTuning.EXTRA_DOUBLE_BACK_QAM, it)
         }
         IgDivider()
         IgToggleRow(
-            L("Stretch games to fill the screen"), on(LinuxTuning.EXTRA_FILL_SCREEN),
-            hint = L("Keeps a game that shrinks its window (FlatOut after Resume game) filling the screen. Applies now."), scopes = game,
+            L("拉伸游戏以填满屏幕"), on(LinuxTuning.EXTRA_FILL_SCREEN),
+            hint = L("保持缩小窗口的游戏（恢复游戏后的 FlatOut）填满屏幕。立即应用。"), scopes = game,
         ) { flip(LinuxTuning.EXTRA_FILL_SCREEN, it) }
         IgDivider()
         IgToggleRow(
-            L("Quake-engine games windowed"), on(LinuxTuning.EXTRA_IDTECH3),
-            hint = L("Quake III, Team Arena, Return to Castle Wolfenstein and Jedi Academy run windowed at the session's size, the one way they start here. Applies at the next game start."),
+            L("Quake 引擎游戏窗口化"), on(LinuxTuning.EXTRA_IDTECH3),
+            hint = L("Quake III、Team Arena、Return to Castle Wolfenstein 和 Jedi Academy 以会话大小的窗口化模式运行，这是它们在此启动的唯一方式。在下次游戏启动时应用。"),
             scopes = game,
         ) { flip(LinuxTuning.EXTRA_IDTECH3, it) }
         IgDivider()
         IgToggleRow(
-            L("Offline mode"), on(LinuxTuning.EXTRA_OFFLINE),
-            hint = L("Steam starts without signing in to Valve; installed games still launch. Needs one online sign-in on this device first. The client reads it only as it starts, so it applies at the next session."),
+            L("离线模式"), on(LinuxTuning.EXTRA_OFFLINE),
+            hint = L("Steam 在不登录 Valve 的情况下启动；已安装的游戏仍可启动。需要先在此设备上进行一次在线登录。客户端仅在启动时读取它，因此它在下次会话时应用。"),
             scopes = game,
         ) { flip(LinuxTuning.EXTRA_OFFLINE, it) }
     }
 
-    IgSectionLabel(L("Troubleshooting"))
+    IgSectionLabel(L("故障排除"))
     IgCard {
         IgToggleRow(
-            L("Xalia off (PROTON_USE_XALIA=0)"), on(LinuxTuning.EXTRA_NO_XALIA),
-            hint = L("On by default: xalia costs every game CPU time under FEX. Turn off only for a game that needs its gamepad navigation. Applies at the next game start."),
+            L("离线模式（不登录 Valve）"), on(LinuxTuning.EXTRA_NO_XALIA),
+            hint = L("默认开启：在 FEX 下，xalia 会消耗每个游戏的 CPU 时间。仅对需要其手柄导航的游戏关闭。在下次游戏启动时应用。"),
             scopes = game,
         ) { flip(LinuxTuning.EXTRA_NO_XALIA, it) }
         IgDivider()
         IgToggleRow(
-            L("proot without seccomp"), on(LinuxTuning.EXTRA_PROOT_NO_SECCOMP),
-            hint = L("Slower; for a device whose seccomp misbehaves. Applies at the next session."), scopes = game,
+            L("无 seccomp 的 proot"), on(LinuxTuning.EXTRA_PROOT_NO_SECCOMP),
+            hint = L("较慢；适用于 seccomp 行为异常的设备。在下次会话时应用。"), scopes = game,
         ) { flip(LinuxTuning.EXTRA_PROOT_NO_SECCOMP, it) }
         IgDivider()
         IgRow(
-            L("Turnip sysmem rendering"),
-            hint = L("Automatic turns it on for the imported A710/A720/A722 Linux drivers. Applies at the next session."),
+            L("Turnip sysmem 渲染"),
+            hint = L("自动会为导入的 A710/A720/A722 Linux 驱动程序开启它。在下次会话时应用。"),
             scopes = game,
             wideControl = true,
         ) {
@@ -193,23 +193,23 @@ internal fun LabLinuxComponentsPanel(state: XServerDrawerState) {
     val protonScope = listOf(SaveScope.other(L("Saved in that Proton, for every game using it")))
 
     IgCard {
-        IgRow(L("Read the Protons again"), hint = L("Downloads, importing and deleting are on the Components tab of the Steam (Linux) entry's settings.")) {
-            IgButton(L("Refresh"), Icons.Outlined.Refresh, { state.onLinuxComponentsRefresh?.run() })
+        IgRow(L("Read the Protons again"), hint = L("下载、导入和删除位于 Steam (Linux) 条目设置的组件选项卡中。")) {
+            IgButton(L("刷新"), Icons.Outlined.Refresh, { state.onLinuxComponentsRefresh?.run() })
         }
         val s = snap
         if (s == null) {
             IgDivider()
-            IgNote(L("Reading the Protons…"))
+            IgNote(L("正在读取 Proton…"))
             return@IgCard
         }
         val running = s.protons.filter { it.inUseByGame }
         IgDivider()
         if (running.isEmpty()) {
-            IgRow(L("Running now"), hint = L("No game is running on a Proton. Changes apply the next time a game starts."))
+            IgRow(L("正在运行"), hint = L("没有游戏正在 Proton 上运行。更改将在下次游戏启动时应用。"))
         } else {
             running.forEach { r ->
                 IgRow(
-                    L("Running now"),
+                    L("正在运行"),
                     hint = r.proton.name + "\n" + LinuxComponents.COMPONENTS.joinToString("\n") { comp ->
                         "${LinuxComponents.LABEL.getValue(comp)}: ${r.components.getValue(comp).inUse}"
                     },
@@ -230,7 +230,7 @@ internal fun LabLinuxComponentsPanel(state: XServerDrawerState) {
             s.protons.indexOf(view),
             hint = listOfNotNull(
                 p.version,
-                L("a game is running on it").takeIf { view.inUseByGame },
+                L("有游戏正在其上运行").takeIf { view.inUseByGame },
                 view.reappliedAt.takeIf { it > 0 }?.let {
                     L("re-applied at launch %1\$s", java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(it * 1000)))
                 },
@@ -261,8 +261,8 @@ internal fun LabLinuxComponentsPanel(state: XServerDrawerState) {
         }
         IgDivider()
         IgNote(
-            if (view.inUseByGame) L("A game is running on this Proton: a change waits until it closes.")
-            else L("Changes apply the next time a game starts."),
+            if (view.inUseByGame) L("有游戏正在此 Proton 上运行：更改会等到它关闭后应用。")
+            else L("更改将在下次游戏启动时应用。"),
         )
     }
 }
@@ -375,8 +375,8 @@ internal fun LabTmContainerPanel(info: XServerDialogState.TmContainerInfo?) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 val wayland = info.displayBackend == "Wayland"
                 // A Linux session runs no Wine and no DX wrapper of ours: say what is true and leave out what would be invented.
-                LabInfoLine(if (info.linuxRuntime) L("Runtime") else "Wine", info.wine)
-                LabInfoLine(L("Display backend"), info.displayBackend)
+                LabInfoLine(if (info.linuxRuntime) L("运行时间") else "Wine", info.wine)
+                LabInfoLine(L("显示后端"), info.displayBackend)
                 if (!info.linuxRuntime) LabInfoLine(L("DX wrapper"), com.winlator.star.ui.prettyDxWrapper(info.dxWrapper), accent)
                 LabInfoLine(
                     L("Renderer"),
@@ -387,7 +387,7 @@ internal fun LabTmContainerPanel(info: XServerDialogState.TmContainerInfo?) {
                     },
                     accent,
                 )
-                LabInfoLine(L("Graphics driver"), info.graphicsDriver)
+                LabInfoLine(L("显卡驱动"), info.graphicsDriver)
                 info.gpuSpoof?.let { LabInfoLine(L("GPU name"), L("%1\$s (spoofed, not the real GPU)", it)) }
                 LabInfoLine(L("Resolution"), info.resolution)
                 LabInfoLine("HDR", info.hdr)
@@ -434,8 +434,8 @@ internal fun LabFriendsPanel(state: XServerDrawerState) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Text(
                 when (src.kind) {
-                    InGameFriendsSource.Kind.AGENT_RELAY -> L("via in-game Steam")
-                    InGameFriendsSource.Kind.APP_SESSION -> L("via app session")
+                    InGameFriendsSource.Kind.AGENT_RELAY -> L("通过游戏内Steam")
+                    InGameFriendsSource.Kind.APP_SESSION -> L("通过应用会话")
                     else -> ""
                 },
                 color = SimpleMuted, fontFamily = NunitoSansFamily, fontSize = 12.5.sp, modifier = Modifier.weight(1f),
@@ -605,7 +605,7 @@ private fun LabChatThread(friend: SteamFriendsStore.SteamFriend, onBack: () -> U
         Spacer(Modifier.height(6.dp))
         Box(Modifier.weight(1f).fillMaxWidth().background(deckCardFill(), SimpleShape).border(1.dp, SimpleLine, SimpleShape)) {
             if (messages.isEmpty()) {
-                Text(L("No messages yet. Say hello!"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontSize = 14.sp, modifier = Modifier.align(Alignment.Center))
+                Text(L("暂无消息。打个招呼吧！"), color = SimpleMuted, fontFamily = NunitoSansFamily, fontSize = 14.sp, modifier = Modifier.align(Alignment.Center))
             } else {
                 LazyColumn(
                     state = listState,
@@ -631,7 +631,7 @@ private fun LabChatThread(friend: SteamFriendsStore.SteamFriend, onBack: () -> U
                 value = draft,
                 onValueChange = { draft = it; if (it.isNotEmpty()) SteamFriendsStore.sendTyping(friend.steamId) },
                 modifier = Modifier.weight(1f),
-                placeholder = L("Message"),
+                placeholder = L("消息"),
                 singleLine = false,
                 maxLines = 3,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),

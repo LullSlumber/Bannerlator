@@ -41,7 +41,7 @@ import com.winlator.star.ui.screens.htmlToAnnotated
 import kotlinx.coroutines.delay
 
 /**
- * Classic's "What is all this?" glossary (ContainerGlossarySheet) in Lab's look, for the container, game and
+ * Classic's "这些是什么?" glossary (ContainerGlossarySheet) in Lab's look, for the container, game and
  * All-containers editors: the same entries, searchable, the D-pad moving through them. B closes.
  */
 @Composable
@@ -74,9 +74,9 @@ internal fun LabGlossaryDialog(onDismiss: () -> Unit, initialQuery: String = "")
                 .onPreviewKeyEvent { ev -> if (simpleInputOf(ev.nativeKeyEvent) == SIn.B) { onDismiss(); true } else false },
         ) {
             Text(L("Help").uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
-            Text(L("What is all this?"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Text(L("这些是什么?"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
             Text(
-                L("Plain-language explanations of the setup options. Tap a term to read what it does."),
+                L("设置选项的通俗语言解释。点击术语可阅读其作用。"),
                 color = SimpleMuted, fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp, bottom = 10.dp),
             )
             val accent = MaterialTheme.colorScheme.primary
@@ -84,7 +84,7 @@ internal fun LabGlossaryDialog(onDismiss: () -> Unit, initialQuery: String = "")
                 value = query,
                 onValueChange = { query = it },
                 singleLine = true,
-                placeholder = { Text(L("Search terms"), color = SimpleDim) },
+                placeholder = { Text(L("搜索术语"), color = SimpleDim) },
                 shape = SimpleShape,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = SimpleStrong,

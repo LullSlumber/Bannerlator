@@ -497,7 +497,7 @@ private fun LabFileManagerBody(
                 LabToolButton(Icons.Filled.Search, L("Search"), pane.loc != FmLoc.Home, small = narrow) { searchFor = pane }
                 LabToolButton(
                     when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                    L("View"), true, small = narrow,
+                    L("查看"), true, small = narrow,
                 ) { viewMenu = true }
                 LabToolButton(Icons.Filled.Sort, L("Sort"), true, small = narrow) { sortOpen = true }
                 if (pick == null && dir != null) LabToolButton(Icons.Filled.Add, L("New"), true, small = narrow) { pageMenu = true }
@@ -552,7 +552,7 @@ private fun LabFileManagerBody(
                     actions = buildList {
                         if (pane.currentDir != null && pane.deepResults == null && q.isNotBlank()) add(L("In subfolders") to { pane.searchSubfolders() })
                         add(L("Change") to { searchFor = pane })
-                        add(L("Clear") to { pane.clearSearch() })
+                        add(L("清除") to { pane.clearSearch() })
                     },
                 )
             }
@@ -566,7 +566,7 @@ private fun LabFileManagerBody(
                     icon = Icons.Filled.ContentPaste,
                     actions = buildList {
                         if (ops.net.canPasteInto(pane.loc)) add(L("Paste here") to { pasteHere(); Unit })
-                        add(L("Clear") to { ops.net.clearClips() })
+                        add(L("清除") to { ops.net.clearClips() })
                     },
                 )
             }
@@ -628,12 +628,12 @@ private fun LabFileManagerBody(
                 if (p.query.isNotBlank() || p.deepResults != null) add(MenuAction(L("Clear the search"), { p.clearSearch() }))
                 add(MenuAction(L("View: %1\$s", viewLabel(p.viewMode)), { viewMenu = true }))
                 add(MenuAction(L("Sort"), { sortOpen = true }))
-                add(MenuAction(if (p.showHidden) L("Hide hidden files") else L("Show hidden files"), {
+                add(MenuAction(if (p.showHidden) L("隐藏隐藏文件") else L("显示隐藏文件"), {
                     val v = !p.showHidden
                     panes.forEach { it.applyShowHidden(v) }
                 }))
                 if (l != FmLoc.Home && pick == null) add(MenuAction(L("Select all"), { p.selectAll() }))
-                add(MenuAction(L("Refresh"), { storageTick++; p.refresh() }))
+                add(MenuAction(L("刷新"), { storageTick++; p.refresh() }))
                 if (pick == null) add(MenuAction(if (dualPref) L("One pane") else L("Two panes"), {
                     dualPref = !dualPref
                     FmPrefs.setDualPane(context, dualPref)
@@ -641,8 +641,8 @@ private fun LabFileManagerBody(
                 }))
                 if (pick == null && d != null) {
                     val fav = FavoritesStore.isFavorite(context, d.absolutePath)
-                    add(MenuAction(if (fav) L("Remove folder from Favorites") else L("Add folder to Favorites"), { ops.toggleFavorite(d) }))
-                    add(MenuAction(L("Folder properties"), { ops.propsTarget = diskItem(d) }))
+                    add(MenuAction(if (fav) L("从收藏中移除文件夹") else L("将文件夹添加到收藏"), { ops.toggleFavorite(d) }))
+                    add(MenuAction(L("文件夹属性"), { ops.propsTarget = diskItem(d) }))
                 }
                 if (pick == null && l is FmLoc.InArchive) add(MenuAction(L("Extract all…"), { ops.extractReq = p to emptyList() }))
                 if (l != FmLoc.Home) add(MenuAction(L("Home"), { p.clearSelection(); p.open(FmLoc.Home) }))
@@ -653,7 +653,7 @@ private fun LabFileManagerBody(
         }
         if (viewMenu) {
             SimpleActionSheet(
-                L("View"),
+                L("查看"),
                 FmViewMode.entries.map { m -> MenuAction(if (m == pane.viewMode) viewLabel(m) + "  ✓" else viewLabel(m), { panes.forEach { it.applyViewMode(m) } }) },
                 onDismiss = { viewMenu = false },
             ) { a -> viewMenu = false; a.run() }
@@ -716,7 +716,7 @@ private fun LabFileManagerBody(
         SimpleActionSheet(
             if (names.size == 1) L("Delete \"%1\$s\"?", names[0]) else L("Delete %1\$s items?", names.size),
             listOf(
-                MenuAction(L("Delete"), {
+                MenuAction(L("删除"), {
                     ops.deleteTargets = emptyList()
                     panes.forEach { it.clearSelection() }
                     ops.delete(victims)
@@ -752,12 +752,12 @@ private fun LabFileManagerBody(
         LabConflictDialog(name, isDir, batch) { choice, all -> ops.answerConflict(choice, all) }
     }
     ops.runChoice?.let { f ->
-        SimpleActionSheet(L("Run in which container?"), containers.map { c -> MenuAction(c.name, { ops.runIn(f, c) }) }, onDismiss = { ops.runChoice = null }) { a ->
+        SimpleActionSheet(L("在哪个容器中运行?"), containers.map { c -> MenuAction(c.name, { ops.runIn(f, c) }) }, onDismiss = { ops.runChoice = null }) { a ->
             ops.runChoice = null; a.run()
         }
     }
     ops.shortcutChoice?.let { f ->
-        SimpleActionSheet(L("Add to which container?"), containers.map { c -> MenuAction(c.name, { ops.addShortcutIn(f, c) }) }, onDismiss = { ops.shortcutChoice = null }) { a ->
+        SimpleActionSheet(L("添加到哪个容器?"), containers.map { c -> MenuAction(c.name, { ops.addShortcutIn(f, c) }) }, onDismiss = { ops.shortcutChoice = null }) { a ->
             ops.shortcutChoice = null; a.run()
         }
     }
@@ -818,15 +818,15 @@ private fun LabFileManagerBody(
 
 /** Home's fixed tile names and lines in Lab's language; a container's or a folder's own name stays as it is. */
 private val FIXED_TILE_TEXT = setOf(
-    "Internal", "System", "Drive Z:", "Downloads", "Pictures", "Documents", "Games", "Drive C:", "This container",
-    "Network drives", "Search again", "Add drive", "Checking…", "Can't reach", "Needs login", "Searching…", "No Wi-Fi", "Checking the download…",
+    "Internal", "System", "Drive Z:", "Downloads", "Pictures", "Documents", "游戏", "Drive C:", "此容器",
+    "Network drives", "再次搜索", "Add drive", "检查中…", "Can't reach", "Needs login", "Searching…", "No Wi-Fi", "Checking the download…",
 )
 private fun labFixed(text: String): String = if (text in FIXED_TILE_TEXT) L(text) else text
 
 private fun viewLabel(m: FmViewMode): String = when (m) {
     FmViewMode.LIST -> L("List")
     FmViewMode.COMPACT -> L("Compact list")
-    FmViewMode.GRID -> L("Grid")
+    FmViewMode.GRID -> L("网格")
 }
 
 /** What the selection can do, as Classic's selection bar (disabled ones left out). */
@@ -844,18 +844,18 @@ private fun selectionActions(pane: FmPane, dual: Boolean, panes: List<FmPane>, o
     val otherNet = other?.currentNet
     if (pane.currentNet != null) return buildList {
         if (netItems.isEmpty()) { add(MenuAction(L("Select all"), { pane.selectAll() })); return@buildList }
-        add(MenuAction(L("Copy"), { ops.net.copy(netItems); pane.clearSelection() }))
+        add(MenuAction(L("拷贝"), { ops.net.copy(netItems); pane.clearSelection() }))
         val over: FmLoc? = otherDir?.let { FmLoc.Dir(it) } ?: otherNet
         if (over != null) add(MenuAction(L("Copy to the other pane"), { pane.clearSelection(); ops.net.sendItems(netItems, over) }))
         else add(MenuAction(L("Copy to…"), { pane.clearSelection(); chooseFolder(L("Copy to")) { ops.net.sendItems(netItems, FmLoc.Dir(it)) } }))
         if (netItems.size == 1) add(MenuAction(L("Rename"), { ops.net.renameTarget = netItems[0]; pane.clearSelection() }))
         add(MenuAction(L("Select all"), { pane.selectAll() }))
-        add(MenuAction(L("Delete"), { ops.net.deleteTargets = netItems }, danger = true))
+        add(MenuAction(L("删除"), { ops.net.deleteTargets = netItems }, danger = true))
     }
     if (disk.isEmpty()) return listOf(MenuAction(L("Select all"), { pane.selectAll() }))
     return buildList {
-        add(MenuAction(L("Copy"), { ops.clipboard = disk; ops.clipCut = false; pane.clearSelection() }))
-        add(MenuAction(L("Cut"), { ops.clipboard = disk; ops.clipCut = true; pane.clearSelection() }))
+        add(MenuAction(L("拷贝"), { ops.clipboard = disk; ops.clipCut = false; pane.clearSelection() }))
+        add(MenuAction(L("剪切"), { ops.clipboard = disk; ops.clipCut = true; pane.clearSelection() }))
         if (otherNet != null) {
             add(MenuAction(L("Copy to the other pane"), { pane.clearSelection(); ops.net.sendFiles(disk, otherNet, false) }))
             add(MenuAction(L("Move to the other pane"), { pane.clearSelection(); ops.net.sendFiles(disk, otherNet, true) }))
@@ -864,13 +864,13 @@ private fun selectionActions(pane: FmPane, dual: Boolean, panes: List<FmPane>, o
             add(MenuAction(L("Move to the other pane"), { pane.clearSelection(); ops.paste(disk, otherDir, true) }))
         } else {
             add(MenuAction(L("Copy to…"), { pane.clearSelection(); chooseFolder(L("Copy to")) { ops.paste(disk, it, false) } }))
-            add(MenuAction(L("Move to…"), { pane.clearSelection(); chooseFolder(L("Move to")) { ops.paste(disk, it, true) } }))
+            add(MenuAction(L("Move to…"), { pane.clearSelection(); chooseFolder(L("移动到")) { ops.paste(disk, it, true) } }))
         }
         add(MenuAction(L("Compress"), { ops.compressTargets = disk }))
-        if (disk.none { it.isDirectory }) add(MenuAction(L("Share"), { ops.share(disk) }))
+        if (disk.none { it.isDirectory }) add(MenuAction(L("分享"), { ops.share(disk) }))
         if (disk.size == 1) add(MenuAction(L("Rename"), { ops.renameTarget = disk[0]; pane.clearSelection() }))
         add(MenuAction(L("Select all"), { pane.selectAll() }))
-        add(MenuAction(L("Delete"), { ops.deleteTargets = disk }, danger = true))
+        add(MenuAction(L("删除"), { ops.deleteTargets = disk }, danger = true))
     }
 }
 
@@ -1227,14 +1227,14 @@ private fun LabSortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort)
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { delay(80); runCatching { first.requestFocus() } }
     LabDialog(L("Sort"), onDismiss) {
-        LabToolHeading(L("Folders"))
+        LabToolHeading(L("文件夹"))
         listOf(FmSortKey.NAME, FmSortKey.DATE).forEachIndexed { i, k ->
             LabToolRow(L(k.label()), selected = s.folders == k, requester = if (i == 0) first else null) { s = s.copy(folders = k) }
         }
-        LabToolRow(L("Reverse"), toggle = s.foldersDesc) { s = s.copy(foldersDesc = !s.foldersDesc) }
-        LabToolHeading(L("Files"))
+        LabToolRow(L("反转"), toggle = s.foldersDesc) { s = s.copy(foldersDesc = !s.foldersDesc) }
+        LabToolHeading(L("文件"))
         FmSortKey.entries.forEach { k -> LabToolRow(L(k.label()), selected = s.files == k) { s = s.copy(files = k) } }
-        LabToolRow(L("Reverse"), toggle = s.filesDesc) { s = s.copy(filesDesc = !s.filesDesc) }
+        LabToolRow(L("反转"), toggle = s.filesDesc) { s = s.copy(filesDesc = !s.filesDesc) }
         LabDialogButtons {
             LabButton(L("Cancel"), onClick = onDismiss)
             LabButton(L("Apply"), primary = true) { onApply(s) }
@@ -1269,9 +1269,9 @@ private fun LabConflictDialog(name: String, isDir: Boolean, batch: Boolean, onAn
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { delay(80); runCatching { first.requestFocus() } }
     LabDialog(L("\"%1\$s\" already exists", name), onDismiss = { onAnswer(null, false) }) {
-        LabToolRow(if (isDir) L("Merge") else L("Overwrite"), requester = first) { onAnswer(if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE, all) }
-        LabToolRow(L("Keep both")) { onAnswer(ConflictChoice.KEEP_BOTH, all) }
-        LabToolRow(L("Skip")) { onAnswer(ConflictChoice.SKIP, all) }
+        LabToolRow(if (isDir) L("合并") else L("覆盖"), requester = first) { onAnswer(if (isDir) ConflictChoice.MERGE else ConflictChoice.OVERWRITE, all) }
+        LabToolRow(L("保留两者")) { onAnswer(ConflictChoice.KEEP_BOTH, all) }
+        LabToolRow(L("跳过")) { onAnswer(ConflictChoice.SKIP, all) }
         if (batch) LabToolRow(L("Apply to all"), toggle = all) { all = !all }
         LabDialogButtons { LabButton(L("Cancel")) { onAnswer(null, false) } }
     }
@@ -1306,13 +1306,13 @@ private fun LabDiskProperties(file: File, containers: List<Container>, imagefsDi
         } else {
             LabPropLine(L("Size"), "${StringUtils.formatBytes(file.length())} (${"%,d".format(file.length())} ${L("bytes")})")
         }
-        LabPropLine(L("Modified"), fmDateTime(file.lastModified()))
+        LabPropLine(L("修改时间"), fmDateTime(file.lastModified()))
         if (created > 0 && created != file.lastModified()) LabPropLine(L("Created"), fmDateTime(created))
         LabPropLine(L("Access"), listOf(if (file.canRead()) L("Read") else L("No read"), if (file.canWrite()) L("write") else L("no write")).joinToString(", "))
         Spacer(Modifier.height(2.dp))
         SimpleRowDivider()
         val st = attrs
-        LabToolRow(L("Read-only"), toggle = st?.readOnly == true, enabled = st != null && !busy) {
+        LabToolRow(L("只读"), toggle = st?.readOnly == true, enabled = st != null && !busy) {
             val want = !(st?.readOnly ?: false)
             busy = true
             scope.launch {
@@ -1321,7 +1321,7 @@ private fun LabDiskProperties(file: File, containers: List<Container>, imagefsDi
                 if (ok) { attrs = attrs?.copy(readOnly = want); onChanged() } else toast(context, L("Couldn't change Read-only"))
             }
         }
-        LabToolRow(L("Hidden"), toggle = st?.hidden == true, enabled = st != null && st.hiddenSupported && !busy) {
+        LabToolRow(L("隐藏"), toggle = st?.hidden == true, enabled = st != null && st.hiddenSupported && !busy) {
             val want = !(st?.hidden ?: false)
             busy = true
             scope.launch {
@@ -1350,7 +1350,7 @@ private fun LabEntryProperties(item: FmItem.Entry, onDismiss: () -> Unit) {
         LabPropLine(L("Type"), if (e.isDir) L("Folder") else e.name.substringAfterLast('.', "").uppercase().ifBlank { L("File") })
         LabPropLine(L("Size"), StringUtils.formatBytes(item.size))
         if (e.packedSize >= 0 && !e.isDir) LabPropLine(L("Packed"), StringUtils.formatBytes(e.packedSize))
-        LabPropLine(L("Modified"), fmDateTime(e.modified))
+        LabPropLine(L("修改时间"), fmDateTime(e.modified))
         e.method?.let { LabPropLine(L("Method"), it) }
         e.crc?.let { LabPropLine(L("CRC"), it, mono = true) }
         if (e.encrypted) LabPropLine(L("Encrypted"), L("Yes"))

@@ -800,10 +800,10 @@ private fun LabSyncStrip(needSync: Int, canSyncAll: Boolean, running: Boolean, p
                 Spacer(Modifier.width(8.dp))
                 Text(L("Syncing %1\$s/%2\$s…", progress.first, progress.second), color = com.winlator.star.ui.simple.SimpleMuted, fontSize = 13.sp)
             }
-            canSyncAll -> com.winlator.star.ui.simple.LabButton(L("Sync now"), primary = true, icon = Icons.Filled.Sync, onClick = onSync)
+            canSyncAll -> com.winlator.star.ui.simple.LabButton(L("立即同步"), primary = true, icon = Icons.Filled.Sync, onClick = onSync)
             // Offline or signed out: shown, not offered (as Classic's disabled button).
             else -> Text(
-                L("Sync now"), color = com.winlator.star.ui.simple.SimpleDim, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                L("立即同步"), color = com.winlator.star.ui.simple.SimpleDim, fontSize = 14.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
             )
         }
@@ -1160,7 +1160,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
             }
             onMessage(
                 if (r.ok) "Backed up ${r.fileCount} files → ${r.path?.substringAfterLast('/')}"
-                else "Backup failed: ${r.error ?: "unknown error"}",
+                else "Backup failed: ${r.error ?: "未知错误"}",
             )
             busyKeys = busyKeys - key
             scope.launch { reload() }
@@ -1174,7 +1174,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
         CustomSaveVault.restoreLatest(context, s.shortcut, target) { r ->
             onMessage(
                 if (r.ok) "Restored ${r.filesWritten} files to \"${target.name}\""
-                else "Restore failed: ${r.error ?: "unknown error"}",
+                else "Restore failed: ${r.error ?: "未知错误"}",
             )
             emuConflicts = r.emuConflicts
             busyKeys = busyKeys - key
@@ -1190,7 +1190,7 @@ private fun CustomSaveTab(modifier: Modifier = Modifier, columns: Int = 1, onMes
         GameSaveBackup.restore(context, uri, target) { r ->
             onMessage(
                 if (r.ok) "Restored ${r.filesWritten} files to \"${target.name}\""
-                else "Restore failed: ${r.error ?: "unknown error"}",
+                else "Restore failed: ${r.error ?: "未知错误"}",
             )
             emuConflicts = r.emuConflicts
             busyKeys = busyKeys - key

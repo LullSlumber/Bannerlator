@@ -131,7 +131,7 @@ internal fun LabAudioTune(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(L("Audio").uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
-                    Text(L("Audio settings"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Text(L("音频设置"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
                 }
                 if (driverLabel.isNotBlank()) SimpleChip(driverLabel)
             }
@@ -151,7 +151,7 @@ internal fun LabAudioTune(
                         Text(L(curPreset.note), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
                     }
                 }
-                item { Heading(L("Preset")) }
+                item { Heading(L("预设")) }
                 AUDIO_PRESETS.forEachIndexed { i, p ->
                     item(key = "preset:${p.id}") {
                         val sel = p.id == cfg.preset
@@ -166,26 +166,26 @@ internal fun LabAudioTune(
                         ) { if (sel) Text("✓", color = accent, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
                     }
                 }
-                item { Heading(if (custom) L("Fine-tune") else L("Fine-tune — what this preset applies (Custom to edit)")) }
+                item { Heading(if (custom) L("微调") else L("Fine-tune — what this preset applies (Custom to edit)")) }
                 item(key = "perf") {
                     TuneRow(
-                        title = L("Output mode"), sub = L("AAudio performance mode"), enabled = custom,
+                        title = L("输出模式"), sub = L("AAudio性能模式"), enabled = custom,
                         onA = { stepPerf(1) }, onStep = ::stepPerf,
-                        onHelp = { help = L("Output mode") to R.string.help_audio_perf_mode },
+                        onHelp = { help = L("输出模式") to R.string.help_audio_perf_mode },
                     ) { Value(perfOpts.firstOrNull { it.second == shown.perfMode }?.first ?: shown.perfMode.toString(), custom) }
                 }
                 item(key = "adaptive") {
                     TuneRow(
-                        title = L("Adaptive buffer"), sub = L("Auto-grow only if it hears crackle"), enabled = custom,
+                        title = L("自适应缓冲区"), sub = L("仅在检测到爆音时自动增长"), enabled = custom,
                         onA = { if (custom) cfg = cfg.copy(adaptive = !cfg.adaptive) },
-                        onHelp = { help = L("Adaptive buffer") to R.string.help_audio_adaptive },
+                        onHelp = { help = L("自适应缓冲区") to R.string.help_audio_adaptive },
                     ) { LabSwitch(shown.adaptive) }
                 }
                 item(key = "latency") {
-                    val name = if (directBuffer) L("Audio buffer") else L("Guest buffer")
+                    val name = if (directBuffer) L("音频缓冲区") else L("客户缓冲区")
                     TuneRow(
                         title = name,
-                        sub = if (!latencyUsed) L("not used by ALSA — set the buffer rows below")
+                        sub = if (!latencyUsed) L("ALSA不使用 — 请在下方设置缓冲区行数")
                         else (if (directBuffer) L("≈%1\$s ms total · %2\$s ms buffer", shown.latencyMsec + ANDROID_OUTPUT_MS, shown.latencyMsec)
                         else L("winepulse · %1\$s ms", shown.latencyMsec)) + if (!latencyLive) "  · " + L("next launch") else "",
                         enabled = custom && latencyUsed,
@@ -201,17 +201,17 @@ internal fun LabAudioTune(
                 }
                 item(key = "bf") {
                     TuneRow(
-                        title = L("Initial sink buffer"), sub = L("frames · 0 = auto"), enabled = custom,
+                        title = L("初始sink缓冲区"), sub = L("帧数 · 0 = 自动"), enabled = custom,
                         onA = {}, onStep = { d -> stepFrames(false, d) },
-                        onHelp = { help = L("Initial sink buffer") to R.string.help_audio_buffer_frames },
+                        onHelp = { help = L("初始sink缓冲区") to R.string.help_audio_buffer_frames },
                     ) { Value(if (shown.bufferFrames > 0) "${shown.bufferFrames}" else L("auto"), custom, onStep = { d -> stepFrames(false, d) }) }
                 }
                 item(key = "mbf") {
                     TuneRow(
-                        title = L("Max sink buffer"), sub = L("growth cap · 0 = device max"), enabled = custom,
+                        title = L("最大sink缓冲区"), sub = L("增长上限 · 0 = 设备最大值"), enabled = custom,
                         onA = {}, onStep = { d -> stepFrames(true, d) },
-                        onHelp = { help = L("Max sink buffer") to R.string.help_audio_max_buffer_frames },
-                    ) { Value(if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else L("device max"), custom, onStep = { d -> stepFrames(true, d) }) }
+                        onHelp = { help = L("最大sink缓冲区") to R.string.help_audio_max_buffer_frames },
+                    ) { Value(if (shown.maxBufferFrames > 0) "${shown.maxBufferFrames}" else L("设备最大值"), custom, onStep = { d -> stepFrames(true, d) }) }
                 }
                 item {
                     Row(Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End)) {

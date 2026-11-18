@@ -82,7 +82,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
                         add(FmHomeTile(
                             d.name, HomeIcons.network, tint, File("/"),
                             subtitle = when (r) {
-                                null -> "Checking…"
+                                null -> "检查中…"
                                 false -> "Can't reach"
                                 true -> "${d.kind.short} · ${d.host}" + (d.folder.trim('/').takeIf { it.isNotEmpty() }?.let { " · $it" } ?: "")
                             },
@@ -99,7 +99,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
                             subtitle = when (f.open) {
                                 true -> "Open · " + f.shares.joinToString(", ").ifEmpty { "SMB" }
                                 false -> "Needs login"
-                                null -> "Checking…"
+                                null -> "检查中…"
                             },
                             target = if (f.open == true) FmLoc.Net(guest, "") else null,
                             action = when (f.open) {
@@ -125,7 +125,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
                         id = "net:streams",
                     ))
                     add(FmHomeTile(
-                        "Search again", HomeIcons.networkSearch, tint, File("/"),
+                        "再次搜索", HomeIcons.networkSearch, tint, File("/"),
                         subtitle = when {
                             NetHub.scanning -> "Searching…"
                             !NetHub.onLan -> "No Wi-Fi"
@@ -138,7 +138,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
                 }
                 is NetEngine.State.Downloading -> add(FmHomeTile(
                     "Network drives", HomeIcons.networkSetup, tint, File("/"),
-                    subtitle = "Downloading " + (if (st.total > 0) "${(st.bytes * 100 / st.total).toInt()} %" else StringUtils.formatBytes(st.bytes)),
+                    subtitle = "正在下载 " + (if (st.total > 0) "${(st.bytes * 100 / st.total).toInt()} %" else StringUtils.formatBytes(st.bytes)),
                     action = { }, id = "net:setup",
                 ))
                 NetEngine.State.Verifying -> add(FmHomeTile("Network drives", HomeIcons.networkSetup, tint, File("/"), subtitle = "Checking the download…", action = { }, id = "net:setup"))
@@ -160,7 +160,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
     private fun driveMenu(d: NetDrive): List<FmMenuEntry> = listOf(
         FmMenuEntry("Edit…", Icons.Filled.Edit) { editReq = d; editIsNew = false; testError = null },
         FmMenuEntry("Check again", Icons.Filled.Refresh) { NetHub.refresh() },
-        FmMenuEntry("Remove", Icons.Filled.Delete, danger = true) { removeReq = d },
+        FmMenuEntry("移除", Icons.Filled.Delete, danger = true) { removeReq = d },
     )
 
     private fun foundMenu(f: NetScan.Found): List<FmMenuEntry> = buildList {
@@ -228,11 +228,11 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
     fun itemMenu(p: FmPane, item: FmItem.Net): List<FmMenuEntry> = buildList {
         add(FmMenuEntry("Open", if (item.isDir) Icons.Filled.FolderOpen else Icons.AutoMirrored.Filled.OpenInNew) { openItem(p, item) })
         add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-        add(FmMenuEntry("Copy", Icons.Filled.ContentCopy) { copy(listOf(item)) })
+        add(FmMenuEntry("拷贝", Icons.Filled.ContentCopy) { copy(listOf(item)) })
         if (item.isDir || item.extension == "exe") add(FmMenuEntry("Add to Games…", Icons.Filled.AddToHomeScreen) { startAdd(item) })
         add(FmMenuEntry("Rename", Icons.Filled.Edit) { renameTarget = item })
-        add(FmMenuEntry("Properties", Icons.Filled.Info) { ops.propsTarget = item })
-        add(FmMenuEntry("Delete", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(item) })
+        add(FmMenuEntry("属性", Icons.Filled.Info) { ops.propsTarget = item })
+        add(FmMenuEntry("删除", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(item) })
     }
 
     fun newMenuEntries(loc: FmLoc.Net): List<FmMenuEntry> = listOf(
@@ -531,7 +531,7 @@ internal class FmNetOps(private val context: Context, private val scope: Corouti
 
     fun removeStream(game: NetStream.Game) {
         removeStreamReq = null
-        streamsJob("Remove") { NetStream.remove(context, game); "Removed ${game.name}" }
+        streamsJob("移除") { NetStream.remove(context, game); "Removed ${game.name}" }
     }
 
     // ── Copying between drives and this device ──

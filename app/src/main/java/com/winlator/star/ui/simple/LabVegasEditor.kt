@@ -125,7 +125,7 @@ private class VegasPick(
 private const val RESET_TO_STOCK = "\u0000reset"
 
 /**
- * The VEGAS config editor of Lab's editors (Graphics › "Edit the VEGAS config file"): Classic's DxvkConfigDialog
+ * The VEGAS config editor of Lab's editors (Graphics › "编辑 VEGAS 配置文件"): Classic's DxvkConfigDialog
  * (VEGAS mode) as a Lab page over the editor. Build, VKD3D, async, frame rate, texture filtering, feature level, DDraw
  * wrapper, the performance tier, the config file (defaults, stock, custom, backups) and its keys, and the key catalog.
  * The lists, the live-file writes, backups, the build delete, notes and the catalog check are the Classic dialog's own
@@ -386,7 +386,7 @@ internal fun LabVegasConfigEditor(
                     allVersions = newVersions
                     if (selectedDxvk !in newVersions) selectedDxvk = newVersions.firstOrNull() ?: selectedDxvk
                     toast(activity, L("VEGAS version deleted"))
-                } else toast(activity, L("No installed VEGAS version to delete"))
+                } else toast(activity, L("没有已安装的VEGAS版本可删除"))
             } catch (e: Exception) {
                 toast(activity, L("ERROR: Failed to delete — %1\$s", e.message))
             } finally {
@@ -440,7 +440,7 @@ internal fun LabVegasConfigEditor(
         else run()
     }
 
-    val saveEntry = MenuEntry("save", L("Save and close"), if (touched) L("Unsaved changes") else null, icon = Icons.Filled.Check, onA = { save() })
+    val saveEntry = MenuEntry("save", L("Save and close"), if (touched) L("未保存的更改") else null, icon = Icons.Filled.Check, onA = { save() })
     val savePrimary = MenuAction(L("Save"), { save() })
 
     // ── Build ──
@@ -452,44 +452,44 @@ internal fun LabVegasConfigEditor(
         add(MenuEntry("loglevel", L("Log level"), context.getString(R.string.vegas_config_loglevel_envvar_note), icon = Icons.Filled.Info,
             onA = { note = L("Log level") to context.getString(R.string.vegas_config_loglevel_envvar_note) }))
         add(MenuEntry(
-            "version", L("VEGAS version"),
+            "version", L("VEGAS版本"),
             if (filteredDxvk.isEmpty()) L("No VEGAS build installed — download one.") else null,
-            trailing = selectedDxvk.ifEmpty { "—" }, icon = Icons.Filled.Memory, group = L("VEGAS version"),
-            onA = { if (filteredDxvk.isNotEmpty()) choose(L("VEGAS version"), filteredDxvk, selectedDxvk) { selectedDxvk = it } },
+            trailing = selectedDxvk.ifEmpty { "—" }, icon = Icons.Filled.Memory, group = L("VEGAS版本"),
+            onA = { if (filteredDxvk.isNotEmpty()) choose(L("VEGAS版本"), filteredDxvk, selectedDxvk) { selectedDxvk = it } },
         ))
-        add(MenuEntry("dl-vegas", L("Download VEGAS builds"), icon = Icons.Filled.CloudDownload, group = L("VEGAS version"), onA = onDownloadDxvk))
-        add(MenuEntry("wcp", L("Install from a file (.wcp)"), if (isProcessing) L("Working…") else null, icon = Icons.Filled.FolderOpen, group = L("VEGAS version"),
+        add(MenuEntry("dl-vegas", L("下载 VEGAS 构建"), icon = Icons.Filled.CloudDownload, group = L("VEGAS版本"), onA = onDownloadDxvk))
+        add(MenuEntry("wcp", L("Install from a file (.wcp)"), if (isProcessing) L("正在处理…") else null, icon = Icons.Filled.FolderOpen, group = L("VEGAS版本"),
             onA = { if (!isProcessing) pickVegasLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WCP, L("Select VEGAS package"))) }))
-        add(MenuEntry("delete-build", L("Delete this VEGAS build"), icon = Icons.Filled.Delete, group = L("VEGAS version"),
+        add(MenuEntry("delete-build", L("Delete this VEGAS build"), icon = Icons.Filled.Delete, group = L("VEGAS版本"),
             onA = { if (!isProcessing) confirmDeleteBuild = true }))
-        if (hasNotes) add(MenuEntry("notes", L("What's new in %1\$s", selectedDxvk), trailing = if (notesLive) L("● live") else L("◐ bundled"),
-            icon = Icons.Filled.NewReleases, group = L("VEGAS version"), onA = { openReleaseNotes() }))
-        add(MenuEntry("vkd3d", L("VKD3D version"), trailing = selectedVkd3d, icon = Icons.Filled.Memory, group = "VKD3D",
-            onA = { choose(L("VKD3D version"), vkd3dVersions, selectedVkd3d) { selectedVkd3d = it } },
-            actions = listOf(MenuAction(L("Download VKD3D versions"), onDownloadVkd3d))))
-        add(MenuEntry("dl-vkd3d", L("Download VKD3D versions"), icon = Icons.Filled.CloudDownload, group = "VKD3D", onA = onDownloadVkd3d))
-        if (dxvkType != DXVKConfigDialog.DXVK_TYPE_NONE) add(MenuEntry("async", L("Async"), toggle = asyncEnabled, group = L("Shaders"), onA = { staged { asyncEnabled = !asyncEnabled } }))
-        if (dxvkType == DXVKConfigDialog.DXVK_TYPE_GPLASYNC) add(MenuEntry("asyncCache", L("Async Cache"), toggle = asyncCacheEnabled, group = L("Shaders"), onA = { staged { asyncCacheEnabled = !asyncCacheEnabled } }))
+        if (hasNotes) add(MenuEntry("notes", L("What's new in %1\$s", selectedDxvk), trailing = if (notesLive) L("● 实时") else L("◐ 捆绑"),
+            icon = Icons.Filled.NewReleases, group = L("VEGAS版本"), onA = { openReleaseNotes() }))
+        add(MenuEntry("vkd3d", L("VKD3D 版本"), trailing = selectedVkd3d, icon = Icons.Filled.Memory, group = "VKD3D",
+            onA = { choose(L("VKD3D 版本"), vkd3dVersions, selectedVkd3d) { selectedVkd3d = it } },
+            actions = listOf(MenuAction(L("下载VKD3D版本"), onDownloadVkd3d))))
+        add(MenuEntry("dl-vkd3d", L("下载VKD3D版本"), icon = Icons.Filled.CloudDownload, group = "VKD3D", onA = onDownloadVkd3d))
+        if (dxvkType != DXVKConfigDialog.DXVK_TYPE_NONE) add(MenuEntry("async", L("异步"), toggle = asyncEnabled, group = L("Shaders"), onA = { staged { asyncEnabled = !asyncEnabled } }))
+        if (dxvkType == DXVKConfigDialog.DXVK_TYPE_GPLASYNC) add(MenuEntry("asyncCache", L("异步缓存"), toggle = asyncCacheEnabled, group = L("Shaders"), onA = { staged { asyncCacheEnabled = !asyncCacheEnabled } }))
         add(MenuEntry("framerate", L("Frame Rate"), trailing = selectedFramerate, icon = Icons.Filled.Speed, group = L("Shaders"),
             onA = { choose(L("Frame Rate"), framerateEntries, selectedFramerate) { selectedFramerate = it } }))
     }
 
     // ── Rendering ──
-    val texNote = L("DirectX 9-11 games only. Applies the next time the game starts.")
+    val texNote = L("仅限DirectX 9-11游戏。下次游戏启动时应用。")
     val renderEntries = buildList {
-        add(MenuEntry("aniso", L("Anisotropic filtering"), texNote, trailing = L(selectedAnisotropy), icon = Icons.Filled.Tune, group = L("Texture filtering"),
+        add(MenuEntry("aniso", L("Anisotropic filtering"), texNote, trailing = L(selectedAnisotropy), icon = Icons.Filled.Tune, group = L("纹理过滤"),
             onA = { choose(L("Anisotropic filtering"), VEGAS_ANISOTROPY_LABELS, selectedAnisotropy) { selectedAnisotropy = it } },
-            actions = listOf(MenuAction(L("What is this?"), { help(R.string.help_anisotropic_filtering) }))))
-        add(MenuEntry("lod", L("Texture sharpness"), texNote, trailing = L(selectedLodBias), icon = Icons.Filled.Tune, group = L("Texture filtering"),
+            actions = listOf(MenuAction(L("音频设置"), { help(R.string.help_anisotropic_filtering) }))))
+        add(MenuEntry("lod", L("Texture sharpness"), texNote, trailing = L(selectedLodBias), icon = Icons.Filled.Tune, group = L("纹理过滤"),
             onA = { choose(L("Texture sharpness"), VEGAS_LOD_BIAS_LABELS, selectedLodBias) { selectedLodBias = it } },
-            actions = listOf(MenuAction(L("What is this?"), { help(R.string.help_texture_sharpness) }))))
+            actions = listOf(MenuAction(L("音频设置"), { help(R.string.help_texture_sharpness) }))))
         add(MenuEntry("level", L("API feature level"), trailing = selectedFeatureLevel, group = L("Direct3D"),
             onA = { choose(L("API feature level"), featureLevelEntries, selectedFeatureLevel) { selectedFeatureLevel = it } }))
-        add(MenuEntry("ddraw", L("DDraw Wrapper"), trailing = selectedDdraw, group = L("Direct3D"),
-            onA = { choose(L("DDraw Wrapper"), ddrawEntries, selectedDdraw) { selectedDdraw = it } }))
+        add(MenuEntry("ddraw", L("DDraw Wrapper图形加速层"), trailing = selectedDdraw, group = L("Direct3D"),
+            onA = { choose(L("DDraw Wrapper图形加速层"), ddrawEntries, selectedDdraw) { selectedDdraw = it } }))
         if (StringUtils.parseIdentifier(selectedDdraw) == "d7vk") {
-            add(MenuEntry("d7vk", L("D7VK Version"), trailing = selectedD7vk, group = L("Direct3D"),
-                onA = { choose(L("D7VK Version"), d7vkVersions, selectedD7vk) { selectedD7vk = it } },
+            add(MenuEntry("d7vk", L("D7VK 版本"), trailing = selectedD7vk, group = L("Direct3D"),
+                onA = { choose(L("D7VK 版本"), d7vkVersions, selectedD7vk) { selectedD7vk = it } },
                 actions = listOf(MenuAction(L("Download D7VK versions"), onDownloadD7vk))))
             add(MenuEntry("dl-d7vk", L("Download D7VK versions"), icon = Icons.Filled.CloudDownload, group = L("Direct3D"), onA = onDownloadD7vk))
         }
@@ -516,7 +516,7 @@ internal fun LabVegasConfigEditor(
         val p = staged?.let { VegasTierPresets.PARAMS[it] }
         if (staged != null && p != null) {
             add(MenuEntry(
-                "tier-apply", L("Apply tier"),
+                "tier-apply", L("应用等级"),
                 L("Draw threshold %1\$s (D3D9 %2\$s) · HAAE pacing %3\$sms · governor cap %4\$s · shader zero-init %5\$s · frame-gen %6\$s",
                     p.drawThreshold, p.drawThresholdD3D9, p.haaePacing, p.governorCap, p.shaderZeroInit, p.frameGen),
                 trailing = "vegas.forceTier = $staged", icon = Icons.Filled.Check, group = L("Apply"),
@@ -546,20 +546,20 @@ internal fun LabVegasConfigEditor(
         L("Heads-up: builds SILENTLY IGNORE keys they don't recognise — if an added key does nothing, it's either not supported by that build or has a typo.")
     val fileEntries = buildList {
         add(MenuEntry("guide", L("How configs work"), icon = Icons.Filled.Info, onA = { note = L("Config") to guide }))
-        add(MenuEntry("defaults", L("Use defaults (no config file)"), toggle = useDefaults, onA = { staged { useDefaults = !useDefaults } }))
+        add(MenuEntry("defaults", L("使用默认（无配置文件）"), toggle = useDefaults, onA = { staged { useDefaults = !useDefaults } }))
         if (!useDefaults) {
             val stockNote = when {
                 stockSources.isEmpty() -> L("No installed VEGAS package ships a config — install one.")
                 selectedStock != null && selectedCustom == null && stockPath != null && !configMissing ->
-                    if (sidecarExists) L("Your edits live in your own copy — the stock version stays pristine.")
-                    else L("Read-only until the first edit — changes create your own copy.")
+                    if (sidecarExists) L("您的编辑保存在您自己的副本中 — 默认版本保持原始状态。")
+                    else L("在首次编辑前为只读 — 更改会创建您自己的副本。")
                 else -> null
             }
             add(MenuEntry(
-                "stock", L("Stock config (per version)"), stockNote, trailing = selectedStock ?: "—", icon = Icons.Filled.Description,
+                "stock", L("默认配置（按版本）"), stockNote, trailing = selectedStock ?: "—", icon = Icons.Filled.Description,
                 current = selectedStock != null, group = L("Source"),
                 onA = {
-                    if (stockSources.isNotEmpty()) choose(L("Stock config (per version)"), stockSources.map { it.displayLabel() }, selectedStock ?: "") { s ->
+                    if (stockSources.isNotEmpty()) choose(L("默认配置（按版本）"), stockSources.map { it.displayLabel() }, selectedStock ?: "") { s ->
                         selectedStock = s; selectedCustom = null; useDefaults = false
                     }
                 },
@@ -567,13 +567,13 @@ internal fun LabVegasConfigEditor(
             ))
             add(MenuEntry("dl-stock", L("Download stock configs"), icon = Icons.Filled.CloudDownload, group = L("Source"), onA = onOpenConfigDownload))
             add(MenuEntry(
-                "custom", L("Custom config file"), selectedCustom, trailing = selectedCustom?.let { File(it).name } ?: "—", icon = Icons.Filled.FolderOpen,
+                "custom", L("自定义配置文件"), selectedCustom, trailing = selectedCustom?.let { File(it).name } ?: "—", icon = Icons.Filled.FolderOpen,
                 current = selectedCustom != null, group = L("Source"),
                 onA = {
                     pick = VegasPick(
-                        L("Custom config file"), customEntries.map { Opt(it, File(it).name) }, selectedCustom ?: "",
-                        customLabel = L("Browse for file…"),
-                        onCustom = { pick = null; pickConfigLauncher.launch(InAppFilePicker.buildIntent(context, emptyArray(), L("Select config file"))) },
+                        L("自定义配置文件"), customEntries.map { Opt(it, File(it).name) }, selectedCustom ?: "",
+                        customLabel = L("浏览文件…"),
+                        onCustom = { pick = null; pickConfigLauncher.launch(InAppFilePicker.buildIntent(context, emptyArray(), L("选择配置文件"))) },
                         onPick = { c -> selectedCustom = c; selectedStock = null; useDefaults = false; touched = true },
                     )
                 },
@@ -595,14 +595,14 @@ internal fun LabVegasConfigEditor(
             }
             if (liveFile != null && !configMissing) {
                 add(MenuEntry(
-                    "backups", L("Backups"),
-                    if (backups.isEmpty()) L("No backups yet — the first edit keeps a copy of the current file.")
+                    "backups", L("备份"),
+                    if (backups.isEmpty()) L("尚无备份 — 首次编辑会保留当前文件的副本。")
                     else L("%1\$s — restore a previously saved state", backups.size),
                     trailing = backups.size.toString(), icon = Icons.Filled.Restore, group = L("Live file"),
                     onA = { showBackups = true },
                     actions = buildList {
                         if (liveFile.isFile) add(MenuAction(L("Backup now"), { manualBackup() }))
-                        if (backups.isNotEmpty()) add(MenuAction(L("Restore…"), { showBackups = true }))
+                        if (backups.isNotEmpty()) add(MenuAction(L("恢复…"), { showBackups = true }))
                     },
                 ))
             }
@@ -633,7 +633,7 @@ internal fun LabVegasConfigEditor(
     })
     val keyEntries = if (!keysShown) emptyList() else buildList {
         add(MenuEntry(
-            "fork", L("Fork-feature filter"),
+            "fork", L("分支功能筛选"),
             if (forkFilter) L("Fork features only: %1\$s of %2\$s keys shown",
                 configRows.count { row -> knowledge != null && knowledge.isForkKey(row.key) && !knowledge.isGated(row.key, selectedDxvk) }, configRows.size)
             else null,
@@ -658,7 +658,7 @@ internal fun LabVegasConfigEditor(
                         applyValue(typo, row.value)
                         scope.launch { delay(300); applyDeleteKey(row.key) }
                     }))
-                    add(MenuAction(L("What is this?"), { note = row.key to vegasKeyDefinition(row.key) }))
+                    add(MenuAction(L("音频设置"), { note = row.key to vegasKeyDefinition(row.key) }))
                     if (!gated) add(MenuAction(L("Remove key"), { pendingDeleteKey = row.key }, danger = true))
                 },
             ))
@@ -680,7 +680,7 @@ internal fun LabVegasConfigEditor(
 
     // ── Catalog and key reference ──
     val knowledgeFooter = if (knowledge != null) L("knowledge: fork %1\$s · %2\$s", knowledge.forkBuild(), knowledge.generated())
-        else L("knowledge data unavailable — showing keys unclassified")
+        else L("知识数据不可用 — 显示未分类的键")
     val catalogFooter = when {
         catalog == null -> L("catalog unavailable — classifier off, rows marked unverified")
         selectedCustom != null -> L("catalog: newest %1\$s · %2\$s — classifier applies to stock configs", catalog.newestTag(), catalog.generatedAt())
@@ -690,8 +690,8 @@ internal fun LabVegasConfigEditor(
     }
     val catalogEntries = listOf(
         MenuEntry("knowledge", L("Knowledge"), knowledgeFooter, icon = Icons.Filled.Info),
-        MenuEntry("catalog", L("Check catalog"), catalogFooter, icon = Icons.Filled.Book, onA = { showCatalog = true }),
-        MenuEntry("live-check", L("Check for new builds"), trailing = if (liveChecking) L("Checking…") else null, icon = Icons.Filled.CloudDownload, onA = { runLiveCheck() }),
+        MenuEntry("catalog", L("检查目录"), catalogFooter, icon = Icons.Filled.Book, onA = { showCatalog = true }),
+        MenuEntry("live-check", L("检查新版本"), trailing = if (liveChecking) L("检查中…") else null, icon = Icons.Filled.CloudDownload, onA = { runLiveCheck() }),
     )
     val bucketLabel: (VegasKeyCatalog.Bucket) -> String = { b ->
         when (b) {
@@ -725,14 +725,14 @@ internal fun LabVegasConfigEditor(
         add(MenuSection("build", L("Build"), Icons.Filled.Memory, buildEntries, primary = savePrimary))
         add(MenuSection("render", L("Rendering"), Icons.Filled.Tune, renderEntries, primary = savePrimary))
         add(MenuSection("tier", L("Performance tier"), Icons.Filled.Speed, tierEntries, primary = savePrimary))
-        add(MenuSection("file", L("Config file"), Icons.Filled.Description, fileEntries, primary = savePrimary))
-        if (keysShown) add(MenuSection("keys", L("Keys"), Icons.Filled.VpnKey, keyEntries, primary = MenuAction(L("Add key"), { showAddKey = true })))
+        add(MenuSection("file", L("配置文件"), Icons.Filled.Description, fileEntries, primary = savePrimary))
+        if (keysShown) add(MenuSection("keys", L("Keys"), Icons.Filled.VpnKey, keyEntries, primary = MenuAction(L("添加键"), { showAddKey = true })))
         add(MenuSection("catalog", L("Catalog"), Icons.Filled.Book, catalogEntries, primary = savePrimary))
         add(MenuSection("reference", L("Key reference"), Icons.Filled.Book, listOf(referenceHead) + referenceEntries, primary = savePrimary))
     }
     val banner = listOfNotNull(
-        if (isProcessing) L("Working…") else null,
-        if (stockEdited && !useDefaults) (if (sidecarExists) L("Edited · yours now — saved to your own copy") else L("Edited · saved to the live config file")) else null,
+        if (isProcessing) L("正在处理…") else null,
+        if (stockEdited && !useDefaults) (if (sidecarExists) L("已编辑 · 现在是您的 — 已保存到您的副本") else L("已编辑 · 已保存到实时配置文件")) else null,
     ).joinToString("\n").ifEmpty { null }
 
     LabOverlay(onDismiss = { requestLeave() }) {
@@ -761,7 +761,7 @@ internal fun LabVegasConfigEditor(
         LabFieldDialog(
             title = row.key,
             initial = row.value,
-            hint = L("Custom value"),
+            hint = L("自定义值"),
             confirm = L("Apply"),
             onDismiss = { customValueFor = null },
         ) { v ->
@@ -777,7 +777,7 @@ internal fun LabVegasConfigEditor(
     }
     pendingDeleteKey?.let { key ->
         SimpleConfirm(
-            title = L("Remove key?"),
+            title = L("移除键？"),
             body = L("Are you sure you want '%1\$s' removed? You can get it back via Backup → Restore or Add key.", key),
             danger = true,
             onDismiss = { pendingDeleteKey = null },
@@ -790,8 +790,8 @@ internal fun LabVegasConfigEditor(
     if (showBackups) {
         val fmt = remember { java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ROOT) }
         SimpleActionSheet(
-            title = L("Restore a backup"),
-            message = if (backups.isEmpty()) L("No backups yet — they appear after the first edit to this config file.") else null,
+            title = L("恢复备份"),
+            message = if (backups.isEmpty()) L("尚无备份 — 它们会在首次编辑此配置文件后出现。") else null,
             actions = buildList {
                 if (liveFile?.isFile == true) add(MenuAction(L("Backup now"), { showBackups = false; manualBackup() }))
                 backups.forEach { b -> add(MenuAction("${b.name} · ${fmt.format(b.lastModified())}", { showBackups = false; backupFor = b })) }
@@ -804,7 +804,7 @@ internal fun LabVegasConfigEditor(
         SimpleActionSheet(
             title = b.name,
             actions = listOf(
-                MenuAction(L("Restore"), { backupFor = null; restoreTarget = b }),
+                MenuAction(L("恢复"), { backupFor = null; restoreTarget = b }),
                 MenuAction(L("Delete backup"), { backupFor = null; if (b.delete()) toggleVersion++ }, danger = true),
                 MenuAction(L("Cancel"), { backupFor = null }),
             ),
@@ -842,14 +842,14 @@ internal fun LabVegasConfigEditor(
     if (showCatalog) {
         val tags = catalog?.knownTags().orEmpty().joinToString("\n") { t -> "$t — ${catalog?.stateOf(t)?.name?.lowercase()?.replace('_', '-') ?: "?"}" }
         SimpleActionSheet(
-            title = L("VEGAS key catalog"),
+            title = L("VEGAS key 键目录"),
             message = listOf(
                 L("generated %1\$s · upstream %2\$s (%3\$s)", catalog?.generatedAt() ?: "n/a", catalog?.upstreamSource() ?: "n/a", catalog?.upstreamFetchedAt() ?: "n/a"),
                 tags,
                 L("Updated at build time (assistant-side maintenance)."),
             ).filter { it.isNotBlank() }.joinToString("\n\n"),
             actions = listOf(
-                MenuAction(if (liveChecking) L("Checking…") else L("Check for new builds"), { runLiveCheck() }),
+                MenuAction(if (liveChecking) L("检查中…") else L("检查新版本"), { runLiveCheck() }),
                 MenuAction(L("OK"), { showCatalog = false }),
             ),
             onDismiss = { showCatalog = false },
@@ -857,8 +857,8 @@ internal fun LabVegasConfigEditor(
     }
     liveReport?.let { r ->
         val body = if (!r.feedOk) {
-            L("Could not reach the release feed (network or API failure).") + "\n\n" +
-                L("The bundled catalog is unchanged; keys for unknown builds stay 'unverified'.")
+            L("无法访问版本源（网络或API故障）。") + "\n\n" +
+                L("捆绑目录未更改；未知版本的键保持'未验证'。")
         } else buildList {
             add(L("Catalog newest: %1\$s (%2\$s).", r.catalogNewestTag ?: "?", r.catalogNewestAt.ifEmpty { "?" }))
             if (r.newerCount == 0) add(L("No newer releases found."))
@@ -867,10 +867,10 @@ internal fun LabVegasConfigEditor(
                     (if (r.newBuildCount > 0) L(" — %1\$s stable", r.newBuildCount) else L(" (all prerelease)")) + ":")
                 r.newerTags.forEach { add("· $it") }
             }
-            add(if (r.installedFoundLive) L("Your installed build is still listed upstream.") else L("Your installed build is not in the current release list."))
-            add(L("This check only reports — no writes, no catalog change. Download and classification still use the existing flows; the catalog asset updates at build time."))
+            add(if (r.installedFoundLive) L("您安装的版本仍列在上游。") else L("您安装的版本不在当前发布列表中。"))
+            add(L("此检查仅报告 — 无写入，无目录更改。下载和分类仍使用现有流程；目录资源在构建时更新。"))
         }.joinToString("\n\n")
-        LabNote(title = L("VEGAS new-build check"), body = body, onDismiss = { liveReport = null })
+        LabNote(title = L("VEGAS 新版本检查"), body = body, onDismiss = { liveReport = null })
     }
     pendingSchemaBlock?.let { key ->
         LabNote(title = L("Key not applicable to this build's schema"), body = vegasSchemaBlockText(key, catalog, activeStockTag), onDismiss = { pendingSchemaBlock = null })
@@ -883,8 +883,8 @@ internal fun LabVegasConfigEditor(
             title = L("Save the VEGAS config?"),
             actions = listOf(
                 MenuAction(L("Save"), { leaving = false; save() }),
-                MenuAction(L("Discard changes"), { leaving = false; onDismiss() }, danger = true),
-                MenuAction(L("Keep editing"), { leaving = false }),
+                MenuAction(L("放弃更改"), { leaving = false; onDismiss() }, danger = true),
+                MenuAction(L("继续编辑"), { leaving = false }),
             ),
             onDismiss = { leaving = false },
         ) { it.run() }
@@ -921,12 +921,12 @@ private fun AddKeyDialog(onDismiss: () -> Unit, onAdd: (String, String) -> Unit)
                 .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(L("Add config entry"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(L("添加配置条目"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             OutlinedTextField(
                 value = key,
                 onValueChange = { key = it },
                 singleLine = true,
-                placeholder = { Text(L("Key (e.g. dxvk.maxFrameLatency)"), color = SimpleDim) },
+                placeholder = { Text(L("key键（例如 dxvk.maxFrameLatency）"), color = SimpleDim) },
                 isError = key.isNotBlank() && !keyValid,
                 shape = SimpleShape,
                 colors = colors,

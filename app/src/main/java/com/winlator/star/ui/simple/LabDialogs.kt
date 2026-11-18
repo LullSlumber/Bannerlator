@@ -147,7 +147,7 @@ internal fun LabDialogText(text: String, muted: Boolean = false, error: Boolean 
     )
 }
 
-/** A small heading inside a Lab pop-up's body ("Changed", "Needs a component"). */
+/** A small heading inside a Lab pop-up's body ("Changed", "需要一个组件"). */
 @Composable
 internal fun LabDialogHeading(text: String) {
     Text(text.uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp, modifier = Modifier.padding(top = 4.dp))

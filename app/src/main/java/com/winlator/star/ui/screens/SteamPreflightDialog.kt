@@ -926,7 +926,7 @@ private fun PreflightHelpTip(text: String, onDismiss: () -> Unit) {
 // ── Lab: the pre-flight as a Lab panel (photo + live caption, step list, fail card, its choices as Lab buttons) ──
 
 /**
- * "Getting Steam ready" for Lab: the photo strip beside (landscape) or over (portrait) the step list, the open help text,
+ * "正在准备Steam" for Lab: the photo strip beside (landscape) or over (portrait) the step list, the open help text,
  * then the fail card when a step stopped the pre-flight. Its choices, Help and Cancel are the panel's buttons; the
  * recommended choice takes the controller focus when it appears. B is Cancel.
  */

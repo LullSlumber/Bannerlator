@@ -300,35 +300,35 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
         json = next
         prefs.setSlotOverridesJson(context, next)
     }
-    val modeLabels = listOf(L("Keep on-screen player"), L("Yield Player 1 to pad"), L("Share the player"))
-    val slotOptions = listOf(SLOT_AUTO to L("Auto")) + (0 until 4).map { it to L("Player %1\$s", it + 1) } + listOf(WinHandler.SLOT_IGNORE to L("Ignore"))
+    val modeLabels = listOf(L("保持屏幕玩家"), L("将玩家1让给手柄"), L("共享该玩家"))
+    val slotOptions = listOf(SLOT_AUTO to L("Auto")) + (0 until 4).map { it to L("Player %1\$s", it + 1) } + listOf(WinHandler.SLOT_IGNORE to L("忽略"))
     val assign = buildList {
-        val g = L("New containers start with")
+        val g = L("新容器启动时使用")
         add(
             MenuEntry(
-                "a-help", L("Player slots"),
-                L("The default for newly-created containers. Assign two devices to one player to share control. Applies to new containers only — existing containers keep their own settings."),
-                icon = Icons.Filled.HelpOutline, group = g, onA = { help(L("Player slots"), R.string.help_player_slots) },
+                "a-help", L("玩家槽位"),
+                L("新创建容器的默认设置。将两个设备分配给一个玩家以共享控制。仅适用于新容器——现有容器保留其自身设置。"),
+                icon = Icons.Filled.HelpOutline, group = g, onA = { help(L("玩家槽位"), R.string.help_player_slots) },
             ),
         )
         add(
             MenuEntry(
-                "a-mode", L("On-screen priority"), trailing = modeLabels.getOrElse(onScreenMode) { modeLabels[0] }, icon = Icons.Filled.TouchApp, group = g,
+                "a-mode", L("屏幕优先级"), trailing = modeLabels.getOrElse(onScreenMode) { modeLabels[0] }, icon = Icons.Filled.TouchApp, group = g,
                 actions = modeLabels.mapIndexed { i, l -> MenuAction(marked(l, i == onScreenMode), { onScreenMode = i; prefs.setOnScreenMode(context, i) }) },
             ),
         )
         add(
             MenuEntry(
-                "a-hide", L("Hide on-screen controls when a controller connects"), icon = Icons.Filled.VisibilityOff, group = g, toggle = autoHide,
+                "a-hide", L("当控制器连接时隐藏屏幕控制"), icon = Icons.Filled.VisibilityOff, group = g, toggle = autoHide,
                 onA = { autoHide = !autoHide; prefs.setAutoHideControlsOnPad(context, autoHide) },
             ),
         )
-        val pg = L("Player slots")
+        val pg = L("玩家槽位")
         rows.forEach { r ->
             val status = when {
                 r.override == WinHandler.SLOT_IGNORE -> L("Ignored")
                 r.override >= 0 -> L("Pinned to Player %1\$s", r.override + 1)
-                else -> L("Auto (assigned by launch order)")
+                else -> L("自动（按启动顺序分配）")
             }
             val suffix = when {
                 r.isOnScreen -> null
@@ -337,7 +337,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
             }
             add(
                 MenuEntry(
-                    "a-${r.descriptor}", if (r.isOnScreen) L("On-screen controls") else r.displayName,
+                    "a-${r.descriptor}", if (r.isOnScreen) L("屏幕控制") else r.displayName,
                     listOfNotNull(status, suffix).joinToString(" · "),
                     trailing = slotOptions.firstOrNull { it.first == r.override }?.second ?: L("Auto"),
                     current = r.override >= 0,
@@ -376,10 +376,10 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
         activeRun = GyroCalibrator.calibrate(context) { result ->
             activeRun = null
             status = when (result) {
-                is GyroCalibrator.Result.Success -> if (result.negligible) L("Calibrated — nothing to remove") else L("Calibrated")
-                GyroCalibrator.Result.Moved -> L("Hold the device still and try again")
-                GyroCalibrator.Result.NotEnoughSamples -> L("Couldn't sample — try again")
-                GyroCalibrator.Result.Unavailable -> L("Gyroscope unavailable")
+                is GyroCalibrator.Result.Success -> if (result.negligible) L("校准完成 — 无需移除偏差") else L("校准完成")
+                GyroCalibrator.Result.Moved -> L("请保持设备静止并重试")
+                GyroCalibrator.Result.NotEnoughSamples -> L("无法采样 — 请重试")
+                GyroCalibrator.Result.Unavailable -> L("陀螺仪不可用")
             }
             refreshBias()
         }
@@ -395,7 +395,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
     fun requestBluetooth() {
         if (Build.VERSION.SDK_INT >= 31 && !bluetoothGranted) permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
     }
-    val trackpadLabels = listOf(L("Right trackpad"), L("Left trackpad"), L("Both trackpads"), L("Off"))
+    val trackpadLabels = listOf(L("右触控板"), L("左触控板"), L("双触控板"), L("Off"))
     val trackpadModes = listOf(
         SteamControllerBackend.TRACKPAD_MOUSE_RIGHT, SteamControllerBackend.TRACKPAD_MOUSE_LEFT,
         SteamControllerBackend.TRACKPAD_MOUSE_BOTH, SteamControllerBackend.TRACKPAD_MOUSE_OFF,
@@ -408,11 +408,11 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
     var capturing by remember { mutableStateOf(false) }
 
     val device = buildList {
-        val gg = L("Gyroscope")
+        val gg = L("陀螺仪")
         val summary = when {
             sensor == null -> L("No gyroscope on this device")
-            !calibrated -> L("Not calibrated")
-            abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS -> L("Very little drift detected — your device already compensates")
+            !calibrated -> L("未校准")
+            abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS -> L("检测到极轻微漂移 — 您的设备已有补偿")
             else -> L("Bias removed: x %1\$s, y %2\$s rad/s", "%.4f".format(biasX), "%.4f".format(biasY))
         }
         add(
@@ -427,14 +427,14 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
         if (sensor != null && calibrated && activeRun == null) add(
             MenuEntry(
                 "g-reset", L("Reset the calibration"), icon = Icons.Filled.RestartAlt, group = gg,
-                onA = { GyroCalibrator.clearBias(context); status = L("Calibration reset"); refreshBias() },
+                onA = { GyroCalibrator.clearBias(context); status = L("校准已重置"); refreshBias() },
             ),
         )
 
         val sg = L("Steam Controller")
         add(
             MenuEntry(
-                "s-on", L("Steam Controller support"),
+                "s-on", L("Steam控制器支持"),
                 L("Reads it directly, as Steam does. Pair it in Bluetooth settings or plug it in. Other controllers are not affected. Applies from the next game start."),
                 icon = Icons.Filled.SportsEsports, group = sg, toggle = steamOn,
                 onA = {
@@ -448,7 +448,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
             val ti = trackpadModes.indexOf(trackpadMode).coerceAtLeast(0)
             add(
                 MenuEntry(
-                    "s-pad", L("Trackpad mouse"), L("Which trackpad moves the mouse. Clicking it is a left click; with both, the left trackpad clicks right."),
+                    "s-pad", L("触控板鼠标"), L("哪个触控板移动鼠标。点击它相当于左键单击；若选择双触控板，则左触控板点击为右键。"),
                     trailing = trackpadLabels[ti], icon = Icons.Filled.Mouse, group = sg,
                     actions = trackpadLabels.mapIndexed { i, l ->
                         MenuAction(marked(l, i == ti), { trackpadMode = trackpadModes[i]; prefs.setSteamTrackpadMouseMode(context, trackpadModes[i]) })
@@ -475,7 +475,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
             }
             if (!bluetoothGranted) add(
                 MenuEntry(
-                    "s-bt", L("Bluetooth permission is off, so only a USB-connected controller will work."),
+                    "s-bt", L("蓝牙权限已关闭，因此仅USB连接的手柄可用。"),
                     trailing = if (Build.VERSION.SDK_INT >= 31) L("Allow Bluetooth") else null,
                     icon = Icons.Filled.Bluetooth, group = sg,
                     onA = if (Build.VERSION.SDK_INT >= 31) ({ requestBluetooth() }) else null,
@@ -483,17 +483,17 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
             )
         }
 
-        val mg = L("Menu button")
+        val mg = L("菜单按钮")
         add(
             MenuEntry(
-                "m-btn", L("Menu button"),
+                "m-btn", L("菜单按钮"),
                 L("For handhelds with built-in controls: a button that opens the in-game side menu. Off until you set one. The chosen button then only opens the menu and isn't sent to the game."),
                 trailing = prefs.menuButtonName(keyCode), icon = Icons.Filled.Menu, group = mg,
                 onA = { capturing = true },
                 actions = buildList {
-                    add(MenuAction(L("Set button"), { capturing = true }))
+                    add(MenuAction(L("设置按钮"), { capturing = true }))
                     if (keyCode != 0) add(MenuAction(L("None"), { prefs.setMenuButtonKeyCode(context, 0); keyCode = prefs.getMenuButtonKeyCode(context) }))
-                    add(MenuAction(L("What is this?"), { help(L("Menu button"), R.string.help_menu_button) }))
+                    add(MenuAction(L("音频设置"), { help(L("菜单按钮"), R.string.help_menu_button) }))
                 },
             ),
         )
@@ -536,8 +536,8 @@ private fun LabMenuButtonCapture(onResult: (Int) -> Unit) {
                 .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(L("Press the button you want to open the menu"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 17.sp)
-            Text(L("Use your device's own controls. B and the volume keys can't be used."), color = SimpleMuted, fontSize = 13.sp)
+            Text(L("按下您想用来打开菜单的按钮"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Text(L("使用您设备自身的控制。B 和音量键无法使用。"), color = SimpleMuted, fontSize = 13.sp)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 LabButton(L("Cancel"), onClick = { onResult(-1) })
             }

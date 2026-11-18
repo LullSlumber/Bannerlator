@@ -648,7 +648,7 @@ private fun LabSteamResults(hits: List<SteamStoreSearch.SteamSuggestion>, onDism
 @Composable
 private fun LabSteamReview(r: SteamReview, onChange: (SteamReview) -> Unit, onDismiss: () -> Unit, onSave: () -> Unit) {
     var editing by remember { mutableStateOf<String?>(null) }
-    val notSet = L("Not set")
+    val notSet = L("未设置")
     LabPanelDialog(
         L("Link to Steam app %1\$s", r.appId),
         onDismiss = onDismiss,
@@ -660,9 +660,9 @@ private fun LabSteamReview(r: SteamReview, onChange: (SteamReview) -> Unit, onDi
         }
         listOf(
             Triple("name", L("Name"), r.name),
-            Triple("genres", L("Genres"), r.genres),
-            Triple("year", L("Release year"), r.year),
-            Triple("meta", L("Metacritic"), r.metacritic),
+            Triple("genres", L("类型"), r.genres),
+            Triple("year", L("发行年份"), r.year),
+            Triple("meta", L("Metacritic评分"), r.metacritic),
             Triple("desc", L("Description"), r.description),
         ).forEach { (key, label, value) ->
             Column(Modifier.fillMaxWidth().labTile(onClick = { editing = key }).padding(horizontal = 10.dp, vertical = 6.dp)) {
@@ -674,13 +674,13 @@ private fun LabSteamReview(r: SteamReview, onChange: (SteamReview) -> Unit, onDi
     editing?.let { key ->
         val (title, start) = when (key) {
             "name" -> L("Name") to r.name
-            "genres" -> L("Genres") to r.genres
-            "year" -> L("Release year") to r.year
-            "meta" -> L("Metacritic") to r.metacritic
+            "genres" -> L("类型") to r.genres
+            "year" -> L("发行年份") to r.year
+            "meta" -> L("Metacritic评分") to r.metacritic
             else -> L("Description") to r.description
         }
         LabTextDialog(
-            title, start, hint = when (key) { "genres" -> L("Action, RPG, Strategy"); "meta" -> "1–100"; else -> null }, multiline = key == "desc",
+            title, start, hint = when (key) { "genres" -> L("描述"); "meta" -> "1–100"; else -> null }, multiline = key == "desc",
             onDismiss = { editing = null },
         ) { v ->
             editing = null

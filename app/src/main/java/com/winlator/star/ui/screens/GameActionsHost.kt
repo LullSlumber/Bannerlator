@@ -995,8 +995,8 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                 containers = containers,
                 subtitle = when (pendingImportKind) {
                     ImportKind.EXE -> com.winlator.star.ui.simple.L("The game's .exe goes into this container")
-                    ImportKind.FOLDER -> com.winlator.star.ui.simple.L("The games found in the folder go into this container")
-                    ImportKind.WINDOWS_STEAM -> com.winlator.star.ui.simple.L("Steam for Windows goes into this container")
+                    ImportKind.FOLDER -> com.winlator.star.ui.simple.L("文件夹中找到的游戏将进入此容器")
+                    ImportKind.WINDOWS_STEAM -> com.winlator.star.ui.simple.L("Windows 版 Steam 将装入此容器")
                     null -> null
                 },
                 onPick = { index ->
@@ -1009,7 +1009,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                     showImportContainerPicker = false
                     pendingImportKind = null
                 },
-                // The stock dialog's "Pick via system…" tick, for the .exe import (a folder never uses the system picker).
+                // The stock dialog's "从系统选取…" tick, for the .exe import (a folder never uses the system picker).
                 systemPickerChecked = if (pendingImportKind == ImportKind.EXE) importUseSystemPicker else null,
                 onSystemPickerChange = { importUseSystemPicker = it },
             )

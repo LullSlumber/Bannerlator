@@ -267,7 +267,7 @@ internal fun rememberLabFileInstall(driver: Boolean = false, onInstalled: () -> 
             if (ok) {
                 toast(context, L("Installed %1\$s", fname))
                 onInstalled()
-            } else fi.failed = L("Install failed.")
+            } else fi.failed = L("安装失败。")
         }
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -275,7 +275,7 @@ internal fun rememberLabFileInstall(driver: Boolean = false, onInstalled: () -> 
     }
     fi.browse = {
         val exts = if (driver) InAppFilePicker.DRIVER else InAppFilePicker.WCP
-        picker.launch(InAppFilePicker.buildIntent(context, exts, if (driver) L("Select driver") else L("Select content file")))
+        picker.launch(InAppFilePicker.buildIntent(context, exts, if (driver) L("Select driver") else L("选择内容文件")))
     }
     fi.system = {
         picker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "*/*" })
@@ -284,8 +284,8 @@ internal fun rememberLabFileInstall(driver: Boolean = false, onInstalled: () -> 
         SimpleActionSheet(
             title = L("Install from a file"),
             actions = listOf(
-                MenuAction(L("Browse files"), { fi.browse() }),
-                MenuAction(L("Pick via system…"), { fi.system() }),
+                MenuAction(L("浏览文件"), { fi.browse() }),
+                MenuAction(L("从系统选取…"), { fi.system() }),
             ),
             onDismiss = { fi.asking = false },
         ) { a -> fi.asking = false; a.run() }
@@ -294,7 +294,7 @@ internal fun rememberLabFileInstall(driver: Boolean = false, onInstalled: () -> 
     return fi
 }
 
-/** Classic's "Content Info" of an installed version, as text. */
+/** Classic's "内容信息" of an installed version, as text. */
 internal fun contentInfoText(p: ContentProfile): String = buildString {
     append(L("Type")).append(": ").append(p.type.toString()).append('\n')
     append(L("Version")).append(": ").append(p.verName).append('\n')

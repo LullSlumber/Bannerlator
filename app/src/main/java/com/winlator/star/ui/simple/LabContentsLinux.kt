@@ -114,7 +114,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
             // The runtime is only useful with something to launch: the Steam entry appears the moment it lands.
             if (ok) runCatching { addSteamEntry(app) }
             LinuxRuntimeUpdate.finish(app)
-            if (!ok) message = L("Install failed — the existing runtime was left alone.")
+            if (!ok) message = L("安装失败 — 现有runtime保持不变。")
         }
     }
     fun remove() {
@@ -133,7 +133,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
     fun installProton(b: LinuxProtons.Build) {
         if (workingOn != null) return
         workingOn = b.name; error = null; errorFor = null
-        stage = L("Starting…"); percent = -1
+        stage = L("正在启动…"); percent = -1
         scope.launch {
             val failure = withContext(Dispatchers.IO) {
                 runCatching { LinuxProtons.install(context, b) { s, p -> stage = s; percent = p } }.getOrElse { it.message ?: it.toString() }
@@ -155,28 +155,28 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
     }
 
     val gpuNote = LabHelpText(
-        L("This device cannot draw a Linux session"),
+        L("此设备无法绘制 Linux 会话"),
         L(
             "The runtime draws with Turnip, an Adreno driver, and this device reports %1\$s. A session on it comes up as sound over a black screen. You can still download the runtime, but nothing will render — Mali, Xclipse and PowerVR are not supported yet.",
             undrawableGpu ?: "",
         ),
     )
-    val restrictionsText = L("A Linux session is dozens of processes — gamescope, the Steam client, its web helper and the game — and Android is set to kill an app's extra child processes. When it does, the session ends with no error and nothing in the log. Turn on \"Disable child process restrictions\" in Developer options before the first launch.") +
+    val restrictionsText = L("一个 Linux 会话包含数十个进程 — gamescope、Steam 客户端、其 Web 辅助进程和游戏 — 而 Android 会终止应用的额外子进程。当它这样做时，会话会在没有任何错误且日志中没有任何内容的情况下结束。请在首次启动前，在开发者选项中打开 \"禁用子进程限制\"。") +
         if (ChildProcessRestrictions.hasSwitch()) "" else "\n\n" + L("This Android version has no switch for it. From a computer:") + "\n" + ChildProcessRestrictions.adbCommand()
-    val restrictionsNote = LabHelpText(L("Turn off child process restrictions first"), restrictionsText)
+    val restrictionsNote = LabHelpText(L("请先关闭子进程限制"), restrictionsText)
     fun openDeveloperOptions() {
         if (!ChildProcessRestrictions.openDeveloperOptions(context)) {
-            onNote(LabHelpText(L("Open Developer options"), L("Could not open Developer options. Settings → About phone → tap Build number seven times, then Developer options.")))
+            onNote(LabHelpText(L("打开开发者选项"), L("Could not open Developer options. Settings → About phone → tap Build number seven times, then Developer options.")))
         }
     }
     val aboutRuntime = LabHelpText(
         L("Linux runtime"),
-        L("Runs Linux programs instead of Windows ones: a glibc rootfs with gamescope as the session compositor, and Valve's Steam client built for ARM. Games run through Steam's own Proton, not through this app's Wine. Optional — nothing else changes if you leave it off."),
+        L("运行Linux程序而非Windows程序：一个带有gamescope作为会话合成器的glibc rootfs，以及Valve为ARM构建的Steam客户端。游戏通过Steam自带的Proton运行，而不是通过此应用的Wine。可选——如果关闭它，其他内容不会改变。"),
     )
     val aboutProtons = LabHelpText(
-        L("Proton builds"),
-        L("What the Steam client runs a Windows game with. Add one here and it appears in that game's Compatibility list, so you can pick a different one per game. A build is unpacked the next time you open the Steam client.") +
-            "\n\n" + L("Steam's own list will also offer Protons that cannot start a game here, including some labelled ARM64. The ones that work are the builds listed below and \"Bannerlator Proton (ARM64)\"."),
+        L("Proton 构建"),
+        L("Steam 客户端用什么来运行 Windows 游戏。在此添加一个，它会出现在该游戏的兼容性列表中，这样您就可以为每个游戏选择不同的版本。下次打开 Steam 客户端时会解压该构建。") +
+            "\n\n" + L("Steam 自己的列表还会提供一些无法在此启动游戏的 Proton，包括一些标记为 ARM64 的。能用的版本是下面列出的构建以及 \"Bannerlator Proton (ARM64)\"。"),
     )
 
     return buildList {
@@ -195,7 +195,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
                 icon = Icons.Filled.Warning, group = group,
                 onA = { if (ChildProcessRestrictions.hasSwitch()) openDeveloperOptions() else onNote(restrictionsNote) },
                 actions = buildList {
-                    if (ChildProcessRestrictions.hasSwitch()) add(MenuAction(L("Open Developer options"), { openDeveloperOptions() }))
+                    if (ChildProcessRestrictions.hasSwitch()) add(MenuAction(L("打开开发者选项"), { openDeveloperOptions() }))
                     add(MenuAction(L("Why"), { onNote(restrictionsNote) }))
                 },
             ),
@@ -209,7 +209,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
                     removing -> L("Removing…")
                     message != null -> message
                     installed != null -> listOfNotNull(L("Installed: %1\$s", installed), available?.takeIf { target?.version != installed }).joinToString(" · ")
-                    checking -> L("Checking for a build…")
+                    checking -> L("正在检查构建…")
                     target == null -> L("No build available (could not reach the catalog)")
                     else -> listOfNotNull(L("Not installed"), available).joinToString(" · ")
                 },
@@ -227,7 +227,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
                 actions = buildList {
                     if (canInstall) add(MenuAction(if (installed == null) L("Install") else L("Update"), { install() }))
                     if (!busy && installed != null) add(
-                        MenuAction(L("Remove"), { remove() }, danger = true, confirm = L("Remove the Linux runtime? Its Steam entry goes with it.")),
+                        MenuAction(L("移除"), { remove() }, danger = true, confirm = L("Remove the Linux runtime? Its Steam entry goes with it.")),
                     )
                     add(MenuAction(L("About the Linux runtime"), { onNote(aboutRuntime) }))
                 },
@@ -242,13 +242,13 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
             ),
         )
 
-        val pGroup = L("Proton builds")
+        val pGroup = L("Proton 构建")
         add(
             MenuEntry(
-                "px-about", L("Proton builds"),
+                "px-about", L("Proton 构建"),
                 subtitle = when {
-                    loading -> L("Checking for builds…")
-                    builds.isEmpty() -> L("No builds available (could not reach the catalog)")
+                    loading -> L("正在检查构建…")
+                    builds.isEmpty() -> L("没有可用的构建（无法访问目录）")
                     used > 0 -> L("Using %1\$s MB", used / MB)
                     else -> L("What the Steam client runs a Windows game with")
                 },
@@ -260,13 +260,13 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
             val state = states[b.name] ?: LinuxProtons.State.ABSENT
             val working = workingOn == b.name
             val stateText = when (state) {
-                LinuxProtons.State.INSTALLED -> L("Added")
+                LinuxProtons.State.INSTALLED -> L("已添加")
                 LinuxProtons.State.PENDING ->
-                    if (b.isDepot) L("Requested — the client fetches it next session") else L("Ready — unpacked next time you open the Steam client")
-                else -> if (b.isDepot) L("Downloaded by the Steam client") else L("%1\$s MB download", b.size / MB)
+                    if (b.isDepot) L("已请求 — 客户端将在下次会话中获取它") else L("就绪 — 下次您打开 Steam 客户端时解压")
+                else -> if (b.isDepot) L("由 Steam 客户端下载") else L("%1\$s MB download", b.size / MB)
             }
             val canGet = workingOn == null && state == LinuxProtons.State.ABSENT
-            val getLabel = if (b.isDepot) L("Request") else L("Download")
+            val getLabel = if (b.isDepot) L("请求") else L("Download")
             add(
                 MenuEntry(
                     "px-${b.name}", b.display,
@@ -286,7 +286,7 @@ internal fun rememberLabLinuxRuntime(active: Boolean, refresh: Int, onNote: (Lab
                         if (canGet) add(MenuAction(getLabel, { installProton(b) }))
                         // Valve's depots belong to the client, which installs and removes them itself.
                         if (!b.isDepot && workingOn == null && state != LinuxProtons.State.ABSENT) {
-                            add(MenuAction(L("Remove"), { removeProton(b) }, danger = true, confirm = L("Remove %1\$s?", b.display)))
+                            add(MenuAction(L("移除"), { removeProton(b) }, danger = true, confirm = L("Remove %1\$s?", b.display)))
                         }
                     },
                 ),

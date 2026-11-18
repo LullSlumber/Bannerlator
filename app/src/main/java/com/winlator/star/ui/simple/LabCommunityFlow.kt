@@ -166,10 +166,10 @@ internal fun LabCommunityHost(vm: ShortcutsViewModel) {
             pick.game.name,
             listOf(
                 MenuAction(L("Apply to game…"), { c.startApply(pick, sc) }),
-                MenuAction(L("View details"), { c.detail = pick to sc; LabNav.go(LabCommunityRoutes.CONFIG) }),
+                MenuAction(L("查看详情"), { c.detail = pick to sc; LabNav.go(LabCommunityRoutes.CONFIG) }),
             ),
             onDismiss = { c.chooser = null },
-            message = L("Config from %1\$s.", fromLabel(pick, L("that device"))),
+            message = L("Config from %1\$s.", fromLabel(pick, L("该设备"))),
         ) { a -> c.chooser = null; a.run() }
     }
 
@@ -244,7 +244,7 @@ internal fun LabCommunityHost(vm: ShortcutsViewModel) {
             L("Share this game's config"),
             listOf(
                 MenuAction(L("Save to Downloads"), { saveCommunityExportToDownloads(context, scope, res) }),
-                MenuAction(L("Share"), { shareCommunityExport(context, scope, res) }),
+                MenuAction(L("分享"), { shareCommunityExport(context, scope, res) }),
                 MenuAction(L("Cancel"), {}),
             ),
             onDismiss = { c.exportResult = null },
@@ -260,8 +260,8 @@ internal fun LabCommunityHost(vm: ShortcutsViewModel) {
             cancel()
         }
         SimpleActionSheet(
-            L("Replace your shared config?"),
-            listOf(MenuAction(L("Replace"), { c.replacePrompt = null; proceed() }), MenuAction(L("Cancel"), stop)),
+            L("替换您的共享配置?"),
+            listOf(MenuAction(L("替换"), { c.replacePrompt = null; proceed() }), MenuAction(L("Cancel"), stop)),
             onDismiss = stop,
             message = L("You already shared a config for \"%1\$s\". Replace it?", existing.game),
         ) { a -> a.run() }
@@ -276,7 +276,7 @@ private suspend fun labApplyAfterInstall(context: Context, vm: ShortcutsViewMode
         vm.refresh()
         toast(context, L("Installed and applied to \"%1\$s\".", target.name))
     } else {
-        toast(context, L("Installed, but couldn't auto-apply — open \"Browse all versions\" to finish."))
+        toast(context, L("已安装，但无法自动应用 — 请打开“浏览所有版本”以完成操作。"))
     }
 }
 
@@ -309,7 +309,7 @@ private fun LabApplyResult(res: CommunityConfigApply.ConfigApplyResult, vm: Shor
             res.changed.forEach { LabDialogText("• $it", muted = true) }
         }
         if (res.missingComponents.isNotEmpty()) {
-            LabDialogHeading(L("Needs a component"))
+            LabDialogHeading(L("需要一个组件"))
             res.missingComponents.forEach { mc ->
                 LabComponentInstallRow(
                     mc = mc,
@@ -323,7 +323,7 @@ private fun LabApplyResult(res: CommunityConfigApply.ConfigApplyResult, vm: Shor
             }
         }
         if (res.missingDrivers.isNotEmpty()) {
-            LabDialogHeading(L("Needs a GPU driver"))
+            LabDialogHeading(L("需要GPU驱动程序"))
             res.missingDrivers.forEach { md ->
                 LabDriverInstallRow(
                     md = md,
@@ -345,7 +345,7 @@ private fun LabApplyResult(res: CommunityConfigApply.ConfigApplyResult, vm: Shor
             }
         }
         if (res.advisories.isNotEmpty()) {
-            LabDialogHeading(L("Heads up"))
+            LabDialogHeading(L("注意"))
             res.advisories.forEach { LabDialogText("• $it", muted = true) }
         }
     }
@@ -372,7 +372,7 @@ private fun InstallTrail(done: Boolean, busy: Boolean, onInstall: () -> Unit) {
 
 /**
  * One component the config needs, with Classic's quick install: the exact version (asked first), else the closest
- * versions and "Browse all versions…". The download and install are Classic's (downloadToCache / installContent).
+ * versions and "浏览所有版本…". The download and install are Classic's (downloadToCache / installContent).
  */
 @Composable
 private fun LabComponentInstallRow(
@@ -404,14 +404,14 @@ private fun LabComponentInstallRow(
             val uri = withContext(Dispatchers.IO) { downloadToCache(context, p) { f -> activity?.runOnUiThread { progress = f } } }
             if (uri == null) {
                 busy = false
-                toast(context, L("Download failed."))
+                toast(context, L("下载失败。"))
                 return@launch
             }
             installing = true
             progress = 0f
             installContent(context, cm, uri, onProgress = { f, _ -> progress = maxOf(progress, f) }) { ok ->
                 busy = false
-                if (ok) onInstalled() else toast(context, L("Install failed."))
+                if (ok) onInstalled() else toast(context, L("安装失败。"))
             }
         }
     }
@@ -430,13 +430,13 @@ private fun LabComponentInstallRow(
         }
         if (busy) {
             val f = progress.coerceIn(0f, 1f)
-            Text(if (installing) L("Installing…") else L("Downloading %1\$s%%…", (f * 100).toInt()), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 10.dp, top = 2.dp))
+            Text(if (installing) L("正在安装…") else L("Downloading %1\$s%%…", (f * 100).toInt()), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 10.dp, top = 2.dp))
             LabBar(f, Modifier.fillMaxWidth().padding(top = 3.dp))
         }
         if (!busy && !done && expanded && shortlist.exact == null) {
             Column(Modifier.padding(start = 10.dp, top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 shortlist.closest.forEach { p -> LabInlineButton(L("Install %1\$s", p.verName)) { install(p) } }
-                LabInlineButton(L("Browse all versions…")) { expanded = false; onBrowseAll() }
+                LabInlineButton(L("浏览所有版本…")) { expanded = false; onBrowseAll() }
             }
         }
     }
@@ -452,7 +452,7 @@ private fun LabComponentInstallRow(
 
 /**
  * One GPU driver the config needs, with Classic's quick install over the driver repositories: every exact build, the
- * closest others and "Browse all drivers…", each asked first. Download and install as Classic's (RemoteDriverRepository,
+ * closest others and "浏览所有驱动程序…", each asked first. Download and install as Classic's (RemoteDriverRepository,
  * AdrenotoolsManager).
  */
 @Composable
@@ -503,11 +503,11 @@ private fun LabDriverInstallRow(
                     val id = withContext(Dispatchers.IO) { AdrenotoolsManager(context).installDriver(Uri.fromFile(file)) }
                     file.delete()
                     busy = false
-                    if (id.isNotEmpty()) onApplied(id) else toast(context, L("Install failed — invalid driver package"))
+                    if (id.isNotEmpty()) onApplied(id) else toast(context, L("安装失败 — 无效的驱动程序包"))
                 },
                 onFailure = { t ->
                     busy = false
-                    toast(context, L("Download failed: %1\$s", t.message ?: L("unknown error")))
+                    toast(context, L("Download failed: %1\$s", t.message ?: L("未知错误")))
                 },
             )
         }
@@ -519,14 +519,14 @@ private fun LabDriverInstallRow(
             InstallTrail(done, busy || loading) { onInstall() }
         }
         if (busy) {
-            Text(if (installing) L("Installing…") else L("Downloading %1\$s%%…", progress), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 10.dp, top = 2.dp))
+            Text(if (installing) L("正在安装…") else L("Downloading %1\$s%%…", progress), color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 10.dp, top = 2.dp))
             LabBar((progress / 100f).coerceIn(0f, 1f), Modifier.fillMaxWidth().padding(top = 3.dp))
         }
         val sl = shortlist
         if (!busy && !done && expanded && sl != null) {
             Column(Modifier.padding(start = 10.dp, top = 6.dp).heightIn(max = 320.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 (sl.exactMatches + sl.closest).forEach { e -> LabInlineButton(L("Install %1\$s · %2\$s", e.source, e.displayName)) { confirm = e } }
-                LabInlineButton(L("Browse all drivers…")) { expanded = false; onBrowseAll() }
+                LabInlineButton(L("浏览所有驱动程序…")) { expanded = false; onBrowseAll() }
             }
         }
     }

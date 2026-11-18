@@ -621,7 +621,7 @@ internal class AppSettingsExtras(
 
     private fun advancedBottom(): List<PageExtra> {
         val resolutions = listOf(
-            WinFgCapture.RES_MATCH to L("Match game"),
+            WinFgCapture.RES_MATCH to L("匹配游戏"),
             WinFgCapture.RES_720P to "720p",
             WinFgCapture.RES_1080P to "1080p",
         )

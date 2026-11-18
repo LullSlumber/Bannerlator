@@ -27,16 +27,16 @@ internal fun LabEaUnsupportedDialog(name: String, onOk: () -> Unit) {
     }
 }
 
-/** "Set up EA Desktop": one setup session runs EA's installer ([onSetUp]); not closable while it starts. */
+/** "设置EA Desktop": one setup session runs EA's installer ([onSetUp]); not closable while it starts. */
 @Composable
 internal fun LabEaSetupDialog(name: String, busy: Boolean, onSetUp: () -> Unit, onCancel: () -> Unit) {
     LabPanelDialog(
-        L("Set up EA Desktop"),
+        L("设置EA Desktop"),
         onDismiss = { if (!busy) onCancel() },
         dismissable = !busy,
         buttons = listOf(
             LabDialogButton(L("Cancel"), onCancel, enabled = !busy),
-            LabDialogButton(if (busy) L("Starting…") else L("Set up"), onSetUp, primary = true, enabled = !busy),
+            LabDialogButton(if (busy) L("正在启动…") else L("设置"), onSetUp, primary = true, enabled = !busy),
         ),
     ) {
         LabDialogText(

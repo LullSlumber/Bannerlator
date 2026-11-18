@@ -88,11 +88,11 @@ private fun readChannels(context: Context): List<String> =
 private fun saveChannels(context: Context, list: List<String>) =
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_CHANNELS, list.joinToString(",")).apply()
 
-/** Lab's Log Manager page (Tools › Game logs, Search › Logs, Settings' "Open the Log Manager"). */
+/** Lab's Log Manager page (Tools › Game logs, Search › Logs, Settings' "打开日志管理器"). */
 @Composable
 internal fun LabLogManagerPage(onOpen: (String) -> Unit, onBack: () -> Unit) {
     val sections = labLogSections(onOpen = onOpen, flat = false)
-    SimpleMenuPage(overline = L("Tools"), title = L("Log Manager"), sections = sections, onBack = onBack)
+    SimpleMenuPage(overline = L("Tools"), title = L("日志管理器"), sections = sections, onBack = onBack)
 }
 
 /**
@@ -139,7 +139,7 @@ internal fun LabLogManagerPanel(onClose: () -> Unit) {
                 if (was != null) com.winlator.star.sound.toggleSound(!was)
             } else if (e != null && e.actions.isNotEmpty()) actionsFor = e
         }
-        val section = MenuSection("logs", L("Logs"), Icons.Filled.Description, entries)
+        val section = MenuSection("logs", L("日志"), Icons.Filled.Description, entries)
         Box(
             Modifier
                 .fillMaxSize()
@@ -246,7 +246,7 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     var channelsHere by remember { mutableStateOf(false) }
     val entries = remember(refreshTick, perGame) { LogInventory.scan(context) }
 
-    fun what(title: String, body: String) = listOf(MenuAction(L("What's this?"), { info = title to body }))
+    fun what(title: String, body: String) = listOf(MenuAction(L("这是什么?"), { info = title to body }))
     fun grp(section: String, sub: String? = null): String? = if (flat) section else sub
     fun browse() {
         val dir = LogLocation.resolveLogDir(context) ?: return
@@ -255,7 +255,7 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     fun openChannels() { if (onOpen != null) onOpen(LabToolRoutes.LOG_CHANNELS) else channelsHere = true }
 
     // ── Logs ──
-    val sLogs = L("Logs")
+    val sLogs = L("日志")
     val logs = entries.map { e ->
         val title = if (e.isAppBucket) L("App & crash logs") else e.name
         MenuEntry(
@@ -276,17 +276,17 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
             group = grp(sLogs),
             onA = { viewing = e },
             actions = listOf(
-                MenuAction(L("View"), { viewing = e }),
-                MenuAction(L("Share"), { shareLogGroup(context, e) }),
+                MenuAction(L("查看"), { viewing = e }),
+                MenuAction(L("分享"), { shareLogGroup(context, e) }),
                 MenuAction(L("Its files"), { filesOf = e }),
-                MenuAction(L("Delete"), { confirmDelete = e }, danger = true),
+                MenuAction(L("删除"), { confirmDelete = e }, danger = true),
             ),
         )
     }
-    val sHouse = L("Housekeeping")
+    val sHouse = L("日志维护")
     val housekeeping = listOf(
         MenuEntry(
-            "total", L("Total size"),
+            "total", L("总大小"),
             L("%1\$s across %2\$s", LogInventory.humanBytes(LogInventory.totalBytes(entries)), if (entries.size == 1) L("1 folder") else L("%1\$s folders", entries.size)),
             icon = Icons.Filled.Storage, group = grp(sLogs, sHouse), onA = { browse() },
         ),
@@ -298,13 +298,13 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     )
 
     // ── What to record ──
-    val sRec = L("What to record")
+    val sRec = L("要记录的内容")
     val ubiReport = context.getString(R.string.ubisoft_diag_report_title)
     val ubiDeep = context.getString(R.string.ubisoft_deep_trace_title)
     val record = buildList {
         fun toggle(key: String, title: String, hint: String?, on: Boolean, help: Pair<String, String>, flip: () -> Unit) =
             add(MenuEntry(key, title, hint, icon = Icons.Filled.Tune, group = grp(sRec), toggle = on, onA = flip, actions = what(help.first, help.second)))
-        toggle("wine", L("Wine debug"), L("Slows games down — for diagnosing a problem"), wineDebug, L("Wine debug") to LogCopy.WINE) {
+        toggle("wine", L("Wine 调试"), L("会拖慢游戏运行速度 — 用于诊断问题"), wineDebug, L("Wine 调试") to LogCopy.WINE) {
             wineDebug = !wineDebug; putBool("enable_wine_debug", wineDebug)
         }
         if (wineDebug) add(
@@ -313,26 +313,26 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
                 icon = Icons.Filled.ListAlt, group = grp(sRec), onA = { openChannels() },
                 actions = listOf(
                     MenuAction(L("Choose channels"), { openChannels() }),
-                    MenuAction(L("Reset to defaults"), {
+                    MenuAction(L("重置为默认值"), {
                         channels = com.winlator.star.SettingsFragment.DEFAULT_WINE_DEBUG_CHANNELS.split(",").filter { it.isNotBlank() }
                         saveChannels(context, channels)
                     }),
                 ),
             ),
         )
-        toggle("box64", L("Box64 / FEXCore"), L("Slows games down at higher verbosity"), box64Logs, L("Box64 / FEXCore") to LogCopy.BOX64) {
+        toggle("box64", L("Box64 / FEXCore"), L("详细程度较高时会拖慢游戏运行速度"), box64Logs, L("Box64 / FEXCore") to LogCopy.BOX64) {
             box64Logs = !box64Logs; putBool("enable_box64_logs", box64Logs)
         }
-        toggle("dxvk", L("DXVK & VKD3D"), L("Safe to leave on — mostly written at startup"), dxvkLogs, L("DXVK & VKD3D") to LogCopy.DXVK) {
+        toggle("dxvk", L("DXVK & VKD3D"), L("保持开启是安全的 — 主要在启动时写入"), dxvkLogs, L("DXVK & VKD3D") to LogCopy.DXVK) {
             dxvkLogs = !dxvkLogs; putBool("enable_dxvk_logs", dxvkLogs)
         }
-        toggle("controller", L("Controller input"), L("For controls that don't work — written when the game exits"), controllerLogs, L("Controller input") to LogCopy.CONTROLLER) {
+        toggle("controller", L("控制器输入"), L("适用于控制不起作用时 — 在游戏退出时写入"), controllerLogs, L("控制器输入") to LogCopy.CONTROLLER) {
             controllerLogs = !controllerLogs; putBool(ControllerLog.PREF_KEY, controllerLogs)
         }
-        toggle("steamlite", L("SteamLite (Steam client)"), L("Only when a game launches through SteamLite"), steamLite, L("SteamLite (Steam client)") to LogCopy.STEAMLITE) {
+        toggle("steamlite", L("SteamLite（Steam客户端）"), L("仅当游戏通过SteamLite启动时"), steamLite, L("SteamLite（Steam客户端）") to LogCopy.STEAMLITE) {
             steamLite = !steamLite; putBool("enable_steamlite_logs", steamLite)
         }
-        toggle("headless", L("Headless Steam (app session host)"), L("Only when a game launches through Headless Steam"), headlessSteam, L("Headless Steam (app session host)") to LogCopy.HEADLESS_STEAM) {
+        toggle("headless", L("无窗口Steam（应用会话主机）"), L("仅当游戏通过无窗口Steam启动时"), headlessSteam, L("无窗口Steam（应用会话主机）") to LogCopy.HEADLESS_STEAM) {
             headlessSteam = !headlessSteam; putBool("enable_headless_steam_logs", headlessSteam)
         }
         toggle("ubireport", ubiReport, context.getString(R.string.ubisoft_diag_report_hint), ubisoftReport, ubiReport to context.getString(R.string.ubisoft_diag_report_info)) {
@@ -341,26 +341,26 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
         toggle("ubideep", ubiDeep, context.getString(R.string.ubisoft_deep_trace_hint), ubisoftDeep, ubiDeep to context.getString(R.string.ubisoft_deep_trace_info)) {
             ubisoftDeep = !ubisoftDeep; putBool(UbisoftDiag.PREF_DEEP_TRACE, ubisoftDeep)
         }
-        toggle("logcat", L("Android logcat"), L("Bannerlator's own output only"), logcat, L("Android logcat") to LogCopy.LOGCAT) {
+        toggle("logcat", L("Android logcat"), L("仅包含 Bannerlator 自身的输出"), logcat, L("Android logcat") to LogCopy.LOGCAT) {
             logcat = !logcat; putBool("enable_logcat", logcat)
         }
-        toggle("crash", L("Crash reports"), L("Nothing runs until something crashes"), crashReports, L("Crash reports") to LogCopy.CRASH) {
+        toggle("crash", L("崩溃报告"), L("仅在崩溃时运行，无性能开销"), crashReports, L("崩溃报告") to LogCopy.CRASH) {
             crashReports = !crashReports; putBool("enable_crash_reports", crashReports)
         }
         val exitOk = ExitReasonReporter.isSupported()
         toggle(
-            "exit", if (exitOk) L("Exit reasons (auto-save on launch)") else L("Exit reasons (needs Android 11+)"),
-            L("Records native crashes without root"), exitAutosave, L("Exit reasons") to LogCopy.EXIT_REASONS,
+            "exit", if (exitOk) L("退出原因（启动时自动保存）") else L("退出原因（需要Android 11+）"),
+            L("无root记录原生崩溃"), exitAutosave, L("退出原因") to LogCopy.EXIT_REASONS,
         ) {
             // As Classic's switch, which is disabled on Android 10 and older: the "?" still explains it.
             if (exitOk) { exitAutosave = !exitAutosave; putBool(ExitReasonReporter.PREF_AUTOSAVE, exitAutosave) }
-            else { info = L("Exit reasons") to LogCopy.EXIT_REASONS }
+            else { info = L("退出原因") to LogCopy.EXIT_REASONS }
         }
         val sNow = L("Capture")
         add(
             MenuEntry(
-                "capture", L("Capture logcat now"), if (logcat) null else L("Turn on Android logcat first"), icon = Icons.Filled.Terminal,
-                group = grp(sRec, sNow), actions = what(L("Capture logcat now"), LogCopy.CAPTURE_NOW),
+                "capture", L("立即捕获 logcat"), if (logcat) null else L("Turn on Android logcat first"), icon = Icons.Filled.Terminal,
+                group = grp(sRec, sNow), actions = what(L("立即捕获 logcat"), LogCopy.CAPTURE_NOW),
                 onA = {
                     if (logcat) scope.launch {
                         withContext(Dispatchers.IO) { LogcatCapture.captureToFile(context, LogcatCapture.DEFAULT_LINES) }
@@ -372,8 +372,8 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
         )
         add(
             MenuEntry(
-                "lastcrash", L("Read last crash"), if (exitOk) null else L("Needs Android 11 or newer"), icon = Icons.Filled.BugReport,
-                group = grp(sRec, sNow), actions = what(L("Exit reasons"), LogCopy.EXIT_REASONS),
+                "lastcrash", L("读取上次崩溃"), if (exitOk) null else L("Needs Android 11 or newer"), icon = Icons.Filled.BugReport,
+                group = grp(sRec, sNow), actions = what(L("退出原因"), LogCopy.EXIT_REASONS),
                 onA = {
                     if (exitOk) scope.launch {
                         val text = withContext(Dispatchers.IO) {
@@ -389,10 +389,10 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     }
 
     // ── Where logs go ──
-    val sWhere = L("Where logs go")
+    val sWhere = L("日志存放位置")
     val modeLabel = when (locationMode) {
         LogLocation.MODE_DOWNLOAD -> L("Download")
-        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) L("Custom folder") else L("Choose folder…")
+        LogLocation.MODE_CUSTOM -> if (customPath.isNotEmpty()) L("自定义文件夹") else L("Choose folder…")
         // MODE_DOCUMENTS (default) and the retired MODE_APP_DATA both resolve to Documents.
         else -> L("Documents")
     }
@@ -404,16 +404,16 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
             actions = listOf(
                 MenuAction(mark(L("Download"), locationMode == LogLocation.MODE_DOWNLOAD), { saveMode(LogLocation.MODE_DOWNLOAD) }),
                 MenuAction(mark(L("Documents"), locationMode != LogLocation.MODE_DOWNLOAD && locationMode != LogLocation.MODE_CUSTOM), { saveMode(LogLocation.MODE_DOCUMENTS) }),
-                MenuAction(mark(L("Choose folder…"), locationMode == LogLocation.MODE_CUSTOM), { dirLauncher.launch(InAppFilePicker.buildDirIntent(context, L("Select log folder"))) }),
+                MenuAction(mark(L("Choose folder…"), locationMode == LogLocation.MODE_CUSTOM), { dirLauncher.launch(InAppFilePicker.buildDirIntent(context, L("选择日志文件夹"))) }),
             ),
         ),
         MenuEntry(
-            "pergame", L("Folder for each game"), L("Each game keeps its own folder"), icon = Icons.Filled.Tune, group = grp(sWhere), toggle = perGame,
+            "pergame", L("每个游戏独立文件夹"), L("每个游戏都有自己的文件夹"), icon = Icons.Filled.Tune, group = grp(sWhere), toggle = perGame,
             onA = { perGame = !perGame; putBool(LogLocation.PREF_PER_GAME, perGame); refreshTick++ },
-            actions = what(L("Folder for each game"), LogCopy.PER_GAME),
+            actions = what(L("每个游戏独立文件夹"), LogCopy.PER_GAME),
         ),
         MenuEntry(
-            "keep", L("Keep last"),
+            "keep", L("保留最近"),
             if (keepLast == 0) L("No history — each run replaces the last") else if (keepLast == 1) L("1 launch per game") else L("%1\$s launches per game", keepLast),
             trailing = if (keepLast == 0) L("No history") else "$keepLast", icon = Icons.Filled.Restore, group = grp(sWhere),
             actions = keepChoices.map { n ->
@@ -421,52 +421,52 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
                     keepLast = n
                     prefs.edit().putInt(LogLocation.PREF_KEEP_LAST, n).apply()
                 })
-            } + what(L("Keep last launches"), LogCopy.KEEP_LAST),
+            } + what(L("保留最近运行次数"), LogCopy.KEEP_LAST),
         ),
     )
 
     // ── Download engines ──
-    val sEng = L("Download engines")
+    val sEng = L("下载引擎")
     val engines = listOf(
         MenuEntry(
-            "rustSteam", L("Native Steam engine (restart required)"), L("On by default · its log joins the SteamLite bundle · off = legacy Java engine"),
+            "rustSteam", L("原生Steam引擎（需要重启）"), L("On by default · its log joins the SteamLite bundle · off = legacy Java engine"),
             icon = Icons.Filled.CloudDownload, group = grp(sEng), toggle = rustSteamEngine,
             onA = { rustSteamEngine = !rustSteamEngine; putBool(BlSteamEngineFlag.PREF_KEY, rustSteamEngine) },
-            actions = what(L("Rust Steam engine"), LogCopy.RUST_ENGINE),
+            actions = what(L("Rust Steam 引擎"), LogCopy.RUST_ENGINE),
         ),
         MenuEntry(
-            "rustEpic", L("Rust engine: Epic downloads"), L("On by default · next download · off = Java downloader"),
+            "rustEpic", L("Rust引擎：Epic下载"), L("On by default · next download · off = Java downloader"),
             icon = Icons.Filled.CloudDownload, group = grp(sEng), toggle = rustEpicEngine,
             onA = { rustEpicEngine = !rustEpicEngine; putBool(BlStoreEngineFlag.PREF_KEY_EPIC, rustEpicEngine) },
-            actions = what(L("Rust store engines"), LogCopy.RUST_STORE_ENGINES),
+            actions = what(L("Rust商店引擎"), LogCopy.RUST_STORE_ENGINES),
         ),
         MenuEntry(
-            "rustGog", L("Rust engine: GOG downloads"), L("On by default · next download · off = Java downloader"),
+            "rustGog", L("Rust引擎：GOG下载"), L("On by default · next download · off = Java downloader"),
             icon = Icons.Filled.CloudDownload, group = grp(sEng), toggle = rustGogEngine,
             onA = { rustGogEngine = !rustGogEngine; putBool(BlStoreEngineFlag.PREF_KEY_GOG, rustGogEngine) },
-            actions = what(L("Rust store engines"), LogCopy.RUST_STORE_ENGINES),
+            actions = what(L("Rust商店引擎"), LogCopy.RUST_STORE_ENGINES),
         ),
         MenuEntry(
-            "rustAmazon", L("Rust engine: Amazon downloads"), L("On by default · next download · off = Java downloader"),
+            "rustAmazon", L("Rust引擎：Amazon下载"), L("On by default · next download · off = Java downloader"),
             icon = Icons.Filled.CloudDownload, group = grp(sEng), toggle = rustAmazonEngine,
             onA = { rustAmazonEngine = !rustAmazonEngine; putBool(BlStoreEngineFlag.PREF_KEY_AMAZON, rustAmazonEngine) },
-            actions = what(L("Rust store engines"), LogCopy.RUST_STORE_ENGINES),
+            actions = what(L("Rust商店引擎"), LogCopy.RUST_STORE_ENGINES),
         ),
         MenuEntry(
-            "speed", L("Store download speed"), L("Ceiling for the Rust Epic / GOG / Amazon engines; next download"),
+            "speed", L("商店下载速度"), L("Ceiling for the Rust Epic / GOG / Amazon engines; next download"),
             trailing = StoreDownloadTier.label(storeDlTier), icon = Icons.Filled.Speed, group = grp(sEng),
             // As Classic: A steps to the next speed; X lists them all.
             onA = { storeDlTier = StoreDownloadTier.next(storeDlTier); StoreDownloadTier.set(context, storeDlTier) },
             actions = StoreDownloadTier.ALL.map { t -> MenuAction(mark(StoreDownloadTier.label(t), t == storeDlTier), { storeDlTier = t; StoreDownloadTier.set(context, t) }) } +
-                what(L("Rust store engines"), LogCopy.RUST_STORE_ENGINES),
+                what(L("Rust商店引擎"), LogCopy.RUST_STORE_ENGINES),
         ),
     )
 
     // ── Help ──
     val sHelp = L("Help")
-    val privacy = L("E-mail addresses, auth tokens and your Steam account name are scrubbed as logs are written. File paths are kept so they stay useful for debugging — glance over them before sharing if a folder name identifies you. Logcat only ever contains Bannerlator's own output.")
+    val privacy = L("电子邮件地址、身份验证令牌和您的 Steam 账户名称在日志写入时会自动脱敏。文件路径保留，以便保持调试价值——如果文件夹名称可能暴露您的身份，请在分享前先检查一遍。Logcat 仅包含 Bannerlator 自身的输出。")
     val help = listOf(
-        MenuEntry("explain", L("Explain the log types"), L("What each log is for and what it costs"), icon = Icons.Filled.HelpOutline, group = grp(sHelp), onA = { info = L("What each log is for") to LogCopy.explainAll() }),
+        MenuEntry("explain", L("了解日志类型"), L("What each log is for and what it costs"), icon = Icons.Filled.HelpOutline, group = grp(sHelp), onA = { info = L("每个日志的用途") to LogCopy.explainAll() }),
         MenuEntry("privacy", L("Before you share a log"), L("What is removed and what is kept"), icon = Icons.Filled.PrivacyTip, group = grp(sHelp), onA = { info = L("Before you share a log") to privacy }),
     )
 
@@ -474,7 +474,7 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     info?.let { (t, b) -> LabReadDialog(t, b, onDismiss = { info = null }) }
     exitReport?.let { r ->
         LabReadDialog(
-            L("Last crash / exit reasons"), r, onDismiss = { exitReport = null }, mono = true,
+            L("上次崩溃/退出原因"), r, onDismiss = { exitReport = null }, mono = true,
             intro = L("Saved with your logs under the \"%1\$s\" folder. Exit #0 is the most recent; a NATIVE_CRASH entry includes the signal and the top backtrace frames.", ExitReasonReporter.FOLDER),
         )
     }
@@ -489,7 +489,7 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     confirmDelete?.let { e ->
         val count = remember(e.dir) { LogInventory.deletableCount(e) }
         val title = when {
-            e.isAppBucket -> L("Delete app & crash logs?")
+            e.isAppBucket -> L("删除应用与崩溃日志?")
             e.isLooseBucket -> L("Delete %1\$s?", e.name.replaceFirstChar { it.lowercase() })
             else -> L("Delete %1\$s logs?", e.name)
         }
@@ -502,7 +502,7 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
             SimpleActionSheet(
                 title,
                 listOf(
-                    MenuAction(L("Delete"), {
+                    MenuAction(L("删除"), {
                         val n = LogInventory.deleteGroup(context, e)
                         confirmDelete = null
                         refreshTick++
@@ -519,9 +519,9 @@ private fun labLogSections(onOpen: ((String) -> Unit)?, flat: Boolean): List<Men
     if (confirmClearAll) {
         val count = remember(refreshTick) { entries.sumOf { LogInventory.deletableCount(it) } }
         SimpleActionSheet(
-            L("Clear all logs?"),
+            L("清除所有日志?"),
             listOf(
-                MenuAction(L("Delete all"), {
+                MenuAction(L("全部删除"), {
                     var n = 0
                     entries.forEach { n += LogInventory.deleteGroup(context, it) }
                     confirmClearAll = false
@@ -587,7 +587,7 @@ internal fun LabWineChannelsPage(onBack: () -> Unit, standalone: Boolean = false
     // up to 60 matches from all of them.
     val q = query.trim()
     val common = buildList {
-        add(MenuEntry("reset", L("Reset to defaults"), com.winlator.star.SettingsFragment.DEFAULT_WINE_DEBUG_CHANNELS.replace(",", ", "), icon = Icons.Filled.Restore, onA = {
+        add(MenuEntry("reset", L("重置为默认值"), com.winlator.star.SettingsFragment.DEFAULT_WINE_DEBUG_CHANNELS.replace(",", ", "), icon = Icons.Filled.Restore, onA = {
             set(com.winlator.star.SettingsFragment.DEFAULT_WINE_DEBUG_CHANNELS.split(",").filter { it.isNotBlank() })
             query = ""
         }))
@@ -617,8 +617,8 @@ internal fun LabWineChannelsPage(onBack: () -> Unit, standalone: Boolean = false
     val search = MenuAction(L("Search"), { searching = true })
     val deckActions = LocalDeckActions.current
     SimpleMenuPage(
-        overline = L("Wine debug"),
-        title = L("Channels"),
+        overline = L("Wine 调试"),
+        title = L("频道"),
         sections = listOf(
             MenuSection("common", L("Common"), Icons.Filled.Tune, common, empty = L("No channel matches."), primary = search),
             MenuSection("all", L("All channels"), Icons.Filled.ListAlt, everything, primary = search),

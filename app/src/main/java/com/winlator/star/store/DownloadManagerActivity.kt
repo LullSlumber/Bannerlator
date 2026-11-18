@@ -285,7 +285,7 @@ private fun DownloadManagerScreen(
                     Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                         if (entries.isEmpty()) {
                             Text(
-                                text = "No downloads or installed games yet.",
+                                text = "尚无下载或已安装的游戏。",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.align(Alignment.Center).padding(24.dp),
@@ -330,7 +330,7 @@ private fun DownloadManagerScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Downloads & Library") },
+                title = { Text("下载和库") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -340,7 +340,7 @@ private fun DownloadManagerScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onClear) { Text("Clear ✓") }
+                    TextButton(onClick = onClear) { Text("清除 ✓") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -358,7 +358,7 @@ private fun DownloadManagerScreen(
         ) {
             if (entries.isEmpty()) {
                 Text(
-                    text = "No downloads or installed games yet.",
+                    text = "尚无下载或已安装的游戏。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center).padding(24.dp),
@@ -427,7 +427,7 @@ private fun XmbDownloadsBar(onBack: () -> Unit, onClear: () -> Unit, look: DmLoo
         }
         Spacer(Modifier.width(look.gap / 2))
         Text(
-            text = "Downloads & Library",
+            text = "下载和库",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -435,7 +435,7 @@ private fun XmbDownloadsBar(onBack: () -> Unit, onClear: () -> Unit, look: DmLoo
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        TextButton(onClick = onClear, modifier = Modifier.dmFocus(look, deckShape(8.dp))) { Text("Clear ✓") }
+        TextButton(onClick = onClear, modifier = Modifier.dmFocus(look, deckShape(8.dp))) { Text("清除 ✓") }
     }
 }
 
@@ -518,19 +518,19 @@ private fun DownloadCardBody(
                     ActiveContent(entry, onClick, onCancel, onPauseResume, look)
 
                 DownloadState.INSTALLED -> {
-                    // Amber "Update available" mirrors the store list's own language
-                    // (AmazonGamesActivity "✓ Installed — Update Available"); up-to-date
+                    // Amber "有可用更新" mirrors the store list's own language
+                    // (AmazonGamesActivity "✓ 已安装 — 有更新可用"); up-to-date
                     // stays installed-green. Store-agnostic: any store that sets
                     // entry.updateAvailable gets the same marker.
                     if (entry.updateAvailable) {
                         Text(
-                            text = "● Installed — Update available",
+                            text = "● 已安装 — 有可用更新",
                             style = MaterialTheme.typography.bodySmall,
                             color = UPDATE_AMBER,
                         )
                     } else {
                         Text(
-                            text = "● Installed",
+                            text = "● 已安装",
                             style = MaterialTheme.typography.bodySmall,
                             color = INSTALLED_GREEN,
                         )
@@ -558,7 +558,7 @@ private fun DownloadCardBody(
 
                 DownloadState.FAILED -> {
                     Text(
-                        text = entry.error?.let { "Failed: $it" } ?: "Download failed",
+                        text = entry.error?.let { "Failed: $it" } ?: "下载失败",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         maxLines = 3,
@@ -572,7 +572,7 @@ private fun DownloadCardBody(
                             shape = deckShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("Dismiss", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
 
@@ -590,7 +590,7 @@ private fun DownloadCardBody(
                             shape = deckShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("Dismiss", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }
@@ -655,7 +655,7 @@ private fun ActiveContent(
     Text(
         text = when (entry.state) {
             DownloadState.PAUSED -> pausedStatusText(pct, sizePart, entry.error)
-            DownloadState.QUEUED -> "Queued…"
+            DownloadState.QUEUED -> "已排队…"
             else -> "Downloading… $pct%$sizePart$speedEta"
         },
         style = MaterialTheme.typography.bodySmall,
@@ -672,7 +672,7 @@ private fun ActiveContent(
             ),
             modifier = Modifier.dmButton(look),
             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-        ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+        ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
 
         if (entry.supportsPause) {
             Button(
@@ -788,7 +788,7 @@ private fun QueuedCardBody(
                         shape = deckShape(8.dp),
                         modifier = Modifier.dmButton(look),
                         contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                    ) { Text("Start next", style = MaterialTheme.typography.labelSmall) }
+                    ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
                     OutlinedButton(
                         onClick = { onMoveUp(entry) },
                         shape = deckShape(8.dp),
@@ -804,7 +804,7 @@ private fun QueuedCardBody(
                     ),
                     modifier = Modifier.dmButton(look),
                     contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                ) { Text("✕ Cancel", style = MaterialTheme.typography.labelSmall) }
+                ) { Text("✕ 取消", style = MaterialTheme.typography.labelSmall) }
             }
         }
     }

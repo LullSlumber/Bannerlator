@@ -319,7 +319,7 @@ fun ColumnScope.AdrenoDriverListPane(
                                         pendingEntry = null
                                         Toast.makeText(
                                             context,
-                                            "Download failed: ${t.message ?: "unknown error"}",
+                                            "Download failed: ${t.message ?: "未知错误"}",
                                             Toast.LENGTH_LONG,
                                         ).show()
                                     },

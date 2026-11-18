@@ -164,10 +164,10 @@ internal fun LabInstallProgress(state: ContentDownloadState, onCancel: () -> Uni
             val frac = state.fraction.coerceIn(0f, 1f)
             val label = when {
                 state.cancelled -> L("Cancelled")
-                state.phase == ContentDownloadPhase.ERROR -> state.error ?: if (state.saveOnly) L("Save failed.") else L("Install failed.")
+                state.phase == ContentDownloadPhase.ERROR -> state.error ?: if (state.saveOnly) L("Save failed.") else L("安装失败。")
                 state.phase == ContentDownloadPhase.DONE -> if (state.saveOnly) L("Saved to My Files") else state.note ?: L("Installed")
                 state.phase == ContentDownloadPhase.DOWNLOADING -> L("Downloading %1\$s%%", (frac * 100).toInt())
-                state.saveOnly -> L("Saving to My Files")
+                state.saveOnly -> L("正在保存到我的文件")
                 else -> L("Installing %1\$s%%", (frac * 100).toInt())
             }
             val labelColor = when {

@@ -101,7 +101,7 @@ internal fun NetDriveDialog(initial: NetDrive, isNew: Boolean, testing: Boolean,
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 10.dp)) {
                         CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(8.dp))
-                        Text("Connecting…", color = cs.onSurfaceVariant, fontSize = 13.sp)
+                        Text("正在连接…", color = cs.onSurfaceVariant, fontSize = 13.sp)
                     }
                 } else if (error != null) {
                     Spacer(Modifier.height(10.dp))
@@ -165,13 +165,13 @@ internal fun netProps(item: FmItem.Net): List<Pair<String, String>> = buildList 
     add("Path" to listOf(d.folder.trim('/'), item.path).filter { it.isNotEmpty() }.joinToString("/"))
     add("Type" to if (item.isDir) "Folder" else item.name.substringAfterLast('.', "").uppercase().ifBlank { "File" })
     if (!item.isDir) add("Size" to StringUtils.formatBytes(item.size))
-    add("Modified" to fmDateTime(item.modified))
+    add("修改时间" to fmDateTime(item.modified))
 }
 
 /** The size line of the Add to Games dialog. */
 internal fun addSizeText(size: Long?): String = when {
     size == null -> "Measuring…"
-    size < 0 -> "Size unknown"
+    size < 0 -> "大小未知"
     else -> StringUtils.formatBytes(size)
 }
 
@@ -216,7 +216,7 @@ internal fun NetAddGameDialog(net: FmNetOps, req: FmNetOps.AddReq, containers: L
                     }
                     Text("Kept in app storage (internal): ${StringUtils.formatBytes(net.appFree())} free", color = cs.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
                 }
-                Heading("Game folder")
+                Heading("游戏文件夹")
                 Choice(true, req.name, addSizeText(req.size) + if (req.levels.size > 1) (if (req.levelsOpen) " · tap to close" else " · tap to change") else "") {
                     if (req.levels.size > 1) req.levelsOpen = !req.levelsOpen
                 }
@@ -310,7 +310,7 @@ internal fun NetStreamsDialog(net: FmNetOps) {
                     com.winlator.star.netdrive.NetStream.Mode.values().forEach { m -> Choice(g.mode == m, m.label) { net.setStreamMode(g, m) } }
                     Row {
                         TextButton(onClick = { net.emptyStream(g) }) { Text("Empty now") }
-                        TextButton(onClick = { net.removeStreamReq = g }) { Text("Remove", color = cs.error) }
+                        TextButton(onClick = { net.removeStreamReq = g }) { Text("移除", color = cs.error) }
                     }
                 }
                 if (hub.streams.isEmpty()) Text("No streamed games yet.", color = cs.onSurfaceVariant, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
@@ -331,7 +331,7 @@ internal fun FmNetDialogs(net: FmNetOps, containers: List<com.winlator.star.cont
             onDismissRequest = { net.removeStreamReq = null },
             title = { Text("Remove \"${g.name}\"?") },
             text = { Text("Removes it from Games and deletes what it keeps on this device. Nothing on the network drive is touched.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp) },
-            confirmButton = { TextButton(onClick = { net.removeStream(g) }) { Text("Remove", color = MaterialTheme.colorScheme.error) } },
+            confirmButton = { TextButton(onClick = { net.removeStream(g) }) { Text("移除", color = MaterialTheme.colorScheme.error) } },
             dismissButton = { TextButton(onClick = { net.removeStreamReq = null }) { Text("Cancel") } },
         )
     }
@@ -343,7 +343,7 @@ internal fun FmNetDialogs(net: FmNetOps, containers: List<com.winlator.star.cont
             onDismissRequest = { net.removeReq = null },
             title = { Text("Remove \"${d.name}\"?") },
             text = { Text("Only the saved drive is removed; nothing on it is deleted.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp) },
-            confirmButton = { TextButton(onClick = { net.remove(d) }) { Text("Remove", color = MaterialTheme.colorScheme.error) } },
+            confirmButton = { TextButton(onClick = { net.remove(d) }) { Text("移除", color = MaterialTheme.colorScheme.error) } },
             dismissButton = { TextButton(onClick = { net.removeReq = null }) { Text("Cancel") } },
         )
     }

@@ -139,7 +139,7 @@ internal class FmOps(
 
     fun paste(sources: List<File>, dest: File, cut: Boolean) {
         if (sources.isEmpty()) return
-        runOp(if (cut) "Moving…" else "Copying…") {
+        runOp(if (cut) "Moving…" else "正在复制…") {
             var applyAll: ConflictChoice? = null
             var done = 0
             var failed = 0
@@ -425,7 +425,7 @@ internal class FmOps(
         return buildList {
             if (dir) add(FmMenuEntry("Open", Icons.Filled.FolderOpen) { p.openDir(f) })
             if (isArchive) add(FmMenuEntry("Browse", Icons.Filled.FolderZip) { p.open(FmLoc.InArchive(f, "")) })
-            if (!dir && isRunnable(f.name)) add(FmMenuEntry("Run", Icons.Filled.PlayArrow) { runFile(f) })
+            if (!dir && isRunnable(f.name)) add(FmMenuEntry("运行", Icons.Filled.PlayArrow) { runFile(f) })
             if (!dir && f.extension.equals("exe", true)) add(FmMenuEntry("Add to Games", Icons.Filled.AddToHomeScreen) { addShortcut(f) })
             if (unpackable) {
                 add(FmMenuEntry("Fast Extract", Icons.Filled.Bolt) { fastExtract(f) })
@@ -434,24 +434,24 @@ internal class FmOps(
                 })
             }
             if (!dir) {
-                add(FmMenuEntry(if (isTextFile(f)) "Edit" else "Open as text", Icons.Filled.TextSnippet) {
+                add(FmMenuEntry(if (isTextFile(f)) "编辑" else "Open as text", Icons.Filled.TextSnippet) {
                     context.startActivity(TextEditorActivity.intent(context, f))
                 })
                 add(FmMenuEntry("Open with…", Icons.AutoMirrored.Filled.OpenInNew) { openWith(f) })
             }
             add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-            add(FmMenuEntry("Copy", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
-            add(FmMenuEntry("Cut", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
+            add(FmMenuEntry("拷贝", Icons.Filled.ContentCopy) { clipboard = listOf(f); clipCut = false })
+            add(FmMenuEntry("剪切", Icons.Filled.ContentCut) { clipboard = listOf(f); clipCut = true })
             add(FmMenuEntry("Rename", Icons.Filled.Edit) { renameTarget = f })
             add(FmMenuEntry("Compress", Icons.Filled.FolderZip) { compressTargets = listOf(f) })
-            if (!dir) add(FmMenuEntry("Share", Icons.Filled.Share) { share(listOf(f)) })
+            if (!dir) add(FmMenuEntry("分享", Icons.Filled.Share) { share(listOf(f)) })
             if (dir) {
                 val fav = FavoritesStore.isFavorite(context, f.absolutePath)
-                add(FmMenuEntry(if (fav) "Remove from Favorites" else "Add to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
+                add(FmMenuEntry(if (fav) "Remove from Favorites" else "添加到收藏夹", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(f) })
             }
             add(FmMenuEntry("Copy path", Icons.Filled.Link) { copyPath(f) })
-            add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
-            add(FmMenuEntry("Delete", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
+            add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
+            add(FmMenuEntry("删除", Icons.Filled.Delete, danger = true) { deleteTargets = listOf(f) })
         }
     }
 
@@ -459,7 +459,7 @@ internal class FmOps(
         add(FmMenuEntry("Open", if (item.isDir) Icons.Filled.FolderOpen else Icons.AutoMirrored.Filled.OpenInNew) { openItem(p, item, null, null) })
         add(FmMenuEntry("Extract…", Icons.Filled.Unarchive) { extractReq = p to listOf(item) })
         add(FmMenuEntry("Select", Icons.Filled.CheckBox) { p.startSelect(item) })
-        add(FmMenuEntry("Properties", Icons.Filled.Info) { propsTarget = item })
+        add(FmMenuEntry("属性", Icons.Filled.Info) { propsTarget = item })
     }
 
     fun newMenuEntries(dir: File): List<FmMenuEntry> = listOf(
@@ -482,7 +482,7 @@ internal class FmOps(
                 Triple("Downloads", HomeIcons.downloads, File(internal, "Download")),
                 Triple("Pictures", HomeIcons.pictures, File(internal, "Pictures")),
                 Triple("Documents", HomeIcons.documents, File(internal, "Documents")),
-                Triple("Games", HomeIcons.games, File(internal, "Winlator/Games")),
+                Triple("游戏", HomeIcons.games, File(internal, "Winlator/Games")),
                 Triple("Bannerlator", HomeIcons.folder, File(internal, "Bannerlator")),
             ).forEach { (t, icon, dir) ->
                 if (dir.isDirectory) add(FmHomeTile(t, icon, androidx.compose.ui.graphics.Color(0xFF2FA7A0), dir, countItems = t == "Downloads", subtitle = if (t == "Downloads") null else ""))
@@ -490,7 +490,7 @@ internal class FmOps(
         }
         val drivesC = buildList {
             val seen = HashSet<String>()
-            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "This container")); seen.add(it.absolutePath) }
+            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "此容器")); seen.add(it.absolutePath) }
             containers.forEach { c ->
                 val dc = File(c.rootDir, ".wine/drive_c")
                 if (dc.isDirectory && seen.add(dc.absolutePath)) add(FmHomeTile(c.name, HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), dc, subtitle = "Drive C:"))
@@ -509,8 +509,8 @@ internal class FmOps(
             // Network drives aren't real folders, so the pickers (which hand back a path) leave them out.
             if (pick == null) net.homeSection() else null,
             FmHomeSection("Places", places),
-            FmHomeSection("Containers", drivesC),
-            FmHomeSection("Favorites", favorites),
+            FmHomeSection("容器管理", drivesC),
+            FmHomeSection("收藏夹", favorites),
         )
     }
 }

@@ -54,29 +54,29 @@ internal fun LabWinlatorSavesPage(onBack: () -> Unit, vm: SavesViewModel = viewM
             subtitle = save.container?.getName() ?: "",
             icon = Icons.Filled.Save,
             actions = listOf(
-                MenuAction(L("Edit"), { editTarget = save }),
+                MenuAction(L("编辑"), { editTarget = save }),
                 MenuAction(L("Transfer to another container"), { transferTarget = save }),
-                MenuAction(L("Export"), { vm.exportSave(context, save, false) }),
-                MenuAction(L("Share"), { vm.exportSave(context, save, true) }),
+                MenuAction(L("导出"), { vm.exportSave(context, save, false) }),
+                MenuAction(L("分享"), { vm.exportSave(context, save, true) }),
                 MenuAction(L("Unregister"), { vm.removeSave(save) }, danger = true),
             ),
         )
     }
     val import = listOf(
-        MenuEntry("browse", L("Browse files"), L("A save archive exported before"), icon = Icons.Filled.FileDownload, onA = {
+        MenuEntry("browse", L("浏览文件"), L("A save archive exported before"), icon = Icons.Filled.FileDownload, onA = {
             importInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, L("Select save archive")))
         }),
-        MenuEntry("system", L("Pick via system…"), icon = Icons.Filled.FolderOpen, onA = { importLauncher.launch("*/*") }),
+        MenuEntry("system", L("从系统选取…"), icon = Icons.Filled.FolderOpen, onA = { importLauncher.launch("*/*") }),
     )
     SimpleMenuPage(
         overline = L("Tools"),
         title = L("Winlator saves"),
         sections = listOf(
             MenuSection("saves", L("Saves"), Icons.Filled.Save, rows, empty = L("No saves yet."), primary = MenuAction(L("New save"), { newOpen = true })),
-            MenuSection("import", L("Import"), Icons.Filled.FileDownload, import),
+            MenuSection("import", L("导入"), Icons.Filled.FileDownload, import),
         ),
         onBack = onBack,
-        banner = if (isLoading) L("Working…") else null,
+        banner = if (isLoading) L("正在处理…") else null,
     )
 
     if (newOpen) {

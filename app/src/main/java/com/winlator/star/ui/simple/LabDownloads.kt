@@ -37,7 +37,7 @@ internal object LabDownloads {
 
     /**
      * The Contents types (ContentsTypes names) [id]'s versions come from, or null when it has nothing to download.
-     * The X11 "Graphics driver" lists Vulkan wrappers, not drivers: its Turnip is "Driver version".
+     * The X11 "显卡驱动" lists Vulkan wrappers, not drivers: its Turnip is "驱动程序版本".
      */
     fun typesFor(id: String, env: SettingsEnv): List<String>? = when (id) {
         WINE -> listOf("Wine", "Proton")
@@ -124,9 +124,9 @@ internal fun LabDownloadPicker(types: List<String>, onClose: () -> Unit, vm: Con
             if (pills.isEmpty() || pills.any { it in wanted }) DlLine("r$i", s.name, onA = { picked = i }) else null
         }
         LabDownloadList(
-            title = L("Download from source"),
+            title = L("从源头下载"),
             lines = buildList<DlLine> {
-                if (repos.isEmpty()) add(DlLine("__none__", L("No repository offers these."), enabled = false)) else addAll(repos)
+                if (repos.isEmpty()) add(DlLine("__none__", L("没有仓库提供这些组件。"), enabled = false)) else addAll(repos)
                 if (profileTypes.isNotEmpty()) add(DlLine("__installed__", L("Installed versions"), onA = { picked = INSTALLED }))
                 add(fileInstall.line())
                 cancelLine?.let { add(it) }
@@ -208,8 +208,8 @@ private fun LabInstalledVersions(types: List<ContentProfile.ContentType>, onBack
                         title = p.verName ?: ContentsManager.getEntryName(p),
                         sub = listOfNotNull(if (p.verCode > 0) "v${p.verCode}" else null, p.desc?.takeIf { it.isNotBlank() }).joinToString(" · ").ifBlank { null },
                         actions = listOf(
-                            MenuAction(L("Info"), { info = p }),
-                            MenuAction(L("Remove"), {
+                            MenuAction(L("信息"), { info = p }),
+                            MenuAction(L("移除"), {
                                 cm.removeContent(p)
                                 cm.syncContents()
                                 tick++

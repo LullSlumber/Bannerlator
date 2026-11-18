@@ -582,7 +582,7 @@ internal fun xmbCopyToDriveCMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
                         xmb.toast("复制已取消 — 未做任何更改。")
                     } else {
                         Log.e("CopyToDriveC", "copy/repoint failed for $name", e)
-                        xmb.toast("Copy failed: ${e.message ?: "unknown error"}. Nothing was changed.")
+                        xmb.toast("Copy failed: ${e.message ?: "未知错误"}. Nothing was changed.")
                     }
                     // The dialog ended the whole flow here; do the same unless the user already backed out.
                     if (onTop) {
@@ -829,7 +829,7 @@ internal fun xmbBackupSavesMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu {
             }
             xmb.toast(
                 if (r.ok) "Backed up ${r.fileCount} files → ${r.path?.substringAfterLast('/')}"
-                else "Backup failed: ${r.error ?: "unknown error"}"
+                else "Backup failed: ${r.error ?: "未知错误"}"
             )
             me.close(xmb)
         }
@@ -960,7 +960,7 @@ private fun xmbRestoreContainerMenu(xmb: XmbScope, zip: File, parent: XmbOpen): 
             restoringInto = null
             xmb.toast(
                 if (r.ok) "Restored ${r.filesWritten} files to \"$cname\""
-                else "Restore failed: ${r.error ?: "unknown error"}"
+                else "Restore failed: ${r.error ?: "未知错误"}"
             )
             if (me.isOpen) {
                 me.close(xmb)

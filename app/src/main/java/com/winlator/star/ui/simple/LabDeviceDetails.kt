@@ -85,7 +85,7 @@ private fun LabDeviceDetailsDialog(onDismiss: () -> Unit) {
                     if (copied) L("Copied") else L("Copy these details into a bug report."),
                     color = SimpleMuted, fontSize = 13.sp, modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 )
-                LabButton(L("Copy"), requester = copy) {
+                LabButton(L("拷贝"), requester = copy) {
                     clipboard.setText(AnnotatedString(DeviceInfo.text(list)))
                     copied = true
                 }

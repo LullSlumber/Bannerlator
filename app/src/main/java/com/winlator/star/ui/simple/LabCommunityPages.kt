@@ -84,7 +84,7 @@ private fun mark(label: String, on: Boolean) = if (on) "$label  ✓" else label
 @Composable
 private fun LabCommunityNotice(title: String, line: String, back: () -> Unit) {
     SimpleMenuPage(
-        overline = L("Community configs"),
+        overline = L("社区配置"),
         title = title,
         sections = listOf(MenuSection("none", title, Icons.Filled.Public, emptyList(), empty = line)),
         onBack = back,
@@ -92,7 +92,7 @@ private fun LabCommunityNotice(title: String, line: String, back: () -> Unit) {
 }
 
 /**
- * The rows of one game's configs, as Classic's sheet and catalog list them: "Matches my device", then one row per
+ * The rows of one game's configs, as Classic's sheet and catalog list them: "匹配我的设备", then one row per
  * uploaded config (votes and downloads; a ✓ on the ones from hardware like yours), or offline the configs by device.
  * A row opens the Apply / Details choice, with [ctx] the game it applies to (null from the catalog).
  */
@@ -111,14 +111,14 @@ private fun communityConfigRows(
     val cfg = rememberGameConfigs(vm, game, extraBannerlatorFolders = extraFolders)
     var mine by rememberSaveable(game.identity) { mutableStateOf(false) }
     val hwOn = userSoc != null || userGpu != null
-    val group = L("Configs")
+    val group = L("配置")
     val rows = ArrayList<MenuEntry>()
     rows += MenuEntry(
-        "mine", L("Matches my device"), L("Your device: %1\$s", deviceHeaderLabel(deviceModel, hardwareLabel)),
+        "mine", L("匹配我的设备"), L("Your device: %1\$s", deviceHeaderLabel(deviceModel, hardwareLabel)),
         icon = Icons.Filled.PhoneAndroid, toggle = mine && hwOn, group = group, onA = { if (hwOn) mine = !mine },
     )
     when {
-        cfg.loading -> rows += MenuEntry("c-loading", L("Loading configs…"), group = group)
+        cfg.loading -> rows += MenuEntry("c-loading", L("加载配置…"), group = group)
         cfg.entries.isNotEmpty() -> {
             val shown = if (!mine) cfg.entries
                 else cfg.entries.filter { GameMatcher.hardwareMatchesUser(userSoc, userGpu, listOf(it.second.device, it.second.soc)) }
@@ -137,7 +137,7 @@ private fun communityConfigRows(
                 )
             }
         }
-        fallback.isEmpty() -> rows += MenuEntry("c-none", L("No configs listed."), group = group)
+        fallback.isEmpty() -> rows += MenuEntry("c-none", L("没有列出的配置。"), group = group)
         else -> {
             val offline = L("Device configs (vote counts unavailable offline)")
             val hw = hardwareLabel?.lowercase()
@@ -164,7 +164,7 @@ private fun communityConfigRows(
 // ───────────────────────────── The catalog ─────────────────────────────
 
 /**
- * Community configs: every game in the community index, with Classic's search, store filter, "Matches my device" and
+ * Community configs: every game in the community index, with Classic's search, store filter, "匹配我的设备" and
  * sort, the index refresh and My account. A game opens its configs.
  */
 @Composable
@@ -194,7 +194,7 @@ internal fun LabCommunityBrowserPage(open: (String) -> Unit, back: () -> Unit, v
         }
     }
     fun storeLabel(f: CatalogStoreFilter) = when (f) { CatalogStoreFilter.ALL -> L("All"); CatalogStoreFilter.STEAM -> "Steam"; CatalogStoreFilter.TITLE -> L("Title") }
-    fun sortLabel(s: CatalogSort) = when (s) { CatalogSort.CONFIGS -> L("Configs"); CatalogSort.NAME -> L("Name"); CatalogSort.DEVICES -> L("Devices") }
+    fun sortLabel(s: CatalogSort) = when (s) { CatalogSort.CONFIGS -> L("配置"); CatalogSort.NAME -> L("Name"); CatalogSort.DEVICES -> L("Devices") }
     fun refresh() {
         if (refreshing) return
         refreshing = true
@@ -209,21 +209,21 @@ internal fun LabCommunityBrowserPage(open: (String) -> Unit, back: () -> Unit, v
     val browse = L("Browse")
     val filters = listOf(
         MenuEntry(
-            "search", L("Search all games"), query.ifBlank { null }, icon = Icons.Filled.Search, group = browse, onA = { sheet = "search" },
-            actions = if (query.isNotBlank()) listOf(MenuAction(L("Search all games"), { sheet = "search" }), MenuAction(L("Clear search"), { query = "" })) else emptyList(),
+            "search", L("搜索所有游戏"), query.ifBlank { null }, icon = Icons.Filled.Search, group = browse, onA = { sheet = "search" },
+            actions = if (query.isNotBlank()) listOf(MenuAction(L("搜索所有游戏"), { sheet = "search" }), MenuAction(L("Clear search"), { query = "" })) else emptyList(),
         ),
         MenuEntry("store", L("Store"), trailing = storeLabel(store), icon = Icons.Filled.Storefront, group = browse, onA = { sheet = "store" }),
-        MenuEntry("mine", L("Matches my device"), icon = Icons.Filled.PhoneAndroid, group = browse, toggle = mine && hwOn, onA = { if (hwOn) mine = !mine }),
+        MenuEntry("mine", L("匹配我的设备"), icon = Icons.Filled.PhoneAndroid, group = browse, toggle = mine && hwOn, onA = { if (hwOn) mine = !mine }),
         MenuEntry("sort", L("Sort"), trailing = sortLabel(sort), icon = Icons.Filled.SwapVert, group = browse, onA = { sheet = "sort" }),
-        MenuEntry("refresh", L("Refresh community index"), if (refreshing) L("Refreshing…") else null, icon = Icons.Filled.Refresh, group = browse, onA = { refresh() }),
-        MenuEntry("account", L("My account"), AccountUiBus.account?.username, icon = Icons.Filled.AccountCircle, group = browse, onA = { open(LabCommunityRoutes.ACCOUNT) }),
+        MenuEntry("refresh", L("Refresh community index"), if (refreshing) L("正在刷新…") else null, icon = Icons.Filled.Refresh, group = browse, onA = { refresh() }),
+        MenuEntry("account", L("我的账户"), AccountUiBus.account?.username, icon = Icons.Filled.AccountCircle, group = browse, onA = { open(LabCommunityRoutes.ACCOUNT) }),
     )
     val gamesGroup = if (visible.size == 1) L("1 game") else L("%1\$s games", visible.size)
     val gameRows = remember(visible, userGpu, loading, games.isEmpty()) {
         when {
-            loading -> listOf(MenuEntry("g-loading", L("Loading the community index…"), group = L("Games")))
-            games.isEmpty() -> listOf(MenuEntry("g-none", L("No community configs available yet (offline, or the index hasn't been fetched)."), group = L("Games")))
-            visible.isEmpty() -> listOf(MenuEntry("g-none", L("No games match your filters."), group = gamesGroup))
+            loading -> listOf(MenuEntry("g-loading", L("Loading the community index…"), group = L("游戏")))
+            games.isEmpty() -> listOf(MenuEntry("g-none", L("No community configs available yet (offline, or the index hasn't been fetched)."), group = L("游戏")))
+            visible.isEmpty() -> listOf(MenuEntry("g-none", L("没有游戏符合您的筛选条件。"), group = gamesGroup))
             else -> visible.map { g ->
                 MenuEntry(
                     "g:" + g.identity, g.name, CanonicalGame.countsLine(g, userGpu), trailing = storeName(g), group = gamesGroup,
@@ -234,14 +234,14 @@ internal fun LabCommunityBrowserPage(open: (String) -> Unit, back: () -> Unit, v
     }
     SimpleMenuPage(
         overline = L("Community"),
-        title = L("Community configs"),
-        sections = listOf(MenuSection("games", L("Games"), Icons.Filled.Public, filters + gameRows)),
+        title = L("社区配置"),
+        sections = listOf(MenuSection("games", L("游戏"), Icons.Filled.Public, filters + gameRows)),
         onBack = back,
         banner = catalog?.let { L("Your device: %1\$s", deviceHeaderLabel(it.deviceModel, it.hardwareLabel)) },
     )
     when (sheet) {
         "search" -> LabInputDialog(
-            L("Search all games"), query, L("Game name"), L("Search"), onDismiss = { sheet = null }, allowBlank = true,
+            L("搜索所有游戏"), query, L("游戏名称"), L("Search"), onDismiss = { sheet = null }, allowBlank = true,
         ) { q -> query = q.trim(); sheet = null }
         "store" -> SimpleActionSheet(
             L("Store"), CatalogStoreFilter.entries.map { f -> MenuAction(mark(storeLabel(f), f == store), { store = f }) }, onDismiss = { sheet = null },
@@ -252,20 +252,20 @@ internal fun LabCommunityBrowserPage(open: (String) -> Unit, back: () -> Unit, v
     }
 }
 
-/** One catalog game: its counts and store, "Matches my device" and its configs (each: Apply to game… or View details). */
+/** One catalog game: its counts and store, "匹配我的设备" and its configs (each: Apply to game… or View details). */
 @Composable
 internal fun LabCommunityGamePage(identity: String, back: () -> Unit, vm: ShortcutsViewModel = viewModel()) {
     var catalog by remember { mutableStateOf<CommunityCatalog?>(null) }
     LaunchedEffect(Unit) { vm.getCommunityCatalog { catalog = it } }
-    val cat = catalog ?: run { LabCommunityNotice(L("Community configs"), L("Loading the community index…"), back); return }
+    val cat = catalog ?: run { LabCommunityNotice(L("社区配置"), L("Loading the community index…"), back); return }
     val game = cat.games.firstOrNull { it.identity == identity }
-        ?: run { LabCommunityNotice(L("Community configs"), L("This game is no longer in the community index."), back); return }
+        ?: run { LabCommunityNotice(L("社区配置"), L("This game is no longer in the community index."), back); return }
     val fallback = remember(game, cat.userSoc, cat.userGpu) { GameMatcher.rankDevices(game.devices, cat.userSoc, cat.userGpu) }
     val rows = communityConfigRows(vm, game, cat.userSoc, cat.userGpu, cat.hardwareLabel, cat.deviceModel, fallback, ctx = null)
     SimpleMenuPage(
-        overline = L("Community configs"),
+        overline = L("社区配置"),
         title = game.name,
-        sections = listOf(MenuSection("configs", L("Configs"), Icons.Filled.Public, rows)),
+        sections = listOf(MenuSection("configs", L("配置"), Icons.Filled.Public, rows)),
         onBack = back,
         banner = CanonicalGame.countsLine(game, cat.userGpu) + " · " + storeName(game),
     )
@@ -274,15 +274,15 @@ internal fun LabCommunityGamePage(identity: String, back: () -> Unit, vm: Shortc
 // ───────────────────────────── A game's own configs ─────────────────────────────
 
 /**
- * A game's Community configs (its game menu), as Classic's sheet: the matched community game (or "Which game is this?"
- * on a tie, or a search of all games), "Matches my device" and its configs; Share config, Import, Upload to community and
+ * A game's Community configs (its game menu), as Classic's sheet: the matched community game (or "这是哪个游戏?"
+ * on a tie, or a search of all games), "匹配我的设备" and its configs; Share config, Import, Upload to community and
  * My uploads under Share.
  */
 @Composable
 internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: () -> Unit, vm: ShortcutsViewModel = viewModel()) {
     val context = LocalContext.current
     val s = remember(path) { loadLabShortcut(context, path) }
-        ?: run { LabCommunityNotice(L("Community configs"), L("This game is no longer in your library."), back); return }
+        ?: run { LabCommunityNotice(L("社区配置"), L("This game is no longer in your library."), back); return }
     LaunchedEffect(s.file.path) { LabArt.selected = s }
     var result by remember(s.file.path) { mutableStateOf<CommunityMatchResult?>(null) }
     var loading by remember(s.file.path) { mutableStateOf(true) }
@@ -300,8 +300,8 @@ internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: ()
     val name = s.name
     val rows = ArrayList<MenuEntry>()
     rows += MenuEntry(
-        "search", L("Search all games"), query.ifBlank { null }, icon = Icons.Filled.Search, onA = { searchOpen = true },
-        actions = if (query.isNotBlank()) listOf(MenuAction(L("Search all games"), { searchOpen = true }), MenuAction(L("Clear search"), { query = "" })) else emptyList(),
+        "search", L("搜索所有游戏"), query.ifBlank { null }, icon = Icons.Filled.Search, onA = { searchOpen = true },
+        actions = if (query.isNotBlank()) listOf(MenuAction(L("搜索所有游戏"), { searchOpen = true }), MenuAction(L("Clear search"), { query = "" })) else emptyList(),
     )
     val game = result?.match
     if (query.trim().length >= 2) {
@@ -324,7 +324,7 @@ internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: ()
         else -> {
             val ties = result?.alternatives.orEmpty()
             if (ties.size > 1) {
-                val q = L("Which game is this?")
+                val q = L("这是哪个游戏?")
                 ties.forEach { alt ->
                     rows += MenuEntry(
                         "t:" + alt.identity, alt.name, null, trailing = storeName(alt), current = alt.identity == game.identity, group = q,
@@ -346,29 +346,29 @@ internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: ()
     }
     val uploading = LabCommunity.uploadingFor == s.file.path
     val share = listOf(
-        MenuEntry("export", L("Share config"), null, icon = Icons.Filled.Share, onA = { LabCommunity.export(s) }),
+        MenuEntry("export", L("分享配置"), null, icon = Icons.Filled.Share, onA = { LabCommunity.export(s) }),
         MenuEntry(
-            "import", L("Import"), null, icon = Icons.Filled.FileUpload,
+            "import", L("导入"), null, icon = Icons.Filled.FileUpload,
             onA = { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.JSON, L("Select a config .json"))) },
         ),
         MenuEntry(
-            "upload", L("Upload to community"),
+            "upload", L("上传到社区"),
             if (uploading) (if (LabCommunity.uploadStarted) L("Uploading…") else L("Preparing…")) else null,
             icon = Icons.Filled.CloudUpload, onA = { if (!uploading) LabCommunity.upload(context, s) },
         ),
-        MenuEntry("uploads", L("My uploads"), null, icon = Icons.Filled.AccountCircle, onA = { open(LabCommunityRoutes.UPLOADS) }),
+        MenuEntry("uploads", L("我的上传"), null, icon = Icons.Filled.AccountCircle, onA = { open(LabCommunityRoutes.UPLOADS) }),
     )
     SimpleMenuPage(
-        overline = L("Community configs"),
+        overline = L("社区配置"),
         title = LabTitles.of(s),
         sections = listOf(
-            MenuSection("configs", L("Configs"), Icons.Filled.Public, rows),
-            MenuSection("share", L("Share"), Icons.Filled.Share, share),
+            MenuSection("configs", L("配置"), Icons.Filled.Public, rows),
+            MenuSection("share", L("分享"), Icons.Filled.Share, share),
         ),
         onBack = back,
     )
     if (searchOpen) {
-        LabInputDialog(L("Search all games"), query, L("Game name"), L("Search"), onDismiss = { searchOpen = false }, allowBlank = true) { q ->
+        LabInputDialog(L("搜索所有游戏"), query, L("游戏名称"), L("Search"), onDismiss = { searchOpen = false }, allowBlank = true) { q ->
             query = q.trim()
             searchOpen = false
         }
@@ -385,7 +385,7 @@ internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: ()
 @Composable
 internal fun LabConfigDetailsPage(back: () -> Unit, vm: ShortcutsViewModel = viewModel()) {
     val context = LocalContext.current
-    val picked = LabCommunity.detail ?: run { LabCommunityNotice(L("Config details"), L("Nothing to show."), back); return }
+    val picked = LabCommunity.detail ?: run { LabCommunityNotice(L("配置详情"), L("Nothing to show."), back); return }
     val (pick, ctx) = picked
     var detail by remember(pick, ctx) { mutableStateOf<CommunityConfigDetail?>(null) }
     var loading by remember(pick, ctx) { mutableStateOf(true) }
@@ -433,10 +433,10 @@ internal fun LabConfigDetailsPage(back: () -> Unit, vm: ShortcutsViewModel = vie
         )
     }
     when {
-        loading -> rows += MenuEntry("x-loading", L("Loading config…"))
+        loading -> rows += MenuEntry("x-loading", L("加载配置…"))
         failed || d == null -> rows += MenuEntry("x-failed", L("Couldn't fetch this config (offline, or no matching file in the repo)."))
         else -> {
-            val sets = L("What this config sets")
+            val sets = L("此配置设置的内容")
             val lines = configSummaryLines(d.config)
             if (lines.isEmpty()) rows += MenuEntry("s-none", L("Nothing this app can set."), group = sets)
             lines.forEachIndexed { i, (label, value) -> rows += MenuEntry("s:$i", label, value, group = sets) }
@@ -444,12 +444,12 @@ internal fun LabConfigDetailsPage(back: () -> Unit, vm: ShortcutsViewModel = vie
             d.preview?.let { pre ->
                 val ch = L("Changes to \"%1\$s\"", game.name)
                 rows += MenuEntry("v-msg", pre.message, null, group = ch)
-                pre.changed.forEachIndexed { i, t -> rows += MenuEntry("v-c$i", t, L("Would change"), group = ch) }
-                pre.missingComponents.forEachIndexed { i, m -> rows += MenuEntry("v-m$i", m.label, L("Needs a component"), group = ch) }
+                pre.changed.forEachIndexed { i, t -> rows += MenuEntry("v-c$i", t, L("会更改"), group = ch) }
+                pre.missingComponents.forEachIndexed { i, m -> rows += MenuEntry("v-m$i", m.label, L("需要一个组件"), group = ch) }
                 pre.missingDrivers.forEachIndexed { i, m ->
-                    rows += MenuEntry("v-d$i", L("Turnip %1\$s", m.wanted) + (m.current?.let { c -> L(" (you have %1\$s)", c) } ?: ""), L("Needs a GPU driver"), group = ch)
+                    rows += MenuEntry("v-d$i", L("Turnip %1\$s", m.wanted) + (m.current?.let { c -> L(" (you have %1\$s)", c) } ?: ""), L("需要GPU驱动程序"), group = ch)
                 }
-                pre.advisories.forEachIndexed { i, t -> rows += MenuEntry("v-a$i", t, L("Heads up"), group = ch) }
+                pre.advisories.forEachIndexed { i, t -> rows += MenuEntry("v-a$i", t, L("注意"), group = ch) }
             }
         }
     }
@@ -458,7 +458,7 @@ internal fun LabConfigDetailsPage(back: () -> Unit, vm: ShortcutsViewModel = vie
     if (d != null && workerGame != null) {
         val social = ArrayList<MenuEntry>()
         social += MenuEntry(
-            "votes", when { voting -> L("Voting…"); voted -> L("Voted ✓"); else -> L("Upvote") }, "★ $votes   ↓ ${d.downloads}",
+            "votes", when { voting -> L("Voting…"); voted -> L("已投票 ✓"); else -> L("赞同") }, "★ $votes   ↓ ${d.downloads}",
             icon = Icons.Filled.ThumbUp,
             onA = onA@{
                 val sha = d.sha ?: return@onA
@@ -475,20 +475,20 @@ internal fun LabConfigDetailsPage(back: () -> Unit, vm: ShortcutsViewModel = vie
             },
         )
         if (d.description.isNotBlank()) social += MenuEntry("desc", d.description, null, icon = Icons.Filled.Star)
-        val cg = L("Comments")
-        if (comments.isEmpty()) social += MenuEntry("c-none", L("No comments yet."), group = cg)
+        val cg = L("评论")
+        if (comments.isEmpty()) social += MenuEntry("c-none", L("暂无评论。"), group = cg)
         comments.forEachIndexed { i, c ->
             social += MenuEntry("c:$i", c.text, listOf(c.device, c.date).filter { it.isNotBlank() }.joinToString(" · ").ifBlank { null }, group = cg)
         }
         social += MenuEntry(
-            "comment", if (commenting) L("Sending…") else L("Add a comment"), null, icon = Icons.Filled.Comment, primary = true,
+            "comment", if (commenting) L("正在发送…") else L("添加评论"), null, icon = Icons.Filled.Comment, primary = true,
             onA = { if (!commenting) commentOpen = true },
         )
         sections += MenuSection("social", L("Votes and comments"), Icons.Filled.ThumbUp, social)
     }
-    SimpleMenuPage(overline = L("Config details"), title = game.name, sections = sections, onBack = back)
+    SimpleMenuPage(overline = L("配置详情"), title = game.name, sections = sections, onBack = back)
     if (commentOpen && d != null && workerGame != null) {
-        LabInputDialog(L("Add a comment"), "", L("Comment"), L("Send"), onDismiss = { commentOpen = false }, multiline = true, maxLength = 500) { text ->
+        LabInputDialog(L("添加评论"), "", L("Comment"), L("Send"), onDismiss = { commentOpen = false }, multiline = true, maxLength = 500) { text ->
             commentOpen = false
             val t = text.trim()
             if (t.isEmpty()) return@LabInputDialog
@@ -530,13 +530,13 @@ internal fun LabMyUploadsPage(back: () -> Unit, vm: ShortcutsViewModel = viewMod
             actions = listOf(
                 MenuAction(L("Edit description"), { editFor = row }),
                 MenuAction(
-                    L("Delete"),
+                    L("删除"),
                     {
                         vm.deleteMyUpload(row) { ok ->
                             if (ok) {
                                 rows = rows?.filterNot { it.record.sha == row.record.sha }
-                                toast(context, L("Deleted your shared config."))
-                            } else toast(context, L("Couldn't reach the server."))
+                                toast(context, L("已删除您的共享配置。"))
+                            } else toast(context, L("无法访问服务器。"))
                         }
                     },
                     danger = true,
@@ -546,11 +546,11 @@ internal fun LabMyUploadsPage(back: () -> Unit, vm: ShortcutsViewModel = viewMod
         )
     }
     SimpleMenuPage(
-        overline = L("Community configs"),
-        title = L("My uploads"),
+        overline = L("社区配置"),
+        title = L("我的上传"),
         sections = listOf(
             MenuSection(
-                "uploads", L("My uploads"), Icons.Filled.CloudUpload, entries,
+                "uploads", L("我的上传"), Icons.Filled.CloudUpload, entries,
                 empty = if (list == null) L("Loading…") else L("You haven't shared any configs yet."),
             ),
         ),
@@ -563,7 +563,7 @@ internal fun LabMyUploadsPage(back: () -> Unit, vm: ShortcutsViewModel = viewMod
         val loaded = descLoaded
         if (loaded == null) {
             LabPanelDialog(L("Description"), onDismiss = { editFor = null }, buttons = listOf(LabDialogButton(L("Cancel"), { editFor = null }))) {
-                LabBusyLine(L("Loading description…"))
+                LabBusyLine(L("加载描述…"))
             }
         } else {
             LabInputDialog(
@@ -571,7 +571,7 @@ internal fun LabMyUploadsPage(back: () -> Unit, vm: ShortcutsViewModel = viewMod
                 message = row.record.game,
             ) { text ->
                 editFor = null
-                vm.editMyUploadDescription(row, text) { ok -> toast(context, if (ok) L("Description updated.") else L("Couldn't reach the server.")) }
+                vm.editMyUploadDescription(row, text) { ok -> toast(context, if (ok) L("描述已更新。") else L("无法访问服务器。")) }
             }
         }
     }
@@ -610,7 +610,7 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
                 is AccountManager.AccountResult.Success -> {
                     account = AccountManager.current(context)
                     AccountUiBus.refresh(context)
-                    toast(context, L("Profile picture updated."))
+                    toast(context, L("个人资料图片已更新。"))
                 }
                 is AccountManager.AccountResult.Error -> toast(context, L(avatarErrorMessage(r.code)))
             }
@@ -619,14 +619,14 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
     val acc = account
     val entries = if (acc != null) listOf(
         MenuEntry(
-            "pic", acc.username, if (avatarBusy) L("Uploading…") else L("Change picture"),
+            "pic", acc.username, if (avatarBusy) L("Uploading…") else L("更换图片"),
             thumb = { AccountAvatar(avatarUrl = acc.displayAvatarUrl, size = 40.dp, fallbackTint = MaterialTheme.colorScheme.primary) },
             onA = { if (!avatarBusy) picker.launch("image/*") },
         ),
-        MenuEntry("key", L("Show my recovery key"), null, icon = Icons.Filled.Visibility, onA = { showKey = true }),
-        MenuEntry("uploads", L("My uploads"), null, icon = Icons.Filled.CloudUpload, onA = { open(LabCommunityRoutes.UPLOADS) }),
+        MenuEntry("key", L("显示我的恢复密钥"), null, icon = Icons.Filled.Visibility, onA = { showKey = true }),
+        MenuEntry("uploads", L("我的上传"), null, icon = Icons.Filled.CloudUpload, onA = { open(LabCommunityRoutes.UPLOADS) }),
         MenuEntry(
-            "logout", L("Log out"), null, icon = Icons.AutoMirrored.Filled.Logout,
+            "logout", L("退出登录"), null, icon = Icons.AutoMirrored.Filled.Logout,
             onA = {
                 AccountManager.logout(context)
                 account = null
@@ -637,12 +637,12 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
     ) else listOf(
         MenuEntry("create", L("Create account"), null, icon = Icons.Filled.PersonAdd, onA = { form = "create" }),
         MenuEntry("login", L("Log in"), null, icon = Icons.AutoMirrored.Filled.Login, onA = { form = "login" }),
-        MenuEntry("reset", L("Forgot password? Reset with recovery key"), null, icon = Icons.Filled.LockOpen, onA = { form = "reset" }),
+        MenuEntry("reset", L("忘记密码？使用恢复密钥重置"), null, icon = Icons.Filled.LockOpen, onA = { form = "reset" }),
     )
     SimpleMenuPage(
-        overline = L("Community configs"),
-        title = L("My account"),
-        sections = listOf(MenuSection("account", L("My account"), Icons.Filled.AccountCircle, entries)),
+        overline = L("社区配置"),
+        title = L("我的账户"),
+        sections = listOf(MenuSection("account", L("我的账户"), Icons.Filled.AccountCircle, entries)),
         onBack = back,
     )
 
@@ -660,16 +660,16 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
             AccountUiBus.refresh(context)
         }
         LabPanelDialog(
-            L("Your recovery key"),
+            L("您的恢复密钥"),
             onDismiss = saved,
             buttons = listOf(
-                LabDialogButton(L("Copy"), { clipboard.setText(AnnotatedString(data.recoveryKey)); toast(context, L("Recovery key copied.")) }),
-                LabDialogButton(L("I've saved it"), saved, primary = true),
+                LabDialogButton(L("拷贝"), { clipboard.setText(AnnotatedString(data.recoveryKey)); toast(context, L("Recovery key copied.")) }),
+                LabDialogButton(L("我已保存"), saved, primary = true),
             ),
         ) {
             LabDialogText(L("Account \"%1\$s\" created.", data.username))
             Text(data.recoveryKey, color = SimpleStrong, fontSize = 18.sp)
-            LabDialogText(L("⚠️ Save this — it's the only way to reset your password if you forget it."), muted = true)
+            LabDialogText(L("⚠️ 请保存此信息——这是您在忘记密码时重置密码的唯一方法。"), muted = true)
         }
     }
     if (showKey) {
@@ -678,7 +678,7 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
             L("My recovery key"),
             onDismiss = { showKey = false },
             buttons = listOfNotNull(
-                key?.let { k -> LabDialogButton(L("Copy"), { clipboard.setText(AnnotatedString(k)); toast(context, L("Recovery key copied.")) }) },
+                key?.let { k -> LabDialogButton(L("拷贝"), { clipboard.setText(AnnotatedString(k)); toast(context, L("Recovery key copied.")) }) },
                 LabDialogButton(L("Close"), { showKey = false }, primary = true),
             ),
         ) {
@@ -721,7 +721,7 @@ private fun LabAccountForm(
             "login" -> vm.loginAccount(username.trim(), password) { r ->
                 busy = false
                 when (r) {
-                    is AccountManager.AccountResult.Success -> { toast(context, L("Signed in.")); onSignedIn() }
+                    is AccountManager.AccountResult.Success -> { toast(context, L("已登录。")); onSignedIn() }
                     is AccountManager.AccountResult.Error -> error = L(accountErrorMessage(r.code, isReset = false))
                 }
             }
@@ -739,7 +739,7 @@ private fun LabAccountForm(
         busy -> L("Please wait…")
         kind == "create" -> L("Create account")
         kind == "login" -> L("Log in")
-        else -> L("Reset")
+        else -> L("重置")
     }
     LabPanelDialog(
         title,
@@ -752,11 +752,11 @@ private fun LabAccountForm(
         ),
     ) {
         if (reset) LabDialogText(L("Enter your username, your recovery key, and a new password."), muted = true)
-        LabTextField(username, { username = it; error = null }, L("Username"), requester = first, enabled = !busy)
+        LabTextField(username, { username = it; error = null }, L("用户名"), requester = first, enabled = !busy)
         if (reset) LabTextField(key, { key = it; error = null }, L("Recovery key"), enabled = !busy)
         LabTextField(password, { password = it; error = null }, if (reset) L("New password") else L("Password"), password = true, enabled = !busy)
         if (kind == "create") {
-            LabDialogText(L("This is just to recover your shared configs — use a throwaway password, not one you use elsewhere."), muted = true)
+            LabDialogText(L("这仅用于恢复您共享的配置——请使用一个临时密码，不要使用您在其他地方使用的密码。"), muted = true)
         }
         error?.let { LabDialogText(it, error = true) }
     }

@@ -86,7 +86,7 @@ internal fun NavGraphBuilder.labContainerRoutes(open: (String) -> Unit, back: ()
     composable(LabParityRoutes.WRAPPERS) { LabWrapperManagerPage(onBack = back) }
 }
 
-/** The wrapper manager over a settings editor (Graphics › "Manage graphics wrappers"): the same Lab page, full screen. */
+/** The wrapper manager over a settings editor (Graphics › "管理图形包装器"): the same Lab page, full screen. */
 @Composable
 internal fun LabWrapperManagerDialog(onDismiss: () -> Unit) {
     LabOverlay(onDismiss) { LabWrapperManagerPage(onBack = onDismiss) }
@@ -440,7 +440,7 @@ internal fun LabWrapperManagerPage(onBack: () -> Unit) {
                 if (entry.description.isNotBlank()) add(entry.description)
                 if (entry.license.isNotBlank()) add(L("License") + ": " + entry.license)
                 formatSize(entry.fileSize)?.let { add(L("Size") + ": " + it) }
-                if (entry.gpuTargets.isNotEmpty()) add(L("GPU targets") + ": " + entry.gpuTargets.joinToString(", "))
+                if (entry.gpuTargets.isNotEmpty()) add(L("GPU 目标") + ": " + entry.gpuTargets.joinToString(", "))
                 applicabilityNote(entry.gpuTargets, gpu.isQualcomm, gpu.model)?.let { add(it) }
                 if (offline && !installed && !busy) add(str(R.string.wrapper_catalog_needs_connection))
                 if (busy) add(str(if (downloadProgress >= 100) R.string.wrapper_catalog_installing else R.string.wrapper_catalog_downloading) + " $downloadProgress%")
@@ -476,7 +476,7 @@ internal fun LabWrapperManagerPage(onBack: () -> Unit) {
         SimpleActionSheet(
             title = L("Replace %1\$s from catalog", slot.label),
             message = listOfNotNull(
-                L("Downloading a wrapper installs it as this slot's override. A wrapper that doesn't match the slot is rejected."),
+                L("下载wrapper会将其安装为此插槽的覆盖版本。不匹配该插槽的wrapper将被拒绝。"),
                 if (offline && !catalogLoading) str(if (catalogSource == WrapperCatalog.Source.CACHE) R.string.wrapper_catalog_offline_cache else R.string.wrapper_catalog_offline) else null,
                 when {
                     catalogLoading -> L("Loading the list…")
@@ -506,11 +506,11 @@ internal fun LabWrapperManagerPage(onBack: () -> Unit) {
             title = if (importMode) str(R.string.wrapper_import_title).removeSuffix("…") else str(R.string.wrapper_update),
             message = str(R.string.wrapper_manager_header),
             actions = listOf(
-                MenuAction(L("Browse files"), {
+                MenuAction(L("浏览文件"), {
                     pickPrompt = false
                     filePicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.WRAPPER, str(R.string.wrapper_select_title)))
                 }),
-                MenuAction(L("Pick via system…"), {
+                MenuAction(L("从系统选取…"), {
                     pickPrompt = false
                     filePicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "*/*" })
                 }),

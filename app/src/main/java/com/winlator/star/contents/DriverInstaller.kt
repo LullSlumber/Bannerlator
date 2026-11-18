@@ -9,7 +9,7 @@ import java.io.File
 import java.util.zip.ZipInputStream
 
 /**
- * One way in for a GPU driver zip, from a download list or a file. "GPU driver" is three things and
+ * One way in for a GPU driver zip, from a download list or a file. "虚幻引擎 HDR 修复" is three things and
  * the zip's own meta.json says which ("kind"): an AdrenoTools driver (the Graphics Driver pickers),
  * a "-Linux" glibc ICD (Linux runtime drivers) or a "-Wayland" one (Wayland game drivers). Each is
  * installed where it can be used, and the result says where, or why nothing was installed.
@@ -89,7 +89,7 @@ object DriverInstaller {
         return when {
             r.id.isNotEmpty() -> Result(Place.ANDROID, r.id, m.getDriverName(r.id).ifEmpty { r.id })
             r.reason == AdrenotoolsManager.InstallResult.SAME_NAME ->
-                Result(null, r.detail ?: "", r.detail ?: "", error = L("%1\$s is already installed", r.detail ?: ""), sameName = true, target = Place.ANDROID)
+                Result(null, r.detail ?: "", r.detail ?: "", error = L("%1\$s 已安装", r.detail ?: ""), sameName = true, target = Place.ANDROID)
             else -> Result(null, error = reasonText(r.reason, r.detail))
         }
     }
@@ -159,7 +159,7 @@ object DriverInstaller {
         val id = m.installDriver(uri, fileName, replace)
         Result(Place.LINUX, id, m.getDriverName(id))
     } catch (e: LinuxVulkanDriverManager.SameNameException) {
-        Result(null, e.id, e.name, error = L("%1\$s is already installed", e.name), sameName = true, target = Place.LINUX)
+        Result(null, e.id, e.name, error = L("%1\$s 已安装", e.name), sameName = true, target = Place.LINUX)
     } catch (e: Exception) {
         Log.w(TAG, "Linux part of a driver bundle not installed", e)
         Result(null, error = e.message ?: e.toString(), target = Place.LINUX)
@@ -179,7 +179,7 @@ object DriverInstaller {
         return when {
             r.ok -> L("Installed %1\$s", r.name)
             r.sameName -> r.error ?: ""
-            else -> L("Install failed: %1\$s", r.error ?: "?")
+            else -> L("安装失败：%1\$s", r.error ?: "?")
         } + where
     }
 
@@ -187,8 +187,8 @@ object DriverInstaller {
         AdrenotoolsManager.InstallResult.NO_META -> L("No meta.json in the zip")
         AdrenotoolsManager.InstallResult.BAD_META -> L("Its meta.json can't be read")
         AdrenotoolsManager.InstallResult.NO_LIBRARY -> L("Its meta.json names no library")
-        AdrenotoolsManager.InstallResult.LIBRARY_MISSING -> L("%1\$s is not in the zip", detail ?: "")
-        AdrenotoolsManager.InstallResult.BUILT_IN -> L("Same name as a built-in driver")
+        AdrenotoolsManager.InstallResult.LIBRARY_MISSING -> L("%1\$s 不在这个 zip 里", detail ?: "")
+        AdrenotoolsManager.InstallResult.BUILT_IN -> L("与内置驱动重名")
         // Routed by kind before AdrenoTools sees it; only a zip whose meta.json moved between reads lands here.
         AdrenotoolsManager.InstallResult.LINUX_KIND -> L("Linux runtime drivers")
         AdrenotoolsManager.InstallResult.GLIBC -> L("It is a Linux driver: import it under Linux runtime drivers")

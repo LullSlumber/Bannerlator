@@ -3806,7 +3806,7 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
             if (show("GPU model", rich)) add(Triple("GPU model", showGpuModel) { showGpuModel = !showGpuModel; apply() })
             if (!fusion && gameHub) add(Triple("Dual battery", dualBattery) { dualBattery = !dualBattery; apply() })
             // Global appearance control, shown for every style/size.
-            add(Triple("Lock in place", hudLocked) { hudLocked = !hudLocked; apply() })
+            add(Triple("锁定位置", hudLocked) { hudLocked = !hudLocked; apply() })
             add(Triple("Snap to sides", hudSnap) { hudSnap = !hudSnap; apply() })
         }
 

@@ -349,7 +349,7 @@ internal class DeckWindowsSection(
     }
 }
 
-/** What "Reset to app defaults" forgets, for its confirm (All containers). */
+/** What "重置为应用默认值" forgets, for its confirm (All containers). */
 internal fun resetDefaultsMessage(vm: ContainerDetailViewModel): String =
     L("The %1\$s defaults profile, ", if (vm.defaultsArch == com.winlator.star.core.NewContainerDefaults.ARCH_X86_64) "x86-64" else "ARM64EC") +
         L("its \"Set as default\" picks and its default layer are forgotten now, and this page shows the app's own defaults. ") +

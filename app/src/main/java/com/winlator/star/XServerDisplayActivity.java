@@ -17999,7 +17999,7 @@ return true;
         File userRegFile = new File(imageFs.getRootDir(), ImageFs.WINEPREFIX + "/user.reg");
         try (WineRegistryEditor reg = new WineRegistryEditor(userRegFile)) {
             if (guestWayland()) {
-                reg.setStringValue("Software\\Wine\\Drivers", "Graphics", "wayland");
+                reg.setStringValue("Software\\Wine\\Drivers", "显示设置", "wayland");
                 // Every process of the session is born on the "shell" desktop - explorer's own threads
                 // included. Without this explorer starts on "Default" and SetThreadDesktop moves only
                 // its main thread to "shell"; the winewayland event thread, clipboard and systray

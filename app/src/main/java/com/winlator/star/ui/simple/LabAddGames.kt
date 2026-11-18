@@ -53,22 +53,22 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Lab's versions of the "Add games" popups (GameActionsHost, AndroidGamePicker): the same state and handlers as the stock
+// Lab's versions of the "添加游戏" popups (GameActionsHost, AndroidGamePicker): the same state and handlers as the stock
 // and XMB dialogs they stand in for, passed as plain parameters, drawn with the Lab dialog kit (LabGameActions.kt).
 
-/** "Add games": what to add (one .exe, a games folder, Android games, Windows Steam x64). */
+/** "添加游戏": what to add (one .exe, a games folder, Android games, Windows Steam x64). */
 @Composable
 internal fun LabImportMethodDialog(onDismiss: () -> Unit, onExe: () -> Unit, onFolder: () -> Unit, onAndroid: () -> Unit, onWindowsSteam: () -> Unit) {
     val first = rememberLabFirstFocus()
     LabActionDialog(
-        title = L("Add games"),
+        title = L("添加游戏"),
         onDismiss = onDismiss,
         buttons = { LabActionButton(L("Cancel"), onClick = onDismiss) },
     ) {
-        LabActionRow(L("Add game EXE"), subtitle = L("Pick one game's .exe file"), icon = Icons.Filled.InsertDriveFile, requester = first, onClick = onExe)
-        LabActionRow(L("Add games folder"), subtitle = L("Pick the folder holding all your games — each one is scanned for its .exe"), icon = Icons.Filled.Folder, onClick = onFolder)
-        LabActionRow(L("Add Android game"), subtitle = L("Pick games installed on this phone — they open as normal Android apps"), icon = Icons.Filled.Android, onClick = onAndroid)
-        LabActionRow(L("Add Windows Steam client x64"), subtitle = L("Valve's 64-bit Steam for Windows, downloaded from Steam"), icon = Icons.Filled.DesktopWindows, onClick = onWindowsSteam)
+        LabActionRow(L("添加游戏EXE"), subtitle = L("选择一个游戏的.exe文件"), icon = Icons.Filled.InsertDriveFile, requester = first, onClick = onExe)
+        LabActionRow(L("添加游戏文件夹"), subtitle = L("选择存放所有游戏的文件夹——每个游戏都会扫描其.exe文件"), icon = Icons.Filled.Folder, onClick = onFolder)
+        LabActionRow(L("添加 Android 游戏"), subtitle = L("选择安装在此手机上的游戏 — 它们会作为普通 Android 应用打开"), icon = Icons.Filled.Android, onClick = onAndroid)
+        LabActionRow(L("添加 Windows Steam 客户端 x64"), subtitle = L("Valve 的 64 位 Windows 版 Steam，从 Steam 下载"), icon = Icons.Filled.DesktopWindows, onClick = onWindowsSteam)
     }
 }
 
@@ -83,10 +83,10 @@ internal fun LabImportContainerDialog(
     onSystemPickerChange: (Boolean) -> Unit,
 ) {
     LabContainerPickerDialog(
-        title = L("Select container"),
+        title = L("选择容器"),
         subtitle = subtitle,
         containers = containers,
-        emptyText = L("No containers found."),
+        emptyText = L("未找到容器。"),
         onPick = onPick,
         onDismiss = onDismiss,
         systemPickerChecked = systemPickerChecked,
@@ -94,12 +94,12 @@ internal fun LabImportContainerDialog(
     )
 }
 
-/** "Scanning for games": the folder being scanned; Cancel stops waiting for it. */
+/** "正在扫描游戏": the folder being scanned; Cancel stops waiting for it. */
 @Composable
 internal fun LabScanProgressDialog(root: String, onCancel: () -> Unit) {
     val first = rememberLabFirstFocus()
     LabActionDialog(
-        title = L("Scanning for games"),
+        title = L("正在扫描游戏"),
         onDismiss = onCancel,
         buttons = { LabActionButton(L("Cancel"), requester = first, onClick = onCancel) },
     ) {
@@ -155,7 +155,7 @@ internal fun LabFolderReviewDialog(
         buttons = {
             LabActionButton(L("Cancel"), enabled = !importing, onClick = onCancel)
             LabActionButton(
-                if (importing) L("Adding…") else L("Add %1\$s", selected.size),
+                if (importing) L("正在添加…") else L("Add %1\$s", selected.size),
                 primary = true,
                 enabled = selected.isNotEmpty() && !importing,
                 onClick = onAdd,
@@ -169,7 +169,7 @@ internal fun LabFolderReviewDialog(
                 L("Adding %1\$s…", labCount(total, "1 game", "%1\$s games")),
                 fraction = if (total > 0) done.toFloat() / total else null,
                 trailing = if (total > 0) "$done / $total" else null,
-                detail = L("Writing the shortcuts and fetching the cover art"),
+                detail = L("正在写入快捷方式并获取封面图"),
             )
         } else {
             val warn = MaterialTheme.colorScheme.tertiary
@@ -251,7 +251,7 @@ internal fun LabExePickerDialog(
 }
 
 /**
- * "Confirm game": the game's name with Search Steam, the Steam results (the linked one first, marked), [components] under
+ * "确认游戏": the game's name with Search Steam, the Steam results (the linked one first, marked), [components] under
  * them, Skip and Save.
  */
 @Composable
@@ -271,20 +271,20 @@ internal fun LabConfirmGameDialog(
 ) {
     val save = rememberLabFirstFocus()
     LabActionDialog(
-        title = L("Confirm game"),
+        title = L("确认游戏"),
         onDismiss = onDismiss,
         wide = true,
         buttons = {
-            LabActionButton(L("Skip"), onClick = onSkip)
+            LabActionButton(L("跳过"), onClick = onSkip)
             LabActionButton(L("Save"), primary = true, requester = save, onClick = onSave)
         },
     ) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LabActionField(name, onNameChange, placeholder = L("Game name"), modifier = Modifier.weight(1f), onClear = onNameClear)
-            LabActionButton(if (searching) L("Searching…") else L("Search Steam"), enabled = !searching && name.isNotBlank(), icon = Icons.Filled.Search, onClick = onSearch)
+            LabActionField(name, onNameChange, placeholder = L("游戏名称"), modifier = Modifier.weight(1f), onClear = onNameClear)
+            LabActionButton(if (searching) L("Searching…") else L("搜索 Steam"), enabled = !searching && name.isNotBlank(), icon = Icons.Filled.Search, onClick = onSearch)
         }
         if (results.isNotEmpty()) {
-            LabActionText(L("Tap a result to set the name + cover art:"), small = true)
+            LabActionText(L("点击结果以设置名称+封面图:"), small = true)
             results.sortedByDescending { it.appId == linkedAppId }.forEach { hit ->
                 val linked = hit.appId == linkedAppId
                 LabActionRow(
@@ -297,9 +297,9 @@ internal fun LabConfirmGameDialog(
                 ) { onPickResult(hit) }
             }
         } else if (searching) {
-            LabProgressLine(L("Searching Steam…"))
+            LabProgressLine(L("正在搜索Steam…"))
         } else {
-            LabActionText(L("Not the right game? Edit the name and tap Search Steam to pick the correct one."), small = true)
+            LabActionText(L("不是正确的游戏？编辑名称并点击搜索Steam以选择正确的游戏。"), small = true)
         }
         components()
     }
@@ -329,7 +329,7 @@ internal fun LabWindowsSteamDialog(
     }
     LabActionDialog(
         title = title,
-        subtitle = if (running) null else L("Where should Steam go?"),
+        subtitle = if (running) null else L("Steam 装到哪里？"),
         onDismiss = onCancel,
         dismissible = !running,
         buttons = if (running) null else buttons,
@@ -337,13 +337,13 @@ internal fun LabWindowsSteamDialog(
         if (progress != null) {
             LabProgressLine(L("Downloading Steam… %1\$s%%", progress), fraction = progress / 100f, detail = places.getOrNull(pick)?.let { L("Saving to %1\$s", L(it.label)) })
         } else if (places.isEmpty()) {
-            LabProgressLine(L("Checking the storage…"))
+            LabProgressLine(L("正在检查存储…"))
         } else {
             places.forEachIndexed { i, place ->
                 LabActionRow(
                     L(place.label),
                     subtitle = when {
-                        place.hasClient -> L("Steam is already here")
+                        place.hasClient -> L("Steam 已存在于此")
                         place.fits -> L("%1\$s free", SteamSdInstall.fmtBytes(place.freeBytes))
                         else -> L("Not enough space (%1\$s free)", SteamSdInstall.fmtBytes(place.freeBytes))
                     },
@@ -356,22 +356,22 @@ internal fun LabWindowsSteamDialog(
     }
 }
 
-/** "Also uninstall Steam?": what would go, or its progress. Keeping is the default. */
+/** "同时卸载 Steam？": what would go, or its progress. Keeping is the default. */
 @Composable
 internal fun LabSteamUninstallDialog(plan: WindowsSteamClient.UninstallPlan?, running: Boolean, onUninstall: (WindowsSteamClient.UninstallPlan) -> Unit, onKeep: () -> Unit) {
     val keep = rememberLabFirstFocus(plan != null)
     val buttons: @Composable RowScope.() -> Unit = {
         LabActionButton(L("Uninstall"), danger = true, enabled = plan != null) { plan?.let(onUninstall) }
-        LabActionButton(L("Keep Steam"), primary = true, requester = keep, onClick = onKeep)
+        LabActionButton(L("保留 Steam"), primary = true, requester = keep, onClick = onKeep)
     }
     LabActionDialog(
-        title = L("Also uninstall Steam?"),
+        title = L("同时卸载 Steam？"),
         onDismiss = onKeep,
         dismissible = !running,
         buttons = if (running) null else buttons,
     ) {
         if (running || plan == null) {
-            LabProgressLine(if (running) L("Uninstalling Steam…") else L("Checking Steam's folder…"))
+            LabProgressLine(if (running) L("正在卸载 Steam…") else L("正在检查 Steam 文件夹…"))
         } else {
             LabActionText(L("Deletes Steam from %1\$s (%2\$s).", plan.where, SteamSdInstall.fmtBytes(plan.bytes)), muted = false)
             if (plan.games > 0) LabActionText(labCount(plan.games, "Includes 1 game installed in Steam's folder.", "Includes %1\$s games installed in Steam's folder."))
@@ -413,7 +413,7 @@ private fun LabAppIcon(app: AndroidGames.InstalledApp) {
 }
 
 /**
- * "Add Android game": search, Games / All apps, the apps as tick rows with their icon, Add N / Cancel. [loading] while
+ * "添加 Android 游戏": search, Games / All apps, the apps as tick rows with their icon, Add N / Cancel. [loading] while
  * the installed apps are read; [adding] while the entries are written. [countLine] is the count under the title.
  */
 @Composable
@@ -436,8 +436,8 @@ internal fun LabAndroidGamePickerDialog(
     val first = remember { androidx.compose.ui.focus.FocusRequester() }
     val firstApp = shown.firstOrNull { it.packageName !in alreadyAdded }
     LabActionDialog(
-        title = L("Add Android game"),
-        subtitle = if (loading) L("Reading installed apps…") else countLine,
+        title = L("添加 Android 游戏"),
+        subtitle = if (loading) L("正在读取已安装的应用…") else countLine,
         onDismiss = onDismiss,
         dismissible = !adding,
         wide = true,
@@ -446,7 +446,7 @@ internal fun LabAndroidGamePickerDialog(
             LabActionButton(L("Cancel"), enabled = !adding, onClick = onDismiss)
             LabActionButton(
                 when {
-                    adding -> L("Adding…")
+                    adding -> L("正在添加…")
                     chosenCount == 0 -> L("Add")
                     else -> L("Add %1\$s", chosenCount)
                 },
@@ -457,15 +457,15 @@ internal fun LabAndroidGamePickerDialog(
         },
     ) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LabActionField(query, onQueryChange, placeholder = L("Search installed apps"), modifier = Modifier.weight(1f), onClear = { onQueryChange("") })
-            LabChoiceChip(L("Games"), selected = gamesOnly, enabled = !adding) { onGamesOnlyChange(true) }
-            LabChoiceChip(L("All apps"), selected = !gamesOnly, enabled = !adding) { onGamesOnlyChange(false) }
+            LabActionField(query, onQueryChange, placeholder = L("搜索已安装的应用"), modifier = Modifier.weight(1f), onClear = { onQueryChange("") })
+            LabChoiceChip(L("游戏"), selected = gamesOnly, enabled = !adding) { onGamesOnlyChange(true) }
+            LabChoiceChip(L("所有应用"), selected = !gamesOnly, enabled = !adding) { onGamesOnlyChange(false) }
         }
         when {
-            loading -> LabProgressLine(L("Reading installed apps…"))
-            adding -> LabProgressLine(L("Adding %1\$s…", labCount(chosenCount, "1 game", "%1\$s games")), detail = L("Writing the shortcuts"))
+            loading -> LabProgressLine(L("正在读取已安装的应用…"))
+            adding -> LabProgressLine(L("Adding %1\$s…", labCount(chosenCount, "1 game", "%1\$s games")), detail = L("正在写入快捷方式"))
             else -> {
-                if (shown.isEmpty() && gamesOnly && query.isBlank()) LabActionText(L("Some games don't tell Android they are games — try All apps."), small = true)
+                if (shown.isEmpty() && gamesOnly && query.isBlank()) LabActionText(L("有些游戏不会告诉 Android 它们是游戏 — 请尝试所有应用。"), small = true)
                 LazyColumn(modifier = Modifier.weight(1f, fill = false).heightIn(min = 0.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     items(shown, key = { it.packageName }) { app ->
                         val added = app.packageName in alreadyAdded

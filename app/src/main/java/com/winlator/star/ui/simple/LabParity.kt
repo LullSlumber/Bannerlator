@@ -9,7 +9,7 @@ import androidx.navigation.NavGraphBuilder
  * controls (LabContentsExtra.kt), files, logs and saves (LabTools.kt).
  */
 internal object LabParityRoutes {
-    /** Lab's wrapper manager (Tools › Wrappers, Search › Wrappers, the editors' "Manage graphics wrappers"). */
+    /** Lab's wrapper manager (Tools › Wrappers, Search › Wrappers, the editors' "管理图形包装器"). */
     const val WRAPPERS = "lab_wrappers"
 }
 

@@ -117,7 +117,7 @@ internal object AppSettingsRegistry {
         fun lab(label: String, hint: String, route: String) = Handoff(label, hint, TARGET_LAB + route)
         val r = com.winlator.star.ui.simple.LabSettingsRoutes
         mapOf(
-            "app.general" to listOf(lab(T("Updates"), T("Installed and latest version, what's new, Download & install, Check for updates."), r.UPDATES)),
+            "app.general" to listOf(lab(T("更新"), T("Installed and latest version, what's new, Download & install, Check for updates."), r.UPDATES)),
             "app.appearance" to handoffs.getValue("app.appearance"),
             "app.library" to listOf(
                 lab(T("Steam library locations"), T("Games folders on shared storage or an SD card."), r.STEAM_LIBRARIES),
@@ -125,18 +125,18 @@ internal object AppSettingsRegistry {
                 Handoff(T("Get a SteamGridDB API key"), T("Opens steamgriddb.com."), TARGET_URL + "https://www.steamgriddb.com/profile/preferences/api"),
             ),
             "app.performance" to listOf(
-                lab(T("Root controls and heat safety"), T("CPU governor and frequency locks, free memory and the temperature watchdog."), r.PERFORMANCE),
+                lab(T("Root 控制与散热保护"), T("CPU 调频策略与频率锁定、可用内存和温度看门狗。"), r.PERFORMANCE),
                 lab(T("Lossless.dll for frame generation"), T("Detect, import or remove the DLL LSFG Native needs."), r.LOSSLESS),
                 lab(T("Translator presets"), T("New, edit, duplicate, remove, export or import Box64 and FEX presets."), r.PRESETS),
             ) + handoffs.getValue("app.performance").filter { it.target == TARGET_DEFAULTS },
-            "app.network" to listOf(lab(T("Steam connection tests"), T("Test regions and the network; pick a datacenter by its ping."), r.STEAM_CONNECTION)),
-            "app.storage" to listOf(lab(T("Storage and folders"), T("Space used, the app data and shortcut export folders, and the base system (ImageFS)."), r.STORAGE)),
+            "app.network" to listOf(lab(T("Steam 连接测试"), T("Test regions and the network; pick a datacenter by its ping."), r.STEAM_CONNECTION)),
+            "app.storage" to listOf(lab(T("存储和文件夹"), T("Space used, the app data and shortcut export folders, and the base system (ImageFS)."), r.STORAGE)),
             "app.logs" to handoffs.getValue("app.logs"),
-            "app.backup" to listOf(lab(T("Back up or restore all app data"), T("Containers, settings and prefix in one file."), r.BACKUP)),
+            "app.backup" to listOf(lab(T("备份或恢复所有应用数据"), T("Containers, settings and prefix in one file."), r.BACKUP)),
             "app.controllers" to handoffs.getValue("app.controllers"),
             "app.contents" to handoffs.getValue("app.contents"),
             "app.about" to handoffs.getValue("app.about"),
-            "app.advanced" to listOf(lab(T("Frame-gen training capture"), T("Contributing captures and the win-fg diagnostic log."), r.FG_CAPTURE)),
+            "app.advanced" to listOf(lab(T("帧生成训练捕获"), T("Contributing captures and the win-fg diagnostic log."), r.FG_CAPTURE)),
         )
     }
 
@@ -182,14 +182,14 @@ internal object AppSettingsRegistry {
         app(id, category, group, label, level, hint = hint, tech = key, control = { Control.Toggle }, binding = prefBool(key, default))
 
     /**
-     * Lab's "Open the app on": its own pages, Home, Library or Containers (user 11-15: "Games" opened Home). The stored
+     * Lab's "打开应用时": its own pages, Home, Library or Containers (user 11-15: "游戏" opened Home). The stored
      * value is the one Classic uses: "games" is the Library (Classic's games list), "containers" the containers, and
      * "home" (Lab only; Classic opens its games list for it) or never set is Home. Big Picture is not offered: Lab has none.
      */
     private fun labLanding() = app(
-        "app.general.landing", "app.general", T("Start-up"), T("Open the app on"), SIMPLE,
+        "app.general.landing", "app.general", T("启动"), T("打开应用时"), SIMPLE,
         tech = T("default_landing_screen"),
-        control = { Control.Segmented(listOf(Opt("home", T("Home")), Opt("games", T("Library")), Opt("containers", T("Containers")))) },
+        control = { Control.Segmented(listOf(Opt("home", T("Home")), Opt("games", T("Library")), Opt("containers", T("容器管理")))) },
         binding = AppBinding(
             get = { c ->
                 val p = prefs(c)

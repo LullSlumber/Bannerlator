@@ -67,7 +67,7 @@ internal fun LabVegasDownloadSheet(onDismiss: () -> Unit, onContentChanged: () -
             downloadingTag = null
             if (uri == null) {
                 activeTag = null
-                errorMsg = L("Download failed.")
+                errorMsg = L("下载失败。")
                 return@launch
             }
             installing = true
@@ -75,7 +75,7 @@ internal fun LabVegasDownloadSheet(onDismiss: () -> Unit, onContentChanged: () -
                 if (!ok) {
                     installing = false
                     activeTag = null
-                    errorMsg = L("Install failed.")
+                    errorMsg = L("安装失败。")
                     return@installWcp
                 }
                 cm.syncContents()
@@ -116,7 +116,7 @@ internal fun LabVegasDownloadSheet(onDismiss: () -> Unit, onContentChanged: () -
                         enabled = !busy || mine,
                         onA = { download(r) },
                         actions = buildList<MenuAction> {
-                            add(MenuAction(L("Download and install"), { download(r) }))
+                            add(MenuAction(L("下载并安装"), { download(r) }))
                             if (notes != null) add(MenuAction(L("What's new"), { notesFor = r }))
                         },
                     ),
@@ -138,7 +138,7 @@ internal fun LabVegasDownloadSheet(onDismiss: () -> Unit, onContentChanged: () -
     // A list was loaded but something went wrong (a download or an install): the message with Retry, as Classic.
     errorMsg?.takeIf { !loading }?.let { msg ->
         SimpleActionSheet(
-            title = L("Download failed"),
+            title = L("下载失败"),
             message = msg,
             actions = listOf(MenuAction(L("OK"), { errorMsg = null }), MenuAction(L("Retry"), { errorMsg = null; retryKey++ })),
             onDismiss = { errorMsg = null },
@@ -151,7 +151,7 @@ internal fun LabVegasDownloadSheet(onDismiss: () -> Unit, onContentChanged: () -
 }
 
 /**
- * Classic's "Stock configs" sheet as a Lab list: every VEGAS release with its config asset (or none); A fetches and
+ * Classic's "默认配置" sheet as a Lab list: every VEGAS release with its config asset (or none); A fetches and
  * parks one release's config so it shows under Stock config. The versions seen are remembered as in Classic.
  */
 @Composable
@@ -209,8 +209,8 @@ internal fun LabStockConfigDownloadSheet(onDismiss: () -> Unit) {
         }
     }
     LabDownloadList(
-        title = L("Stock configs"),
-        message = L("Tap a version to fetch its config. Builds without a shipped config show none."),
+        title = L("默认配置"),
+        message = L("点击一个版本以获取其配置。没有附带配置的构建不会显示任何内容。"),
         lines = lines,
         onDismiss = onDismiss,
     )

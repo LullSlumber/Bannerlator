@@ -184,7 +184,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     val importer = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data ?: InAppFilePicker.pickedUri(result.data) ?: return@rememberLauncherForActivityResult
         val json = runCatching { context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } }.getOrNull()
-        toast(context, if (json != null && vm.importRepoListJson(json, merge = true)) L("Repositories imported") else L("That file is not a repository list"))
+        toast(context, if (json != null && vm.importRepoListJson(json, merge = true)) L("Repositories imported") else L("该文件不是仓库列表"))
     }
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
@@ -192,13 +192,13 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     }
     fun exportList() = runCatching {
         val share = Intent(Intent.ACTION_SEND).apply { type = "application/json"; putExtra(Intent.EXTRA_TEXT, vm.exportRepoListJson()) }
-        context.startActivity(Intent.createChooser(share, L("Export repositories")))
+        context.startActivity(Intent.createChooser(share, L("导出仓库")))
     }
     // Classic's refresh: the source list read again and the cached lists dropped, so the next open loads them fresh.
     fun refreshLists() {
         vm.reloadSources()
         vm.refreshSelected()
-        if (query.isNotBlank()) vm.setQuery(query) else toast(context, L("Refreshed"))
+        if (query.isNotBlank()) vm.setQuery(query) else toast(context, L("已刷新"))
     }
     fun openPage(s: HubSource) {
         val url = vm.browseUrl(s)
@@ -214,7 +214,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 when { searching -> L("Searching…"); results.size == 1 -> L("1 result"); else -> L("%1\$s results", results.size) },
                 icon = Icons.Filled.Search,
                 onA = { searchOpen = true },
-                actions = listOf(MenuAction(L("Search again"), { searchOpen = true }), MenuAction(L("Clear the search"), { vm.setQuery("") })),
+                actions = listOf(MenuAction(L("再次搜索"), { searchOpen = true }), MenuAction(L("Clear the search"), { vm.setQuery("") })),
             ),
         )
         if (!searching) results.groupBy { it.type }.values.flatten().forEach { item ->
@@ -241,7 +241,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 onA = { onNavigate(SimpleRoutes.componentSource(i)) },
                 actions = buildList {
                     add(MenuAction(L("Browse"), { onNavigate(SimpleRoutes.componentSource(i)) }))
-                    if (vm.browseUrl(s).isNotBlank()) add(MenuAction(L("Open source page"), { openPage(s) }))
+                    if (vm.browseUrl(s).isNotBlank()) add(MenuAction(L("打开来源页面"), { openPage(s) }))
                     add(
                         MenuAction(
                             if (s.removeIsHide) L("Hide this repository") else L("Remove this repository"),
@@ -262,29 +262,29 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
             )
         }
         listOf(
-            MenuEntry("search", L("Search all repositories"), icon = Icons.Filled.Search, onA = { searchOpen = true }),
-            MenuEntry("refresh", L("Refresh the lists"), icon = Icons.Filled.Refresh, onA = { refreshLists() }),
+            MenuEntry("search", L("搜索所有仓库"), icon = Icons.Filled.Search, onA = { searchOpen = true }),
+            MenuEntry("refresh", L("刷新列表"), icon = Icons.Filled.Refresh, onA = { refreshLists() }),
         ) + repos + listOf(
             MenuEntry("fromfile", L("Install content from file"), icon = Icons.Filled.FolderOpen, primary = true, onA = fromFile),
         ) + hidden + listOf(
             MenuEntry(
-                "io", L("Import or export the list"), icon = Icons.Filled.ImportExport, group = L("Manage"),
+                "io", L("导入或导出列表"), icon = Icons.Filled.ImportExport, group = L("Manage"),
                 actions = listOf(
-                    MenuAction(L("Import a list from a file"), { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.JSON, L("Select repository list"))) }),
-                    MenuAction(L("Export the list"), { exportList() }),
+                    MenuAction(L("从文件导入列表"), { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.JSON, L("选择仓库列表"))) }),
+                    MenuAction(L("导出列表"), { exportList() }),
                 ),
             ),
             MenuEntry(
-                "location", L("Save location"), baseDisplay, icon = Icons.Filled.FolderSpecial, group = L("Manage"),
+                "location", L("保存位置"), baseDisplay, icon = Icons.Filled.FolderSpecial, group = L("Manage"),
                 actions = listOf(
-                    MenuAction(L("Downloads › bannerlator (default)"), { vm.library.setDefaultBase(); vm.refreshBase(); vm.refreshFolders() }),
-                    MenuAction(L("App-private storage"), { vm.library.setFileBase(vm.library.appPrivateBasePath()); vm.refreshBase(); vm.refreshFolders() }),
-                    MenuAction(L("Choose another folder…"), {
+                    MenuAction(L("Downloads › bannerlator（默认）"), { vm.library.setDefaultBase(); vm.refreshBase(); vm.refreshFolders() }),
+                    MenuAction(L("应用私有存储"), { vm.library.setFileBase(vm.library.appPrivateBasePath()); vm.refreshBase(); vm.refreshFolders() }),
+                    MenuAction(L("选择其他文件夹…"), {
                         folderPicker.launch(InAppFilePicker.buildDirIntent(context, title = L("Select save folder"), initialDir = vm.library.currentFileBasePath()))
                     }),
                 ),
             ),
-            MenuEntry("restore", L("Restore default repositories"), icon = Icons.Filled.Restore, group = L("Manage"), onA = { restoreAsk = true }),
+            MenuEntry("restore", L("恢复默认仓库"), icon = Icons.Filled.Restore, group = L("Manage"), onA = { restoreAsk = true }),
         )
     }
 
@@ -294,7 +294,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     }.orEmpty()
     // Classic's gold badges: which architecture's new containers it is the default for.
     fun defaultLabel(archs: List<String>): String? =
-        if (archs.isEmpty()) null else L("Default · %1\$s", archs.joinToString(", ") { SetAsDefault.archLabel(it) })
+        if (archs.isEmpty()) null else L("默认 · %1\$s", archs.joinToString(", ") { SetAsDefault.archLabel(it) })
     val installed = remember(tick, cm) {
         buildList {
             runCatching { adreno?.enumarateInstalledDrivers()?.toList() }.getOrNull().orEmpty().forEach { id ->
@@ -309,12 +309,12 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Memory,
                         actions = listOf(
                             MenuAction(L("Set as default…"), { defaultItem = item }),
-                            MenuAction(L("Remove"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
+                            MenuAction(L("移除"), { adreno?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s? Games set to it go back to their container's driver.", name)),
                         ),
                     ),
                 )
             }
-            add(MenuEntry("d-install", L("Install GPU driver"), icon = Icons.Filled.Add, group = L("GPU drivers"), onA = { driverAsk = true }))
+            add(MenuEntry("d-install", L("安装GPU驱动"), icon = Icons.Filled.Add, group = L("GPU drivers"), onA = { driverAsk = true }))
             runCatching { wayland?.enumerateInstalledDrivers() }.getOrNull().orEmpty().forEach { id ->
                 val name = wayland?.getDriverName(id) ?: id
                 // As Classic: a build without the Wayland WSI is marked.
@@ -322,14 +322,14 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 add(
                     MenuEntry(
                         key = "w$id", title = name, group = L("Wayland game drivers"),
-                        subtitle = listOfNotNull(wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, if (noWsi) L("No Wayland WSI detected") else null).joinToString(" · ").ifBlank { null },
+                        subtitle = listOfNotNull(wayland?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, if (noWsi) L("未检测到 Wayland WSI") else null).joinToString(" · ").ifBlank { null },
                         icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { wayland?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
             if (wayland != null) {
-                val pick = { waylandPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), L("Select Wayland game driver zip"))) }
+                val pick = { waylandPicker.launch(InAppFilePicker.buildIntent(context, arrayOf("zip"), L("选择Wayland游戏驱动zip"))) }
                 add(
                     MenuEntry(
                         "w-import", L("Import Wayland game driver (.zip)"),
@@ -337,7 +337,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Add, group = L("Wayland game drivers"), onA = pick,
                         actions = listOf(
                             MenuAction(L("Import a zip"), pick),
-                            MenuAction(L("What is this?"), {
+                            MenuAction(L("音频设置"), {
                                 note = LabHelpText(L("Wayland game drivers"), L("The Vulkan driver a game renders on under the Wayland display backend. Import a zip with a libvulkan_freedreno*.so built for Wayland/Linux (optional libdrm.so, meta.json). Android Turnip zips (vulkan.adXXXX.so) belong under GPU drivers and are rejected here."))
                             }),
                         ),
@@ -352,7 +352,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         key = "l$id", title = name, group = L("Linux runtime drivers"),
                         subtitle = listOfNotNull(linux?.getDriverVersion(id)?.takeIf { it.isNotBlank() }, glibc?.let { "glibc $it+" }).joinToString(" · ").ifBlank { null },
                         icon = Icons.Filled.Memory,
-                        actions = listOf(MenuAction(L("Remove"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
+                        actions = listOf(MenuAction(L("移除"), { linux?.removeDriver(id); tick++; toast(context, L("Removed %1\$s", name)) }, danger = true, confirm = L("Remove %1\$s?", name))),
                     ),
                 )
             }
@@ -365,7 +365,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Add, group = L("Linux runtime drivers"), onA = pick,
                         actions = listOf(
                             MenuAction(L("Import a zip"), pick),
-                            MenuAction(L("What is this?"), {
+                            MenuAction(L("音频设置"), {
                                 note = LabHelpText(L("Linux runtime drivers"), L("The Vulkan driver the Linux runtime draws with: the native Steam client's interface and every game it launches. Import a \"-Linux\" Turnip zip (glibc). The client and its games are Linux processes, so an Android (vulkan.adXXXX.so) or \"-Wayland\" zip cannot be loaded by them and is rejected here. Frames still reach the screen through the GPU driver above."))
                             }),
                         ),
@@ -385,7 +385,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                             icon = Icons.Filled.Extension,
                             actions = buildList {
                                 if (item != null) add(MenuAction(L("Set as default…"), { defaultItem = item }))
-                                add(MenuAction(L("Remove"), {
+                                add(MenuAction(L("移除"), {
                                     runCatching { cm?.removeContent(p); cm?.syncContents() }
                                     vm.refreshStatus(); tick++
                                     toast(context, L("Removed %1\$s %2\$s", label, p.verName))
@@ -416,7 +416,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                 onA = reinstall, play = reinstall, playIcon = Icons.Filled.Download, playLabel = L("Reinstall"),
                 actions = listOf(
                     MenuAction(L("Reinstall"), reinstall),
-                    MenuAction(L("Share"), { shareArchive(context, f) }),
+                    MenuAction(L("分享"), { shareArchive(context, f) }),
                     MenuAction(L("Delete the saved file"), { vm.deleteSaved(f) }, danger = true, confirm = L("Delete %1\$s?", f.name)),
                 ),
             )
@@ -428,7 +428,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
 
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("Contents"),
+        title = L("内容管理"),
         sections = listOf(
             MenuSection("download", L("Download components"), Icons.Filled.Download, download, empty = L("No repositories."), primary = MenuAction(L("Add a repository"), { addRepo = true })),
             MenuSection("installed", L("Installed"), Icons.Filled.CheckCircle, installed, empty = L("Only the built-in components so far."), primary = MenuAction(L("Install content from file"), { fromFile() })),
@@ -448,7 +448,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     // What Set as default did (running containers skipped, failures), with Classic's Undo.
     outcome?.let { o ->
         SimpleActionSheet(
-            title = L("Set as default"),
+            title = L("设为默认"),
             actions = listOfNotNull(
                 MenuAction(L("OK"), {}),
                 if (o.canUndo) MenuAction(L("Undo"), {
@@ -465,17 +465,17 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
     }
     if (addRepo) LabAddRepoDialog(vm, onDismiss = { addRepo = false })
     if (searchOpen) {
-        LabTextEntryDialog(L("Search all repositories"), query, L("Search"), onDismiss = { searchOpen = false }, allowBlank = true, search = true) { q ->
+        LabTextEntryDialog(L("搜索所有仓库"), query, L("Search"), onDismiss = { searchOpen = false }, allowBlank = true, search = true) { q ->
             searchOpen = false
             vm.setQuery(q)
         }
     }
     if (driverAsk) {
         SimpleActionSheet(
-            title = L("Install GPU driver"),
+            title = L("安装GPU驱动"),
             actions = listOf(
-                MenuAction(L("Browse files"), { driverPicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, L("Select GPU driver"))) }),
-                MenuAction(L("Pick via system…"), {
+                MenuAction(L("浏览文件"), { driverPicker.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.DRIVER, L("选择GPU驱动"))) }),
+                MenuAction(L("从系统选取…"), {
                     driverPicker.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "*/*" })
                 }),
                 MenuAction(L("Cancel"), {}),
@@ -498,7 +498,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
         ) { a -> otherList = null; a.run() }
     }
     if (restoreAsk) {
-        SimpleConfirm(L("Restore default repositories"), L("Hidden built-in repositories come back. Yours stay."), danger = false, onDismiss = { restoreAsk = false }) {
+        SimpleConfirm(L("恢复默认仓库"), L("隐藏的内置仓库会恢复。你自己的仓库不受影响。"), danger = false, onDismiss = { restoreAsk = false }) {
             restoreAsk = false
             vm.restoreDefaultSources()
         }

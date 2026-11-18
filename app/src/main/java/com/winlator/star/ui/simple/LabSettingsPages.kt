@@ -107,10 +107,10 @@ internal fun NavGraphBuilder.labSettingsRoutes(open: (String) -> Unit, back: () 
 
 private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
-/** The "Browse files" / "Pick via system…" choice Classic offers on every import (issue #73). */
+/** The "浏览文件" / "从系统选取…" choice Classic offers on every import (issue #73). */
 private fun pickActions(inApp: () -> Unit, system: () -> Unit) = listOf(
-    MenuAction(L("Browse files"), inApp),
-    MenuAction(L("Pick via system…"), system),
+    MenuAction(L("浏览文件"), inApp),
+    MenuAction(L("从系统选取…"), system),
 )
 
 // ───────────────────────────── Updates ─────────────────────────────
@@ -133,7 +133,7 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
                 if (force) checking = false
                 if (report) {
                     if (r == null) toast(context, L("Couldn't check for updates"))
-                    else if (!r.isNewer) toast(context, L("You're on the latest version"))
+                    else if (!r.isNewer) toast(context, L("您已是最新版本"))
                 }
             }
         }
@@ -146,8 +146,8 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
             "latest", L("Latest"),
             subtitle = when {
                 latest == null -> null
-                latest.isNewer -> L("Update available")
-                else -> L("You're up to date.")
+                latest.isNewer -> L("有可用更新")
+                else -> L("已是最新版本。")
             },
             trailing = latest?.let { "V " + it.versionName } ?: if (checking) "…" else "—",
             icon = Icons.Filled.SystemUpdate,
@@ -171,15 +171,15 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
             }
         }
         add(MenuEntry(
-            "check", if (checking) L("Checking…") else L("Check for updates"), icon = Icons.Filled.Refresh, group = L("Updates"),
+            "check", if (checking) L("检查中…") else L("检查更新"), icon = Icons.Filled.Refresh, group = L("更新"),
             onA = { if (!checking) check(force = true, report = true) },
         ))
-        add(MenuEntry("notify", L("Tell me about new versions"), group = L("Updates"), toggle = notify, onA = {
+        add(MenuEntry("notify", L("告知我新版本"), group = L("更新"), toggle = notify, onA = {
             notify = !notify
             UpdateManager.setNotifyEnabled(context, notify)
         }))
         // A channel switch re-checks at once, as Classic does.
-        add(MenuEntry("pre", L("Include beta builds"), L("Pre-releases may be less stable."), group = L("Updates"), toggle = pre, onA = {
+        add(MenuEntry("pre", L("包含测试版构建"), L("预发布版本可能不太稳定。"), group = L("更新"), toggle = pre, onA = {
             pre = !pre
             UpdateManager.setIncludePrereleases(context, pre)
             check(force = true, report = false)
@@ -187,8 +187,8 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Updates"),
-        sections = listOf(MenuSection("updates", L("Updates"), Icons.Filled.SystemUpdate, entries)),
+        title = L("更新"),
+        sections = listOf(MenuSection("updates", L("更新"), Icons.Filled.SystemUpdate, entries)),
         onBack = onBack,
     )
     reading?.let { (t, b) -> LabSetInfo(t, b) { reading = null } }
@@ -229,25 +229,25 @@ internal fun LabStoragePage(onBack: () -> Unit) {
     val space = dev?.volumes.orEmpty().mapIndexed { i, v ->
         MenuEntry(
             "vol$i", L(v.label), subtitle = L("%1\$s of %2\$s GB used", fmtGb(v.usedGb), fmtGb(v.totalGb)),
-            trailing = "${(v.fraction * 100).toInt()}%", icon = if (v.removable) Icons.Filled.SdCard else Icons.Filled.Storage, group = L("Space used"),
+            trailing = "${(v.fraction * 100).toInt()}%", icon = if (v.removable) Icons.Filled.SdCard else Icons.Filled.Storage, group = L("已用空间"),
         )
     }
     val folders = listOf(
-        MenuEntry("data", L("App data folder"), dataPath, icon = Icons.Filled.Folder, group = L("Folders"),
+        MenuEntry("data", L("应用数据文件夹"), dataPath, icon = Icons.Filled.Folder, group = L("文件夹"),
             onA = { treeKey = "winlator_path_uri"; tree.launch(null) }),
-        MenuEntry("export", L("Shortcut export folder"), exportPath, icon = Icons.Filled.Folder, group = L("Folders"),
+        MenuEntry("export", L("快捷方式导出文件夹"), exportPath, icon = Icons.Filled.Folder, group = L("文件夹"),
             onA = { treeKey = "shortcuts_export_path_uri"; tree.launch(null) }),
-        MenuEntry("imagefs", L("Reinstall the base system (ImageFS)"), L("Restores the system files. Your containers are not changed."),
+        MenuEntry("imagefs", L("重装基础系统（ImageFS）"), L("恢复系统文件。你的容器不受影响。"),
             icon = Icons.Filled.Storage, group = L("Base system"), onA = { askImageFs = true }),
     )
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Storage and folders"),
+        title = L("存储和文件夹"),
         sections = listOf(MenuSection("storage", L("Storage"), Icons.Filled.Storage, space + folders)),
         onBack = onBack,
     )
     if (askImageFs) {
-        SimpleConfirm(L("Reinstall ImageFS"), context.getString(R.string.do_you_want_to_reinstall_imagefs), danger = false, onDismiss = { askImageFs = false }) {
+        SimpleConfirm(L("重新安装 ImageFS"), context.getString(R.string.do_you_want_to_reinstall_imagefs), danger = false, onDismiss = { askImageFs = false }) {
             askImageFs = false
             (context.labSetActivity() as? MainActivity)?.let { ImageFsInstaller.installFromAssets(it) }
         }
@@ -284,9 +284,9 @@ internal fun LabBackupPage(onBack: () -> Unit) {
         }, "app-data-backup").start()
     }
     val entries = listOf(
-        MenuEntry("backup", L("Back up app data"), L("Containers, settings and prefix in one file: app_data_backup.tar in your storage root."),
+        MenuEntry("backup", L("备份应用数据"), L("Containers, settings and prefix in one file: app_data_backup.tar in your storage root."),
             icon = Icons.Filled.FileUpload, onA = { askBackup = true }),
-        MenuEntry("restore", L("Restore app data"), L("Pick a backup file. The app restarts."), icon = Icons.Filled.Archive,
+        MenuEntry("restore", L("恢复应用数据"), L("Pick a backup file. The app restarts."), icon = Icons.Filled.Archive,
             actions = pickActions(
                 inApp = { inApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, L("Select backup"))) },
                 system = { system.launch(arrayOf("*/*")) },
@@ -294,19 +294,19 @@ internal fun LabBackupPage(onBack: () -> Unit) {
     )
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Backup and restore"),
-        sections = listOf(MenuSection("backup", L("Backup and restore"), Icons.Filled.Archive, entries)),
+        title = L("备份与恢复"),
+        sections = listOf(MenuSection("backup", L("备份与恢复"), Icons.Filled.Archive, entries)),
         onBack = onBack,
     )
     if (askBackup) {
-        SimpleConfirm(L("Back up app data"), L("Do you want to create a backup of the app's data directory?"), danger = false, onDismiss = { askBackup = false }) {
+        SimpleConfirm(L("备份应用数据"), L("是否要创建应用数据目录的备份？"), danger = false, onDismiss = { askBackup = false }) {
             askBackup = false
             runBackup()
         }
     }
-    if (backingUp) LabSetBusy(L("Backing up data"), L("This can take a while."))
+    if (backingUp) LabSetBusy(L("正在备份数据"), L("这可能需要一段时间。"))
     restoreUri?.let { uri ->
-        SimpleConfirm(L("Restore app data"), L("This will restart the app. Continue?"), danger = true, onDismiss = { restoreUri = null }) {
+        SimpleConfirm(L("恢复应用数据"), L("This will restart the app. Continue?"), danger = true, onDismiss = { restoreUri = null }) {
             restoreUri = null
             val intent = Intent(context, com.winlator.star.restore.RestoreActivity::class.java)
             intent.data = uri
@@ -358,11 +358,11 @@ internal fun LabSoundBanksPage(onBack: () -> Unit) {
     }
     val system = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let { install(it) } }
     val entries = listOf(
-        MenuEntry("builtin", L("Built-in General MIDI bank"), L("Always available; it cannot be removed."), icon = Icons.Filled.MusicNote),
+        MenuEntry("builtin", L("Built-in General MIDI bank"), L("始终可用，无法移除。"), icon = Icons.Filled.MusicNote),
     ) + banks.map { name ->
         MenuEntry(
             "sf:$name", name, icon = Icons.Filled.MusicNote,
-            actions = listOf(MenuAction(L("Remove"), {
+            actions = listOf(MenuAction(L("移除"), {
                 if (MidiManager.removeSF2File(context, name)) {
                     toast(context, context.getString(R.string.sound_font_removed_success))
                     tick++
@@ -374,19 +374,19 @@ internal fun LabSoundBanksPage(onBack: () -> Unit) {
         overline = L("Settings"),
         title = L("MIDI sound banks"),
         sections = listOf(MenuSection(
-            "banks", L("Sound banks"), Icons.Filled.MusicNote, entries,
-            primary = MenuAction(L("Add a sound bank (.sf2)"), { picking = true }),
+            "banks", L("音色库"), Icons.Filled.MusicNote, entries,
+            primary = MenuAction(L("添加音色库（.sf2）"), { picking = true }),
         )),
         onBack = onBack,
     )
     if (picking) {
-        SimpleActionSheet(L("Add a sound bank (.sf2)"), pickActions(
+        SimpleActionSheet(L("添加音色库（.sf2）"), pickActions(
             inApp = { inApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SF2, L("Select SoundFont"))) },
             system = { system.launch(arrayOf("*/*")) },
         ), onDismiss = { picking = false }) { a -> picking = false; a.run() }
     }
-    if (busy) LabSetBusy(L("Sound banks"), context.getString(R.string.installing_content))
-    result?.let { LabSetInfo(L("Sound banks"), it) { result = null } }
+    if (busy) LabSetBusy(L("音色库"), context.getString(R.string.installing_content))
+    result?.let { LabSetInfo(L("音色库"), it) { result = null } }
 }
 
 // ───────────────────────────── Steam connection ─────────────────────────────
@@ -441,12 +441,12 @@ internal fun LabSteamConnectionPage(onBack: () -> Unit) {
     val n = net
     val tests = listOf(
         MenuEntry(
-            "regions", if (probing) L("Testing regions…") else L("Test regions"),
-            subtitle = if (probing) L("Pinging every Steam datacenter…") else L("Pings every Steam datacenter now. Auto remembers the fastest."),
+            "regions", if (probing) L("Testing regions…") else L("测试区域"),
+            subtitle = if (probing) L("Pinging every Steam datacenter…") else L("立即测试所有 Steam 数据中心延迟。自动模式会记住最快的。"),
             icon = Icons.Filled.Refresh, group = L("Tests"), onA = { if (!probing) testRegions() },
         ),
         MenuEntry(
-            "network", if (netProbing) L("Testing network…") else L("Test network"),
+            "network", if (netProbing) L("Testing network…") else L("测试网络"),
             subtitle = when {
                 netProbing -> L("Checking how this network handles online game traffic…")
                 n == null -> L("Checks the NAT type and UDP for online games (the same check the SteamLite launch shows).")
@@ -458,12 +458,12 @@ internal fun LabSteamConnectionPage(onBack: () -> Unit) {
             icon = Icons.Filled.Speed, group = L("Tests"), onA = { if (!netProbing) testNetwork() },
         ),
         MenuEntry("testshelp", L("About these tests"), icon = Icons.Filled.HelpOutline, group = L("Tests"),
-            onA = { help = L("Test regions / Test network") to L(TESTS_HELP) }),
+            onA = { help = L("测试区域 / 测试网络") to L(TESTS_HELP) }),
     )
     val r = remembered
     val regions = listOf(
         MenuEntry(
-            "auto", L("Auto (nearest by ping)"),
+            "auto", L("自动（按延迟选最近）"),
             subtitle = if (r != null) "${SteamRegion.nameOf(r.dc)} ${r.dc}, ${r.ms} ms" else L("Remembers the winner"),
             current = mode == SteamRegion.AUTO, icon = Icons.Filled.Public, group = L("Steam connection region"),
             onA = { pick(SteamRegion.AUTO) },
@@ -480,8 +480,8 @@ internal fun LabSteamConnectionPage(onBack: () -> Unit) {
         onA = { help = L("Steam connection region") to L(REGION_HELP) })
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Steam connection"),
-        sections = listOf(MenuSection("steam", L("Steam connection"), Icons.Filled.Public, tests + regions)),
+        title = L("Steam 连接"),
+        sections = listOf(MenuSection("steam", L("Steam 连接"), Icons.Filled.Public, tests + regions)),
         onBack = onBack,
     )
     help?.let { (t, b) -> LabSetInfo(t, b) { help = null } }
@@ -576,13 +576,13 @@ internal fun LabSteamLibrariesPage(onBack: () -> Unit) {
 // ───────────────────────────── Frame-gen training capture ─────────────────────────────
 
 private val CAPTURE_GUIDE = listOf(
-    "What this does:" to "records raw in-game frames while you play, to help train an open, clean frame-generation model. Off by default; it lowers FPS while recording. Files save to Download/win-fg for you to share.",
-    "Best games to record:" to "ones with smooth, CONTINUOUS motion: 3D games, racing, action, anything with camera movement. These teach real interpolation.",
-    "Games to avoid:" to "menu-heavy screens, 2D games where sprites snap or teleport, and heavy particle-storm or rapid-flashing effects (un-interpolatable noise).",
-    "Cap your FPS" to "to a stable value (for example 30 or 60) so frame timing is even: this makes much cleaner training data.",
-    "Resolution:" to "\"Match game\" is best (records at your actual play resolution); pick 720p or 1080p to force one. A mix across contributors is ideal.",
+    "作用:" to "在您游玩时记录原始游戏内帧，以帮助训练开放、干净的帧生成模型。默认关闭；录制时会降低FPS。文件保存到Download/win-fg供您分享。",
+    "最佳录制游戏:" to "ones with smooth, CONTINUOUS motion: 3D games, racing, action, anything with camera movement. These teach real interpolation.",
+    "应避免的游戏:" to "menu-heavy screens, 2D games where sprites snap or teleport, and heavy particle-storm or rapid-flashing effects (un-interpolatable noise).",
+    "限制您的FPS" to "to a stable value (for example 30 or 60) so frame timing is even: this makes much cleaner training data.",
+    "分辨率:" to "\"匹配游戏\" 最佳（以您实际游玩的分辨率录制）；选择720p或1080p强制固定一种。贡献者混合使用最理想。",
     "Variety helps more than length:" to "a few minutes each across several different games beats a long session of one.",
-    "Privacy:" to "only the game's rendered frames are captured: NO HUD or overlay, NO personal info, NO account data, NO audio. The record is anonymous.",
+    "隐私:" to "only the game's rendered frames are captured: NO HUD or overlay, NO personal info, NO account data, NO audio. The record is anonymous.",
 )
 
 /** Classic Settings › Developer: frame-gen training capture (consent first), its resolution, extra logging, the diagnostic log. */
@@ -597,7 +597,7 @@ internal fun LabCapturePage(onBack: () -> Unit) {
     var consent by remember { mutableStateOf(false) }
     var guide by remember { mutableStateOf(false) }
     val resolutions = listOf(
-        WinFgCapture.RES_MATCH to L("Match game (native)"),
+        WinFgCapture.RES_MATCH to L("匹配游戏（原生）"),
         WinFgCapture.RES_720P to "720p (1280×720)",
         WinFgCapture.RES_1080P to "1080p (1920×1080)",
     )
@@ -612,13 +612,13 @@ internal fun LabCapturePage(onBack: () -> Unit) {
             if (f != null) {
                 recording = true
                 logPath = f.absolutePath
-                toast(context, L("Recording diagnostic log: reproduce the freeze, then stop"))
-            } else toast(context, L("Could not start the diagnostic log (storage permission?)"))
+                toast(context, L("正在录制诊断日志：复现冻结后停止"))
+            } else toast(context, L("无法启动诊断日志（存储权限？）"))
         }
     }
     val entries = listOf(
         MenuEntry(
-            "capture", L("Contribute frame-gen training capture"),
+            "capture", L("贡献帧生成训练采集"),
             subtitle = if (enabled) L("Recording is ON: files are saved to Download/win-fg. Only records while a game's frame generation engine is win-fg.")
             else L("Records raw in-game frames (no HUD, no personal data, no audio) to Download/win-fg for you to share. It lowers FPS while recording."),
             icon = Icons.Filled.Movie, toggle = enabled,
@@ -633,44 +633,44 @@ internal fun LabCapturePage(onBack: () -> Unit) {
             },
         ),
         MenuEntry(
-            "res", L("Capture resolution"), L("Match game records at your play resolution (best data); 720p / 1080p force a fixed size."),
+            "res", L("采集分辨率"), L("按游玩分辨率匹配游戏记录（数据最佳）；720p / 1080p 会强制固定尺寸。"),
             trailing = resolutions.firstOrNull { it.first == res }?.second, icon = Icons.Filled.Tune,
             actions = resolutions.map { (v, l) -> MenuAction(labSetMark(l, v == res), { res = v; WinFgCapture.setCaptureRes(context, v) }) },
         ),
         MenuEntry(
-            "extra", L("Extra win-fg logging (verbose)"),
-            L("For debugging a win-fg freeze: turn this and the diagnostic log on, reproduce the freeze, then share the saved log."),
-            group = L("Debug a win-fg freeze"), toggle = extra,
+            "extra", L("额外win-fg日志（详细）"),
+            L("用于排查 win-fg 冻结：同时开启此项和诊断日志，复现冻结，然后分享保存的日志。"),
+            group = L("调试win-fg卡死"), toggle = extra,
             onA = {
                 extra = !extra
                 WinFgDiag.setExtraLoggingEnabled(context, extra)
-                toast(context, if (extra) L("Extra win-fg logging on") else L("Extra win-fg logging off"))
+                toast(context, if (extra) L("额外win-fg日志已开启") else L("额外win-fg日志已关闭"))
             },
         ),
         MenuEntry(
-            "diag", if (recording) L("Stop diagnostic log") else L("Start diagnostic log"),
+            "diag", if (recording) L("停止诊断日志") else L("启动诊断日志"),
             subtitle = when {
-                recording -> L("Recording: reproduce the freeze, then stop.")
+                recording -> L("录制中：复现冻结后停止。")
                 logPath != null -> L("Saved to %1\$s", logPath.orEmpty())
-                else -> L("Records this app's log to Download/win-fg-logs while you play. No root needed.")
+                else -> L("游玩时将本应用的日志记录到 Download/win-fg-logs。无需 root。")
             },
-            icon = Icons.Filled.Description, group = L("Debug a win-fg freeze"), onA = { toggleDiag() },
+            icon = Icons.Filled.Description, group = L("调试win-fg卡死"), onA = { toggleDiag() },
         ),
-        MenuEntry("guide", L("How to record good training data"), L("What to record, what to avoid and what is captured."),
-            icon = Icons.Filled.HelpOutline, group = L("Debug a win-fg freeze"), onA = { guide = true }),
+        MenuEntry("guide", L("如何录制良好的训练数据"), L("录制什么、避开什么以及捕获的内容。"),
+            icon = Icons.Filled.HelpOutline, group = L("调试win-fg卡死"), onA = { guide = true }),
     )
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("Frame-gen training capture"),
-        sections = listOf(MenuSection("capture", L("Frame-gen training capture"), Icons.Filled.Movie, entries)),
+        title = L("帧生成训练捕获"),
+        sections = listOf(MenuSection("capture", L("帧生成训练捕获"), Icons.Filled.Movie, entries)),
         onBack = onBack,
     )
     if (consent) {
         LabSetGate(
             title = context.getString(R.string.winfg_capture_consent_title),
             body = context.getString(R.string.winfg_capture_consent_v1),
-            checkLabel = L("I understand"),
-            confirmLabel = L("Enable"),
+            checkLabel = L("我理解"),
+            confirmLabel = L("启用"),
             requireScroll = false,
             danger = false,
             onConfirm = {
@@ -683,6 +683,6 @@ internal fun LabCapturePage(onBack: () -> Unit) {
         )
     }
     if (guide) {
-        LabSetInfo(L("How to record good training data"), CAPTURE_GUIDE.joinToString("\n\n") { (lead, body) -> "• " + L(lead) + " " + L(body) }) { guide = false }
+        LabSetInfo(L("如何录制良好的训练数据"), CAPTURE_GUIDE.joinToString("\n\n") { (lead, body) -> "• " + L(lead) + " " + L(body) }) { guide = false }
     }
 }

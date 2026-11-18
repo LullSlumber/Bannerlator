@@ -66,9 +66,9 @@ internal fun LabStorageDialog(container: Container, onDismiss: () -> Unit) {
             Text(container.name, color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SizeLine(L("Drive C"), driveC)
-                    SizeLine(L("Cache"), cache)
-                    SizeLine(L("Total"), driveC + cache, strong = true)
+                    SizeLine(L("驱动器 C"), driveC)
+                    SizeLine(L("缓存"), cache)
+                    SizeLine(L("总计"), driveC + cache, strong = true)
                 }
                 // As Classic: the total against the internal storage's size.
                 val pct = if (internal > 0) ((driveC + cache).toFloat() / internal * 100f).coerceIn(0f, 100f) else 0f
@@ -83,11 +83,11 @@ internal fun LabStorageDialog(container: Container, onDismiss: () -> Unit) {
                         )
                         Text("${pct.toInt()}%", color = SimpleStrong, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     }
-                    Text(L("Estimated used space"), color = SimpleMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
+                    Text(L("已用空间估算"), color = SimpleMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
                 }
             }
             Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-                LabButton(L("Clear cache")) {
+                LabButton(L("清除缓存")) {
                     FileUtils.clear(File(container.getRootDir(), ".cache"))
                     container.putExtra("desktopTheme", null)
                     container.saveData()

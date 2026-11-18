@@ -589,7 +589,7 @@ fun ContainersScreen(
                     GameSaveBackup.restore(context, uri, c) { r ->
                         busyMessage = null
                         resultMessage = if (r.ok) "Restored ${r.filesWritten} files to \"${c.name}\""
-                        else "Restore failed: ${r.error ?: "unknown error"}"
+                        else "Restore failed: ${r.error ?: "未知错误"}"
                         emuConflicts = r.emuConflicts
                     }
                 }) { Text("恢复") }
@@ -1017,7 +1017,7 @@ internal fun runScopedBackup(
         setBusy(null)
         setResult(
             if (r.ok) "Saved ${r.fileCount} files → ${r.path?.substringAfterLast('/')}"
-            else "Backup failed: ${r.error ?: "unknown error"}"
+            else "Backup failed: ${r.error ?: "未知错误"}"
         )
     }
 }

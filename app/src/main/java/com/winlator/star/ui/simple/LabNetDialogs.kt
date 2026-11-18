@@ -41,7 +41,7 @@ internal fun LabNetDriveDialog(initial: NetDrive, isNew: Boolean, testing: Boole
         LabTextField(f.password, { f.password = it }, L("Password"), modifier = solid, password = true)
         if (f.kind == NetKind.WEBDAV) LabToolRow(L("https"), toggle = f.https) { f.https = !f.https }
         when {
-            testing -> LabBusyLine(L("Connecting…"))
+            testing -> LabBusyLine(L("正在连接…"))
             error != null -> LabDialogText(error, error = true)
         }
         LabDialogButtons {
@@ -85,7 +85,7 @@ internal fun LabNetAddGameDialog(net: FmNetOps, req: FmNetOps.AddReq, containers
             }
             LabDialogText(L("Kept in app storage (internal): %1\$s free", StringUtils.formatBytes(net.appFree())), muted = true)
         }
-        LabToolHeading(L("Game folder"))
+        LabToolHeading(L("游戏文件夹"))
         LabToolRow(req.name, sub = L(addSizeText(req.size)) + if (req.levels.size > 1) " · " + (if (req.levelsOpen) L("tap to close") else L("tap to change")) else "", selected = true) {
             if (req.levels.size > 1) req.levelsOpen = !req.levelsOpen
         }
@@ -153,7 +153,7 @@ internal fun LabNetStreamsDialog(net: FmNetOps) {
             LabToolHeading("${g.name} · ${StringUtils.formatBytes(info.bytes)}")
             com.winlator.star.netdrive.NetStream.Mode.values().forEach { m -> LabToolRow(L(m.label), selected = g.mode == m) { net.setStreamMode(g, m) } }
             LabToolRow(L("Empty now")) { net.emptyStream(g) }
-            LabToolRow(L("Remove"), danger = true) { net.removeStreamReq = g }
+            LabToolRow(L("移除"), danger = true) { net.removeStreamReq = g }
         }
         if (hub.streams.isEmpty()) LabDialogText(L("No streamed games yet."), muted = true)
         LabDialogButtons {
@@ -172,7 +172,7 @@ internal fun LabNetDialogs(net: FmNetOps, containers: List<com.winlator.star.con
         SimpleActionSheet(
             L("Remove \"%1\$s\"?", g.name),
             listOf(
-                MenuAction(L("Remove"), { net.removeStream(g) }, danger = true),
+                MenuAction(L("移除"), { net.removeStream(g) }, danger = true),
                 MenuAction(L("Cancel"), { net.removeStreamReq = null }),
             ),
             onDismiss = { net.removeStreamReq = null },
@@ -186,7 +186,7 @@ internal fun LabNetDialogs(net: FmNetOps, containers: List<com.winlator.star.con
         SimpleActionSheet(
             L("Remove \"%1\$s\"?", d.name),
             listOf(
-                MenuAction(L("Remove"), { net.remove(d) }, danger = true),
+                MenuAction(L("移除"), { net.remove(d) }, danger = true),
                 MenuAction(L("Cancel"), { net.removeReq = null }),
             ),
             onDismiss = { net.removeReq = null },
@@ -212,7 +212,7 @@ internal fun LabNetDialogs(net: FmNetOps, containers: List<com.winlator.star.con
         SimpleActionSheet(
             if (names.size == 1) L("Delete \"%1\$s\"?", names[0]) else L("Delete %1\$s items?", names.size),
             listOf(
-                MenuAction(L("Delete"), {
+                MenuAction(L("删除"), {
                     net.deleteTargets = emptyList()
                     clearSelections()
                     net.delete(victims)

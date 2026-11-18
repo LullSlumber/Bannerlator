@@ -76,7 +76,7 @@ object DeviceInfo {
         val model = SocNames.model()
         val platform = prop("ro.board.platform")
         add("Name", SocNames.name(model, platform))
-        add("Model", model)
+        add("模型", model)
         if (Build.VERSION.SDK_INT >= 31) add("Maker", Build.SOC_MANUFACTURER)
         add("Platform", platform)
         add("Hardware", Build.HARDWARE)
@@ -146,7 +146,7 @@ object DeviceInfo {
     private fun memory(context: Context) = Section("Memory", buildList<Pair<String, String>> {
         val am = context.getSystemService(ActivityManager::class.java) ?: return@buildList
         val mi = ActivityManager.MemoryInfo().also(am::getMemoryInfo)
-        add("Total", size(mi.totalMem))
+        add("总计", size(mi.totalMem))
         add("Available now", size(mi.availMem))
     })
 

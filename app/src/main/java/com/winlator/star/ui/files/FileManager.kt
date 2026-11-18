@@ -354,8 +354,8 @@ fun FileManagerRoot(
     conflict?.let { (name, isDir, batch) ->
         ConflictDialog(name, isDir, batch) { choice, all -> ops.answerConflict(choice, all) }
     }
-    runChoice?.let { f -> ContainerChoiceDialog("Run in which container?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
-    shortcutChoice?.let { f -> ContainerChoiceDialog("Add to which container?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
+    runChoice?.let { f -> ContainerChoiceDialog("在哪个容器中运行?", containers, { runChoice = null }) { c -> runChoice = null; runIn(f, c) } }
+    shortcutChoice?.let { f -> ContainerChoiceDialog("添加到哪个容器?", containers, { shortcutChoice = null }) { c -> shortcutChoice = null; addShortcutIn(f, c) } }
     panes.forEach { p ->
         val unlistable = p.unlistable
         LaunchedEffect(unlistable) {
@@ -398,12 +398,12 @@ fun FileManagerRoot(
     /** [note] is an inert first line (the compact toolbar puts the free space there when the row is too narrow for it). */
     fun moreMenuEntries(dir: File?, note: String?): List<FmMenuEntry> = buildList {
         if (note != null) add(FmMenuEntry(note, Icons.Filled.Info) { })
-        add(FmMenuEntry(if (pane.showHidden) "Hide hidden files" else "Show hidden files", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
+        add(FmMenuEntry(if (pane.showHidden) "隐藏隐藏文件" else "显示隐藏文件", if (pane.showHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility) {
             val v = !pane.showHidden
             panes.forEach { it.applyShowHidden(v) }
         })
         if (pane.loc != FmLoc.Home) add(FmMenuEntry("Select all", Icons.Filled.SelectAll) { pane.selectAll() })
-        add(FmMenuEntry("Refresh", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
+        add(FmMenuEntry("刷新", Icons.Filled.Refresh) { storageTick++; pane.refresh() })
         if (pick == null) add(FmMenuEntry(if (dualPref) "One pane" else "Two panes", Icons.Filled.ViewColumn) {
             dualPref = !dualPref
             FmPrefs.setDualPane(context, dualPref)
@@ -411,8 +411,8 @@ fun FileManagerRoot(
         })
         if (pick == null && dir != null) {
             val fav = FavoritesStore.isFavorite(context, dir.absolutePath)
-            add(FmMenuEntry(if (fav) "Remove folder from Favorites" else "Add folder to Favorites", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
-            add(FmMenuEntry("Folder properties", Icons.Filled.Info) { propsTarget = diskItem(dir) })
+            add(FmMenuEntry(if (fav) "从收藏中移除文件夹" else "将文件夹添加到收藏", if (fav) Icons.Filled.Star else Icons.Filled.StarBorder) { toggleFavorite(dir) })
+            add(FmMenuEntry("文件夹属性", Icons.Filled.Info) { propsTarget = diskItem(dir) })
         }
         val l = pane.loc
         if (pick == null && l is FmLoc.InArchive) add(FmMenuEntry("Extract all…", Icons.Filled.Unarchive) { extractReq = pane to emptyList() })
@@ -487,7 +487,7 @@ fun FileManagerRoot(
                             }, modifier = Modifier.size(tb)) {
                                 Icon(
                                     when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                                    "View",
+                                    "查看",
                                     modifier = Modifier.size(tbIcon),
                                 )
                             }
@@ -529,7 +529,7 @@ fun FileManagerRoot(
                 }) {
                     Icon(
                         when (pane.viewMode) { FmViewMode.LIST -> Icons.Filled.ViewAgenda; FmViewMode.COMPACT -> Icons.Filled.ViewList; FmViewMode.GRID -> Icons.Filled.GridView },
-                        "View",
+                        "查看",
                     )
                 }
                 IconButton(onClick = { sortFor = pane }) { Icon(Icons.Filled.Sort, "Sort") }
@@ -644,16 +644,16 @@ fun FileManagerRoot(
                     FmSelAction("Extract", Icons.Filled.Unarchive, entries.isNotEmpty()) { extractReq = pane to entries },
                     FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() },
                 ) else if (pane.currentNet != null) buildList {
-                    add(FmSelAction("Copy", Icons.Filled.ContentCopy, netItems.isNotEmpty()) { ops.net.copy(netItems); pane.clearSelection() })
+                    add(FmSelAction("拷贝", Icons.Filled.ContentCopy, netItems.isNotEmpty()) { ops.net.copy(netItems); pane.clearSelection() })
                     val over: FmLoc? = otherDir?.let { FmLoc.Dir(it) } ?: otherNet
                     if (over != null) add(FmSelAction("Copy over", Icons.Filled.ContentCopy, netItems.isNotEmpty()) { pane.clearSelection(); ops.net.sendItems(netItems, over) })
                     else add(FmSelAction("Copy to", Icons.Filled.Folder, netItems.isNotEmpty()) { val n = netItems; pane.clearSelection(); chooseFolder("Copy to") { ops.net.sendItems(n, FmLoc.Dir(it)) } })
                     if (netItems.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { ops.net.renameTarget = netItems[0]; pane.clearSelection() })
                     add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
-                    add(FmSelAction("Delete", Icons.Filled.Delete, netItems.isNotEmpty(), danger = true) { ops.net.deleteTargets = netItems })
+                    add(FmSelAction("删除", Icons.Filled.Delete, netItems.isNotEmpty(), danger = true) { ops.net.deleteTargets = netItems })
                 } else buildList {
-                    add(FmSelAction("Copy", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
-                    add(FmSelAction("Cut", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
+                    add(FmSelAction("拷贝", Icons.Filled.ContentCopy, disk.isNotEmpty()) { clipboard = disk; clipCut = false; pane.clearSelection() })
+                    add(FmSelAction("剪切", Icons.Filled.ContentCut, disk.isNotEmpty()) { clipboard = disk; clipCut = true; pane.clearSelection() })
                     if (otherNet != null) {
                         add(FmSelAction("Copy over", Icons.Filled.ContentCopy, disk.isNotEmpty()) { pane.clearSelection(); ops.net.sendFiles(disk, otherNet, false) })
                         add(FmSelAction("Move over", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { pane.clearSelection(); ops.net.sendFiles(disk, otherNet, true) })
@@ -662,13 +662,13 @@ fun FileManagerRoot(
                         add(FmSelAction("Move over", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { pane.clearSelection(); paste(disk, otherDir, true) })
                     } else {
                         add(FmSelAction("Copy to", Icons.Filled.Folder, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Copy to") { paste(d, it, false) } })
-                        add(FmSelAction("Move to", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("Move to") { paste(d, it, true) } })
+                        add(FmSelAction("移动到", Icons.Filled.DriveFileMove, disk.isNotEmpty()) { val d = disk; pane.clearSelection(); chooseFolder("移动到") { paste(d, it, true) } })
                     }
                     add(FmSelAction("Compress", Icons.Filled.FolderZip, disk.isNotEmpty()) { compressTargets = disk })
-                    add(FmSelAction("Share", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
+                    add(FmSelAction("分享", Icons.Filled.Share, disk.isNotEmpty() && disk.none { it.isDirectory }) { share(disk) })
                     if (disk.size == 1) add(FmSelAction("Rename", Icons.Filled.Edit) { renameTarget = disk[0]; pane.clearSelection() })
                     add(FmSelAction("All", Icons.Filled.SelectAll) { pane.selectAll() })
-                    add(FmSelAction("Delete", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
+                    add(FmSelAction("删除", Icons.Filled.Delete, disk.isNotEmpty(), danger = true) { deleteTargets = disk })
                 }
                 FmSelectionBar(pane.selected.size, actions) { pane.clearSelection() }
             }

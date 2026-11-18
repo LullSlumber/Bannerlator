@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 // Classic sheets (ContentDownloadSheet, VegasDownloadSheet, StockConfigDownloadSheet, AdrenoDriverDownloadSheet).
 
 /**
- * Classic's component download sheet as a Lab list: the Official catalog and, with "Include community repos" on,
+ * Classic's component download sheet as a Lab list: the Official catalog and, with "包含社区仓库" on,
  * the Contents screen's component sources (each one a switch), the installed versions (A: info and remove), a
  * download's progress on its line with Cancel download, and Install from a file. After an install or a remove
  * [onContentChanged] runs, as in Classic. [inUseKey] marks the version in use.
@@ -97,7 +97,7 @@ internal fun LabContentDownloadSheet(
                 tracked = null
             }
             st.phase == ContentDownloadPhase.ERROR -> {
-                if (!st.cancelled) failure = st.error ?: L("Install failed.")
+                if (!st.cancelled) failure = st.error ?: L("安装失败。")
                 tracked = null
             }
         }
@@ -123,7 +123,7 @@ internal fun LabContentDownloadSheet(
         val vc = if (local && p.verCode > 0) " · v${p.verCode}" else ""
         val sub = when {
             busy -> if (st!!.phase == ContentDownloadPhase.INSTALLING) L("Installing") else L("Downloading")
-            inUse -> L("In use") + vc
+            inUse -> L("使用中") + vc
             local -> L("Installed") + vc
             profile.communityInstalled -> L("Installed")
             !p.desc.isNullOrEmpty() -> p.desc
@@ -150,8 +150,8 @@ internal fun LabContentDownloadSheet(
             actions = when {
                 busy -> listOf(MenuAction(L("Cancel download"), { ContentDownloadRegistry.requestCancel(key) }, danger = true))
                 local -> listOf(
-                    MenuAction(L("Info"), { info = p }),
-                    MenuAction(L("Remove"), {
+                    MenuAction(L("信息"), { info = p }),
+                    MenuAction(L("移除"), {
                         cm.removeContent(p)
                         cm.syncContents()
                         loadProfiles(cm, contentTypes) { profiles = it }
@@ -171,7 +171,7 @@ internal fun LabContentDownloadSheet(
         }
         add(
             DlLine(
-                "__community__", L("Include community repos"), sub = L("Add versions from the Contents screen's sources"), toggle = includeCommunity,
+                "__community__", L("包含社区仓库"), sub = L("从内容屏幕的来源添加版本"), toggle = includeCommunity,
                 onA = {
                     val on = !includeCommunity
                     includeCommunity = on
@@ -224,7 +224,7 @@ internal fun LabContentDownloadSheet(
         onDismiss = onDismiss,
     )
     info?.let { p -> LabNote(L("Content info"), contentInfoText(p)) { info = null } }
-    failure?.let { msg -> LabNote(L("Download failed"), msg) { failure = null } }
+    failure?.let { msg -> LabNote(L("下载失败"), msg) { failure = null } }
 }
 
 /** A version line's profile, and whether a community duplicate of it is already installed. */

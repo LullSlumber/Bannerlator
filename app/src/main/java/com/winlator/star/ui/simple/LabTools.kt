@@ -85,7 +85,7 @@ internal fun NavGraphBuilder.labToolsRoutes(open: (String) -> Unit, back: () -> 
 }
 
 /**
- * Lab's viewer for one log entry (the Log Manager's logs, a game's "View logs"): Classic's log viewer drawn in Lab's
+ * Lab's viewer for one log entry (the Log Manager's logs, a game's "查看日志"): Classic's log viewer drawn in Lab's
  * look. The run (current, Wayland, earlier ones) and the file as chips, follow it live, wrap, find in it (live filter),
  * copy what is shown, share the file, report a problem. The log scrolls with Up / Down (Left / Right sideways when not
  * wrapped); Y finds, X shares, Start follows, B closes. Draws Lab's wallpaper itself, so it works as a page or full
@@ -163,7 +163,7 @@ private fun LabLogViewerBody(entry: LogInventory.Entry, onClose: () -> Unit) {
         Column(Modifier.fillMaxSize().padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 10.dp)) {
             Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
-                    Text(L("Logs").uppercase(), color = accent, fontWeight = FontWeight.Bold, fontSize = 11.sp, letterSpacing = 2.sp)
+                    Text(L("日志").uppercase(), color = accent, fontWeight = FontWeight.Bold, fontSize = 11.sp, letterSpacing = 2.sp)
                     Text(
                         if (entry.isAppBucket) L("App & crash logs") else entry.name,
                         color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
@@ -181,7 +181,7 @@ private fun LabLogViewerBody(entry: LogInventory.Entry, onClose: () -> Unit) {
             // The runs, shown when there is history to switch to.
             if (runs.size > 1) {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(L("Run"), color = SimpleDim, fontSize = 12.sp, modifier = Modifier.padding(end = 4.dp))
+                    Text(L("运行"), color = SimpleDim, fontSize = 12.sp, modifier = Modifier.padding(end = 4.dp))
                     runs.forEach { r ->
                         LabViewerChip(if (r.current) L("Current") else if (r.wayland) L("Wayland") else runLabel(r.millis), r == selectedRun) {
                             selectedRun = r
@@ -201,11 +201,11 @@ private fun LabLogViewerBody(entry: LogInventory.Entry, onClose: () -> Unit) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 LabViewerChip(if (following) L("Following") else L("Follow"), following, dot = if (following) Color(0xFF5FBF6B) else SimpleDim) { following = !following }
-                LabViewerChip(L("Wrap"), wrap) { wrap = !wrap }
-                LabViewerChip(L("Find"), query.isNotBlank()) { findOpen = true }
-                LabViewerChip(L("Copy"), false) { copy() }
-                LabViewerChip(L("Share"), false) { share() }
-                LabViewerChip(L("Report a problem"), false) { reportOpen = true }
+                LabViewerChip(L("换行"), wrap) { wrap = !wrap }
+                LabViewerChip(L("查找"), query.isNotBlank()) { findOpen = true }
+                LabViewerChip(L("拷贝"), false) { copy() }
+                LabViewerChip(L("分享"), false) { share() }
+                LabViewerChip(L("报告问题"), false) { reportOpen = true }
             }
             if (query.isNotBlank()) {
                 Spacer(Modifier.height(6.dp))
@@ -215,7 +215,7 @@ private fun LabLogViewerBody(entry: LogInventory.Entry, onClose: () -> Unit) {
                         color = SimpleStrong, fontSize = 13.sp, modifier = Modifier.weight(1f, fill = false),
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(L("Clear"), color = accent, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.background(SimpleCard, SimpleShape).simpleTap { query = "" }.padding(horizontal = 10.dp, vertical = 5.dp))
+                    Text(L("清除"), color = accent, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.background(SimpleCard, SimpleShape).simpleTap { query = "" }.padding(horizontal = 10.dp, vertical = 5.dp))
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -264,7 +264,7 @@ private fun LabLogViewerBody(entry: LogInventory.Entry, onClose: () -> Unit) {
             }
             Spacer(Modifier.height(8.dp))
             SimpleLegend(
-                listOf("B" to L("Close"), "▲▼" to L("Scroll"), "Y" to L("Find"), "X" to L("Share"), "Start" to if (following) L("Stop following") else L("Follow")),
+                listOf("B" to L("Close"), "▲▼" to L("Scroll"), "Y" to L("查找"), "X" to L("分享"), "Start" to if (following) L("Stop following") else L("Follow")),
                 Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             )
         }
@@ -300,7 +300,7 @@ private fun LabViewerChip(label: String, on: Boolean, dot: Color? = null, onClic
 }
 
 /**
- * Classic's "Report a problem" in Lab's look: a title and a description, which files go with it, the app logs too or
+ * Classic's "报告问题" in Lab's look: a title and a description, which files go with it, the app logs too or
  * not, then the redacted zip is built and GitHub's new-issue form opens (same steps as Classic).
  */
 @Composable
@@ -314,21 +314,21 @@ private fun LabLogReportDialog(entry: LogInventory.Entry, runDir: File, onDismis
     val willAttach = remember(runDir) { LogInventory.filesIn(runDir).map { it.name } }
     val field = remember { FocusRequester() }
     LaunchedEffect(Unit) { delay(80); runCatching { field.requestFocus() } }
-    LabDialog(L("Report a problem"), onDismiss = { if (!busy) onDismiss() }, wide = true) {
-        LabToolHeading(L("What went wrong?"))
+    LabDialog(L("报告问题"), onDismiss = { if (!busy) onDismiss() }, wide = true) {
+        LabToolHeading(L("出了什么问题?"))
         LabField(title, { title = it }, requester = field)
-        LabToolHeading(L("Any detail that helps (optional)"))
+        LabToolHeading(L("任何有助于排查的细节（可选）"))
         LabField(description, { description = it }, singleLine = false)
-        LabToolHeading(L("Will be attached"))
+        LabToolHeading(L("将一并附上"))
         willAttach.forEach { Text("• $it", color = SimpleInk, fontSize = 13.sp, modifier = Modifier.padding(start = 8.dp)) }
-        LabToolRow(L("Also app logcat and crash reports"), toggle = includeApp) { includeApp = !includeApp }
+        LabToolRow(L("以及应用的 logcat 和崩溃报告"), toggle = includeApp) { includeApp = !includeApp }
         Text(
             L("Saved as a zip in Downloads. E-mail addresses, auth tokens and your Steam account name are stripped; file paths are kept so they stay useful for debugging, so glance over them if a folder name identifies you. GitHub can't receive a file from a link, so attach the zip with 📎 once the form opens."),
             color = SimpleMuted, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 4.dp),
         )
         LabDialogButtons {
             LabButton(L("Cancel")) { if (!busy) onDismiss() }
-            LabButton(if (busy) L("Working…") else L("Continue on GitHub"), primary = true) {
+            LabButton(if (busy) L("正在处理…") else L("在 GitHub 上继续"), primary = true) {
                 if (busy) return@LabButton
                 busy = true
                 scope.launch {

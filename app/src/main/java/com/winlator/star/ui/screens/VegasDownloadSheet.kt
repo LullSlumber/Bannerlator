@@ -99,7 +99,7 @@ fun VegasDownloadSheet(
     errorMsg?.let { msg ->
         AlertDialog(
             onDismissRequest = { errorMsg = null },
-            title = { Text("Download failed", color = MaterialTheme.colorScheme.onSurface) },
+            title = { Text("下载失败", color = MaterialTheme.colorScheme.onSurface) },
             text = { Text(msg, color = MaterialTheme.colorScheme.onSurface) },
             confirmButton = { DeckDialogBars(); TextButton(onClick = { errorMsg = null }) { Text("OK") } },
             dismissButton = { TextButton(onClick = { errorMsg = null; retryKey++ }) { Text("Retry") } }
@@ -201,11 +201,11 @@ Column(modifier = Modifier.weight(1f)) {
                                                             onDismiss()
                                                         }
                                                     } else {
-                                                        errorMsg = "Install failed."
+                                                        errorMsg = "安装失败。"
                                                     }
                                                 }
                                             } else {
-                                                errorMsg = "Download failed."
+                                                errorMsg = "下载失败。"
                                             }
                                         }
                                     }
@@ -259,7 +259,7 @@ Column(modifier = Modifier.weight(1f)) {
  */
 internal fun fetchVegasReleases(): Pair<List<VegasRelease>, String?> {
     val json = Downloader.downloadString("https://api.github.com/repos/isygold/vegas-releases/releases")
-        ?: return emptyList<VegasRelease>() to "Failed to fetch releases from GitHub (rate limit 60/h or no network) — tap Retry."
+        ?: return emptyList<VegasRelease>() to "从GitHub获取版本失败（速率限制60/小时或无网络）— 点击重试。"
     return try {
         val arr = JSONArray(json)
         val list = mutableListOf<VegasRelease>()
@@ -291,7 +291,7 @@ internal fun fetchVegasReleases(): Pair<List<VegasRelease>, String?> {
                 list.add(VegasRelease(tag, name, wcpUrl, zipUrl, confUrl, body))
             }
         }
-        list to (if (list.isEmpty()) "No releases found — check GitHub status or retry." else null)
+        list to (if (list.isEmpty()) "未找到版本 — 检查GitHub状态或重试。" else null)
     } catch (e: Exception) {
         emptyList<VegasRelease>() to "Failed to parse releases: ${e.message} — tap Retry."
     }
@@ -527,6 +527,6 @@ internal object VegasStockConfigFetcher {
                 last = ParkResult.Ok(verName)
             }
             last ?: ParkResult.Fail("no target version derived")
-        }.getOrElse { ParkResult.Fail(it.message ?: "unknown error") }
+        }.getOrElse { ParkResult.Fail(it.message ?: "未知错误") }
     }
 }

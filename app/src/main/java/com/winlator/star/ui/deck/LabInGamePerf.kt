@@ -60,7 +60,7 @@ import kotlinx.coroutines.delay
 // ───────────────────────────── Frame generation ─────────────────────────────
 
 /**
- * Lab replacement for the Classic FrameGenSection: one card, placed under the page's "Frame generation" heading.
+ * Lab replacement for the Classic FrameGenSection: one card, placed under the page's "帧率" heading.
  * The multiplier writes this session only; model, flow scale, capture resolution and performance mode the container.
  */
 @Composable
@@ -119,7 +119,7 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
             val multEnabled = fgUnavailable.isEmpty() && !waylandFgBlocked
 
             IgDivider()
-            if (waylandFgBlocked) IgNote(L("Not on Wayland in this build yet."), modifier = Modifier.padding(top = 8.dp))
+            if (waylandFgBlocked) IgNote(L("此版本尚未在 Wayland 上支持。"), modifier = Modifier.padding(top = 8.dp))
             if (fgUnavailable.isNotEmpty()) {
                 IgNote("⚠ $fgUnavailable", error = true, modifier = Modifier.padding(top = 8.dp))
                 if (fgUnavailableDetail.isNotEmpty()) IgNote(L("Driver check: %1\$s", fgUnavailableDetail))
@@ -127,7 +127,7 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
             val multOptions = if (engine == "bionic") listOf(0 to L("Off"), 2 to L("On"))
             else listOf(0 to L("Off"), 2 to "2×", 3 to "3×", 4 to "4×")
             IgRow(
-                L("Frame generation"),
+                L("帧率"),
                 note = L("Starts off each launch."),
                 scopes = listOf(SaveScope.SESSION),
                 wideControl = true,
@@ -157,9 +157,9 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
             // win-fg only, while on. Legacy stored models 0-2 show as Optical flow (3), as in Classic.
             if (engine == "bionic" && fgMult > 0 && !waylandFgBlocked) {
                 IgDivider()
-                IgRow(L("Model"), scopes = listOf(SaveScope.CONTAINER), wideControl = true) {
+                IgRow(L("模型"), scopes = listOf(SaveScope.CONTAINER), wideControl = true) {
                     IgSegmented(
-                        listOf(3 to L("Optical flow"), 4 to L("Bidirectional")),
+                        listOf(3 to L("光流"), 4 to L("双向")),
                         if (fgModel < 3) 3 else fgModel,
                     ) { m ->
                         fgModel = m
@@ -179,7 +179,7 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
                     format = { "%.2f".format(it) },
                     onChange = { fgFlow = it },
                     onFinished = { applyFg() },
-                    hint = L("Higher flow scale = smoother motion estimate, more GPU cost."),
+                    hint = L("光流精度越高 = 运动估计越平滑，GPU开销越大。"),
                     scopes = listOf(SaveScope.CONTAINER),
                 )
             }
@@ -198,9 +198,9 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
                 var lsfgPerf by remember(initLsfgPerf) { mutableStateOf(initLsfgPerf) }
                 IgDivider()
                 IgToggleRow(
-                    L("Performance mode"),
+                    L("性能模式"),
                     lsfgPerf,
-                    hint = L("Lower quality for higher FPS — helps on low-end devices."),
+                    hint = L("降低质量以提高 FPS — 有助于低端设备。"),
                     scopes = listOf(SaveScope.CONTAINER),
                 ) {
                     lsfgPerf = it
@@ -210,10 +210,10 @@ internal fun LabFrameGenPanel(state: XServerDrawerState) {
             }
         } else if (waylandFgBlocked) {
             IgDivider()
-            IgNote(L("Not on Wayland in this build yet."), modifier = Modifier.padding(vertical = 6.dp))
+            IgNote(L("此版本尚未在 Wayland 上支持。"), modifier = Modifier.padding(vertical = 6.dp))
         } else {
             IgDivider()
-            IgNote(L("Off for this container. Turn it on in the container's settings to use it here."), modifier = Modifier.padding(vertical = 6.dp))
+            IgNote(L("此容器已关闭。在此容器的设置中将其开启以在此使用。"), modifier = Modifier.padding(vertical = 6.dp))
         }
     }
 }
@@ -342,9 +342,9 @@ private fun LabPerfFgCaptureRow(selected: String, panelHeight: Int, onSelect: (S
     val selectedKey = if (selected == Container.FG_CAPTURE_PANEL || selected == Container.FG_CAPTURE_GAME) selected
     else Container.fgCaptureHeightFor(selected).toString()
     IgRow(
-        L("Capture resolution"),
-        hint = L("Height the frame-gen chain runs at (width follows the screen). Lower = far cheaper on the GPU, softer picture. Panel = full resolution."),
-        note = L("Experimental"),
+        L("采集分辨率"),
+        hint = L("帧生成链运行的高度（宽度跟随屏幕）。更低 = GPU开销小得多，画面更柔和。Panel = 全分辨率。"),
+        note = L("实验性模式"),
         scopes = listOf(SaveScope.CONTAINER),
         wideControl = true,
     ) {
@@ -503,7 +503,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
 
     IgCard {
         IgToggleRow(
-            L("Show performance overlay"),
+            L("显示性能覆盖层"),
             hudEnabled,
             scopes = scopes,
             note = L("Turning the overlay on when it wasn't built this launch also switches it on in the container"),
@@ -516,10 +516,10 @@ internal fun LabHudPanel(state: XServerDrawerState) {
     IgSectionLabel(L("Style & size"))
     IgCard {
         val styleHint = when (hudStyle) {
-            "gamehub" -> L("Rich overlay: skins, colored fields, live FPS graph. Style change applies on next launch.")
-            "gamenative" -> L("GameNative-style overlay: compact pill or stacked list with live graphs. Style change applies on next launch.")
-            "fusion" -> L("Fusion overlay: one color-coded look in 5 sizes with percentile lows, VRAM + a Mega everything-view. Tap the HUD to cycle size.")
-            else -> L("Classic Bannerlator overlay.")
+            "gamehub" -> L("丰富覆盖层：皮肤、彩色字段、实时FPS图表。样式更改将在下次启动时生效。")
+            "gamenative" -> L("GameNative风格覆盖层：紧凑药丸形或堆叠列表，带实时图表。样式更改将在下次启动时生效。")
+            "fusion" -> L("Fusion 覆盖层：5 种尺寸的配色方案，含百分位低值、显存以及 Mega 综合视图。点击 HUD 可循环切换尺寸。")
+            else -> L("经典Bannerlator覆盖层。")
         }
         LabPerfHudChoiceRow(
             L("Overlay style"),
@@ -532,7 +532,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
             IgDivider()
             LabPerfHudChoiceRow(
                 L("Size"),
-                listOf(L("Full"), L("Tiles"), L("Pill"), L("Minimal"), L("Mega")),
+                listOf(L("Full"), L("平铺"), L("药丸形"), L("简洁"), L("超大")),
                 fusionSizes.indexOf(fusionSize).coerceAtLeast(0),
                 scopes,
             ) { fusionSize = fusionSizes[it]; applyHud() }
@@ -545,16 +545,16 @@ internal fun LabHudPanel(state: XServerDrawerState) {
         if (show("FPS", true)) add(Triple(T("FPS"), showFPS) { showFPS = !showFPS; applyHud() })
         if (show("FPS graph", rich)) add(Triple(T("FPS graph"), showGraph) { showGraph = !showGraph; applyHud() })
         if (show("CPU", true)) add(Triple(T("CPU"), showCPU) { showCPU = !showCPU; applyHud() })
-        if (!fusion && gameNative) add(Triple(T("CPU graph"), showCpuGraph) { showCpuGraph = !showCpuGraph; applyHud() })
+        if (!fusion && gameNative) add(Triple(T("CPU 图表"), showCpuGraph) { showCpuGraph = !showCpuGraph; applyHud() })
         if (show("GPU", true)) add(Triple(T("GPU"), showGPU) { showGPU = !showGPU; applyHud() })
-        if (!fusion && gameNative) add(Triple(T("GPU graph"), showGpuGraph) { showGpuGraph = !showGpuGraph; applyHud() })
+        if (!fusion && gameNative) add(Triple(T("GPU 图表"), showGpuGraph) { showGpuGraph = !showGpuGraph; applyHud() })
         if (show("VRAM", false)) add(Triple(T("VRAM"), showVram) { showVram = !showVram; applyHud() })
         if (show("RAM", true)) add(Triple(T("RAM"), showRAM) { showRAM = !showRAM; applyHud() })
         if (show("Power", true)) add(Triple(T("Power"), showPower) { showPower = !showPower; applyHud() })
         if (show("Temp", true)) add(Triple(T("Temp"), showTemp) { showTemp = !showTemp; applyHud() })
         if (show("GPU temp", gameNative)) add(Triple(T("GPU temp"), showGpuTemp) { showGpuTemp = !showGpuTemp; applyHud() })
         if (show("Battery", gameNative)) add(Triple(T("Battery"), showBattery) { showBattery = !showBattery; applyHud() })
-        if (!fusion && gameNative) add(Triple(T("Runtime"), showRuntime) { showRuntime = !showRuntime; applyHud() })
+        if (!fusion && gameNative) add(Triple(T("运行时间"), showRuntime) { showRuntime = !showRuntime; applyHud() })
         if (show("0.01% low", false)) add(Triple(T("0.01% low"), showLow001) { showLow001 = !showLow001; applyHud() })
         if (show("FPS .1", false)) add(Triple(T("FPS .1"), fpsDecimal) { fpsDecimal = !fpsDecimal; applyHud() })
         if (show("Per-core", false)) add(Triple(T("Per-core"), showPerCore) { showPerCore = !showPerCore; applyHud() })
@@ -568,10 +568,10 @@ internal fun LabHudPanel(state: XServerDrawerState) {
         if (show("Clock", gameNative)) add(Triple(T("Clock"), showClock) { showClock = !showClock; applyHud() })
         if (show("Engine", true)) add(Triple(T("Engine"), showEngine) { showEngine = !showEngine; applyHud() })
         if (show("GPU model", rich)) add(Triple(T("GPU model"), showGpuModel) { showGpuModel = !showGpuModel; applyHud() })
-        if (!fusion && gameHub) add(Triple(T("Dual battery"), dualBattery) { dualBattery = !dualBattery; applyHud() })
-        add(Triple(T("Lock in place"), hudLocked) { hudLocked = !hudLocked; applyHud() })
+        if (!fusion && gameHub) add(Triple(T("双电池电量"), dualBattery) { dualBattery = !dualBattery; applyHud() })
+        add(Triple(T("锁定位置"), hudLocked) { hudLocked = !hudLocked; applyHud() })
     }
-    IgSectionLabel(L("Metrics"))
+    IgSectionLabel(L("指标"))
     IgCard {
         // Stacked even on wide windows: the chip grid needs the full card width.
         CompositionLocalProvider(LocalIgCompact provides true) {
@@ -582,7 +582,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
     }
 
     // ── Appearance ──
-    IgSectionLabel(L("Appearance"))
+    IgSectionLabel(L("外观"))
     IgCard {
         IgSliderRow(
             title = L("Scale"), value = scaleValue, range = 50f..150f, step = 5f,
@@ -591,29 +591,29 @@ internal fun LabHudPanel(state: XServerDrawerState) {
         IgDivider()
         if (rich) {
             IgSliderRow(
-                title = L("Opacity"), value = opacityValue, range = 0f..100f, step = 5f,
+                title = L("不透明度"), value = opacityValue, range = 0f..100f, step = 5f,
                 format = { "${it.toInt()}%" }, onChange = { opacityValue = it }, onFinished = { applyHud() }, scopes = scopes,
             )
         } else {
             IgSliderRow(
-                title = L("Transparency"), value = transValue, range = 0f..50f, step = 2.5f,
+                title = L("透明度"), value = transValue, range = 0f..50f, step = 2.5f,
                 format = { "${it.toInt()}" }, onChange = { transValue = it }, onFinished = { applyHud() }, scopes = scopes,
             )
         }
         if (gameHub) {
             IgDivider()
-            LabPerfHudChoiceRow(L("Skin"), listOf(L("Classic"), L("Neon"), L("Mono")), skins.indexOf(skin), scopes) { skin = skins[it]; applyHud() }
+            LabPerfHudChoiceRow(L("皮肤"), listOf(L("Classic"), L("霓虹"), L("黑白")), skins.indexOf(skin), scopes) { skin = skins[it]; applyHud() }
         }
         if (gameHub || gameNative || fusion) {
             IgDivider()
-            LabPerfHudChoiceRow(L("Colour"), listOf(L("Soft"), L("Mid"), L("Vivid")), colors.indexOf(color), scopes) { color = colors[it]; applyHud() }
+            LabPerfHudChoiceRow(L("颜色"), listOf(L("柔和"), L("适中"), L("鲜艳")), colors.indexOf(color), scopes) { color = colors[it]; applyHud() }
             IgDivider()
             IgSliderRow(
-                title = L("Outline"), value = outlineValue, range = 0f..100f, step = 5f,
+                title = L("轮廓"), value = outlineValue, range = 0f..100f, step = 5f,
                 format = { "${it.toInt()}" }, onChange = { outlineValue = it }, onFinished = { applyHud() }, scopes = scopes,
             )
             IgDivider()
-            LabPerfHudChoiceRow(L("Outline colour"), listOf(L("Gray"), L("Accent")), if (outlineAccent) 1 else 0, scopes) { outlineAccent = it == 1; applyHud() }
+            LabPerfHudChoiceRow(L("轮廓颜色"), listOf(L("灰色"), L("强调色")), if (outlineAccent) 1 else 0, scopes) { outlineAccent = it == 1; applyHud() }
         }
     }
 
@@ -625,14 +625,14 @@ internal fun LabHudPanel(state: XServerDrawerState) {
             IgDivider()
             val bandMode = if (!tempBands) 0 else if (tempAuto) 1 else 2
             LabPerfHudChoiceRow(
-                L("Danger colours"),
-                listOf(L("Off"), L("Auto"), L("Manual")),
+                L("危险颜色"),
+                listOf(L("Off"), L("Auto"), L("手动")),
                 bandMode,
                 scopes,
                 hint = when (bandMode) {
-                    0 -> L("Temperatures use their normal color.")
-                    1 -> L("Thresholds read from your device's own thermal trip points, falling back to safe defaults.")
-                    else -> L("Set the red point per sensor; amber sits just below it.")
+                    0 -> L("温度使用正常颜色显示。")
+                    1 -> L("阈值从您设备自身的温度触发点读取，若无则回退到安全默认值。")
+                    else -> L("为每个传感器设置红色阈值点，琥珀色阈值位于其下方。")
                 },
             ) {
                 tempBands = it != 0
@@ -642,7 +642,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
             if (bandMode == 2) {
                 IgDivider()
                 IgSliderRow(
-                    title = L("CPU red at"), value = tempRedCpu, range = 50f..110f, step = 3f,
+                    title = L("CPU 红色阈值"), value = tempRedCpu, range = 50f..110f, step = 3f,
                     format = { "${it.toInt()}°C" }, onChange = { tempRedCpu = it }, onFinished = { applyHud() }, scopes = scopes,
                 )
                 if ((gameNative || fusion) && showGpuTemp) {
@@ -654,7 +654,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
                 }
                 IgDivider()
                 IgSliderRow(
-                    title = L("Battery red at"), value = tempRedBat, range = 35f..60f, step = 1.25f,
+                    title = L("电池红色阈值"), value = tempRedBat, range = 35f..60f, step = 1.25f,
                     format = { "${it.toInt()}°C" }, onChange = { tempRedBat = it }, onFinished = { applyHud() }, scopes = scopes,
                 )
             }
@@ -666,9 +666,9 @@ internal fun LabHudPanel(state: XServerDrawerState) {
     IgCard {
         val diagContext = LocalContext.current
         IgRow(
-            L("Export HUD diagnostics"),
-            hint = L("Saves a sensor report (CPU/GPU/temp/VRAM…) straight to your Downloads folder."),
-        ) { IgButton(L("Export"), Icons.Outlined.Description, { exportHudDiagnostics(diagContext) }) }
+            L("导出 HUD 诊断信息"),
+            hint = L("将传感器报告（CPU/GPU/温度/显存…）直接保存到您的下载文件夹。"),
+        ) { IgButton(L("导出"), Icons.Outlined.Description, { exportHudDiagnostics(diagContext) }) }
     }
 }
 
@@ -743,18 +743,18 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     val game = igGameScope()
 
     // ── Wireless cast ──
-    IgSectionLabel(L("Cast to a TV (wireless)"))
+    IgSectionLabel(L("投屏到电视TV （无线）"))
     IgCard {
         IgNote(
-            L("⚠ EXPERIMENTAL · VIDEO ONLY — wireless streaming is new: the picture runs a few seconds behind, there's no TV sound yet (game audio stays on this device), and it may take a moment to start or need a second try."),
+            L("⚠ 实验性 · 仅视频 — 无线流式传输是新功能：画面会延迟几秒，暂无电视TV 声音（游戏音频保留在此设备上），启动可能需要一点时间或需要再试一次。"),
             error = true,
             modifier = Modifier.padding(top = 8.dp),
         )
         IgRow(
-            L("Cast to a TV"),
-            hint = L("Stream the game's picture to a Google TV / Chromecast on your Wi-Fi — pick one in the app, nothing to install on the TV. Tap the “?” inside for how it works and the trade-offs."),
+            L("投屏到电视TV "),
+            hint = L("将游戏画面通过 Wi‑Fi 流式传输到 Google TV / Chromecast投屏器 — 在应用中选择一个，电视TV 上无需安装任何内容。点击内部的“？”了解工作原理及其取舍。"),
         ) { IgButton(L("Cast"), Icons.Outlined.Cast, { state.onOpenCastPicker?.run() }) }
-        IgNote(L("For the lowest lag, a wired USB-C→HDMI cable is still best."), modifier = Modifier.padding(bottom = 8.dp))
+        IgNote(L("要获得最低延迟，有线 USB‑C→HDMI 线缆仍然是最佳选择。"), modifier = Modifier.padding(bottom = 8.dp))
     }
 
     // ── Wired / external display, only while one is connected ──
@@ -803,8 +803,8 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     // ── Reset audio (sound can drop after backgrounding or an HDMI route change) ──
     Spacer(Modifier.height(10.dp))
     IgCard {
-        IgRow(L("Reset audio"), hint = L("Fixes lost sound after switching apps.")) {
-            IgButton(L("Reset"), null, { state.onResetAudio?.run() })
+        IgRow(L("重置音频"), hint = L("修复切换应用后声音丢失的问题。")) {
+            IgButton(L("重置"), null, { state.onResetAudio?.run() })
         }
     }
 
@@ -812,7 +812,7 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     IgSectionLabel(L("Picture"))
     IgCard {
         val fullscreenMode by state.fullscreenMode.collectAsState()
-        IgRow(L("Aspect"), scopes = listOf(game), wideControl = true) {
+        IgRow(L("比例"), scopes = listOf(game), wideControl = true) {
             IgSegmented(
                 listOf(
                     0 to stringResource(R.string.fullscreen_mode_off_short),
@@ -831,7 +831,7 @@ internal fun LabTvPanel(state: XServerDrawerState) {
         val overscan by state.tvOverscan.collectAsState()
         var overscanVal by remember(overscan) { mutableIntStateOf(overscan) }
         IgSliderRow(
-            title = L("Overscan / safe area"),
+            title = L("过扫描 / 安全区域"),
             value = overscanVal.toFloat(),
             range = 0f..8f,
             step = 1f,
@@ -841,23 +841,23 @@ internal fun LabTvPanel(state: XServerDrawerState) {
                 state.setTvOverscan(overscanVal)
                 state.onTvOverscanChange?.accept(overscanVal)
             },
-            hint = L("Shrinks the picture inward if your TV cuts off the edges."),
+            hint = L("如果您的TV裁切了边缘，则将画面向内收缩。"),
             scopes = listOf(SaveScope.CONTAINER),
         )
         IgDivider()
         if (rendererIsVulkan) {
-            IgNote(L("Scaling filter is available on the OpenGL renderer."), modifier = Modifier.padding(vertical = 6.dp))
+            IgNote(L("缩放滤镜在 OpenGL 渲染器上可用。"), modifier = Modifier.padding(vertical = 6.dp))
         } else {
             val initGlUpscalerMode by XServerDialogState.glUpscalerMode.collectAsState()
             var glUpscalerMode by remember(initGlUpscalerMode) { mutableIntStateOf(initGlUpscalerMode) }
             val compact = LocalIgCompact.current
-            IgRow(L("Scaling filter"), scopes = listOf(game), wideControl = true) {
+            IgRow(L("缩放滤镜"), scopes = listOf(game), wideControl = true) {
                 Column(horizontalAlignment = if (compact) Alignment.Start else Alignment.End) {
                     IgChips(
                         listOf(
-                            0 to L("None"), 1 to L("Linear"), 2 to L("Nearest"),
+                            0 to L("None"), 1 to L("线性过滤"), 2 to L("邻近采样"),
                             3 to "SGSR", 8 to "SGSR HQ", 4 to "FSR",
-                            5 to "FSR (Fit)", 6 to L("Sharpen"), 7 to "NIS",
+                            5 to "FSR (适应)", 6 to L("画面锐化"), 7 to "NIS",
                         ),
                         glUpscalerMode,
                     ) {
@@ -865,19 +865,19 @@ internal fun LabTvPanel(state: XServerDrawerState) {
                         XServerDialogState.onGlUpscalerApply?.invoke(it)
                     }
                     Spacer(Modifier.height(8.dp))
-                    IgHelpButton(L("Scaling filter"), R.string.help_scaling_mode)
+                    IgHelpButton(L("缩放滤镜"), R.string.help_scaling_mode)
                 }
             }
         }
     }
 
     // ── Latency ──
-    IgSectionLabel(L("Latency"))
+    IgSectionLabel(L("延迟"))
     IgCard {
         if (rendererIsVulkan) {
             LabPerfPresentModeRow(state)
         } else {
-            IgNote(L("Latency mode (V-Sync / Low latency) is available on the Vulkan renderer."), modifier = Modifier.padding(vertical = 6.dp))
+            IgNote(L("延迟模式（垂直同步/低延迟）在Vulkan渲染器上可用。"), modifier = Modifier.padding(vertical = 6.dp))
         }
         IgDivider()
         val fpsLimiterEnabled by state.fpsLimiterEnabled.collectAsState()
@@ -885,7 +885,7 @@ internal fun LabTvPanel(state: XServerDrawerState) {
         val capValues = listOf(0, 30, 60, 90, 120)
         val capOptions = capValues.map { if (it == 0) L("Off") else L("%1\$s fps", it) }
         val capIdx = if (!fpsLimiterEnabled) 0 else capValues.indexOf(fpsLimit).let { if (it >= 0) it else 0 }
-        IgPickRow(L("Frame cap"), capOptions, capIdx, scopes = listOf(game)) { i ->
+        IgPickRow(L("帧率上限"), capOptions, capIdx, scopes = listOf(game)) { i ->
             val v = capValues[i]
             state.setFpsLimiterEnabled(v > 0)
             if (v > 0) state.setFpsLimit(v)
@@ -894,19 +894,19 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     }
 
     // ── Frame generation ──
-    IgSectionLabel(L("Frame generation"))
+    IgSectionLabel(L("帧率"))
     LabFrameGenPanel(state)
-    IgInfo(L("Tip: enable Game Mode on your TV for the lowest input lag."))
+    IgInfo(L("提示：在TV上启用游戏模式以获得最低输入延迟。"))
 
     // ── Audio & power ──
-    IgSectionLabel(L("Audio & power"))
+    IgSectionLabel(L("音频与电源"))
     IgCard {
         val audioOut by state.tvAudioOut.collectAsState()
         IgPickRow(
-            L("Audio output"),
-            listOf(L("Follow system"), L("TV / HDMI"), L("Handheld")),
+            L("音频输出"),
+            listOf(L("跟随系统"), L("TV / HDMI"), L("手持设备")),
             audioOut,
-            hint = L("Experimental — the guest audio route may not always follow."),
+            hint = L("实验性 — 客户音频路由可能并非始终跟随。"),
             scopes = listOf(SaveScope.CONTAINER),
         ) { i ->
             state.setTvAudioOut(i)
@@ -915,9 +915,9 @@ internal fun LabTvPanel(state: XServerDrawerState) {
         IgDivider()
         val dimHandheld by state.tvDimHandheld.collectAsState()
         IgToggleRow(
-            L("Dim handheld while on TV"),
+            L("在TV投屏时调暗手持设备屏幕"),
             dimHandheld,
-            hint = L("Saves battery and heat by dimming the phone screen."),
+            hint = L("通过调暗手机屏幕来节省电量和减少发热。"),
             scopes = listOf(SaveScope.CONTAINER),
         ) {
             state.setTvDimHandheld(it)
@@ -930,10 +930,10 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     IgCard {
         val renderRes by state.tvRenderRes.collectAsState()
         IgPickRow(
-            L("TV render resolution"),
-            listOf(L("Match TV"), L("Match handheld"), "1080p", "1440p"),
+            L("TV渲染分辨率"),
+            listOf(L("匹配TV"), L("匹配手持设备"), "1080p", "1440p"),
             renderRes,
-            hint = L("Applies on the next game launch (the render resolution is fixed at startup)."),
+            hint = L("在下次游戏启动时应用（渲染分辨率在启动时固定）。"),
             scopes = listOf(SaveScope.CONTAINER),
         ) { i ->
             state.setTvRenderRes(i)
@@ -942,14 +942,14 @@ internal fun LabTvPanel(state: XServerDrawerState) {
     }
 
     // ── Streaming (not available yet) ──
-    IgSectionLabel(L("Streaming"))
+    IgSectionLabel(L("流式传输"))
     IgCard {
         IgRow(
             L("Wireless streaming"),
-            hint = L("Wireless streaming to a TV without a cable (bitrate, codec, transport) is coming in a future update. Wired HDMI / DeX casting works today via the controls above."),
+            hint = L("无需线缆的无线投屏到TV（比特率、编解码器、传输协议）将在未来更新中提供。有线 HDMI / DeX 投屏目前已可通过上述控制使用。"),
             enabled = false,
         )
-        listOf(T("Bitrate"), T("Codec (H.264 / HEVC)"), T("Transport (WebRTC / DLNA)"), T("Stream resolution & FPS")).forEach {
+        listOf(T("比特率"), T("编解码器 (H.264 / HEVC)"), T("传输协议 (WebRTC / DLNA)"), T("流分辨率和帧率")).forEach {
             IgDivider()
             IgRow(L(it), hint = L("Requires WiFi streaming"), enabled = false)
         }

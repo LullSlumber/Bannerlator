@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Classic's "Download GPU drivers" sheet (AdrenoDriverDownloadSheet) as Lab lists: the driver sources, then one
+ * Classic's "下载GPU驱动" sheet (AdrenoDriverDownloadSheet) as Lab lists: the driver sources, then one
  * source's drivers. A on a driver asks, then downloads and installs it with the progress on its line (the same
  * DriverInstaller steps and messages); a driver for the Android list is handed to [onDriverInstalled]. "Manage
  * sources" turns built-in sources on or off and adds or removes your own (a JSON list or a GitHub repository).
@@ -87,7 +87,7 @@ internal fun LabTurnipDownloadSheet(onDismiss: () -> Unit, onDriverInstalled: (S
                 },
                 onFailure = { t ->
                     busy = null
-                    Toast.makeText(context, L("Download failed: %1\$s", t.message ?: L("unknown error")), Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, L("Download failed: %1\$s", t.message ?: L("未知错误")), Toast.LENGTH_LONG).show()
                 },
             )
         }
@@ -99,7 +99,7 @@ internal fun LabTurnipDownloadSheet(onDismiss: () -> Unit, onDriverInstalled: (S
     }
     if (source == null) {
         LabDownloadList(
-            title = L("Download GPU drivers"),
+            title = L("下载GPU驱动"),
             lines = sources.mapIndexed { i, s -> DlLine("s$i-${s.name}", s.name, onA = { picked = i }) } +
                 DlLine("__manage__", L("Manage sources…"), accent = true, onA = { manage = true }),
             onDismiss = onDismiss,
@@ -108,7 +108,7 @@ internal fun LabTurnipDownloadSheet(onDismiss: () -> Unit, onDriverInstalled: (S
     }
     val lines = buildList<DlLine> {
         when {
-            loading -> add(DlLine("__loading__", L("Loading drivers…"), enabled = false))
+            loading -> add(DlLine("__loading__", L("加载驱动…"), enabled = false))
             error != null -> {
                 add(DlLine("__error__", L("Could not load drivers"), sub = error, enabled = false))
                 add(DlLine("__retry__", L("Retry"), accent = true, onA = { refreshKey++ }))
@@ -144,8 +144,8 @@ internal fun LabTurnipDownloadSheet(onDismiss: () -> Unit, onDriverInstalled: (S
     )
     ask?.let { e ->
         SimpleConfirm(
-            title = L("Download driver?"),
-            body = e.displayName + "\n\n" + L("Source: %1\$s", e.source) + "\n\n" + L("The driver will be downloaded and installed automatically."),
+            title = L("下载驱动?"),
+            body = e.displayName + "\n\n" + L("Source: %1\$s", e.source) + "\n\n" + L("驱动程序将自动下载并安装。"),
             danger = false,
             onDismiss = { ask = null },
         ) { ask = null; download(e) }
@@ -179,7 +179,7 @@ private fun LabDriverSourcesManager(onDismiss: () -> Unit, onChanged: () -> Unit
         if (custom.isNotEmpty()) {
             add(DlLine("__hc", L("Custom sources"), header = true))
             custom.forEach { src ->
-                add(DlLine("c-${src.name}", src.name, sub = feedSummary(src), actions = listOf(MenuAction(L("Remove"), { mutate { store.removeCustom(src.name) } }, danger = true))))
+                add(DlLine("c-${src.name}", src.name, sub = feedSummary(src), actions = listOf(MenuAction(L("移除"), { mutate { store.removeCustom(src.name) } }, danger = true))))
             }
         }
         add(DlLine("__add__", L("Add source…"), accent = true, onA = { newName = ""; newOwner = ""; step = "name" }))
@@ -187,7 +187,7 @@ private fun LabDriverSourcesManager(onDismiss: () -> Unit, onChanged: () -> Unit
     LabDownloadList(title = L("Manage driver sources"), lines = lines, onDismiss = onDismiss)
 
     when (step) {
-        "name" -> LabFieldDialog(title = L("Add source"), initial = newName, hint = L("Name"), confirm = L("Next"), onDismiss = { step = null }) { v ->
+        "name" -> LabFieldDialog(title = L("添加源"), initial = newName, hint = L("Name"), confirm = L("Next"), onDismiss = { step = null }) { v ->
             if (v.trim().isEmpty()) msg(L("Enter a name")) else { newName = v.trim(); step = "kind" }
         }
         "kind" -> SimpleActionSheet(
@@ -195,7 +195,7 @@ private fun LabDriverSourcesManager(onDismiss: () -> Unit, onChanged: () -> Unit
             actions = listOf(MenuAction(L("JSON URL"), { step = "url" }), MenuAction(L("GitHub repo"), { step = "owner" })),
             onDismiss = { step = null },
         ) { it.run() }
-        "url" -> LabFieldDialog(title = L("JSON URL"), initial = "", hint = "https://…", confirm = L("Add source"), onDismiss = { step = null }) { v ->
+        "url" -> LabFieldDialog(title = L("JSON URL"), initial = "", hint = "https://…", confirm = L("添加源"), onDismiss = { step = null }) { v ->
             if (v.isBlank()) msg(L("Enter a JSON URL"))
             else { mutate { store.addCustom(newName, DriverFeed.Json(v.trim())) }; step = null }
         }
@@ -207,7 +207,7 @@ private fun LabDriverSourcesManager(onDismiss: () -> Unit, onChanged: () -> Unit
             else if (v.isBlank()) msg(L("Enter owner and repo"))
             else step = "repo"
         }
-        "repo" -> LabFieldDialog(title = L("Repo"), initial = "", confirm = L("Add source"), onDismiss = { step = null }) { v ->
+        "repo" -> LabFieldDialog(title = L("Repo"), initial = "", confirm = L("添加源"), onDismiss = { step = null }) { v ->
             val gh = DriverSourceStore.parseGithubRepo(newOwner, v)
             if (gh == null) msg(L("Enter owner and repo"))
             else { mutate { store.addCustom(newName, DriverFeed.GithubReleases(gh.first, gh.second)) }; step = null }

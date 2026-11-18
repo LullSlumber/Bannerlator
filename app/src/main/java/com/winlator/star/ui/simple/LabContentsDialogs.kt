@@ -163,11 +163,11 @@ private fun LabInstallProgressDialog(state: ContentDownloadState, onCancel: () -
     val stepless = !terminal && state.phase == ContentDownloadPhase.INSTALLING && !state.hasDownload && frac == 0f && ContentsTypes.isDriver(state.type ?: "")
     val label = when {
         state.cancelled -> L("Cancelled")
-        state.phase == ContentDownloadPhase.ERROR -> state.error ?: if (state.saveOnly) L("Save failed.") else L("Install failed.")
+        state.phase == ContentDownloadPhase.ERROR -> state.error ?: if (state.saveOnly) L("Save failed.") else L("安装失败。")
         state.phase == ContentDownloadPhase.DONE -> if (state.saveOnly) L("Saved to My files") else state.note ?: L("Installed")
         state.phase == ContentDownloadPhase.DOWNLOADING -> L("Downloading %1\$s%%", (frac * 100).toInt())
         state.saveOnly -> L("Saving to My files")
-        stepless -> L("Installing…")
+        stepless -> L("正在安装…")
         else -> L("Installing %1\$s%%", (frac * 100).toInt())
     }
     val labelColor = when {
@@ -355,13 +355,13 @@ internal fun LabTextEntryDialog(
 
 /** What an item sets, as Set as default says it ("sets the graphics driver"). */
 private fun settingName(kind: SetAsDefault.Kind): String = when (kind) {
-    SetAsDefault.Kind.DRIVER -> L("graphics driver")
+    SetAsDefault.Kind.DRIVER -> L("图形驱动程序")
     SetAsDefault.Kind.DXVK, SetAsDefault.Kind.VEGAS -> L("DX wrapper")
-    SetAsDefault.Kind.VKD3D -> L("VKD3D version")
-    SetAsDefault.Kind.BOX64 -> L("Box64 version")
-    SetAsDefault.Kind.WOWBOX64 -> L("WOWBox64 version")
-    SetAsDefault.Kind.FEXCORE -> L("FEXCore version")
-    SetAsDefault.Kind.LAYER -> L("compatibility layer")
+    SetAsDefault.Kind.VKD3D -> L("VKD3D 版本")
+    SetAsDefault.Kind.BOX64 -> L("Box64 版本")
+    SetAsDefault.Kind.WOWBOX64 -> L("WOWBox64 版本")
+    SetAsDefault.Kind.FEXCORE -> L("FEXCore 版本")
+    SetAsDefault.Kind.LAYER -> L("兼容层")
 }
 
 /**
@@ -409,9 +409,9 @@ internal fun LabSetAsDefaultDialog(item: SetAsDefault.Item, onDismiss: () -> Uni
         }
     }
 
-    LabDialogFrame(L("Set as default"), onDismiss = { if (!busy) onDismiss() }) {
+    LabDialogFrame(L("设为默认"), onDismiss = { if (!busy) onDismiss() }) {
         Text(L("%1\$s — sets the %2\$s", item.title, setting), color = SimpleMuted, fontSize = 13.sp)
-        SheetLabel(L("Architecture"))
+        SheetLabel(L("架构"))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(SetAsDefault.ARM64EC, SetAsDefault.X86_64).forEach { a ->
                 val on = arch == a
@@ -432,22 +432,22 @@ internal fun LabSetAsDefaultDialog(item: SetAsDefault.Item, onDismiss: () -> Uni
         if (item.archs.size < 2) {
             Text(L("%1\$s only works with %2\$s containers.", item.title, SetAsDefault.archLabel(item.archs.first())), color = SimpleMuted, fontSize = 12.sp)
         }
-        SheetLabel(L("Apply to"))
-        LabOptionRow(L("New container defaults"), L("Every new %1\$s container starts with it.", archText), enabled = !busy, onClick = { toDefaults = !toDefaults }) { LabSwitch(toDefaults) }
+        SheetLabel(L("应用到"))
+        LabOptionRow(L("新容器默认值"), L("Every new %1\$s container starts with it.", archText), enabled = !busy, onClick = { toDefaults = !toDefaults }) { LabSwitch(toDefaults) }
         LabOptionRow(
-            L("All existing containers"),
+            L("所有现有容器"),
             L("%1\$s %2\$s containers switch to it now.", n(nC), archText) +
                 if (isLayer) " " + L("Uses the in-place layer update with a revert snapshot; saves are kept.") else "",
             enabled = !busy, onClick = { toContainers = !toContainers },
         ) { LabSwitch(toContainers) }
         LabOptionRow(
-            L("All game shortcuts"),
-            if (isLayer) L("Games always use their container’s layer, so there is nothing to set per game.")
+            L("所有游戏快捷方式"),
+            if (isLayer) L("游戏始终使用其容器的层，因此无需按游戏设置。")
             else L("%1\$s games in those containers get it written into their own settings.", n(nG)),
             enabled = !isLayer && !busy, onClick = { toGames = !toGames },
         ) { LabSwitch(toGames && !isLayer) }
         Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically) {
-            if (busy) Text(L("Applying…"), color = SimpleMuted, fontSize = 13.sp, modifier = Modifier.weight(1f))
+            if (busy) Text(L("应用中…"), color = SimpleMuted, fontSize = 13.sp, modifier = Modifier.weight(1f))
             LabButton(L("Cancel"), onClick = { if (!busy) onDismiss() })
             LabButton(
                 L("Apply"), primary = any && !busy, modifier = Modifier.alpha(if (any && !busy) 1f else 0.5f),
@@ -498,24 +498,24 @@ internal fun LabAddRepoDialog(vm: ContentsHubViewModel, onDismiss: () -> Unit) {
         else vm.addComponentSource(RemoteSourceRepository.RemoteSource(name = n, url = u, format = format, supportedTypes = emptyList(), isCustom = true))
         onDismiss()
     }
-    LabDialogFrame(L("Add repository"), onDismiss) {
-        Text(L("Paste any component or GPU-driver source — it joins the list like a built-in."), color = SimpleMuted, fontSize = 13.sp)
-        LabEntryField(name, { name = it }, L("Display name"), requester = first, imeAction = ImeAction.Next)
-        LabEntryField(url, { url = it }, if (isDriver) L("GitHub repo (owner/repo) or JSON URL") else L("URL (repo, releases API, or JSON)"), onIme = { add() })
-        LabOptionRow(L("GPU driver source"), L("Listed with the other GPU driver sources"), onClick = { isDriver = !isDriver }) { LabSwitch(isDriver) }
+    LabDialogFrame(L("添加仓库"), onDismiss) {
+        Text(L("粘贴任何组件或GPU驱动程序来源 — 它会像内置源一样加入列表。"), color = SimpleMuted, fontSize = 13.sp)
+        LabEntryField(name, { name = it }, L("显示名称"), requester = first, imeAction = ImeAction.Next)
+        LabEntryField(url, { url = it }, if (isDriver) L("GitHub仓库（所有者/仓库）或JSON URL") else L("URL（仓库、发布API或JSON）"), onIme = { add() })
+        LabOptionRow(L("GPU驱动程序来源"), L("Listed with the other GPU driver sources"), onClick = { isDriver = !isDriver }) { LabSwitch(isDriver) }
         if (!isDriver) {
-            LabOptionRow(L("Source format"), null, onClick = { formatOpen = true }) {
+            LabOptionRow(L("来源格式"), null, onClick = { formatOpen = true }) {
                 Text(fmt(format), color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
             }
         }
         Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
             LabButton(L("Cancel"), onClick = onDismiss)
-            LabButton(L("Add source"), primary = ok, modifier = Modifier.alpha(if (ok) 1f else 0.5f), onClick = { add() })
+            LabButton(L("添加源"), primary = ok, modifier = Modifier.alpha(if (ok) 1f else 0.5f), onClick = { add() })
         }
     }
     if (formatOpen) {
         SimpleActionSheet(
-            L("Source format"),
+            L("来源格式"),
             RemoteSourceRepository.SourceFormat.values().map { f -> MenuAction(if (f == format) fmt(f) + "  ✓" else fmt(f), { format = f }) },
             onDismiss = { formatOpen = false },
         ) { a -> formatOpen = false; a.run() }

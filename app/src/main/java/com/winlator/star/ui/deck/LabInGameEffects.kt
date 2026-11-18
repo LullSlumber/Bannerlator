@@ -78,9 +78,9 @@ private const val LABFX_CUSTOM = -1
 
 /** The nine scaling modes in the Classic picker's order (mode ints are persisted per game: never renumber). */
 private val LABFX_SCALING_MODES = listOf(
-    0 to "None", 1 to "Linear", 2 to "Nearest",
+    0 to "None", 1 to "线性过滤", 2 to "邻近采样",
     3 to "SGSR", 8 to "SGSR HQ", 4 to "FSR",
-    5 to "FSR (Fit)", 6 to "Sharpen", 7 to "NIS",
+    5 to "FSR (适应)", 6 to "画面锐化", 7 to "NIS",
 )
 
 /** Same as XServerDrawer.pushSgsrUpdate. */
@@ -113,7 +113,7 @@ internal fun LabEffectsPanel(state: XServerDrawerState) {
     if (effectsSupported) LabFxGlBlock(glEnabled, waylandFxBlocked, game)
     if (vulkanSupported) LabFxVkBlock(vkEnabled, waylandFxBlocked, game)
     if (!effectsSupported && !vulkanSupported) {
-        IgCard { IgInfo(L("No graphics enhancements are available with the SurfaceFlinger renderer.")) }
+        IgCard { IgInfo(L("SurfaceFlinger渲染器不支持任何图形增强功能。")) }
     }
 
     val nativeRenderingSupported by state.nativeRenderingSupported.collectAsState()
@@ -125,9 +125,9 @@ internal fun LabEffectsPanel(state: XServerDrawerState) {
             if (nativeRenderingSupported) {
                 // Wayland: X11 direct scanout never runs, so the row is greyed and points at Zero-copy presentation.
                 IgToggleRow(
-                    L("Native rendering"),
+                    L("原生渲染"),
                     nativeRenderingEnabled,
-                    hint = if (isWaylandSession) L("X11 direct scanout is not used on Wayland; Zero-copy presentation below is the Wayland equivalent.") else null,
+                    hint = if (isWaylandSession) L("X11直接扫描输出在Wayland上不使用；下面的零拷贝呈现是Wayland的等效方式。") else null,
                     scopes = listOf(SaveScope.SESSION),
                     enabled = !isWaylandSession,
                 ) {
@@ -253,7 +253,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
             val fiveStops = glUpscalerMode == 6
             IgDivider()
             IgSliderRow(
-                title = L("Sharpness"),
+                title = L("锐化度"),
                 value = glUpscaleSharpness.toFloat(),
                 range = 0f..100f,
                 step = if (fiveStops) 25f else 5f,
@@ -265,7 +265,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
             )
         }
         IgDivider()
-        IgToggleRow(L("Sharpen (CAS)"), sgsrEnabled, scopes = gameScopes, enabled = glEnabled) {
+        IgToggleRow(L("画面锐化 (CAS)"), sgsrEnabled, scopes = gameScopes, enabled = glEnabled) {
             sgsrEnabled = it
             XServerDialogState.setSgsrEnabled(it)
             lookTouched()
@@ -275,7 +275,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
             // Standalone CAS: always the five stops, 0 = off.
             IgDivider()
             IgSliderRow(
-                title = L("Sharpness"),
+                title = L("锐化度"),
                 value = sgsrSharpness.toFloat(),
                 range = 0f..100f,
                 step = 25f,
@@ -303,7 +303,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         LabFxLooksRow(selectedLook, glEnabled) { applyGlLook(it) }
         IgDivider()
         IgSliderRow(
-            title = L("Brightness"), value = localBrightness, range = -100f..100f, step = 10f,
+            title = L("亮度"), value = localBrightness, range = -100f..100f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { localBrightness = it; lookTouched(); applySe() },
             onFinished = { XServerDialogState.setSeBrightness(localBrightness) },
@@ -311,7 +311,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         )
         IgDivider()
         IgSliderRow(
-            title = L("Contrast"), value = localContrast, range = -100f..100f, step = 10f,
+            title = L("对比度"), value = localContrast, range = -100f..100f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { localContrast = it; lookTouched(); applySe() },
             onFinished = { XServerDialogState.setSeContrast(localContrast) },
@@ -319,7 +319,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         )
         IgDivider()
         IgSliderRow(
-            title = L("Gamma"), value = localGamma, range = 0.5f..3.0f, step = 0.125f,
+            title = L("伽马"), value = localGamma, range = 0.5f..3.0f, step = 0.125f,
             format = { "%.2f".format(it) },
             onChange = { localGamma = it; lookTouched(); applySe() },
             onFinished = { XServerDialogState.setSeGamma(localGamma) },
@@ -328,7 +328,7 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         IgDivider()
         // 0..200 percent, 100 = neutral.
         IgSliderRow(
-            title = L("Saturation"), value = localSaturation, range = 0f..200f, step = 10f,
+            title = L("饱和度"), value = localSaturation, range = 0f..200f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { localSaturation = it; lookTouched(); applySe() },
             onFinished = { XServerDialogState.setSeSaturation(localSaturation) },
@@ -338,10 +338,10 @@ private fun LabFxGlBlock(glEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         IgRow(L("Shader effects"), scopes = session, enabled = glEnabled, wideControl = true) {
             LabFxToggleChips(
                 listOf(
-                    LabFxToggle("FXAA", localFxaa) { localFxaa = it; XServerDialogState.setSeFxaa(it); lookTouched(); applySe() },
-                    LabFxToggle("CRT", localCrt) { localCrt = it; XServerDialogState.setSeCrt(it); lookTouched(); applySe() },
-                    LabFxToggle("Toon", localToon) { localToon = it; XServerDialogState.setSeToon(it); lookTouched(); applySe() },
-                    LabFxToggle("NTSC", localNtsc) { localNtsc = it; XServerDialogState.setSeNtsc(it); lookTouched(); applySe() },
+                    LabFxToggle("快速近似抗锯齿", localFxaa) { localFxaa = it; XServerDialogState.setSeFxaa(it); lookTouched(); applySe() },
+                    LabFxToggle("复古电视显像管滤镜", localCrt) { localCrt = it; XServerDialogState.setSeCrt(it); lookTouched(); applySe() },
+                    LabFxToggle("卡通风格", localToon) { localToon = it; XServerDialogState.setSeToon(it); lookTouched(); applySe() },
+                    LabFxToggle("NTSC电视滤镜", localNtsc) { localNtsc = it; XServerDialogState.setSeNtsc(it); lookTouched(); applySe() },
                 ),
                 enabled = glEnabled,
             )
@@ -451,7 +451,7 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
             var upscaleSharpness by remember(initUpscaleSharpness) { mutableIntStateOf(initUpscaleSharpness) }
             IgDivider()
             IgSliderRow(
-                title = L("Sharpness"),
+                title = L("锐化度"),
                 value = upscaleSharpness.toFloat(),
                 range = 0f..100f,
                 step = 5f,
@@ -500,7 +500,7 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         LabFxLooksRow(selectedLook, vkEnabled) { applyVkLook(it) }
         IgDivider()
         IgSliderRow(
-            title = L("Brightness"), value = vkBrightness, range = -100f..100f, step = 10f,
+            title = L("亮度"), value = vkBrightness, range = -100f..100f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { vkBrightness = it; lookTouched(); applyVkSe() },
             onFinished = { XServerDialogState.setVkBrightness(vkBrightness) },
@@ -508,7 +508,7 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         )
         IgDivider()
         IgSliderRow(
-            title = L("Contrast"), value = vkContrast, range = -100f..100f, step = 10f,
+            title = L("对比度"), value = vkContrast, range = -100f..100f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { vkContrast = it; lookTouched(); applyVkSe() },
             onFinished = { XServerDialogState.setVkContrast(vkContrast) },
@@ -516,7 +516,7 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         )
         IgDivider()
         IgSliderRow(
-            title = L("Gamma"), value = vkGamma, range = 0.5f..3.0f, step = 0.125f,
+            title = L("伽马"), value = vkGamma, range = 0.5f..3.0f, step = 0.125f,
             format = { "%.2f".format(it) },
             onChange = { vkGamma = it; lookTouched(); applyVkSe() },
             onFinished = { XServerDialogState.setVkGamma(vkGamma) },
@@ -525,7 +525,7 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         IgDivider()
         // 0..200 percent, 100 = neutral.
         IgSliderRow(
-            title = L("Saturation"), value = vkSaturation, range = 0f..200f, step = 10f,
+            title = L("饱和度"), value = vkSaturation, range = 0f..200f, step = 10f,
             format = { "%.0f".format(it) },
             onChange = { vkSaturation = it; lookTouched(); applyVkSe() },
             onFinished = { XServerDialogState.setVkSaturation(vkSaturation) },
@@ -535,10 +535,10 @@ private fun LabFxVkBlock(vkEnabled: Boolean, waylandFxBlocked: Boolean, game: Sa
         IgRow(L("Shader effects"), scopes = session, enabled = vkEnabled, wideControl = true) {
             LabFxToggleChips(
                 listOf(
-                    LabFxToggle("FXAA", vkFxaa) { vkFxaa = it; XServerDialogState.setVkFxaa(it); lookTouched(); applyVkSe() },
-                    LabFxToggle("Toon", vkToon) { vkToon = it; XServerDialogState.setVkToon(it); lookTouched(); applyVkSe() },
-                    LabFxToggle("CRT", vkCrt) { vkCrt = it; XServerDialogState.setVkCrt(it); lookTouched(); applyVkSe() },
-                    LabFxToggle("NTSC", vkNtsc) { vkNtsc = it; XServerDialogState.setVkNtsc(it); lookTouched(); applyVkSe() },
+                    LabFxToggle("快速近似抗锯齿", vkFxaa) { vkFxaa = it; XServerDialogState.setVkFxaa(it); lookTouched(); applyVkSe() },
+                    LabFxToggle("卡通风格", vkToon) { vkToon = it; XServerDialogState.setVkToon(it); lookTouched(); applyVkSe() },
+                    LabFxToggle("复古电视显像管滤镜", vkCrt) { vkCrt = it; XServerDialogState.setVkCrt(it); lookTouched(); applyVkSe() },
+                    LabFxToggle("NTSC电视滤镜", vkNtsc) { vkNtsc = it; XServerDialogState.setVkNtsc(it); lookTouched(); applyVkSe() },
                 ),
                 enabled = vkEnabled,
             )
@@ -562,7 +562,7 @@ private fun LabFxScalingRow(
     }
     IgRow(
         L("Scaling mode"),
-        note = if (waylandFxBlocked) L("Not on Wayland in this build yet.") else null,
+        note = if (waylandFxBlocked) L("此版本尚未在 Wayland 上支持。") else null,
         scopes = scopes,
         enabled = enabled,
         wideControl = true,
@@ -583,7 +583,7 @@ private fun LabFxDebandRows(enabled: Boolean, scopes: List<SaveScope>, onUserCha
     val initDebandStrength by XServerDialogState.debandStrength.collectAsState()
     var debandEnabled by remember(initDebandEnabled) { mutableStateOf(initDebandEnabled) }
     var debandStrength by remember(initDebandStrength) { mutableIntStateOf(initDebandStrength) }
-    IgToggleRow(L("Debanding"), debandEnabled, scopes = scopes, enabled = enabled) {
+    IgToggleRow(L("色带消除"), debandEnabled, scopes = scopes, enabled = enabled) {
         debandEnabled = it
         XServerDialogState.setDebandEnabled(it)
         onUserChange()
@@ -592,7 +592,7 @@ private fun LabFxDebandRows(enabled: Boolean, scopes: List<SaveScope>, onUserCha
     if (debandEnabled) {
         IgDivider()
         IgSliderRow(
-            title = L("Dither strength"),
+            title = L("抖动强度"),
             value = debandStrength.toFloat(),
             range = 0f..200f,
             step = 10f,
@@ -618,9 +618,9 @@ private fun LabFxLooksRow(selected: Int?, enabled: Boolean, onPick: (Int) -> Uni
         val look = looks[selected]
         if (look.desc.isEmpty()) L(look.name) else L(look.name) + " — " + L(look.desc)
     } else {
-        L("Adjusted — everything below is yours. Tap a look to go back.")
+        L("已调整 — 以下所有都是您的。点击外观以返回。")
     }
-    IgRow(L("Looks"), hint = line, scopes = listOf(SaveScope.SESSION), enabled = enabled, wideControl = true) {
+    IgRow(L("外观"), hint = line, scopes = listOf(SaveScope.SESSION), enabled = enabled, wideControl = true) {
         IgChips(options, selected ?: LABFX_CUSTOM, enabled = enabled) { if (it != LABFX_CUSTOM) onPick(it) }
     }
 }
@@ -673,17 +673,17 @@ private fun LabFxWaylandHdrOutputRow(state: XServerDrawerState) {
     val screenCapable by state.waylandHdrScreenCapable.collectAsState()
     var checked by remember(output) { mutableStateOf(output) }
     val status = when {
-        checked && onScreen -> L("On: HDR frames on screen now.")
-        checked && noHeadroom -> L("On, but the screen gives HDR no headroom right now: brightness at maximum, or the screen is being recorded (Android turns HDR headroom off while recording).")
-        checked && toneMapped -> L("On, but shown tone-mapped: frame generation on a screen with no HDR swapchain.")
+        checked && onScreen -> L("开启：HDR帧现在在屏幕上。")
+        checked && noHeadroom -> L("开启，但屏幕当前没有为HDR提供余量：亮度处于最大，或屏幕正在被录制（Android在录制时会关闭HDR余量）。")
+        checked && toneMapped -> L("开启，但显示为色调映射：在没有HDR交换链的屏幕上进行帧生成。")
         checked && !screenCapable -> L("On, but this screen has no HDR10: Android tone-maps the picture for it. The game keeps the HDR it was offered until it closes.")
-        checked -> L("On: no HDR frames right now (is HDR on in the game's settings?).")
-        onScreen || noHeadroom -> L("Off, but these frames cannot be tone-mapped here: they stay HDR.")
-        toneMapped -> L("Off: HDR frames shown tone-mapped to SDR.")
-        else -> L("Off: no HDR frames right now.")
+        checked -> L("开启：当前没有HDR帧（游戏设置中是否开启了HDR？）。")
+        onScreen || noHeadroom -> L("关闭，但这些帧无法在此进行色调映射：它们保持HDR。")
+        toneMapped -> L("关闭：HDR帧显示为色调映射到SDR。")
+        else -> L("关闭：当前没有HDR帧。")
     }
     IgToggleRow(
-        L("HDR output"),
+        L("HDR 输出"),
         checked,
         hint = L("On: HDR games show real HDR on this screen. Off: the same picture tone-mapped to SDR. Applies immediately; the game's own HDR setting is left alone."),
         note = status,
@@ -712,15 +712,15 @@ private fun LabFxWaylandZeroCopyRow(state: XServerDrawerState, effectsAvailable:
     }
     val effectsOn = effectsAvailable && labFxCompositorEffectsOn()
     val status = when {
-        checked && effectsOn -> L("On: screen effects are drawn into the game's display layer, so it keeps hardware composition.")
-        checked && !live -> L("Switching on… the game is rebuilding its swapchain on display buffers.")
+        checked && effectsOn -> L("开启：屏幕效果绘制到游戏的显示层中，因此保持硬件合成。")
+        checked && !live -> L("正在开启… 游戏正在显示缓冲区上重建其交换链。")
         checked && frames > 0 -> L("On: %1\$s zero-copy frames in the last 10 s", frames)
-        checked -> L("On: frames are going straight to the display layer.")
-        live -> L("Switching off… the game's last display-layer frames are still on screen.")
-        else -> L("Off: the compositor copies each frame into its own swapchain.")
+        checked -> L("开启：帧直接发送到显示层。")
+        live -> L("正在关闭… 游戏最后的显示层帧仍在屏幕上。")
+        else -> L("关闭：合成器将每帧复制到其自己的交换链中。")
     }
     IgToggleRow(
-        L("Zero-copy presentation"),
+        L("零拷贝呈现"),
         checked,
         hint = L("Fullscreen games are shown on their own display layer with no compositor copy. Applies immediately."),
         note = status,
@@ -757,7 +757,7 @@ private fun LabFxWaylandGlSafeModeRow(state: XServerDrawerState, scopes: List<Sa
     val safeMode by state.waylandGlSafeMode.collectAsState()
     var checked by remember(safeMode) { mutableStateOf(safeMode) }
     IgToggleRow(
-        L("OpenGL safe mode"),
+        L("OpenGL安全模式"),
         checked,
         hint = if (checked)
             L("On: stops native OpenGL games disappearing with no error. Costs a little OpenGL speed; DirectX games are unaffected. Takes effect the next time the game starts.")
@@ -784,7 +784,7 @@ internal fun LabReshadePanel() {
     val seed = remember { XServerDialogState.reshadeLoadout.value }
 
     if (!supported || seed.isEmpty()) {
-        IgCard { IgInfo(L("No ReShade effects selected. Add one or more in this game's settings (or the container's) to switch and tune them here.")) }
+        IgCard { IgInfo(L("未选择任何 ReShade 滤镜效果。请在此游戏（或容器）的设置中添加一个或多个滤镜效果，以便在此处切换和调整。")) }
         return
     }
 
@@ -891,7 +891,7 @@ internal fun LabReshadePanel() {
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 4.dp),
                         ) {
                             IgButton(
-                                L("Reset"),
+                                L("重置"),
                                 Icons.Filled.Restore,
                                 {
                                     values.clear()
@@ -903,7 +903,7 @@ internal fun LabReshadePanel() {
                             )
                         }
                         if (item.params.isEmpty()) {
-                            IgNote(L("No tunable parameters."))
+                            IgNote(L("无可调参数。"))
                         } else {
                             LabFxReshadeParams(item.params, values, colorSeed) { apply() }
                         }
@@ -1041,18 +1041,18 @@ private fun LabFxColorControl(
     }
     if (expanded) {
         LabFxGradientSlider(
-            L("Hue"), hue, 0f..360f,
+            L("色相"), hue, 0f..360f,
             Brush.horizontalGradient((0..12).map { Color(android.graphics.Color.HSVToColor(floatArrayOf(it * 30f, 1f, 1f))) })
         ) { hue = it; emit() }
         LabFxGradientSlider(
-            L("Saturation"), sat, 0f..1f,
+            L("饱和度"), sat, 0f..1f,
             Brush.horizontalGradient(listOf(
                 Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, 0f, valv))),
                 Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, 1f, valv)))
             ))
         ) { sat = it; emit() }
         LabFxGradientSlider(
-            L("Brightness"), valv, 0f..1f,
+            L("亮度"), valv, 0f..1f,
             Brush.horizontalGradient(listOf(Color.Black, Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, sat, 1f)))))
         ) { valv = it; emit() }
         if (components >= 4) {

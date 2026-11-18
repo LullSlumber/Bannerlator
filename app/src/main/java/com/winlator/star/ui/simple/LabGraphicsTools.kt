@@ -72,7 +72,7 @@ internal fun LabGraphicsDialogs(state: DeckGraphicsState) {
 }
 
 /**
- * The facts under "Unreal Engine HDR fix" set to DirectX 11 (Classic's UnrealHdrDx11Notes): the dxvk-nvapi this build
+ * The facts under "虚幻引擎 HDR 修复" set to DirectX 11 (Classic's UnrealHdrDx11Notes): the dxvk-nvapi this build
  * carries, and the NVIDIA spoof hint while the GPU name games see is not an NVIDIA one. Read once off the main thread;
  * the note updates when they arrive.
  */
