@@ -93,6 +93,7 @@ class FusionHudView(
     private var showBattery = true
     private var showPower = true
     private var showBatteryTemp = false
+    private var showBatteryTime = true
     private var showGraph = false
     private var showLow001 = true
     private var fpsDecimal = true
@@ -135,8 +136,10 @@ class FusionHudView(
     private val colVram = 0xFFC98BFF.toInt()
     private val colRam = 0xFFFF7BC0.toInt()
     private val colBat = 0xFFFFAB5E.toInt()
-    private val colFps = 0xFFFF6B6B.toInt()
-    private val colGraph = 0xFF5EE08A.toInt()
+    // DroidDeck palette: the FPS accent + graph colour follow the app accent (applyConfig),
+    // blue defaults before the first config apply (DroidDeckHudView.kt:131,157-158).
+    private var colFps = 0xFF1A9FFF.toInt()
+    private var colGraph = 0xFF5CB8FF.toInt()
     private val colValue = 0xFFF2F5F9.toInt()
     private val colDim = 0xFF9AA4B2.toInt()
     private val colLo = 0xFFE4E8EE.toInt()
@@ -159,8 +162,9 @@ class FusionHudView(
     }
 
     // ---- Built geometry ---------------------------------------------------
-    private class Glyph(val x: Float, val baseline: Float, val text: String, val color: Int, val sizePx: Float)
-    private class Span(val text: String, val color: Int, val sizePx: Float)
+    private class Glyph(val x: Float, val baseline: Float, val text: String, val color: Int, val sizePx: Float,
+                        val glow: Boolean = false)
+    private class Span(val text: String, val color: Int, val sizePx: Float, val glow: Boolean = false)
     /**
      * A "label + value-run" row for the aligned grid sizes (Full / Mega). When [inline] is true the row
      * opts OUT of the shared label column — its value run is placed directly after the label — so a long
@@ -233,6 +237,7 @@ class FusionHudView(
         showBattery = cfg.get("showBattery", "1") == "1"
         showPower = cfg.get("showPower", "1") == "1"
         showBatteryTemp = cfg.get("showBatteryTemp", "0") == "1"
+        showBatteryTime = cfg.get("showBatteryTime", "1") == "1"
         showGraph = cfg.get("showFPSGraph", "0") == "1"
         showLow001 = cfg.get("showLow001", "1") == "1"
         fpsDecimal = cfg.get("fpsDecimal", "1") == "1"
@@ -256,6 +261,9 @@ class FusionHudView(
         outlineFollowAccent = cfg.get("hudOutlineAccent", "1") == "1"
         scale = (parseIntOr(cfg.get("hudScale", "100"), 100).coerceIn(50, 200)) / 100f
         bgOpacity = (parseIntOr(cfg.get("hudOpacity", "80"), 80).coerceIn(0, 100)) / 100f
+        // DroidDeck applyPalette(): FPS accent = the app accent, graph = accent lightened 30%.
+        colFps = AppThemeState.getCurrentAccentArgb()
+        colGraph = lighten(colFps, 0.3f)
 
         rebuildAndInvalidate()
     }
@@ -318,6 +326,12 @@ class FusionHudView(
     }
 
     private fun sp(v: Float) = v * density * scale
+    /** DroidDeckHudView.lighten(): mix the colour toward white by [amount] (0..1). */
+    private fun lighten(color: Int, amount: Float): Int = Color.rgb(
+        (Color.red(color) + (255 - Color.red(color)) * amount).roundToInt(),
+        (Color.green(color) + (255 - Color.green(color)) * amount).roundToInt(),
+        (Color.blue(color) + (255 - Color.blue(color)) * amount).roundToInt(),
+    )
     private fun measure(text: String, sizePx: Float): Float { measurePaint.textSize = sizePx; return measurePaint.measureText(text) }
     private fun lineH(sizePx: Float): Float { measurePaint.textSize = sizePx; val fm = measurePaint.fontMetrics; return fm.descent - fm.ascent }
     private fun ascent(sizePx: Float): Float { measurePaint.textSize = sizePx; return measurePaint.fontMetrics.ascent }
@@ -331,10 +345,22 @@ class FusionHudView(
     private fun placeRun(startX: Float, baseline: Float, spans: List<Span>): Float {
         var x = startX
         for (s in spans) {
-            glyphs.add(Glyph(x, baseline, s.text, blend(s.color), s.sizePx))
+            glyphs.add(Glyph(x, baseline, s.text, blend(s.color), s.sizePx, s.glow))
             x += measure(s.text, s.sizePx)
         }
         return x
+    }
+
+    /** DroidDeckHudView.withAlpha(). */
+    private fun withAlpha(color: Int, alpha: Int): Int =
+        Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
+
+    /** Cap height of "0" at [px] — DroidDeckHudView.capHeight(), used to baseline the Strip. */
+    private val inkRect = android.graphics.Rect()
+    private fun capHeight(px: Float): Float {
+        measurePaint.textSize = px
+        measurePaint.getTextBounds("0", 0, 1, inkRect)
+        return -inkRect.top.toFloat()
     }
 
     private fun one(v: Float): String =
@@ -1074,20 +1100,21 @@ class FusionHudView(
 
     /**
      * Strip — a one-line bar spanning the parent width (ported from DroidDeck PR #1935, GPL-3.0).
-     * Left to right: API + FPS + frametime, [frametime graph], the percentile lows, GPU, CPU, VRAM,
-     * RAM, battery, display server, GPU model, HDR — ordered by priority, so anything that no longer
-     * fits before the clock is dropped from the END (lowest priority first); the clock stays pinned
-     * to the right end. Position still comes from the shared drag + lock ([HudLockController]):
-     * drag it to the top or bottom edge and long-press to lock it there — no edge snapping needed.
+     * Layout re-matched 1:1 against the DroidDeck source (DroidDeckHudView.kt buildStrip): 11.5sp
+     * rows with 0.8x units, a 15sp glowing FPS value (shrinks a notch while frame generation shifts
+     * it), a 72sp frametime graph, 26sp total height, 13sp group gaps, and independent labelled rows
+     * — GPU.T / CPU.T / BAT.T / BAT TIME — instead of temps appended to their load row. Ordered by
+     * priority, so anything that no longer fits before the clock is dropped from the END (lowest
+     * priority first); the clock stays pinned to the right end. No DroidDeck brand mark: the Strip
+     * starts at the rounded-corner pad instead. Position still comes from the shared drag + lock
+     * ([HudLockController]): drag it to the top or bottom edge and long-press to lock it there.
      */
     private fun buildStrip(s: HudMetrics.Snapshot) {
-        // Faithful replica of DroidDeck's Strip (PR #1935): values at full size, units a
-        // notch smaller sharing the baseline (bottom-aligned look), thin gap between a
-        // number and its unit, coloured labels with white values.
-        val px = sp(12f); val unitPx = px * 0.85f; val numGap = px * 0.28f
-        val pad = sp(7f); val itemGap = sp(10f)
+        val rowPx = sp(11.5f); val unitPx = rowPx * 0.8f; val fpsPx = sp(15f)
+        val itemGap = sp(13f)
+        val h = sp(26f)
         // Phones have rounded screen corners; the strip spans the full parent width, so
-        // inset both ends further than the vertical pad to keep the first/last item clear.
+        // inset both ends further than DroidDeck's 10sp pad to keep the first/last item clear.
         // The left corner radius eats deeper in practice — give the first item extra room.
         val endPad = sp(16f)
         val startPad = sp(34f)
@@ -1097,111 +1124,82 @@ class FusionHudView(
         val parentW = (parent as? View)?.width?.takeIf { it > 0 }
             ?: resources.displayMetrics.widthPixels
 
-        val line = lineH(px)
         contentW = parentW.toFloat()
-        contentH = pad * 2 + line
-        val baseline = pad - ascent(px)
+        contentH = h
+        val baseline = h / 2f + capHeight(fpsPx) / 2f
+
+        // Clock pinned at the far right: drawn first, then the working area shrinks behind it.
+        var right = parentW - endPad
         val clockStr = clockTimeString()
-        val clockW = if (showClockTime) measure(clockStr, px) else 0f
-        val rightLimit = parentW - endPad - (if (showClockTime) clockW + itemGap else 0f)
+        if (showClockTime) {
+            right -= measure(clockStr, rowPx)
+            glyphs.add(Glyph(right, baseline, clockStr, blend(colDim), rowPx))
+            right -= itemGap
+        }
 
         // Ordered pieces — priority order, placed while they fit.
         class StripPiece(val w: Float, val place: (Float) -> Unit)
         val pieces = ArrayList<StripPiece>()
 
-        if (showFPS) {
-            val l = listOf(
-                Span(apiLabel(), colFps, unitPx), gap(unitPx),
-                Span(fpsText(fpsNow), colValue, px), gap(numGap), Span("fps", colDim, unitPx))
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        // A labelled row, exactly DroidDeck's reading(): coloured label + one dim space + value run.
+        fun row(label: String, labelCol: Int, vals: List<Span>): StripPiece? {
+            if (vals.isEmpty()) return null
+            val spans = listOf(Span(label, labelCol, rowPx), Span(" ", colDim, rowPx)) + vals
+            return StripPiece(runWidth(spans)) { x -> placeRun(x, baseline, spans) }
         }
-        val graphW = if (showGraph) sp(56f) else 0f
-        val graphH = line * 0.9f
-        if (showGraph)
-            pieces.add(StripPiece(graphW) { x ->
-                graphRect = RectF(x, (contentH - graphH) / 2f, x + graphW, (contentH + graphH) / 2f)
+
+        if (showFPS) {
+            val fps = ArrayList<Span>()
+            if (apiLabel() != "FPS") fps += Span("${apiLabel()} ", colDim, rowPx)
+            // 15sp value with the graph-colour glow (a shadow layer applied in onDraw); DroidDeck
+            // shrinks it a notch while frame generation shifts the rate.
+            fps += Span(fpsText(fpsNow), colValue, if (differs(fpsNow)) fpsPx * 0.8f else fpsPx, glow = true)
+            fps += Span("fps", colDim, unitPx)
+            pieces.add(StripPiece(runWidth(fps)) { x -> placeRun(x, baseline, fps) })
+        }
+        if (showGraph) {
+            val gw = sp(72f); val gh = h * 0.55f
+            pieces.add(StripPiece(gw) { x ->
+                graphRect = RectF(x, (contentH - gh) / 2f, x + gw, (contentH + gh) / 2f)
             })
+        }
         if (showFPS) {
             // Only the 1% low on the Strip (0.1%/0.01% dropped for readability).
-            val l = listOf(
-                Span("1%", colLo, unitPx), gap(unitPx),
-                Span(lowText(lows.low1Fps) ?: "—", colValue, px))
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showGPU) {
-            val l = ArrayList<Span>()
-            l += Span("GPU", colGpu, unitPx); l += gap(unitPx)
-            l += numUnit(s.gpuPercent?.toString(), "%", px, unitPx, numGap)
-            if (showGpuTemp) tempSpans(s.gpuTempC, HudMetrics.TempSensor.GPU, px, unitPx, numGap)
-                .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showCPU) {
-            val l = ArrayList<Span>()
-            l += Span("CPU", colCpu, unitPx); l += gap(unitPx)
-            l += numUnit(s.cpuPercent?.toString(), "%", px, unitPx, numGap)
-            if (showCpuTemp) tempSpans(s.cpuTempC, HudMetrics.TempSensor.CPU, px, unitPx, numGap)
-                .let { if (it.isNotEmpty()) { l += gap(unitPx); l += it } }
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showVram && s.vramText() != null) {
-            val l = listOf(Span("VRAM", colVram, unitPx), gap(unitPx)) + valueUnit(s.vramText()!!, px, unitPx, numGap)
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showRAM) {
-            val l = listOf(
-                Span("RAM", colRam, unitPx), gap(unitPx),
-                Span("${s.ramPercent.roundToInt()}", colValue, px), gap(numGap), Span("%", colDim, unitPx))
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showBattery || showPower) {
-            val l = ArrayList<Span>(); var any = false
-            if (showBattery && s.battery.percent != null) {
-                l += Span("${s.battery.percent}", colValue, px); l += gap(numGap); l += Span("%", colDim, unitPx); any = true
-            }
-            if (showBatteryTemp) tempSpans(s.battery.tempC, HudMetrics.TempSensor.BATTERY, px, unitPx, numGap)
-                .let { if (it.isNotEmpty()) { if (any) l += gap(unitPx); l += it; any = true } }
-            if (showPower && s.battery.watts > 0f) {
-                if (any) l += gap(unitPx)
-                l += Span(fmt1(s.battery.watts), colValue, px); l += gap(numGap); l += Span("W", colDim, px); any = true
-            }
-            if (any) {
-                val full = listOf(Span("BAT", colBat, unitPx), gap(unitPx)) + l
-                pieces.add(StripPiece(runWidth(full)) { x -> placeRun(x, baseline, full) })
+            lowText(lows.low1Fps)?.let { l ->
+                row("1%", colLo, listOf(Span(l, colValue, rowPx)))?.let { pieces.add(it) }
             }
         }
-        if ((showBattery || showPower) && s.battery.runtimeText != null) {
-            // Runtime-left (GameNative-parity): sits right after BAT/PWR; the clock stays pinned at
-            // the far right, so it reads ... BAT 45% PWR 1.5W LEFT 6h 27m ... TIME. runtimeText is
-            // "LEFT 6h 27m" or "LEFT CHG" — split off the label and keep the Strip's own styling.
-            val v = s.battery.runtimeText!!.removePrefix("LEFT ")
-            val l = listOf(Span("LEFT", colBat, unitPx), gap(unitPx), Span(v, colValue, px))
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
+        if (showGPU) row("GPU", colGpu, numUnit(s.gpuPercent?.toString(), "%", rowPx, unitPx))?.let { pieces.add(it) }
+        if (showGpuTemp) row("GPU.T", colGpu, tempSpans(s.gpuTempC, HudMetrics.TempSensor.GPU, rowPx, unitPx))?.let { pieces.add(it) }
+        if (showCPU) row("CPU", colCpu, numUnit(s.cpuPercent?.toString(), "%", rowPx, unitPx))?.let { pieces.add(it) }
+        if (showCpuTemp) row("CPU.T", colCpu, tempSpans(s.cpuTempC, HudMetrics.TempSensor.CPU, rowPx, unitPx))?.let { pieces.add(it) }
+        if (showVram) row("VRAM", colVram, valueUnit(s.vramText() ?: "—", rowPx, unitPx))?.let { pieces.add(it) }
+        if (showRAM) row("RAM", colRam, numUnit(s.ramPercent.roundToInt().toString(), "%", rowPx, unitPx))?.let { pieces.add(it) }
+        if (showBattery) row("BAT", colBat, numUnit(s.battery.percent?.toString(), "%", rowPx, unitPx))?.let { pieces.add(it) }
+        if (showBatteryTemp) row("BAT.T", colBat, tempSpans(s.battery.tempC, HudMetrics.TempSensor.BATTERY, rowPx, unitPx))?.let { pieces.add(it) }
+        if (showBatteryTime) {
+            // Runtime-left, DroidDeck's "BAT TIME" row: runtimeText is "LEFT 6 hrs 27 mins" or
+            // "LEFT CHG" — split the label off; charging reads like DroidDeck's "Charging".
+            val rt = s.battery.runtimeText
+            val v = when {
+                rt == null -> "—"
+                rt == "LEFT CHG" -> "Charging"
+                else -> rt.removePrefix("LEFT ")
+            }
+            row("BAT TIME", colBat, listOf(Span(v, colValue, rowPx)))?.let { pieces.add(it) }
         }
-        if (displayServer.isNotBlank()) {
-            val l = listOf(Span(displayServer, colDisp, unitPx))
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (showGpuModel && gpuNameText().isNotBlank()) {
-            val l = gpuModelSpans(unitPx, colDim, compact = true)
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
-        if (hdrState != FusionHdr.NONE) {
-            val l = hdrLine(unitPx)
-            pieces.add(StripPiece(runWidth(l)) { x -> placeRun(x, baseline, l) })
-        }
+        if (showPower) row("PWR", colBat, numUnit(if (s.battery.watts > 0f) fmt1(s.battery.watts) else null, "W", rowPx, unitPx))?.let { pieces.add(it) }
+        if (displayServer.isNotBlank()) row("DISP", colDisp, listOf(Span(displayServer, colValue, rowPx)))?.let { pieces.add(it) }
+        if (hdrState != FusionHdr.NONE) row("HDR", colHdr, hdrValue(rowPx))?.let { pieces.add(it) }
+        if (showGpuModel && gpuNameText().isNotBlank()) row("MODEL", colGpu, gpuModelSpans(rowPx, colValue))?.let { pieces.add(it) }
 
         // Place while they fit; from the first overflow onward everything drops (lowest priority first).
         var x = startPad
         for (p in pieces) {
-            val nextGap = if (x > startPad) itemGap else 0f
-            if (x + nextGap + p.w > rightLimit) break
-            x += nextGap
+            if (x + p.w > right) break
             p.place(x)
-            x += p.w
+            x += p.w + itemGap
         }
-        if (showClockTime)
-            glyphs.add(Glyph(parentW - endPad - clockW, baseline, clockStr, blend(colDim), px))
     }
 
     // ---- Measure / draw ---------------------------------------------------
@@ -1245,7 +1243,10 @@ class FusionHudView(
         for (g in glyphs) {
             drawPaint.textSize = g.sizePx
             drawPaint.color = g.color
+            // DroidDeck's FPS-value glow: a soft shadow in the graph colour (DroidDeckHudView drawContent).
+            if (g.glow) drawPaint.setShadowLayer(sp(6f), 0f, 0f, withAlpha(blend(colGraph), 217))
             canvas.drawText(g.text, g.x, g.baseline, drawPaint)
+            if (g.glow) drawPaint.clearShadowLayer()
         }
 
         // Frametime graph
@@ -1257,15 +1258,15 @@ class FusionHudView(
     private fun drawGraph(canvas: Canvas, rect: RectF) {
         val values = graphSamples.toList().filter { it.isFinite() }
         if (values.size < 2) return
-        var peak = 1f
-        for (v in values) peak = max(peak, v)
         graphPaint.strokeWidth = sp(1.6f)
         graphPaint.color = blend(colGraph)
         val step = rect.width() / (values.size - 1)
         val path = Path()
         for (i in values.indices) {
             val px = rect.left + i * step
-            val py = rect.bottom - (values[i] / peak).coerceIn(0f, 1f) * rect.height()
+            // DroidDeck's fixed frametime scale (GameFrames.GRAPH_MAX_MS = 50, clip 49.9): a 60 fps
+            // line sits a third up from the floor instead of riding the peak.
+            val py = rect.bottom - min(values[i], 49.9f).coerceIn(0f, 49.9f) / 50f * rect.height()
             if (i == 0) path.moveTo(px, py) else path.lineTo(px, py)
         }
         canvas.drawPath(path, graphPaint)

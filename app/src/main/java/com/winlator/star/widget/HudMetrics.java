@@ -851,9 +851,12 @@ public class HudMetrics {
         int totalMinutes = Math.max(1, (int) Math.round(hours * 60.0));
         int wholeHours = totalMinutes / 60;
         int minutes = totalMinutes % 60;
-        if (wholeHours > 0 && minutes > 0) return wholeHours + "h " + minutes + "m";
-        if (wholeHours > 0) return wholeHours + "h";
-        return minutes + "m";
+        // DroidDeck BatteryRuntimeEstimator.formatDuration(): "8 hrs 16 mins" style.
+        String hourUnit = wholeHours == 1 ? "hr" : "hrs";
+        String minuteUnit = minutes == 1 ? "min" : "mins";
+        if (wholeHours > 0 && minutes > 0) return wholeHours + " " + hourUnit + " " + minutes + " " + minuteUnit;
+        if (wholeHours > 0) return wholeHours + " " + hourUnit;
+        return minutes + " " + minuteUnit;
     }
 
     private long readCurrentNowFallback() {
