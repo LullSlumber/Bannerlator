@@ -34,7 +34,7 @@ import com.winlator.star.store.compose.openShortcutsScreen
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.winlator.star.ui.theme.LabTextButton as TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -80,6 +80,7 @@ import java.io.File
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Consumer
+import com.winlator.star.ui.deck.deckShape
 
 class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
 
@@ -621,7 +622,9 @@ class GogGameDetailActivity : ComponentActivity(), GogRedistInstaller.Host {
         lifecycleScope.launch(Dispatchers.IO) {
             val installPath = GogInstallPath.getInstallDir(this@GogGameDetailActivity, dirName)
             // Only a game folder inside a GOG download location (an empty name would point at the whole library).
-            StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.GOG, installPath)
+            val refused = StoreShortcutCleanup.keptBySafeDelete(applicationContext, StoreInstallLocations.Store.GOG, installPath)
+            val gone = StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.GOG, installPath)
+            StoreShortcutCleanup.afterDelete(applicationContext, Store.GOG, gameId, installPath.absolutePath, gone, refused)
             GogInstallPath.forgetBase(applicationContext, dirName)
             // Purge the FULL native install record via the one canonical helper, and clear the DL
             // manager's registry/library row — so the store list, this page, and the cross-store
@@ -1197,7 +1200,7 @@ private fun GogDlcContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.surface, deckShape(6.dp))
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

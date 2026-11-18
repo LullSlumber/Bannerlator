@@ -44,6 +44,8 @@ class FilePickerActivity : ComponentActivity() {
 
         // WinlatorTheme reads AppThemeState; init it in case MainActivity hasn't run yet.
         AppThemeState.init(this)
+        // The app's Orientation setting, as on the main screen and the store pages.
+        com.winlator.star.core.AppOrientation.apply(this)
 
         val extensions = intent.getStringArrayExtra(EXTRA_EXTENSIONS)?.toList() ?: emptyList()
         val initialDir = intent.getStringExtra(EXTRA_INITIAL_DIRECTORY)?.let { File(it) }
@@ -75,7 +77,19 @@ class FilePickerActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize().then(if (xmb) Modifier.windowInsetsPadding(WindowInsets.displayCutout) else Modifier),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    FileManagerScreen(
+                    // Lab: the Lab-drawn picker (same choices and result as the file manager in pick mode).
+                    if (AppThemeState.simpleLook) com.winlator.star.ui.simple.LabFilePicker(
+                        pickDirMode = pickDir,
+                        pickExtensions = extensions,
+                        initialDir = initialDir,
+                        pickerTitle = title,
+                        driveCPath = driveCPath,
+                        onPick = { file ->
+                            setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_SELECTED_FILE, file.absolutePath))
+                            finish()
+                        },
+                        onCancel = { finish() },
+                    ) else FileManagerScreen(
                         pickMode = true,
                         pickDirMode = pickDir,
                         pickExtensions = extensions,

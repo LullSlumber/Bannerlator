@@ -227,6 +227,10 @@ internal fun LabHome(
         deckActions.ownLegend.value = legend
         onDispose { if (deckActions.ownLegend.value === legend) deckActions.ownLegend.value = null }
     }
+    // Touch: the "X Game menu" hint with no tile focused opens the menu of the game on the big tile.
+    LabHintFallback(android.view.KeyEvent.KEYCODE_BUTTON_X) {
+        (recent.firstOrNull { it.file.path == selPath } ?: lastGame)?.let { menuFor = it }
+    }
     val addGame = { GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME) }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -314,7 +318,11 @@ internal fun LabHome(
             val cardW = when (style) { LabArt.WIDE -> (rowH - 46.dp) * 2.14f; LabArt.ICONS -> rowH - 84.dp; else -> coverW }
             Column(m.labPanel().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 LabTileLabel(if (recent.size == 1) L("Library · 1 game") else L("Library · %1\$s games", recent.size))
-                LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                // Starts at the game played last (the row is newest first). The list comes in after the page opens: without this
+                // the row kept "Add a game", its only item until then, in view, so it opened at the far end (user 11-15).
+                val rowState = androidx.compose.foundation.lazy.rememberLazyListState()
+                LaunchedEffect(recent.size, recent.firstOrNull()?.file?.path) { if (recent.isNotEmpty()) rowState.scrollToItem(0) }
+                LazyRow(Modifier.weight(1f), state = rowState, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(recent, key = { it.file.path }) { s ->
                         val sel = s.file.path == game?.file?.path
                         Box(

@@ -113,18 +113,18 @@ class ShortcutLauncher internal constructor(
     internal var ubisoftSetupError by mutableStateOf<String?>(null)
     private var ubisoftDownloadHandle: UbisoftInstallerDownload.Handle? = null
     // Who is waiting on this dialog when it was opened by [launchWithUbisoftGate] (a screen without its own launch flow):
-    // what "仍要启动" runs, and the screen's "I am done with this game" call. Both null for the Games tab's own flow.
+    // what "Launch anyway" runs, and the screen's "I am done with this game" call. Both null for the Games tab's own flow.
     private var ubisoftProceed: (() -> Unit)? = null
     private var ubisoftOnClosed: (() -> Unit)? = null
     // A gate check is deciding (a second tap on the same screen must not start another one).
     private var ubisoftGateBusy = false
     // SteamLite launch pre-flight (session → network → cloud saves → update check, BEFORE the container opens):
-    // the RealSteam game whose "正在准备Steam" dialog is up (null = none). Every RealSteam
+    // the RealSteam game whose "Getting Steam ready" dialog is up (null = none). Every RealSteam
     // launch — the popup pick and a remembered pick — routes through it; Goldberg/Raw never do.
     internal var preflightFor by mutableStateOf<Shortcut?>(null)
     // Steam account check (see SteamAccountStore.launchAccountCheck): a SteamLite / Headless Steam launch
     // whose game belongs to a different saved account waits here, before its component download and
-    // pre-flight, until the user switches, picks "仍要启动" or closes it; a game no saved account
+    // pre-flight, until the user switches, picks "Launch anyway" or closes it; a game no saved account
     // owns is refused. Goldberg/Raw never use it.
     internal var accountWarning by mutableStateOf<AccountWarning?>(null)
     // Download-on-launch progress overlay: the game we're about to launch once its picked component
@@ -142,7 +142,7 @@ class ShortcutLauncher internal constructor(
     internal var steamUpdateLabel by mutableStateOf("")
     internal var steamUpdateTitle by mutableStateOf("")
     internal var steamUpdateHandle by mutableStateOf<SteamGameUpdater.UpdateHandle?>(null)
-    // "检查更新" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
+    // "Check for updates" is check-THEN-offer (never auto-applies): a cheap [checkForUpdate] probe runs
     // first, and when it finds a delta (or can't tell from cached data) this holds the game + its status so
     // the confirm dialog below can offer to apply it. null = no offer pending.
     internal var steamUpdateOffer by mutableStateOf<Pair<Shortcut, SteamGameUpdater.UpdateStatus>?>(null)
@@ -152,7 +152,7 @@ class ShortcutLauncher internal constructor(
     // surfaces as a toast. Cancellable via steamUpdateHandle (the modal's Cancel button).
     internal fun runSteamMaintenance(s: Shortcut, verify: Boolean) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = if (verify) "验证游戏文件" else "正在更新游戏"
+        steamUpdateTitle = if (verify) "Verifying game files" else "Updating game"
         steamUpdateLabel = if (verify) "Verifying ${s.name}…" else "Checking ${s.name} for updates…"
         steamUpdateProgress = -1f
         steamUpdateFor = s
@@ -163,7 +163,7 @@ class ShortcutLauncher internal constructor(
             steamUpdateFor = null
             steamUpdateHandle = null
             // Every terminal result except a user cancel is worth a one-line toast (offline / failed /
-            // "Files verified" / "Updated" / "已是最新"). A launch never follows.
+            // "Files verified" / "Updated" / "Already up to date"). A launch never follows.
             if (result != SteamGameUpdater.Result.CANCELLED && msg.isNotBlank()) {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
@@ -173,14 +173,14 @@ class ShortcutLauncher internal constructor(
             else SteamGameUpdater.updateNow(context, appId, progress, done)
     }
 
-    // "检查更新": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
-    // as the animated "检查中…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
+    // "Check for updates": a cheap, network-free [checkForUpdate] probe (shown in the shared progress modal
+    // as the animated "Checking…" indeterminate phase), then BRANCH — we never auto-apply. Up-to-date /
     // not-installed just inform via a toast; an available (or can't-tell-offline) result opens the confirm
     // dialog, whose [Update now] / [Check online] hands off to runSteamMaintenance (the authoritative
     // updateNow pass). The onResult lands on the main thread (see checkForUpdate's doc).
     internal fun checkForUpdatesThenOffer(s: Shortcut) {
         val appId = steamAppIdOf(s)
-        steamUpdateTitle = "正在检查更新"
+        steamUpdateTitle = "Checking for updates"
         steamUpdateLabel = "Checking ${s.name}…"
         steamUpdateProgress = -1f   // opens in the animated indeterminate state, never a static 0%.
         steamUpdateFor = s
@@ -218,7 +218,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!GoldbergComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "Steam 模拟器 (Goldberg)"
+            componentDownloadLabel = "Steam Emulator (Goldberg)"
             componentDownloadProgress = 0f
             GoldbergComponent.downloadAsync(
                 context,
@@ -268,7 +268,7 @@ class ShortcutLauncher internal constructor(
         }
         if (!SteamHostComponent.isInstalled(context)) {
             componentDownloadFor = s
-            componentDownloadLabel = "无窗口Steam（Valve Steam客户端）"
+            componentDownloadLabel = "Headless Steam (Valve Steam client)"
             componentDownloadProgress = 0f
             SteamHostComponent.downloadAsync(
                 context,
@@ -373,7 +373,7 @@ class ShortcutLauncher internal constructor(
      * wall, "Open with" > Play from library): one check, one dialog, then [proceed] launches the game. Only a Ubisoft
      * candidate ([UbisoftSupport.gateKind], string tests) is looked at, off the main thread and for at most a few seconds;
      * every other game just gets [proceed] straight away, as it always did. FAIL-OPEN: an exception, a timeout, an
-     * unanswerable check all mean [proceed]; the dialog's "仍要启动" and a finished setup's automatic launch call
+     * unanswerable check all mean [proceed]; the dialog's "Launch anyway" and a finished setup's automatic launch call
      * the raw launch, never this check again (the gate is this wrapper, not part of the launch itself). The screen must
      * also draw [ShortcutLaunchDialogs]; [onDone] is called once when the gate is finished with the game, whichever way
      * (launched, set up started, cancelled). A dialog-less entry (a pinned home-screen icon opening the session
@@ -427,7 +427,7 @@ class ShortcutLauncher internal constructor(
     }
 
     /**
-     * The dialog's "仍要启动": the opening screen's own launch when the dialog came from [launchWithUbisoftGate],
+     * The dialog's "Launch anyway": the opening screen's own launch when the dialog came from [launchWithUbisoftGate],
      * otherwise the Games tab flow's launch-method step. Neither goes through the setup check again.
      */
     internal fun ubisoftLaunchAnyway(s: Shortcut) {
@@ -596,17 +596,21 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                     val ok = onRemove(s)
                     Toast.makeText(
                         context,
-                        if (ok) "快捷方式已删除。" else "移除快捷方式失败。",
+                        if (ok) "Shortcut removed." else "Failed to remove shortcut.",
                         Toast.LENGTH_SHORT,
                     ).show()
-                }) { Text("移除") }
+                }) { Text("Remove") }
             },
             dismissButton = { TextButton(onClick = { launcher.androidMissingFor = null }) { Text("Keep") } },
         )
     }
 
+    // Lab draws the EA and Ubisoft pop-ups as Lab panels (LabLaunchDialogs.kt): the same text, buttons and outcomes.
+    val lab = com.winlator.star.ui.theme.AppThemeState.simpleLook
+
     // ── Steam launch-method popup (M3): SteamLite (real Steam / VAC) vs Goldberg (offline) ──────────
-    launcher.eaUnsupportedFor?.let { s ->
+    if (lab) launcher.eaUnsupportedFor?.let { s -> com.winlator.star.ui.simple.LabEaUnsupportedDialog(s.name ?: "") { launcher.eaUnsupportedFor = null } }
+    if (!lab) launcher.eaUnsupportedFor?.let { s ->
         AlertDialog(
             onDismissRequest = { launcher.eaUnsupportedFor = null },
             title = { Text("Not supported: EA anti-cheat") },
@@ -619,10 +623,53 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             confirmButton = { DeckDialogBars(); TextButton(onClick = { launcher.eaUnsupportedFor = null }) { Text("OK") } },
         )
     }
-    launcher.eaSetupFor?.let { s ->
+    // "Set up" on the EA question (Classic's and Lab's): one setup session that runs EA's installer.
+    fun startEaSetup(s: Shortcut) {
+        launcher.eaSetupBusy = true
+        launcher.eaScope.launch {
+            // Resolve with the SAME derivation that decided to show this dialog
+            // (EaSupport.installDirOf): a legacy shortcut written before steamAppId was stamped
+            // (pre-2026-08 downloads), or a drive-letter path the strict resolver can't map, used
+            // to dead-end here with a misleading "install folder" toast (reported on NFS Heat, 3.0.7).
+            val installDir = withContext(Dispatchers.IO) {
+                runCatching { EaSupport.installDirOf(s) }.getOrNull()
+            }
+            val exe = withContext(Dispatchers.IO) {
+                val resolved = runCatching { WinePath.resolveAndroidPath(s.container, s.path)?.absolutePath }.getOrNull()
+                // runForShortcut locates the depot from the exe's steam_games/ segment, so prefer a
+                // path inside the resolved depot when the direct mapping lacks that segment.
+                resolved?.takeIf { InstallScriptExecutor.locateInstallDir(File(it)) != null }
+                    ?: installDir?.let { File(it, s.path.replace('\\', '/').substringAfterLast('/')).absolutePath }
+                    ?: resolved
+            }
+            val appId = withContext(Dispatchers.IO) {
+                runCatching { EaSupport.resolveSteamAppId(s, installDir) }.getOrDefault(0)
+            }
+            if (exe != null && appId > 0) {
+                withContext(Dispatchers.IO) {
+                    try { InstallScriptExecutor.runForShortcut(context, s.container, appId, exe, true) }
+                    catch (t: Throwable) { android.util.Log.w("ShortcutsScreen", "EA setup failed", t) }
+                }
+            } else {
+                android.util.Log.w("ShortcutsScreen", "EA setup: cannot start for '${s.name}' — exe=$exe appId=$appId path='${s.path}' container=${s.container.id}")
+                Toast.makeText(
+                    context,
+                    if (exe == null) "Couldn't locate the game's install folder (${s.path})"
+                    else "Couldn't work out this game's Steam app id — re-add it from the Steam library",
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+            launcher.eaSetupBusy = false
+            launcher.eaSetupFor = null
+        }
+    }
+    if (lab) launcher.eaSetupFor?.let { s ->
+        com.winlator.star.ui.simple.LabEaSetupDialog(s.name ?: "", busy = launcher.eaSetupBusy, onSetUp = { startEaSetup(s) }, onCancel = { launcher.eaSetupFor = null })
+    }
+    if (!lab) launcher.eaSetupFor?.let { s ->
         AlertDialog(
             onDismissRequest = { if (!launcher.eaSetupBusy) launcher.eaSetupFor = null },
-            title = { Text("设置EA Desktop") },
+            title = { Text("Set up EA Desktop") },
             text = {
                 Text(
                     "\"${s.name}\" is an EA title: it launches through EA Desktop, which isn't installed in this " +
@@ -635,51 +682,38 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             confirmButton = {
                 DeckDialogBars()
                 DeckDialogScaled {
-                    TextButton(enabled = !launcher.eaSetupBusy, onClick = {
-                        launcher.eaSetupBusy = true
-                        launcher.eaScope.launch {
-                            // Resolve with the SAME derivation that decided to show this dialog
-                            // (EaSupport.installDirOf): a legacy shortcut written before steamAppId was stamped
-                            // (pre-2026-08 downloads), or a drive-letter path the strict resolver can't map, used
-                            // to dead-end here with a misleading "install folder" toast (reported on NFS Heat, 3.0.7).
-                            val installDir = withContext(Dispatchers.IO) {
-                                runCatching { EaSupport.installDirOf(s) }.getOrNull()
-                            }
-                            val exe = withContext(Dispatchers.IO) {
-                                val resolved = runCatching { WinePath.resolveAndroidPath(s.container, s.path)?.absolutePath }.getOrNull()
-                                // runForShortcut locates the depot from the exe's steam_games/ segment, so prefer a
-                                // path inside the resolved depot when the direct mapping lacks that segment.
-                                resolved?.takeIf { InstallScriptExecutor.locateInstallDir(File(it)) != null }
-                                    ?: installDir?.let { File(it, s.path.replace('\\', '/').substringAfterLast('/')).absolutePath }
-                                    ?: resolved
-                            }
-                            val appId = withContext(Dispatchers.IO) {
-                                runCatching { EaSupport.resolveSteamAppId(s, installDir) }.getOrDefault(0)
-                            }
-                            if (exe != null && appId > 0) {
-                                withContext(Dispatchers.IO) {
-                                    try { InstallScriptExecutor.runForShortcut(context, s.container, appId, exe, true) }
-                                    catch (t: Throwable) { android.util.Log.w("ShortcutsScreen", "EA setup failed", t) }
-                                }
-                            } else {
-                                android.util.Log.w("ShortcutsScreen", "EA setup: cannot start for '${s.name}' — exe=$exe appId=$appId path='${s.path}' container=${s.container.id}")
-                                Toast.makeText(
-                                    context,
-                                    if (exe == null) "Couldn't locate the game's install folder (${s.path})"
-                                    else "Couldn't work out this game's Steam app id — re-add it from the Steam library",
-                                    Toast.LENGTH_LONG,
-                                ).show()
-                            }
-                            launcher.eaSetupBusy = false
-                            launcher.eaSetupFor = null
-                        }
-                    }) { Text(if (launcher.eaSetupBusy) "正在启动…" else "设置") }
+                    TextButton(enabled = !launcher.eaSetupBusy, onClick = { startEaSetup(s) }) { Text(if (launcher.eaSetupBusy) "Starting…" else "Set up") }
                 }
             },
             dismissButton = { TextButton(enabled = !launcher.eaSetupBusy, onClick = { launcher.eaSetupFor = null }) { Text("Cancel") } },
         )
     }
-    launcher.ubisoftSetupFor?.let { s ->
+    // The Ubisoft question's main button (Classic's and Lab's): download the installer first, or start the setup.
+    fun confirmUbisoft(s: Shortcut, download: Boolean) {
+        if (download) {
+            launcher.runUbisoftDownloadSetup(s)
+        } else {
+            launcher.ubisoftSetupBusy = true
+            launcher.eaScope.launch {
+                val problem = withContext(Dispatchers.IO) {
+                    try { UbisoftSupport.startSetup(context, s) }
+                    catch (t: Throwable) {
+                        android.util.Log.w("ShortcutsScreen", "Ubisoft setup failed", t)
+                        context.getString(R.string.ubisoft_setup_failed)
+                    }
+                }
+                // Launched: the game starts by itself once the setup session is over and the app is back.
+                if (problem != null) Toast.makeText(context, problem, Toast.LENGTH_LONG).show()
+                else launcher.ubisoftSetupStarted(s)
+                launcher.ubisoftSetupBusy = false
+                launcher.closeUbisoftSetup()
+            }
+        }
+    }
+    if (lab) launcher.ubisoftSetupFor?.let { s ->
+        com.winlator.star.ui.simple.LabUbisoftSetupDialog(launcher, s) { confirmUbisoft(s, launcher.ubisoftSetupDownload) }
+    }
+    if (!lab) launcher.ubisoftSetupFor?.let { s ->
         val download = launcher.ubisoftSetupDownload
         val busy = launcher.ubisoftSetupBusy
         AlertDialog(
@@ -725,27 +759,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             confirmButton = {
                 DeckDialogBars()
                 DeckDialogScaled {
-                    TextButton(enabled = !busy, onClick = {
-                        if (download) {
-                            launcher.runUbisoftDownloadSetup(s)
-                        } else {
-                            launcher.ubisoftSetupBusy = true
-                            launcher.eaScope.launch {
-                                val problem = withContext(Dispatchers.IO) {
-                                    try { UbisoftSupport.startSetup(context, s) }
-                                    catch (t: Throwable) {
-                                        android.util.Log.w("ShortcutsScreen", "Ubisoft setup failed", t)
-                                        context.getString(R.string.ubisoft_setup_failed)
-                                    }
-                                }
-                                // Launched: the game starts by itself once the setup session is over and the app is back.
-                                if (problem != null) Toast.makeText(context, problem, Toast.LENGTH_LONG).show()
-                                else launcher.ubisoftSetupStarted(s)
-                                launcher.ubisoftSetupBusy = false
-                                launcher.closeUbisoftSetup()
-                            }
-                        }
-                    }) {
+                    TextButton(enabled = !busy, onClick = { confirmUbisoft(s, download) }) {
                         Text(stringResource(when {
                             !busy -> if (download) R.string.ubisoft_download_confirm else R.string.ubisoft_setup_confirm
                             download -> R.string.ubisoft_download_downloading
@@ -774,7 +788,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         LaunchMethodSheet(
             shortcut = s,
             onDismiss = { launcher.launchChoiceFor = null },
-            // Verify runs a full re-validate pass directly. "检查更新" is check-THEN-offer: probe
+            // Verify runs a full re-validate pass directly. "Check for updates" is check-THEN-offer: probe
             // first, then a confirm dialog lets the user choose to apply — it never auto-updates. Both
             // dismiss the sheet first (so no dialog is layered behind the ModalBottomSheet's window).
             onUpdateFiles = { launcher.launchChoiceFor = null; launcher.checkForUpdatesThenOffer(s) },
@@ -784,11 +798,11 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 // next time (contract literals: launchMode ∈ RealSteam/Goldberg/Raw, launchModeRemembered="1").
                 s.putExtra("launchMode", mode)
                 s.putExtra("launchModeRemembered", if (remember) "1" else "0")
-                // Per-game "控制器直通" (read only on RealSteam launches; inert otherwise).
+                // Per-game "Controller passthrough" (read only on RealSteam launches; inert otherwise).
                 s.putExtra("controllerPassthrough", if (controllerPassthrough) "1" else "0")
-                // Per-game "Steam 输入" (SteamLite only; the agent configures the client's controller layer).
+                // Per-game "Steam Input" (SteamLite only; the agent configures the client's controller layer).
                 s.putExtra("steamInput", if (steamInput) "1" else "0")
-                // Per-game "需要安全（VAC）启动" override: "" = follow app-info detection, "1"/"0".
+                // Per-game "Requires secure (VAC) launch" override: "" = follow app-info detection, "1"/"0".
                 s.putExtra("steamVacLaunch", vacLaunch)
                 s.saveData()
                 launcher.launchChoiceFor = null
@@ -816,7 +830,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
 
     // ── Steam account check — before the SteamLite / Headless Steam launch goes on ──────────────────
     launcher.accountWarning?.let { w ->
-        // "仍要启动" and "Switch account and launch" (once the switch succeeded) both go on with the
+        // "Launch anyway" and "Switch account and launch" (once the switch succeeded) both go on with the
         // launch; the account was already checked.
         val proceed = {
             launcher.accountWarning = null
@@ -831,7 +845,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // ── SteamLite pre-flight ("正在准备Steam") — runs BEFORE XServerDisplayActivity ──────────
+    // ── SteamLite pre-flight ("Getting Steam ready") — runs BEFORE XServerDisplayActivity ──────────
     launcher.preflightFor?.let { s ->
         val appId = steamAppIdOf(s)
         val installDir = remember(s) {
@@ -844,7 +858,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
                 appId = appId,
                 installDir = installDir,
                 gameName = s.name,
-                pullCloudSaves = savePrefs.getBoolean("Steam 游戏", true),
+                pullCloudSaves = savePrefs.getBoolean("auto_download_steam_on_launch", true),
                 clientPackage = if (s.getExtra("launchMode", "") == "AppSteam") SteamSessionManager.ClientPackage.APP_STEAM
                                 else SteamSessionManager.ClientPackage.STEAMLITE,
             ),
@@ -931,7 +945,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
         )
     }
 
-    // "检查更新" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
+    // "Check for updates" outcome: a delta is (or might be) due — offer to apply it. Never auto-updates;
     // [Update now] / [Check online] runs the authoritative updateNow pass, [Later] / [Cancel] does nothing.
     launcher.steamUpdateOffer?.let { (s, status) ->
         val available = status.state == SteamGameUpdater.State.UPDATE_AVAILABLE
@@ -940,7 +954,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = {
                 Text(
-                    if (available) "有可用更新" else "Check online?",
+                    if (available) "Update available" else "Check online?",
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             },
@@ -960,12 +974,12 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             },
             confirmButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null; launcher.runSteamMaintenance(s, verify = false) }) {
-                    Text(if (available) "立即更新" else "Check online", color = MaterialTheme.colorScheme.primary)
+                    Text(if (available) "Update now" else "Check online", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null }) {
-                    Text(if (available) "等待" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(if (available) "Later" else "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
         )

@@ -22,7 +22,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.ViewList
-import androidx.compose.material3.Button
+import com.winlator.star.ui.theme.LabButton as Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.winlator.star.core.AppOrientation
 import com.winlator.star.store.download.DownloadRegistry
 import com.winlator.star.store.download.DownloadsButton
+import com.winlator.star.ui.deck.deckShape
 
 /**
  * The GOG section's host — flipped from a login card + "View Game Library" button to a
@@ -140,7 +141,7 @@ class GogMainActivity : ComponentActivity() {
 private val GOG_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -212,11 +213,11 @@ private fun GogStorefrontHost(
                 onClick = { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) },
                 modifier = Modifier.steamFocusRing(),
             ) {
-                Icon(Icons.Filled.ViewList, contentDescription = "完整库界面", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ViewList, contentDescription = "Full library screen", tint = MaterialTheme.colorScheme.primary)
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -226,7 +227,7 @@ private fun GogStorefrontHost(
             DownloadsButton(Modifier.xmbRailStop(ring = true))
             StoreRailOverflow(
                 items = listOf<Triple<String, ImageVector, () -> Unit>>(
-                    Triple("完整库界面", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) }),
+                    Triple("Full library screen", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, GogGamesActivity::class.java)) }),
                 ),
                 onSignOut = onSignOut,
             )
@@ -291,7 +292,7 @@ fun StoreRailOverflow(
             }
             if (items.isNotEmpty()) HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
             DropdownMenuItem(
-                text = { Text("退出登录", color = MaterialTheme.colorScheme.error) },
+                text = { Text("Sign out", color = MaterialTheme.colorScheme.error) },
                 leadingIcon = {
                     Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 },
@@ -321,7 +322,7 @@ private fun GogLoginScreen(onLoginClick: () -> Unit) {
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "登录以浏览GOG商店、领取免费游戏并下载您的库。",
+                "Sign in to browse the GOG store, claim free games and download your library.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -329,9 +330,9 @@ private fun GogLoginScreen(onLoginClick: () -> Unit) {
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = onLoginClick,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("使用GOG登录") }
+                shape = deckShape(8.dp),
+                modifier = Modifier.steamFocusRing(deckShape(8.dp)),
+            ) { Text("Login with GOG") }
         }
     }
 }

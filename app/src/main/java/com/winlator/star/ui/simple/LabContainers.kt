@@ -21,6 +21,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.winlator.star.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.winlator.star.XServerDisplayActivity
 import com.winlator.star.XrActivity
@@ -30,13 +32,10 @@ import com.winlator.star.container.ContainerManager
 import com.winlator.star.container.Shortcut
 import com.winlator.star.core.GameSaveBackup
 import com.winlator.star.core.SaveLocator
-import com.winlator.star.store.download.InstallProgressDialog
 import com.winlator.star.ui.components.EmuAccountConflictDialog
 import com.winlator.star.ui.deck.settings.DeckSettingsRoutes
 import com.winlator.star.ui.screens.ContainersViewModel
-import com.winlator.star.ui.screens.GameSavesDialog
 import com.winlator.star.ui.screens.SaveFlow
-import com.winlator.star.ui.screens.SaveFlowProgressDialog
 import com.winlator.star.ui.screens.runScopedBackup
 import com.winlator.star.util.InAppFilePicker
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +73,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
     var saveBusy by remember { mutableStateOf<String?>(null) }
     val busy by rememberUpdatedState(isLoading || layerBusy != null || layerDownload != null || saveBusy != null)
     fun guarded(label: String? = null, job: () -> Unit): () -> Unit = {
-        if (busy) toast(context, L("等待当前任务完成"))
+        if (busy) toast(context, L("Wait until the current job is done"))
         else { working = label; job() }
     }
 
@@ -108,6 +107,14 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             runCatching { ContainerManager(context).loadShortcuts().groupingBy { it.container.id }.eachCount() }.getOrNull()
         }
     }
+    // Classic's card chips (renderer, DXVK, VKD3D, GPU driver, frame generation, emulator), read off the main thread:
+    // the renderer needs the layer's Wayland probe.
+    var specs by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
+    LaunchedEffect(containers) {
+        specs = withContext(Dispatchers.IO) { containers.associate { c -> c.id to runCatching { cardSpecs(context, c) }.getOrDefault("") } }
+    }
+    var layerHelp by remember { mutableStateOf<Container?>(null) }
+    var layerConfirm by remember { mutableStateOf<Container?>(null) }
 
     val entries = containers.map { c ->
         val games = gameCounts?.let { it[c.id] ?: 0 }
@@ -119,7 +126,9 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
         MenuEntry(
             key = "c${c.id}",
             title = c.name,
-            subtitle = listOfNotNull(c.wineVersion, games?.let { if (it == 1) L("1 game") else L("%1\$s games", it) }).joinToString(" · "),
+            // The second line (shown on the focused row) carries Classic's card chips.
+            subtitle = listOfNotNull(c.wineVersion, c.screenSize.takeIf { it.isNotEmpty() }, games?.let { if (it == 1) L("1 game") else L("%1\$s games", it) }).joinToString(" · ") +
+                (specs[c.id]?.takeIf { it.isNotEmpty() }?.let { "\n$it" } ?: ""),
             trailing = if (c.displayBackend == Container.DISPLAY_BACKEND_WAYLAND) "Wayland" else "X11",
             pills = if (target != null) listOf(L("Layer update")) else emptyList(),
             icon = Icons.Filled.Inventory2,
@@ -130,41 +139,35 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                 add(MenuAction(L("Start its Windows desktop"), { startDesktop(c) }))
                 if (target != null) {
                     val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
-                    val oldLabel = ContainerLayerUpdater.layerLabel(c.wineVersion, target)
-                    val body = listOfNotNull(
-                        L("%1\$s 从 %2\$s 升级到 %3\$s。游戏、存档、快捷方式和设置全部保留。", c.name, c.wineVersion, target),
-                        remote?.let { r -> r.sizeBytes?.let { L("先下载层（%1\$s）。", ContainerLayerUpdater.formatSize(it)) } ?: L("先下载层。") },
-                        if (c.id in layerCurrentMissing) L("%1\$s 已不再安装，因此无法回退。", oldLabel)
-                        else L("%1\$s 保持已安装，随时可以回退。", oldLabel),
-                        L("请先关闭其中正在运行的内容。"),
-                    ).joinToString(" ")
                     add(
                         MenuAction(
-                            if (remote != null) L("Download and update layer to %1\$s", newLabel) else L("更新层到 %1\$s", newLabel),
+                            if (remote != null) L("Download and update layer to %1\$s", newLabel) else L("Update layer to %1\$s", newLabel),
                             guarded { if (remote != null) vm.downloadAndUpdateLayer(c, remote) else vm.updateLayer(c, target) },
-                            confirm = body,
+                            confirm = layerUpdateBody(c, target, remote, revertable = c.id !in layerCurrentMissing),
                         ),
                     )
+                    // Classic's "?" beside Update layer.
+                    add(MenuAction(L("About layer updates"), { layerHelp = c }))
                 }
                 if (snapshot != null) {
                     val oldLabel = ContainerLayerUpdater.layerLabel(snapshot.oldEntry, c.wineVersion)
                     add(
                         MenuAction(
-                            L("将层回退到 %1\$s", oldLabel),
+                            L("Revert layer to %1\$s", oldLabel),
                             guarded { vm.revertLayer(c, snapshot) },
                             confirm = L(
-                                "%1\$s 从 %2\$s 回退到 %3\$s。注册表会恢复为更新前备份的内容；游戏、存档、快捷方式和设置全部保留。%4\$s 仍需保持已安装。",
+                                "%1\$s goes back from %2\$s to %3\$s. The registry is restored from the backup taken before the update; games, saves, shortcuts and settings are kept. %4\$s must still be installed.",
                                 c.name, c.wineVersion, snapshot.oldEntry, oldLabel,
                             ),
                         ),
                     )
                 }
                 // The view model posts "Container duplicated" or "Couldn't duplicate container" itself.
-                add(MenuAction(L("复制"), guarded(L("正在复制 %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
-                add(MenuAction(L("备份存档…"), guarded { saveFlow = SaveFlow.BackupScope(c) }))
-                add(MenuAction(L("恢复存档…"), guarded { saveFlow = SaveFlow.RestoreSource(c) }))
+                add(MenuAction(L("Duplicate"), guarded(L("Duplicating %1\$s…", c.name)) { vm.duplicate(c) {} }, confirm = L("Make a copy of %1\$s, with its games and settings?", c.name)))
+                add(MenuAction(L("Back up saves…"), guarded { saveFlow = SaveFlow.BackupScope(c) }))
+                add(MenuAction(L("Restore a save…"), guarded { saveFlow = SaveFlow.RestoreSource(c) }))
                 add(
-                    MenuAction(L("导出"), guarded(L("正在导出 %1\$s…", c.name)) {
+                    MenuAction(L("Export"), guarded(L("Exporting %1\$s…", c.name)) {
                         vm.exportContainer(c) { path ->
                             (context as? Activity)?.runOnUiThread {
                                 toast(context, when {
@@ -177,10 +180,10 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                         }
                     }),
                 )
-                add(MenuAction(L("存储信息"), { storageFor = c }))
+                add(MenuAction(L("Storage info"), { storageFor = c }))
                 add(
                     MenuAction(
-                        L("移除"), guarded(L("正在移除 %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
+                        L("Remove"), guarded(L("Removing %1\$s…", c.name)) { vm.remove(c, context) { toast(context, L("Removed %1\$s", c.name)) } },
                         danger = true, confirm = L("Remove %1\$s and everything in it? Its games' shortcuts go too.", c.name),
                     ),
                 )
@@ -189,10 +192,10 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
     }
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("容器管理"),
+        title = L("Containers"),
         sections = listOf(
             MenuSection(
-                "containers", L("容器管理"), Icons.Filled.Inventory2, entries,
+                "containers", L("Containers"), Icons.Filled.Inventory2, entries,
                 empty = L("No containers yet."),
                 primary = MenuAction(L("New container"), {
                     if (com.winlator.star.xenvironment.ImageFs.find(context).isValid()) onNavigate(DeckSettingsRoutes.container(DeckSettingsRoutes.NEW_CONTAINER_ID))
@@ -200,7 +203,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                 }),
             ),
             MenuSection(
-                "import", L("备份"), Icons.Filled.Restore,
+                "import", L("Backups"), Icons.Filled.Restore,
                 backups.map { f ->
                     MenuEntry(
                         "b${f.absolutePath}", f.name, f.parent, icon = Icons.Filled.Restore,
@@ -208,7 +211,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                             MenuAction(
                                 L("Import this container"),
                                 // The view model calls back only when the import worked; a failure shows its message.
-                                guarded(L("正在导入 %1\$s…", f.name)) { vm.importContainer(f) { (context as? Activity)?.runOnUiThread { toast(context, L("Imported %1\$s", f.name)) } } },
+                                guarded(L("Importing %1\$s…", f.name)) { vm.importContainer(f) { (context as? Activity)?.runOnUiThread { toast(context, L("Imported %1\$s", f.name)) } } },
                                 confirm = L("Import %1\$s as a new container?", f.name),
                             ),
                         ),
@@ -218,22 +221,65 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             ),
             MenuSection(
                 "defaults", L("Defaults"), Icons.Filled.Tune,
-                listOf(MenuEntry("defaults", L("新容器默认值"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
+                listOf(MenuEntry("defaults", L("New container defaults"), L("What every new container starts with"), icon = Icons.Filled.Tune, onA = { onNavigate(DeckSettingsRoutes.DEFAULTS) })),
             ),
         ),
         onBack = onBack,
-        banner = if (isLoading) working ?: L("正在处理…") else null,
+        banner = if (isLoading) working ?: L("Working…") else null,
     )
+
+    // ── Classic's "About layer updates" and the update it leads to ──
+    fun layerTargetOf(c: Container): Triple<String, ContainerLayerUpdater.CatalogCandidate?, Boolean>? {
+        val installed = layerUpdates[c.id]
+        val remote = if (installed == null) layerUpdateRemote[c.id] else null
+        val target = installed ?: remote?.entryName ?: return null
+        return Triple(target, remote, c.id !in layerCurrentMissing)
+    }
+    layerHelp?.let { c ->
+        val t = layerTargetOf(c)
+        if (t == null) layerHelp = null
+        else {
+            val (target, remote, _) = t
+            val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
+            SimpleActionSheet(
+                title = L("About layer updates"),
+                message = layerHelpBody(c, target, remote, layerSnapshots[c.id]),
+                actions = listOf(
+                    MenuAction(if (remote != null) L("Download & update to %1\$s…", newLabel) else L("Update to %1\$s…", newLabel), { layerHelp = null; layerConfirm = c }),
+                    MenuAction(L("Close"), { layerHelp = null }),
+                ),
+                onDismiss = { layerHelp = null },
+            ) { it.run() }
+        }
+    }
+    layerConfirm?.let { c ->
+        val t = layerTargetOf(c)
+        if (t == null) layerConfirm = null
+        else {
+            val (target, remote, revertable) = t
+            val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
+            SimpleConfirm(
+                title = if (remote != null) L("Download and update layer to %1\$s", newLabel) else L("Update layer to %1\$s", newLabel),
+                body = layerUpdateBody(c, target, remote, revertable),
+                danger = false,
+                onDismiss = { layerConfirm = null },
+            ) {
+                layerConfirm = null
+                guarded { if (remote != null) vm.downloadAndUpdateLayer(c, remote) else vm.updateLayer(c, target) }.invoke()
+            }
+        }
+    }
 
     // ── Backup / Restore save: Classic's steps (SaveFlow), as Lab lists where it is a choice ──
     when (val flow = saveFlow) {
         null, is SaveFlow.Fork -> {}
         is SaveFlow.BackupScope -> SimpleActionSheet(
-            title = L("备份存档"),
-            message = L("有些游戏把存档放在别处（安装文件夹、注册表、Steam 云）。删除任何东西前先检查备份。"),
+            title = L("Back up saves"),
+            // Classic's prompt and its "Not foolproof yet" caution.
+            message = stringResource(R.string.save_backup_scope_prompt) + "\n\n" + labSaveCaution(),
             actions = listOf(
-                MenuAction(L("全部游戏存档（整个配置）"), { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) }),
-                MenuAction(L("指定游戏…"), { saveFlow = SaveFlow.GamePicker(flow.container) }),
+                MenuAction(L("All game saves (whole profile)"), { saveFlow = SaveFlow.BackupFormat(flow.container, null, flow.container.name) }),
+                MenuAction(L("A specific game…"), { saveFlow = SaveFlow.GamePicker(flow.container) }),
             ),
             onDismiss = { saveFlow = null },
         ) { it.run() }
@@ -245,7 +291,7 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             val list = shortcuts
             key(list?.size ?: -1) {
                 SimpleActionSheet(
-                    title = L("选择一个游戏"),
+                    title = L("Pick a game"),
                     actions = list.orEmpty().map { sc ->
                         MenuAction(sc.name, {
                             saveFlow = SaveFlow.GameSaves(
@@ -260,14 +306,14 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
                     },
                     message = when {
                         list == null -> L("Loading the list…")
-                        list.isEmpty() -> L("此容器中未找到游戏。")
+                        list.isEmpty() -> L("No games found in this container.")
                         else -> null
                     },
                     onDismiss = { saveFlow = null },
                 ) { it.run() }
             }
         }
-        is SaveFlow.GameSaves -> GameSavesDialog(
+        is SaveFlow.GameSaves -> LabGameSaves(
             container = flow.container,
             gameName = flow.gameName,
             gameKey = flow.gameKey,
@@ -281,25 +327,29 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
         is SaveFlow.BackupFormat -> {
             fun backup(layout: GameSaveBackup.BackupLayout) =
                 runScopedBackup(context, flow, layout, { saveFlow = null }, { saveBusy = it }, { r -> r?.let { toast(context, it) } })
-            SimpleActionSheet(
-                title = L("备份格式"),
-                message = L("此备份用于哪个工具?"),
-                actions = listOf(
-                    MenuAction(L("GameHub-compatible .zip (default)"), { backup(GameSaveBackup.BackupLayout.GAMEHUB) }),
-                    MenuAction(L("Winlator-native .zip"), { backup(GameSaveBackup.BackupLayout.WINLATOR) }),
+            // Each format with Classic's line under it.
+            LabChoiceSheet(
+                title = stringResource(R.string.save_backup_format_title),
+                message = stringResource(R.string.save_backup_format_prompt),
+                choices = listOf(
+                    LabChoice(stringResource(R.string.save_backup_format_gamehub), stringResource(R.string.save_backup_format_gamehub_sub)) { backup(GameSaveBackup.BackupLayout.GAMEHUB) },
+                    LabChoice(stringResource(R.string.save_backup_format_winlator), stringResource(R.string.save_backup_format_winlator_sub)) { backup(GameSaveBackup.BackupLayout.WINLATOR) },
                 ),
                 onDismiss = { saveFlow = null },
-            ) { it.run() }
+                back = { saveFlow = SaveFlow.BackupScope(flow.container) },
+            )
         }
         is SaveFlow.RestoreSource -> SimpleActionSheet(
             title = L("Restore a save"),
+            // Classic's prompt, and the same "Not foolproof yet" caution as the backup.
+            message = L("Choose the backup source.") + "\n\n" + labSaveCaution(),
             actions = listOf(
                 MenuAction(L("GameHub backup (.zip)"), {
                     restoreTarget = flow.container
                     saveFlow = null
                     restoreInApp.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, L("Select backup (.zip)")))
                 }),
-                MenuAction(L("从系统选取…"), {
+                MenuAction(L("Pick via system…"), {
                     restoreTarget = flow.container
                     saveFlow = null
                     restoreSystem.launch("application/zip")
@@ -308,29 +358,77 @@ internal fun SimpleContainersPage(onNavigate: (String) -> Unit, onBack: () -> Un
             onDismiss = { saveFlow = null },
         ) { it.run() }
         is SaveFlow.Confirm -> SimpleConfirm(
-            title = L("恢复"),
-            body = L("将 %1\$s 的备份恢复到 %2\$s？这可能覆盖那里的存档数据。", flow.gameName, flow.container.name),
+            title = L("Restore"),
+            body = L("Restore the backup of %1\$s into %2\$s? This may overwrite save data there.", flow.gameName, flow.container.name),
             danger = false,
             onDismiss = { saveFlow = null },
         ) {
             val c = flow.container
             saveFlow = null
-            saveBusy = L("正在恢复 %1\$s…", flow.gameName)
+            saveBusy = L("Restoring %1\$s…", flow.gameName)
             GameSaveBackup.restore(context, flow.uri, c) { r ->
                 saveBusy = null
-                toast(context, if (r.ok) L("已将 %1\$s 个文件恢复到 %2\$s", r.filesWritten, c.name) else L("恢复失败：%1\$s", r.error ?: L("unknown")))
+                toast(context, if (r.ok) L("Restored %1\$s files to %2\$s", r.filesWritten, c.name) else L("Restore failed: %1\$s", r.error ?: L("unknown")))
                 emuConflicts = r.emuConflicts
             }
         }
     }
 
-    saveBusy?.let { SaveFlowProgressDialog(message = it) }
-    layerBusy?.let { SaveFlowProgressDialog(message = it) }
+    saveBusy?.let { LabProgressDialog(message = it) }
+    layerBusy?.let { LabProgressDialog(message = it) }
     // The catalog download before a remote layer update; on success the view model closes it and updates.
-    layerDownload?.let { st -> InstallProgressDialog(state = st, onCancel = { vm.cancelLayerDownload() }, onDismiss = { vm.layerDownloadDismissed() }) }
+    layerDownload?.let { st -> LabInstallProgress(state = st, onCancel = { vm.cancelLayerDownload() }, onDismiss = { vm.layerDownloadDismissed() }) }
     storageFor?.let { c -> LabStorageDialog(container = c, onDismiss = { storageFor = null }) }
     EmuAccountConflictDialog(conflicts = emuConflicts) { applied, _ ->
         emuConflicts = emptyList()
-        if (applied > 0) toast(context, L("模拟器账号已切换为备份中的账号。请重新启动游戏。"))
+        if (applied > 0) toast(context, L("Emulator account switched to the backup's. Relaunch the game."))
     }
+}
+
+/** Classic's update-layer confirm: what moves, the download, what changes, what is kept, and whether it can be reverted. */
+private fun layerUpdateBody(c: Container, target: String, remote: ContainerLayerUpdater.CatalogCandidate?, revertable: Boolean): String {
+    val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
+    val oldLabel = ContainerLayerUpdater.layerLabel(c.wineVersion, target)
+    val size = remote?.sizeBytes?.let { " (~" + ContainerLayerUpdater.formatSize(it) + ")" } ?: ""
+    return listOfNotNull(
+        L("%1\$s moves from %2\$s to %3\$s.", c.name, c.wineVersion, target),
+        remote?.let { L("The %1\$s layer is not on this device yet: it is downloaded from the catalog%2\$s and installed first, then the container is updated.", newLabel, size) },
+        L("What changes: the Wine/Proton layer files (system32/syswow64 builtin DLLs are refreshed; DXVK, FEX/Box64 and game-installed files are left as they are). Wine finishes its own prefix update on the next launch."),
+        L("What is kept: games, saves, shortcuts and container settings."),
+        if (revertable) L("The %1\$s layer stays installed and a backup of the registry is taken, so you can revert from this menu.", oldLabel)
+        else L("The %1\$s layer is no longer installed on this device, so this update cannot be reverted afterwards (a registry backup is still taken).", oldLabel),
+        L("Make sure nothing is running in this container."),
+    ).joinToString("\n\n")
+}
+
+/** Classic's "About layer updates": what a layer is, what the update does and keeps, and the revert. */
+private fun layerHelpBody(c: Container, target: String, remote: ContainerLayerUpdater.CatalogCandidate?, snapshot: ContainerLayerUpdater.Snapshot?): String {
+    val newLabel = ContainerLayerUpdater.layerLabel(target, c.wineVersion)
+    val size = remote?.sizeBytes?.let { " (~" + ContainerLayerUpdater.formatSize(it) + ")" } ?: ""
+    val what = if (newLabel == ContainerLayerUpdater.codeLabel(target)) L("a newer build of the same layer") else L("a newer DroidDeck-Proton version")
+    return listOfNotNull(
+        L("A layer is the set of Wine/Proton files a container runs on. %1\$s runs on %2\$s; %3\$s, %4\$s, is ", c.name, c.wineVersion, what, target) +
+            (if (remote != null) L("available in the catalog. The %1\$s layer will be downloaded%2\$s first.", newLabel, size) else L("installed.")),
+        L("What the update changes: only Wine's own files inside the container are refreshed to the new version. DXVK, FEX/Box64 and anything a game installed are left as they are; Wine finishes its own prefix update on the next launch."),
+        L("What is kept: installed games, saves, shortcuts and container settings."),
+        L("The old layer stays installed and a backup of the registry is taken first, so \"Revert layer\" is available from this container's menu afterwards."),
+        L("Close the game before updating."),
+        snapshot?.let { L("A %1\$s snapshot from an earlier update exists — revert is available in the menu.", ContainerLayerUpdater.layerLabel(it.oldEntry, c.wineVersion)) },
+    ).joinToString("\n\n")
+}
+
+/** Classic's container card chips as one line: renderer, DXVK, frame generation, GPU driver, VKD3D, emulator. Blocking (the Wayland probe). */
+private fun cardSpecs(context: android.content.Context, c: Container): String {
+    val (dxvk, vkd3d) = com.winlator.star.ui.screens.parseDxwrapperConfig(c.getDXWrapperConfig())
+    val driverCfg = c.getGraphicsDriverConfig()
+    val driver = if (driverCfg.isNotEmpty()) com.winlator.star.contentdialog.GraphicsDriverConfigDialog.getVersion(driverCfg) ?: "" else ""
+    val wayland = com.winlator.star.core.WineWaylandSupport.runsOnWayland(context, c)
+    return listOf(
+        com.winlator.star.ui.screens.rendererLabelOf(c.renderer, wayland),
+        if (dxvk.isNotEmpty()) "DXVK $dxvk" else "",
+        com.winlator.star.ui.screens.frameGenLabelOf(c.frameGenEngine),
+        driver,
+        if (vkd3d.isNotEmpty()) "VKD3D $vkd3d" else "",
+        com.winlator.star.ui.EmulatorLabels.chipLabel(c.emulator, c.wineVersion),
+    ).filter { it.isNotEmpty() }.joinToString(" · ")
 }

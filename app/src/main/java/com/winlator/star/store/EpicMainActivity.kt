@@ -21,7 +21,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.ViewList
-import androidx.compose.material3.Button
+import com.winlator.star.ui.theme.LabButton as Button
 import androidx.compose.material3.Icon
 import com.winlator.star.store.StoreGlassIconButton as IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.winlator.star.core.AppOrientation
 import com.winlator.star.store.download.DownloadRegistry
 import com.winlator.star.store.download.DownloadsButton
+import com.winlator.star.ui.deck.deckShape
 
 /**
  * The Epic section's host — flipped from a login card + "View Game Library" button to a
@@ -122,7 +123,7 @@ class EpicMainActivity : ComponentActivity() {
         if (loggedIn) {
             val creds = EpicCredentialStore.load(this)
             if (creds != null) {
-                displayName = if (!creds.displayName.isNullOrEmpty()) creds.displayName else "Epic账户"
+                displayName = if (!creds.displayName.isNullOrEmpty()) creds.displayName else "Epic Account"
                 tokenMinutesLeft = (creds.expiresAt - System.currentTimeMillis()) / 60000L
             }
         }
@@ -140,7 +141,7 @@ class EpicMainActivity : ComponentActivity() {
 private val EPIC_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -221,11 +222,11 @@ private fun EpicStorefrontHost(
                 onClick = { ctx.startActivity(Intent(ctx, EpicGamesActivity::class.java)) },
                 modifier = Modifier.steamFocusRing(),
             ) {
-                Icon(Icons.Filled.ViewList, contentDescription = "完整库界面", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ViewList, contentDescription = "Full library screen", tint = MaterialTheme.colorScheme.primary)
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -235,8 +236,8 @@ private fun EpicStorefrontHost(
             DownloadsButton(Modifier.xmbRailStop(ring = true))
             StoreRailOverflow(
                 items = listOf<Triple<String, ImageVector, () -> Unit>>(
-                    Triple("完整库界面", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, EpicGamesActivity::class.java)) }),
-                    Triple("免费游戏页面", Icons.Filled.Redeem, { ctx.startActivity(Intent(ctx, EpicFreeGamesActivity::class.java)) }),
+                    Triple("Full library screen", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, EpicGamesActivity::class.java)) }),
+                    Triple("Free games page", Icons.Filled.Redeem, { ctx.startActivity(Intent(ctx, EpicFreeGamesActivity::class.java)) }),
                 ),
                 onSignOut = onSignOut,
             )
@@ -299,7 +300,7 @@ private fun EpicLoginScreen(onLoginClick: () -> Unit) {
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "登录以浏览Epic游戏商店、领取本周免费游戏并下载您的库。",
+                "Sign in to browse the Epic Games Store, claim this week's free games and download your library.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -307,9 +308,9 @@ private fun EpicLoginScreen(onLoginClick: () -> Unit) {
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = onLoginClick,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(48.dp).steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("使用Epic Games登录") }
+                shape = deckShape(8.dp),
+                modifier = Modifier.height(48.dp).steamFocusRing(deckShape(8.dp)),
+            ) { Text("Login with Epic Games") }
         }
     }
 }

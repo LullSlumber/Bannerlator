@@ -20,7 +20,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.ViewList
-import androidx.compose.material3.Button
+import com.winlator.star.ui.theme.LabButton as Button
 import androidx.compose.material3.Icon
 import com.winlator.star.store.StoreGlassIconButton as IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.winlator.star.core.AppOrientation
 import com.winlator.star.store.download.DownloadRegistry
 import com.winlator.star.store.download.DownloadsButton
+import com.winlator.star.ui.deck.deckShape
 
 /**
  * The Amazon Games section's host — flipped from a login card + "View Game Library" button to the
@@ -135,7 +136,7 @@ class AmazonMainActivity : ComponentActivity() {
         }
         AmazonCredentialStore.clear(this)
         refreshView()
-        resultBarMsg = "已退出Amazon Games"
+        resultBarMsg = "Signed out of Amazon Games"
     }
 }
 
@@ -144,7 +145,7 @@ class AmazonMainActivity : ComponentActivity() {
 private val AMAZON_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "Profile", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -216,11 +217,11 @@ private fun AmazonStorefrontHost(
                 onClick = { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) },
                 modifier = Modifier.steamFocusRing(),
             ) {
-                Icon(Icons.Filled.ViewList, contentDescription = "完整库界面", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.ViewList, contentDescription = "Full library screen", tint = MaterialTheme.colorScheme.primary)
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sign out", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -230,7 +231,7 @@ private fun AmazonStorefrontHost(
             DownloadsButton(Modifier.xmbRailStop(ring = true))
             StoreRailOverflow(
                 items = listOf<Triple<String, ImageVector, () -> Unit>>(
-                    Triple("完整库界面", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) }),
+                    Triple("Full library screen", Icons.Filled.ViewList, { ctx.startActivity(Intent(ctx, AmazonGamesActivity::class.java)) }),
                 ),
                 onSignOut = onSignOut,
             )
@@ -290,7 +291,7 @@ private fun AmazonLoginScreen(onLoginClick: () -> Unit) {
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "登录以领取Prime Gaming游戏并下载您的Amazon Games库。",
+                "Sign in to claim Prime Gaming titles and download your Amazon Games library.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -298,9 +299,9 @@ private fun AmazonLoginScreen(onLoginClick: () -> Unit) {
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = onLoginClick,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(48.dp).steamFocusRing(RoundedCornerShape(8.dp)),
-            ) { Text("使用Amazon登录") }
+                shape = deckShape(8.dp),
+                modifier = Modifier.height(48.dp).steamFocusRing(deckShape(8.dp)),
+            ) { Text("Login with Amazon") }
         }
     }
 }

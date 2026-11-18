@@ -46,10 +46,10 @@ import com.winlator.star.ui.screens.MenuItemDivider
 import com.winlator.star.ui.screens.OutlinedAlertDialog
 import com.winlator.star.ui.screens.outlinedMenuCard
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
+import com.winlator.star.ui.theme.LabOutlinedButton as OutlinedButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.Button
+import com.winlator.star.ui.theme.LabButton as Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -62,7 +62,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.winlator.star.ui.theme.LabTextButton as TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -123,6 +123,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
+import com.winlator.star.ui.deck.deckShape
 
 /** Semantic action carried by the install button; the colour resolves inside the composable
  *  (install/retry = primary, cancel/uninstall = error) so theme presets recolor it live. */
@@ -152,7 +153,7 @@ private data class CloudConfirm(
 private data class SizeBreakdown(
     val downloadLabel: String = "",   // "Download: 4.5 GB"
     val picsLabel: String = "",       // "PICS estimate (Steam): 8.4 GB"
-    val freeLabel: String = "",       // "Free space: 23.1 GB" (+ " — 空间不足" when applicable)
+    val freeLabel: String = "",       // "Free space: 23.1 GB" (+ " — won't fit" when applicable)
     val fits: Boolean = true,         // false → render freeLabel in the error color
 )
 
@@ -167,7 +168,7 @@ private data class BranchDisplay(
 
 /** One entry in the DLC tab's full owned-DLC list. `tag` is the human delivery label derived from
  *  the DB `kind` ("Installs with game" for depot/app, "Owned — no separate download" for
- *  entitlement, "Owned" while unresolved, "未拥有" for unowned). DISPLAY-ONLY. */
+ *  entitlement, "Owned" while unresolved, "Not owned" for unowned). DISPLAY-ONLY. */
 private data class DlcTabEntry(
     val appId: Int,
     val name: String,
@@ -177,7 +178,7 @@ private data class DlcTabEntry(
 
 /** Map the steam_dlc `kind` + ownership to the tab's delivery label. */
 private fun dlcKindTag(kind: String, owned: Boolean): String = when {
-    !owned                                 -> "未拥有"
+    !owned                                 -> "Not owned"
     kind == "depot" || kind == "app"       -> "Installs with game"
     kind == "entitlement"                  -> "Owned — no separate download"
     else                                   -> "Owned"   // owned but not yet resolved
@@ -208,7 +209,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
     private var nameText by mutableStateOf("Loading…")
     private var typeText by mutableStateOf("GAME")
     // Headline chip = on-disk footprint (estimate with "~", or the real measured size once installed).
-    private var sizeText by mutableStateOf("大小未知")
+    private var sizeText by mutableStateOf("Size unknown")
     // Breakdown lines under the chips: download (compressed), PICS estimate (labeled), free space.
     private var sizeBreakdown by mutableStateOf(SizeBreakdown())
     // "Includes DLC: <names>" — owned DLC that WILL download (excluded ones dropped); "" hides the line.
@@ -288,7 +289,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
     private var showExePicker by mutableStateOf<ExePickerDataGame?>(null)
     private var addToShortcuts by mutableStateOf<AddToShortcutsRequest?>(null)
     private var addResult by mutableStateOf<AddShortcutResult?>(null)
-    // Destructive "取消并删除下载" confirm — gates the guaranteed wipe+reset (gear item).
+    // Destructive "Cancel & delete download" confirm — gates the guaranteed wipe+reset (gear item).
     // The partial is only nuked once the user confirms; dismiss keeps the download exactly as-is.
     private var showCancelDeleteConfirm by mutableStateOf(false)
 
@@ -322,7 +323,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
     // Pending per-move confirm dialog (move + container label + optional staleness warning).
     private var cloudConfirm by mutableStateOf<CloudConfirm?>(null)
     // One-time third-party disclaimer (persisted in steam_prefs). pendingCloudMove is the move the
-    // user tried to run before accepting; it's dispatched once they tap "我理解".
+    // user tried to run before accepting; it's dispatched once they tap "I understand".
     private var showCloudDisclaimer by mutableStateOf(false)
     private var pendingCloudMove by mutableStateOf<CloudMove?>(null)
 
@@ -433,7 +434,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 if (showCloudDisclaimer) {
                     OutlinedAlertDialog(
                         onDismissRequest = { showCloudDisclaimer = false; pendingCloudMove = null },
-                        title = { Text("第三方云同步") },
+                        title = { Text("Third-party cloud sync") },
                         text = {
                             Text(
                                 "Steam Cloud save syncing here is handled by a third-party tool, not " +
@@ -447,7 +448,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                                 setCloudDisclaimerAccepted()
                                 pendingCloudMove?.let { prepareCloudConfirm(it) }
                                 pendingCloudMove = null
-                            }) { Text("我理解") }
+                            }) { Text("I understand") }
                         },
                         dismissButton = {
                             TextButton(onClick = {
@@ -490,7 +491,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                             showSpeedPicker = false
                             lastSpeedTier = tier
                             installBtnEnabled = false
-                            installBtnText = "正在启动…"
+                            installBtnText = "Starting…"
                             // installRoot = the chosen location's base: the SD card's steam_games folder, or
                             // a user library's <folder>/steamapps/common; null = internal default.
                             downloadHandle = SteamDepotDownloader.installApp(
@@ -524,10 +525,10 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 // stops the download (the installed game and its files are kept).
                 val askPack = languageMissing
                 if (showLanguageAsk && askPack != null && languageRun == null) {
-                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "此游戏"
+                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "this game"
                     OutlinedAlertDialog(
                         onDismissRequest = { showLanguageAsk = false },
-                        title = { Text("下载语言文件？") },
+                        title = { Text("Download language files?") },
                         text = {
                             Text(
                                 "Downloads the ${SteamGameLanguage.label(askPack)} files for \"$gName\". " +
@@ -535,13 +536,13 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                             )
                         },
                         confirmButton = { TextButton(onClick = { startLanguageDownload() }) { Text("Download") } },
-                        dismissButton = { TextButton(onClick = { showLanguageAsk = false }) { Text("等待") } },
+                        dismissButton = { TextButton(onClick = { showLanguageAsk = false }) { Text("Later") } },
                     )
                 }
                 languageRun?.let { run ->
                     OutlinedAlertDialog(
                         onDismissRequest = { },
-                        title = { Text("语言文件") },
+                        title = { Text("Language files") },
                         text = {
                             Column {
                                 Text(languageProgressText)
@@ -556,34 +557,34 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                                 }
                             }
                         },
-                        confirmButton = { TextButton(onClick = { run.cancel() }) { Text("停止") } },
+                        confirmButton = { TextButton(onClick = { run.cancel() }) { Text("Stop") } },
                     )
                 }
 
-                // Destructive confirm for the gear's "取消并删除下载". Names the game and
+                // Destructive confirm for the gear's "Cancel & delete download". Names the game and
                 // spells out that this stops the download, deletes every downloaded file and resets it
                 // for a fresh, full download. The wipe runs ONLY on confirm; dismiss keeps the partial.
                 if (showCancelDeleteConfirm && game?.isInstalled == true) {
                     // An update / verify / language download of the INSTALLED game: stopping it keeps the files.
                     OutlinedAlertDialog(
                         onDismissRequest = { showCancelDeleteConfirm = false },
-                        title = { Text("停止下载？") },
-                        text = { Text("已安装的游戏及其文件会保留。") },
+                        title = { Text("Stop the download?") },
+                        text = { Text("The installed game and its files are kept.") },
                         confirmButton = {
                             TextButton(onClick = {
                                 showCancelDeleteConfirm = false
                                 performCancelDeleteReset()
-                            }) { Text("停止") }
+                            }) { Text("Stop") }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showCancelDeleteConfirm = false }) { Text("继续下载") }
+                            TextButton(onClick = { showCancelDeleteConfirm = false }) { Text("Keep downloading") }
                         },
                     )
                 } else if (showCancelDeleteConfirm) {
-                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "此游戏"
+                    val gName = game?.name?.takeIf { it.isNotBlank() } ?: "this game"
                     OutlinedAlertDialog(
                         onDismissRequest = { showCancelDeleteConfirm = false },
-                        title = { Text("取消并删除下载?") },
+                        title = { Text("Cancel & delete download?") },
                         text = {
                             Text(
                                 "This stops the download for \"$gName\", deletes every file already " +
@@ -595,11 +596,11 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                             TextButton(onClick = {
                                 showCancelDeleteConfirm = false
                                 performCancelDeleteReset()
-                            }) { Text("删除并重置", color = MaterialTheme.colorScheme.error) }
+                            }) { Text("Delete & reset", color = MaterialTheme.colorScheme.error) }
                         },
                         dismissButton = {
                             TextButton(onClick = { showCancelDeleteConfirm = false }) {
-                                Text("保留下载")
+                                Text("Keep download")
                             }
                         },
                     )
@@ -651,7 +652,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 goldbergMessage?.let { msg ->
                     OutlinedAlertDialog(
                         onDismissRequest = { goldbergMessage = null },
-                        title = { Text("Steam 模拟器 (Goldberg)") },
+                        title = { Text("Steam Emulator (Goldberg)") },
                         text = { Text(msg) },
                         confirmButton = {
                             TextButton(onClick = { goldbergMessage = null }) { Text("OK") }
@@ -761,7 +762,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                 progressValue = 0
                 downloadProgressValue = 0
                 progressTextVisible = true
-                progressText = "已排队…"
+                progressText = "Queued…"
                 installBtnEnabled = true
                 installBtnText = "Cancel"
                 installAction = InstallAction.CANCEL
@@ -900,7 +901,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         sizeText = when {
             footprint > 0L && resolved -> "${fmtSize(footprint)} on disk"
             footprint > 0L             -> "~${fmtSize(footprint)} on disk"
-            else                       -> "大小未知"
+            else                       -> "Size unknown"
         }
 
         // Download (compressed): the resolved per-depot sum is exclusion-aware; before resolve fall
@@ -913,7 +914,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         sizeBreakdown = SizeBreakdown(
             downloadLabel = if (downloadBytes > 0L) "Download: ${fmtSize(downloadBytes)}" else "",
             picsLabel     = if (pics > 0L) "PICS estimate (Steam): ${fmtSize(pics)}" else "",
-            freeLabel     = if (free >= 0L) "Free space: ${fmtSize(free)}" + (if (!fits) " — 空间不足" else "") else "",
+            freeLabel     = if (free >= 0L) "Free space: ${fmtSize(free)}" + (if (!fits) " — won't fit" else "") else "",
             fits          = fits,
         )
     }
@@ -1156,7 +1157,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
                         progressValue = 0
                         downloadProgressValue = 0
                         progressTextVisible = true
-                        progressText = "已排队…"
+                        progressText = "Queued…"
                         installBtnEnabled = true
                         installBtnText = "Cancel"
                         installAction = InstallAction.CANCEL
@@ -1336,7 +1337,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         // now converge on the SAME confirm-gated guaranteed reset (performCancelDeleteReset), so the old
         // divergence is gone: the active branch used to skip db.deleteDownload() (leaving a stale
         // DL_DOWNLOADING row), and each deleted only the DB-row dir. In practice the gear's
-        // "取消并删除下载" item calls the confirm directly; this keeps any other caller that
+        // "Cancel & delete download" item calls the confirm directly; this keeps any other caller that
         // reaches here in a cancel state on the same confirmed path (never an unconfirmed wipe).
         if (downloadHandle != null) { showCancelDeleteConfirm = true; return }
         val db = SteamRepository.getInstance().database
@@ -1572,14 +1573,14 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
             installBtnText = "Cancel"
             installBtnEnabled = true
             val cur = progressText
-            if (cur.startsWith("Downloading")) progressText = cur.replace("Downloading", "正在暂停")
+            if (cur.startsWith("Downloading")) progressText = cur.replace("Downloading", "Pausing")
         } else {
             val dlRow = SteamRepository.getInstance().database.getDownload(appId) ?: return
             if (dlRow.status != SteamDatabase.DL_PAUSED) return
             pauseBtnEnabled = false
             pauseBtnText = "Resuming…"
             installBtnEnabled = false
-            installBtnText = "正在启动…"
+            installBtnText = "Starting…"
             downloadHandle = SteamDepotDownloader.resumeApp(appId, applicationContext, lastSpeedTier)
         }
     }
@@ -1692,7 +1693,7 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
      */
     private fun cloudStalenessWarning(s: SteamCloudSaveManager.Staleness): String? =
         if (s.containerFileCount > 0 && s.containerNewestMtime > s.libraryNewestMtime)
-            "⚠️ 此容器有比您的库更新的存档 — 先收集?"
+            "⚠️ This container has newer saves than your Library — Collect first?"
         else null
 
     /** Dispatch the confirmed move to the frozen manager API. Each runs on its own worker thread. */
@@ -1701,12 +1702,12 @@ class SteamGameDetailActivity : ComponentActivity(), SteamRepository.SteamEventL
         val g = game ?: return
         cloudBusy = true
         cloudStatus = when (move) {
-            CloudMove.DOWNLOAD  -> "正在准备下载…"
-            CloudMove.UPLOAD    -> "正在准备上传…"
-            CloudMove.APPLY     -> "正在应用到容器…"
-            CloudMove.COLLECT   -> "正在从容器收集…"
-            CloudMove.SYNC_FROM -> "正在从云端同步…"
-            CloudMove.SYNC_TO   -> "正在同步到云端…"
+            CloudMove.DOWNLOAD  -> "Preparing download…"
+            CloudMove.UPLOAD    -> "Preparing upload…"
+            CloudMove.APPLY     -> "Applying to container…"
+            CloudMove.COLLECT   -> "Collecting from container…"
+            CloudMove.SYNC_FROM -> "Syncing from Cloud…"
+            CloudMove.SYNC_TO   -> "Syncing to Cloud…"
         }
         val cb = object : SteamCloudSaveManager.Callback {
             override fun onStatus(message: String) { runOnUiThread { cloudStatus = message } }
@@ -1914,7 +1915,7 @@ private fun SteamGameDetailScreen(
     onPauseResumeClick: () -> Unit,
     onCancelDeleteClick: () -> Unit,
     onLaunchClick: () -> Unit,
-    /** Gear → "移动到 SD 卡" / "移动到内部存储". Null while the game isn't movable
+    /** Gear → "Move to SD card" / "Move to internal storage". Null while the game isn't movable
      *  (not installed, folder missing, or no card to move it to) — the row is then hidden. */
     moveStorageLabel: String?,
     onMoveStorageClick: () -> Unit,
@@ -1925,7 +1926,7 @@ private fun SteamGameDetailScreen(
     var gearMenuExpanded by remember { mutableStateOf(false) }
     // Goldberg (Steam emulator) popup — opened from the gear menu (installed games only).
     var goldbergDialogOpen by remember { mutableStateOf(false) }
-    // Gear → "使用已有的文件夹": the game's files from a PC copy, another app or a backup
+    // Gear → "Use a folder I already have": the game's files from a PC copy, another app or a backup
     // (SteamFolderAdopt: installs into that folder, keeping what is already there).
     var adoptFolder by remember { mutableStateOf<File?>(null) }
     val adoptPick = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -1950,7 +1951,7 @@ private fun SteamGameDetailScreen(
             true -> LaunchedEffect(folder) { start() }
             false -> OutlinedAlertDialog(
                 onDismissRequest = { adoptFolder = null },
-                confirmButton = { TextButton(onClick = { start() }) { Text("使用它") } },
+                confirmButton = { TextButton(onClick = { start() }) { Text("Use it") } },
                 dismissButton = { TextButton(onClick = { adoptFolder = null }) { Text("Cancel") } },
                 title = { Text(nameText) },
                 text = { Text("\"${folder.name}\" doesn't look like this game's folder. Use it anyway? The game's files will be added there.") },
@@ -2007,7 +2008,7 @@ private fun SteamGameDetailScreen(
     // DLC tab — the FULL owned-DLC catalogue (broader than the depot-bundled `dlcEntries` picker set:
     // it also lists DLC that are owned but ship no separate download, e.g. Risk of Rain 2's DLC). Loaded
     // like achievements: paint from the cached steam_dlc rows, kick a best-effort PICS resolve for
-    // names/kinds off the UI thread, then re-read. `dlcHasAny` distinguishes "no DLC" 来自 "not resolved
+    // names/kinds off the UI thread, then re-read. `dlcHasAny` distinguishes "no DLC" from "not resolved
     // yet". This never touches the depot-bundled picker/size path (still driven by `dlcEntries`).
     var dlcTabRows by remember(appId) { mutableStateOf<List<DlcTabEntry>>(emptyList()) }
     var dlcHasAny by remember(appId) { mutableStateOf(false) }
@@ -2077,7 +2078,7 @@ private fun SteamGameDetailScreen(
     )
     // Primary action + gear menu: a single state-driven button drives install / retry / add-to-shortcuts (and shows
     // download progress read-only), while the gear dropdown carries pause/resume, cancel, uninstall, branch, DLC and Goldberg.
-    val primaryShape = RoundedCornerShape(10.dp)
+    val primaryShape = deckShape(10.dp)
     var freeMessage by remember(appId) { mutableStateOf<String?>(null) }
     StorePage(
         geometry = geometry,
@@ -2178,14 +2179,14 @@ private fun SteamGameDetailScreen(
                     freeScope.launch {
                         when (val r = SteamFreeLicense.request(appId)) {
                             is SteamFreeLicense.Result.Failed -> freeMessage = r.message
-                            else -> { freeOwned = true; SteamFreeOffers.ids.remove(appId); freeMessage = "已加入你的游戏库" }
+                            else -> { freeOwned = true; SteamFreeOffers.ids.remove(appId); freeMessage = "Added to your library" }
                         }
                         freeBusy = false
                     }
                 }
                 val (label, enabled, onPrimary) = when {
                     installAction == InstallAction.UNINSTALL -> Triple("Add to shortcuts", launchBtnEnabled, onLaunchClick)
-                    !freeOwned -> Triple(if (freeBusy) "正在添加…" else "添加到库", !freeBusy, addFree)
+                    !freeOwned -> Triple(if (freeBusy) "Adding…" else "Add to Library", !freeBusy, addFree)
                     else -> Triple(installBtnText, installBtnEnabled, onInstallClick) // INSTALL / RETRY / transient
                 }
                 Box(
@@ -2237,18 +2238,18 @@ private fun SteamGameDetailScreen(
                         GearMenuItem(pauseEmoji, pauseBtnText, enabled = pauseBtnEnabled,
                             onClick = { gearMenuExpanded = false; onPauseResumeClick() })
                         MenuItemDivider()
-                        GearMenuItem("🗑", "取消并删除下载", danger = true, // hard delete + fresh-restart reset
+                        GearMenuItem("🗑", "Cancel & delete download", danger = true, // hard delete + fresh-restart reset
                             onClick = { gearMenuExpanded = false; onCancelDeleteClick() })
                         MenuItemDivider()
                     }
-                    GearMenuItem("🌿", "选择分支",
+                    GearMenuItem("🌿", "Choose branch",
                         onClick = { gearMenuExpanded = false; onBranchLineClick() })
                     MenuItemDivider()
-                    GearMenuItem("🧩", "管理DLC", enabled = dlcEntries.isNotEmpty(),
+                    GearMenuItem("🧩", "Manage DLC", enabled = dlcEntries.isNotEmpty(),
                         onClick = { gearMenuExpanded = false; onDlcLineClick() })
                     if (installAction == InstallAction.INSTALL && !downloading) {
                         MenuItemDivider()
-                        GearMenuItem("📁", "使用已有的文件夹",
+                        GearMenuItem("📁", "Use a folder I already have",
                             onClick = {
                                 gearMenuExpanded = false
                                 adoptPick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(context, nameText))
@@ -2343,15 +2344,15 @@ private fun SteamGameDetailScreen(
                     if (branches.any { it.name != "public" }) {
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "分支: " + if (selectedBranch == "public") "public (default)" else selectedBranch,
+                            text = "Branch: " + if (selectedBranch == "public") "public (default)" else selectedBranch,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                         )
                         OutlinedButton(
                             onClick = onBranchLineClick,
-                            modifier = Modifier.padding(top = 6.dp).storeFocus(CircleShape, onBranchLineClick),
+                            modifier = Modifier.padding(top = 6.dp).storeFocus(com.winlator.star.ui.theme.labPillShape(), onBranchLineClick),
                         ) {
-                            Text("更改分支")
+                            Text("Change branch")
                         }
                     }
                     // Game language — only when Steam lists more than one for this game.
@@ -2364,9 +2365,9 @@ private fun SteamGameDetailScreen(
                         )
                         OutlinedButton(
                             onClick = onLanguageLineClick,
-                            modifier = Modifier.padding(top = 6.dp).storeFocus(CircleShape, onLanguageLineClick),
+                            modifier = Modifier.padding(top = 6.dp).storeFocus(com.winlator.star.ui.theme.labPillShape(), onLanguageLineClick),
                         ) {
-                            Text("更改语言")
+                            Text("Change language")
                         }
                         if (languageMissing != null) {
                             Text(
@@ -2377,9 +2378,9 @@ private fun SteamGameDetailScreen(
                             )
                             OutlinedButton(
                                 onClick = onLanguageDownloadClick,
-                                modifier = Modifier.padding(top = 6.dp).storeFocus(CircleShape, onLanguageDownloadClick),
+                                modifier = Modifier.padding(top = 6.dp).storeFocus(com.winlator.star.ui.theme.labPillShape(), onLanguageDownloadClick),
                             ) {
-                                Text("下载语言文件")
+                                Text("Download language files")
                             }
                         }
                     }
@@ -2416,25 +2417,25 @@ private fun SteamGameDetailScreen(
                 when {
                     // Still resolving and nothing cached yet — brief, only on a never-resolved game.
                     dlcTabLoading && dlcTabRows.isEmpty() && !dlcHasAny -> Text(
-                        text = "正在加载DLC…",
+                        text = "Loading DLC…",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     // Resolved and the game genuinely lists no DLC.
                     !dlcHasAny -> Text(
-                        text = "此游戏没有可用的DLC。",
+                        text = "No DLC available for this game.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     // Has DLC, but the user owns none of it.
                     ownedDlc.isEmpty() -> Text(
-                        text = "您没有此游戏的任何DLC。",
+                        text = "You don't own any DLC for this game.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     else -> {
                         Text(
-                            text = "您的DLC",
+                            text = "Your DLC",
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
@@ -2465,7 +2466,7 @@ private fun SteamGameDetailScreen(
                             )
                             OutlinedButton(
                                 onClick = onDlcLineClick,
-                                modifier = Modifier.padding(top = 8.dp).storeFocus(CircleShape, onDlcLineClick),
+                                modifier = Modifier.padding(top = 8.dp).storeFocus(com.winlator.star.ui.theme.labPillShape(), onDlcLineClick),
                             ) { Text("Choose DLC") }
                         }
                     }
@@ -2474,7 +2475,7 @@ private fun SteamGameDetailScreen(
                 if (unownedDlc.isNotEmpty()) {
                     Spacer(Modifier.height(14.dp))
                     Text(
-                        text = "未拥有",
+                        text = "Not owned",
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -2522,16 +2523,16 @@ private fun SteamGameDetailScreen(
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 16.dp),
                     ) {
                         Text(
-                            text = "Steam 云存档",
+                            text = "Steam Cloud Saves",
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = when {
-                                !signedIn -> "登录Steam以同步此游戏的云存档。"
+                                !signedIn -> "Sign in to Steam to sync this game's cloud saves."
                                 gameStatus == GameStatus.INSTALLED -> "Connecting to Steam…"
-                                else -> "安装此游戏以将其云存档与您的Steam云同步。"
+                                else -> "Install this game to sync its cloud saves with your Steam Cloud."
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -2610,7 +2611,7 @@ private fun SteamGameDetailScreen(
                 Button(
                     onClick = onDismissDlcSheet,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = deckShape(10.dp),
                 ) { Text("Done") }
             }
         }
@@ -2629,12 +2630,12 @@ private fun SteamGameDetailScreen(
                     .padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
             ) {
                 Text(
-                    text = "游戏语言",
+                    text = "Game language",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "已安装的游戏在下载新语言文件前会先询问。",
+                    text = "Installed games ask before downloading new language files.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
@@ -2671,7 +2672,7 @@ private fun SteamGameDetailScreen(
                     .padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
             ) {
                 Text(
-                    text = "选择分支",
+                    text = "Choose a branch",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -2722,7 +2723,7 @@ private fun SteamGameDetailScreen(
                 if (branches.any { it.pwdRequired && !it.unlocked }) {
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        text = "解锁受密码保护的测试版",
+                        text = "Unlock a password-protected beta",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -2753,7 +2754,7 @@ private fun SteamGameDetailScreen(
                         onClick = { onCheckBranchPassword(code) },
                         enabled = !branchCheckBusy && code.isNotBlank(),
                         modifier = Modifier.padding(top = 8.dp),
-                        shape = RoundedCornerShape(10.dp),
+                        shape = deckShape(10.dp),
                     ) {
                         if (branchCheckBusy) {
                             CircularProgressIndicator(
@@ -2770,7 +2771,7 @@ private fun SteamGameDetailScreen(
                 Button(
                     onClick = onDismissBranchSheet,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = deckShape(10.dp),
                 ) { Text("Done") }
             }
         }
@@ -2806,7 +2807,7 @@ private fun GearMenuItem(
 ) {
     val base = if (danger) MaterialTheme.colorScheme.error else AchvInk
     DropdownMenuItem(
-        modifier = if (enabled) Modifier.storeFocus(RoundedCornerShape(6.dp), onClick) else Modifier,
+        modifier = if (enabled) Modifier.storeFocus(deckShape(6.dp), onClick) else Modifier,
         text = {
             Text(
                 text = text,
@@ -2845,7 +2846,7 @@ private fun SteamDetailTabs(
         },
         selected = tabs.indexOf(selected),
         onSelect = { onSelect(tabs[it]) },
-        shape = RoundedCornerShape(8.dp),
+        shape = deckShape(8.dp),
         idle = StoreChipStyle(AchvCard, AchvLineSoft, AchvInk2),
         active = StoreChipStyle(AchvTabActiveBg, AchvTabActiveBorder, AchvTabActiveText),
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 6.dp),
@@ -2875,7 +2876,7 @@ private fun AchievementsTabBody(
 
     when {
         !signedIn -> Text(
-            text = "登录Steam以查看成就。",
+            text = "Sign in to Steam to view achievements.",
             fontSize = 13.sp,
             color = AchvInk2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -2890,10 +2891,10 @@ private fun AchievementsTabBody(
                 strokeWidth = 2.dp,
             )
             Spacer(Modifier.width(8.dp))
-            Text("正在加载成就…", fontSize = 13.sp, color = AchvInk2)
+            Text("Loading achievements…", fontSize = 13.sp, color = AchvInk2)
         }
         achievements.isEmpty() -> Text(
-            text = "此游戏没有成就。",
+            text = "This game has no achievements.",
             fontSize = 13.sp,
             color = AchvInk2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -2958,7 +2959,7 @@ private fun AchievementProgressBlock(done: Int, total: Int, pct: Int) {
         }
         Spacer(Modifier.height(8.dp))
         val frac = (pct / 100f).coerceIn(0f, 1f)
-        val trackShape = RoundedCornerShape(20.dp)
+        val trackShape = deckShape(20.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -3003,7 +3004,7 @@ private fun AchievementTile(
     modifier: Modifier = Modifier,
 ) {
     val hiddenLocked = a.hidden && !a.unlocked
-    val shape = RoundedCornerShape(11.dp)
+    val shape = deckShape(11.dp)
     val bg = if (a.unlocked) Brush.linearGradient(listOf(AchvTileUnlockedTop, AchvTileUnlockedBot))
              else Brush.linearGradient(listOf(AchvTileLockedTop, AchvTileLockedBot))
     val borderColor = when {
@@ -3063,21 +3064,21 @@ private fun AchievementTile(
 
 /**
  * Long-press help popup for a tile — rendered through the app's standard [OutlinedAlertDialog] (the
- * same rounded/outlined "?" look, with a "知道了" confirm) so it matches every other help dialog.
+ * same rounded/outlined "?" look, with a "Got it" confirm) so it matches every other help dialog.
  * The body mirrors the mockup's `.dlg` block: a centered column of the achievement's full art
  * (78dp, gold-bordered + tinted when unlocked, greyscaled when locked, a lock glyph when hidden and
- * locked), its name, a status pill (gold "Unlocked · <date>" / muted "Locked" / "隐藏"), and the
+ * locked), its name, a status pill (gold "Unlocked · <date>" / muted "Locked" / "Hidden"), and the
  * description (a generic hint for a blank hidden-and-locked one).
  */
 @Composable
 private fun AchievementHelpDialog(a: SteamAchievement, onDismiss: () -> Unit) {
     val hiddenLocked = a.hidden && !a.unlocked
-    val iconShape = RoundedCornerShape(16.dp)
-    val pillShape = RoundedCornerShape(20.dp)
+    val iconShape = deckShape(16.dp)
+    val pillShape = deckShape(20.dp)
     val statusLabel = when {
         a.unlocked && a.unlockTimeSec > 0L -> "Unlocked · ${formatUnlockDate(a.unlockTimeSec)}"
         a.unlocked                         -> "Unlocked"
-        hiddenLocked                       -> "隐藏"
+        hiddenLocked                       -> "Hidden"
         else                               -> "Locked"
     }
     val desc = when {
@@ -3157,7 +3158,7 @@ private fun AchievementHelpDialog(a: SteamAchievement, onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("知道了") }
+            TextButton(onClick = onDismiss) { Text("Got it") }
         },
     )
 }
@@ -3225,7 +3226,7 @@ private fun AchievementCaptionBar(selected: SteamAchievement?, modifier: Modifie
             ) {
                 AchvLegendItem(swatch = { AchvLegendSwatch(unlocked = true) }, label = "Unlocked")
                 AchvLegendItem(swatch = { AchvLegendSwatch(unlocked = false) }, label = "Locked")
-                AchvLegendItem(swatch = { Text("🔒", fontSize = 11.sp) }, label = "隐藏")
+                AchvLegendItem(swatch = { Text("🔒", fontSize = 11.sp) }, label = "Hidden")
             }
         }
     }
@@ -3234,7 +3235,7 @@ private fun AchievementCaptionBar(selected: SteamAchievement?, modifier: Modifie
 /** Status pill for the caption bar: gold "Unlocked" vs muted "Locked". */
 @Composable
 private fun AchvStatusPill(unlocked: Boolean) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = deckShape(20.dp)
     Box(
         modifier = Modifier
             .clip(shape)
@@ -3263,7 +3264,7 @@ private fun AchvLegendItem(swatch: @Composable () -> Unit, label: String) {
 /** A 12dp legend swatch: unlocked (gold-bordered bright gradient) vs locked (dim greyed gradient). */
 @Composable
 private fun AchvLegendSwatch(unlocked: Boolean) {
-    val shape = RoundedCornerShape(4.dp)
+    val shape = deckShape(4.dp)
     Box(
         modifier = Modifier
             .size(12.dp)
@@ -3338,7 +3339,7 @@ private fun GoldbergModeDialog(
 }
 
 /**
- * Opt-in "Steam 模拟器 (Goldberg)" section. Goldberg is ONE global download
+ * Opt-in "Steam Emulator (Goldberg)" section. Goldberg is ONE global download
  * shared by every game: until it's installed, this shows a "Download Steam
  * Emulator" button (with progress + MD5-verified extract); once installed it
  * shows the tier selector. Tiers are escalating fallbacks. The helper text is
@@ -3361,15 +3362,15 @@ private fun GoldbergSection(
     // No "Off" entry: launching the game with SteamLite or Headless Steam puts its original files back
     // automatically (GoldbergPatcher.restoreOriginalForRealSteam), so Goldberg never needs switching off by hand.
     val options = listOf(
-        GoldbergMode.REGULAR to "常规模式",
-        GoldbergMode.EXPERIMENTAL to "实验性模式",
-        GoldbergMode.COLDCLIENT to "冷客户端加载器",
+        GoldbergMode.REGULAR to "Regular",
+        GoldbergMode.EXPERIMENTAL to "Experimental",
+        GoldbergMode.COLDCLIENT to "Cold Client Loader",
     )
     // Rendered inside the Goldberg popup (OutlinedAlertDialog provides the card), so this is a plain
     // content column with no card wrapper of its own.
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Steam 模拟器 (Goldberg)",
+            text = "Steam Emulator (Goldberg)",
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -3411,7 +3412,7 @@ private fun GoldbergSection(
                     // A newer build is available — small hint above the Update button.
                     Text(
                         text = if (catalogVersion > 0) "Update available — gbe_fork v$catalogVersion"
-                            else "有可用更新",
+                            else "Update available",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -3422,7 +3423,7 @@ private fun GoldbergSection(
                 Button(
                     onClick = onDownloadClick,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = deckShape(10.dp),
                 ) { Text("$verb Steam Emulator$sizeSuffix", maxLines = 1) }
             }
         }
@@ -3445,7 +3446,7 @@ private fun GoldbergSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(deckShape(8.dp))
                     .clickable(enabled = !busy) { onModeSelected(optMode) }
                     .padding(vertical = 4.dp),
             ) {
@@ -3473,7 +3474,7 @@ private fun GoldbergSection(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "应用中…",
+                    text = "Applying…",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -3516,12 +3517,12 @@ private fun CloudSavesSection(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(deckShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(16.dp),
     ) {
         Text(
-            text = "Steam 云存档",
+            text = "Steam Cloud Saves",
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -3535,7 +3536,7 @@ private fun CloudSavesSection(
         // Always-visible third-party disclaimer note.
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "⚠️ 第三方云同步 —— 使用风险自负。",
+            text = "⚠️ Third-party cloud sync — use at your own risk.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
@@ -3552,7 +3553,7 @@ private fun CloudSavesSection(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "正在检查本游戏的容器…",
+                        text = "Checking this game's container…",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -3571,9 +3572,9 @@ private fun CloudSavesSection(
                 Spacer(Modifier.height(12.dp))
                 Button(
                     onClick = onSetUp,
-                    modifier = Modifier.fillMaxWidth().storeFocus(RoundedCornerShape(10.dp), onSetUp, tint = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                ) { Text("在容器中设置", maxLines = 1) }
+                    modifier = Modifier.fillMaxWidth().storeFocus(deckShape(10.dp), onSetUp, tint = MaterialTheme.colorScheme.onPrimary),
+                    shape = deckShape(10.dp),
+                ) { Text("Set up in a container", maxLines = 1) }
             }
 
             else -> {
@@ -3594,12 +3595,12 @@ private fun CloudSavesSection(
                 Button(
                     onClick = onSyncFromCloud,
                     enabled = !busy,
-                    modifier = Modifier.fillMaxWidth().storeFocus(RoundedCornerShape(10.dp), onSyncFromCloud, tint = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                ) { Text("⬇ 从云端同步", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    modifier = Modifier.fillMaxWidth().storeFocus(deckShape(10.dp), onSyncFromCloud, tint = MaterialTheme.colorScheme.onPrimary),
+                    shape = deckShape(10.dp),
+                ) { Text("⬇ Sync from Cloud", maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "将 Steam 云存档下载并应用到本游戏。",
+                    text = "Bring your Steam Cloud saves down and into this game.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -3608,12 +3609,12 @@ private fun CloudSavesSection(
                 Button(
                     onClick = onSyncToCloud,
                     enabled = !busy,
-                    modifier = Modifier.fillMaxWidth().storeFocus(RoundedCornerShape(10.dp), onSyncToCloud, tint = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                ) { Text("⬆ 同步到云端", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    modifier = Modifier.fillMaxWidth().storeFocus(deckShape(10.dp), onSyncToCloud, tint = MaterialTheme.colorScheme.onPrimary),
+                    shape = deckShape(10.dp),
+                ) { Text("⬆ Sync to Cloud", maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "将本游戏当前存档上传至 Steam 云。",
+                    text = "Send this game's current saves up to Steam Cloud.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -3624,19 +3625,19 @@ private fun CloudSavesSection(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .storeFocus(RoundedCornerShape(8.dp), { advancedExpanded = !advancedExpanded })
-                        .clip(RoundedCornerShape(8.dp))
+                        .storeFocus(deckShape(8.dp), { advancedExpanded = !advancedExpanded })
+                        .clip(deckShape(8.dp))
                         .clickable { advancedExpanded = !advancedExpanded }
                         .padding(vertical = 6.dp),
                 ) {
                     Text(
-                        text = if (advancedExpanded) "▾ 高级设置" else "▸ 高级设置",
+                        text = if (advancedExpanded) "▾ Advanced" else "▸ Advanced",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "单独操作：下载 / 应用 / 收集 / 上传",
+                        text = "individual Download / Apply / Collect / Upload",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -3655,16 +3656,16 @@ private fun CloudSavesSection(
                         Button(
                             onClick = onDownload,
                             enabled = !busy,
-                            modifier = Modifier.weight(1f).storeFocus(RoundedCornerShape(10.dp), onDownload, tint = MaterialTheme.colorScheme.onPrimary),
-                            shape = RoundedCornerShape(10.dp),
-                        ) { Text("⬇ 下载", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            modifier = Modifier.weight(1f).storeFocus(deckShape(10.dp), onDownload, tint = MaterialTheme.colorScheme.onPrimary),
+                            shape = deckShape(10.dp),
+                        ) { Text("⬇ Download", maxLines = 1, overflow = TextOverflow.Ellipsis) }
 
                         OutlinedButton(
                             onClick = onUpload,
                             enabled = !busy,
-                            modifier = Modifier.weight(1f).storeFocus(RoundedCornerShape(10.dp), onUpload),
-                            shape = RoundedCornerShape(10.dp),
-                        ) { Text("⬆ 上传", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            modifier = Modifier.weight(1f).storeFocus(deckShape(10.dp), onUpload),
+                            shape = deckShape(10.dp),
+                        ) { Text("⬆ Upload", maxLines = 1, overflow = TextOverflow.Ellipsis) }
                     }
 
                     // Container row — Apply (Library → Container) / Collect (Container → Library).
@@ -3679,16 +3680,16 @@ private fun CloudSavesSection(
                         Button(
                             onClick = onApply,
                             enabled = !busy,
-                            modifier = Modifier.weight(1f).storeFocus(RoundedCornerShape(10.dp), onApply, tint = MaterialTheme.colorScheme.onPrimary),
-                            shape = RoundedCornerShape(10.dp),
-                        ) { Text("→ 应用", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            modifier = Modifier.weight(1f).storeFocus(deckShape(10.dp), onApply, tint = MaterialTheme.colorScheme.onPrimary),
+                            shape = deckShape(10.dp),
+                        ) { Text("→ Apply", maxLines = 1, overflow = TextOverflow.Ellipsis) }
 
                         OutlinedButton(
                             onClick = onCollect,
                             enabled = !busy,
-                            modifier = Modifier.weight(1f).storeFocus(RoundedCornerShape(10.dp), onCollect),
-                            shape = RoundedCornerShape(10.dp),
-                        ) { Text("← 收集", maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            modifier = Modifier.weight(1f).storeFocus(deckShape(10.dp), onCollect),
+                            shape = deckShape(10.dp),
+                        ) { Text("← Collect", maxLines = 1, overflow = TextOverflow.Ellipsis) }
                     }
                 }
 
@@ -3702,7 +3703,7 @@ private fun CloudSavesSection(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = status ?: "正在处理…",
+                            text = status ?: "Working…",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -3734,44 +3735,44 @@ private fun CloudConfirmDialog(
     val container = confirm.containerLabel
     val (title, body, action) = when (confirm.move) {
         CloudMove.DOWNLOAD -> Triple(
-            "从云端下载？",
+            "Download from Cloud?",
             "Download this game's Steam Cloud saves into your local save Library. This replaces the " +
                 "Library's copy of those files with the cloud versions. It doesn't touch the game's " +
                 "container — use Apply afterwards to put them where the game reads them.",
             "Download",
         )
         CloudMove.APPLY -> Triple(
-            "应用到容器？",
+            "Apply to container?",
             "Copy the saves from your Library into $container (this game's container). This overwrites " +
                 "that container's copy of those files with your Library copy. Your Library isn't changed.",
             "Apply",
         )
         CloudMove.COLLECT -> Triple(
-            "从容器收集？",
+            "Collect from container?",
             "Copy the saves from $container (this game's container) into your Library, capturing any " +
                 "progress you've made. This overwrites the Library's copy of those files. The container " +
                 "isn't changed.",
-            "收集",
+            "Collect",
         )
         CloudMove.UPLOAD -> Triple(
-            "上传到云端？",
+            "Upload to Cloud?",
             "Upload the saves in your local Library to your Steam Cloud. This only ADDS or REPLACES " +
                 "cloud files — it never deletes anything from the cloud. If the Library is empty, " +
                 "nothing is sent. Make sure your Library has your latest saves (Collect after playing).",
-            "上传",
+            "Upload",
         )
         CloudMove.SYNC_FROM -> Triple(
-            "从云端同步？",
+            "Sync from Cloud?",
             "Bring your Steam Cloud saves down and into $container (this game's container). This " +
                 "overwrites this container's saves with the cloud copy.",
-            "从云端同步",
+            "Sync from Cloud",
         )
         CloudMove.SYNC_TO -> Triple(
-            "同步到云端？",
+            "Sync to Cloud?",
             "Send this game's current saves from $container up to your Steam Cloud. Make sure this is " +
                 "the container with your latest saves — this only ADDS or REPLACES cloud files, it " +
                 "never deletes anything from the cloud.",
-            "同步到云端",
+            "Sync to Cloud",
         )
     }
     OutlinedAlertDialog(
@@ -3790,7 +3791,7 @@ private fun CloudConfirmDialog(
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = "第三方云同步 — 使用风险自负。",
+                    text = "Third-party cloud sync — use at your own risk.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -3809,7 +3810,7 @@ private fun CloudConfirmDialog(
 private fun InfoChip(label: String) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(deckShape(6.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 8.dp, vertical = 3.dp),
     ) {
@@ -3836,10 +3837,10 @@ private fun DownloadSpeedPickerDialog(
     // Tiers mirror GameNative: cores × ratio scales download + decompress concurrency.
     // Higher tiers download faster but use more RAM/CPU during decompression.
     val options = listOf(
-        "慢速 — 最低内存/CPU 占用" to DownloadSpeedConfig.TIER_SLOW,
-        "中等 — 均衡" to DownloadSpeedConfig.TIER_MEDIUM,
-        "快速 — 推荐" to DownloadSpeedConfig.TIER_FAST,
-        "极速 — 最快速度，最高内存/CPU 占用" to DownloadSpeedConfig.TIER_BLAZING,
+        "Slow — lowest RAM/CPU" to DownloadSpeedConfig.TIER_SLOW,
+        "Medium — balanced" to DownloadSpeedConfig.TIER_MEDIUM,
+        "Fast — recommended" to DownloadSpeedConfig.TIER_FAST,
+        "Blazing — fastest, highest RAM/CPU" to DownloadSpeedConfig.TIER_BLAZING,
     )
     var selected by remember { mutableIntStateOf(selectedIndex) }
     // Per-download, not persisted — defaults off each time (scoped to this one download).
@@ -3847,7 +3848,7 @@ private fun DownloadSpeedPickerDialog(
     // Install location — the user's default (the internal one unless they set another), asked every
     // time. The chooser is only shown when there is more than the internal default (an SD card is
     // detected or library folders were added); with just the internal location nothing changes.
-    // Follows a default changed while the dialog is open (Manage locations → Make default, "设为默认").
+    // Follows a default changed while the dialog is open (Manage locations → Make default, "Use as default").
     var selectedLocationId by remember(defaultLocationId) { mutableStateOf(defaultLocationId) }
     var makeDefault by remember { mutableStateOf(false) }
     val ctx = LocalContext.current
@@ -3913,7 +3914,7 @@ private fun DownloadSpeedPickerDialog(
                             .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 6.dp),
                     ) {
                         Text(
-                            text = "下载速度",
+                            text = "Download speed",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = cs.onSurface,
@@ -3922,7 +3923,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "What is this?",
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -3955,19 +3956,19 @@ private fun DownloadSpeedPickerDialog(
                             options.forEachIndexed { index, (_, tier) ->
                                 val isSel = selected == index
                                 val name = when (tier) {
-                                    DownloadSpeedConfig.TIER_SLOW -> "慢速"
-                                    DownloadSpeedConfig.TIER_MEDIUM -> "中等"
-                                    DownloadSpeedConfig.TIER_FAST -> "快速"
-                                    else -> "极速"
+                                    DownloadSpeedConfig.TIER_SLOW -> "Slow"
+                                    DownloadSpeedConfig.TIER_MEDIUM -> "Medium"
+                                    DownloadSpeedConfig.TIER_FAST -> "Fast"
+                                    else -> "Blazing"
                                 }
                                 val hint = when (tier) {
                                     DownloadSpeedConfig.TIER_SLOW ->
-                                        "对设备最温和"
+                                        "Gentlest on the device"
                                     DownloadSpeedConfig.TIER_MEDIUM ->
                                         "Balanced"
                                     DownloadSpeedConfig.TIER_FAST ->
-                                        "适合大多数设备"
-                                    else -> "最快，内存/CPU 占用最高"
+                                        "Best for most devices"
+                                    else -> "Fastest, heaviest on RAM / CPU"
                                 }
                                 // One slim line per speed, the Lab menu's way: the selected one carries the line on its
                                 // left and a faint fill; a fading line separates the rows.
@@ -4038,12 +4039,12 @@ private fun DownloadSpeedPickerDialog(
                                 Spacer(Modifier.width(6.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = "日志调试会话",
+                                        text = "Log debug session",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = cs.onSurface,
                                     )
                                     Text(
-                                        text = "写入详细日志以帮助诊断下载问题。",
+                                        text = "Writes a detailed log to help diagnose download problems.",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = cs.onSurfaceVariant,
                                     )
@@ -4115,11 +4116,11 @@ private fun DownloadSpeedPickerDialog(
         onDismissRequest = onDismiss,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("下载速度", modifier = Modifier.weight(1f))
+                Text("Download speed", modifier = Modifier.weight(1f))
                 IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                     Icon(
                         Icons.Default.Help,
-                        contentDescription = "音频设置",
+                        contentDescription = "What is this?",
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -4150,7 +4151,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = tierHelpRes(tier) }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "What is this?",
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -4174,11 +4175,11 @@ private fun DownloadSpeedPickerDialog(
                     Spacer(Modifier.width(8.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "日志调试会话",
+                            text = "Log debug session",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
-                            text = "写入详细日志以帮助诊断下载问题。",
+                            text = "Writes a detailed log to help diagnose download problems.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -4250,7 +4251,7 @@ private fun SpeedLoadMeter(filled: Int) {
             Box(
                 modifier = Modifier
                     .size(width = 12.dp, height = 4.dp)
-                    .clip(RoundedCornerShape(2.dp))
+                    .clip(deckShape(2.dp))
                     .background(if (i < filled) cs.primary else cs.surfaceVariant),
             )
         }
@@ -4265,9 +4266,9 @@ private fun DownloadDialogWarning(text: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(deckShape(8.dp))
             .background(cs.error.copy(alpha = 0.12f))
-            .border(1.dp, cs.error.copy(alpha = 0.30f), RoundedCornerShape(8.dp))
+            .border(1.dp, cs.error.copy(alpha = 0.30f), deckShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 6.dp),
     ) {
         Text(
@@ -4316,7 +4317,7 @@ private fun ExePickerDialogGame(
 
 /**
  * Under the "Install to" list: "+ Custom folder…" (any folder, made a regular Steam library), one "+ <drive>" per
- * SD card / USB drive that has no location yet (a `Steam` folder on it becomes a library), and "设为默认".
+ * SD card / USB drive that has no location yet (a `Steam` folder on it becomes a library), and "Use as default".
  */
 @Composable
 private fun LocationExtras(
@@ -4354,7 +4355,7 @@ private fun LocationExtras(
     }
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { pick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(ctx, "选择下载文件夹")) }) {
+            TextButton(onClick = { pick.launch(com.winlator.star.util.InAppFilePicker.buildDirIntent(ctx, "Choose a download folder")) }) {
                 Text("+ Custom folder…")
             }
             for (d in drives) {
@@ -4371,7 +4372,7 @@ private fun LocationExtras(
                 modifier = Modifier.clickable { onMakeDefault(!makeDefault) },
             ) {
                 androidx.compose.material3.Checkbox(checked = makeDefault, onCheckedChange = onMakeDefault)
-                Text("设为默认")
+                Text("Use as default")
             }
         }
     }

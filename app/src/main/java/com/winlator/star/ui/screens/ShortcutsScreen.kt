@@ -321,6 +321,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.winlator.star.ui.DeckDialogBars
 import com.winlator.star.ui.DeckDialogScaled
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -397,7 +398,7 @@ fun ShortcutsScreen(vm: ShortcutsViewModel = viewModel()) {
             IconButton(onClick = { showCommunityBrowser = true }) {
                 Icon(
                     imageVector = Icons.Filled.Public,
-                    contentDescription = "社区配置",
+                    contentDescription = "Community configs",
                     tint = androidx.compose.ui.graphics.Color.White,
                 )
             }
@@ -413,7 +414,7 @@ fun ShortcutsScreen(vm: ShortcutsViewModel = viewModel()) {
                 ) {
                     Icon(
                         Icons.Filled.Delete,
-                        contentDescription = "移除所选",
+                        contentDescription = "Remove selected",
                         tint = if (selectedPaths.isEmpty())
                             androidx.compose.ui.graphics.Color.White.copy(alpha = 0.4f)
                         else DangerRed,
@@ -455,8 +456,8 @@ fun ShortcutsScreen(vm: ShortcutsViewModel = viewModel()) {
                 }
                 DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
                     val orders = listOf(
-                        ShortcutSortOrder.NAME_ASC  to "名称 A→Z",
-                        ShortcutSortOrder.NAME_DESC to "名称 Z→A",
+                        ShortcutSortOrder.NAME_ASC  to "Name A→Z",
+                        ShortcutSortOrder.NAME_DESC to "Name Z→A",
                         ShortcutSortOrder.CONTAINER to "Container",
                     )
                     orders.forEach { (order, label) ->
@@ -503,7 +504,7 @@ fun ShortcutsScreen(vm: ShortcutsViewModel = viewModel()) {
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (shortcuts.isEmpty()) {
                 Text(
-                    text = "还没有快捷方式。",
+                    text = "No shortcuts yet.",
                     color = OnSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center),
                 )
@@ -680,7 +681,7 @@ fun ShortcutsScreen(vm: ShortcutsViewModel = viewModel()) {
                         else "Removed $ok of ${targets.size} — the rest could not be deleted.",
                         Toast.LENGTH_SHORT,
                     ).show()
-                }) { Text("移除", color = DangerRed) }
+                }) { Text("Remove", color = DangerRed) }
             },
             dismissButton = {
                 TextButton(onClick = { confirmRemoveSelected = false }) { Text("Cancel") }
@@ -758,6 +759,9 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     // picker/result) don't stack behind them; the chooser/detail themselves are gated on installSheetOpen.
     val installSheetOpen = installSheetFor != null || driverSheetFor != null
     val communityDialogsGated = installSheetOpen || configAction != null || detailFor != null
+    // Lab: its own pages for the community configs, a game's logs and My account (LabCommunity.kt), instead of these dialogs.
+    val labPages = com.winlator.star.ui.simple.LabNav.ready
+    if (labPages) com.winlator.star.ui.simple.LabActionHandoffs(actions)
 
     // Shared apply runner — used by both the catalog browser and the per-shortcut sheet. Dispatches by
     // pick kind: a specific uploaded file applies THAT file; a device-row fallback applies the
@@ -806,49 +810,11 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     // the same authority the save-share + updater use); Save copies it to public Downloads and toasts.
     val shareExport: (ShortcutExporter.ExportResult) -> Unit = { res ->
         exportResult = null
-        scope.launch(Dispatchers.IO) {
-            val dir = File(context.cacheDir, "community_configs/export").apply { mkdirs() }
-            val file = File(dir, res.fileName)
-            file.writeText(res.json)
-            withContext(Dispatchers.Main) {
-                try {
-                    val authority = context.packageName + ".tileprovider"
-                    val uri = FileProvider.getUriForFile(context, authority, file)
-                    val send = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        putExtra(Intent.EXTRA_SUBJECT, res.game)
-                        putExtra(Intent.EXTRA_TEXT, "Bannerlator config for ${res.game}")
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    context.startActivity(Intent.createChooser(send, "分享配置"))
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Couldn't share the config.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+        shareCommunityExport(context, scope, res)
     }
     val saveExportToDownloads: (ShortcutExporter.ExportResult) -> Unit = { res ->
         exportResult = null
-        scope.launch(Dispatchers.IO) {
-            val ok = try {
-                val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                // Exported configs live under Download/bannerlator/game-configs/ (created if absent).
-                val exportDir = File(downloads, "bannerlator/game-configs")
-                if (!exportDir.exists()) exportDir.mkdirs()
-                val out = File(exportDir, res.fileName)
-                out.writeText(res.json)
-                out.setReadable(true, false)
-                MediaScannerConnection.scanFile(context, arrayOf(out.absolutePath), null, null)
-                out.absolutePath
-            } catch (e: Exception) {
-                null
-            }
-            withContext(Dispatchers.Main) {
-                if (ok != null) Toast.makeText(context, "Saved to $ok", Toast.LENGTH_LONG).show()
-                else Toast.makeText(context, "Couldn't save the config.", Toast.LENGTH_SHORT).show()
-            }
-        }
+        saveCommunityExportToDownloads(context, scope, res)
     }
 
     // Post-install fixup shared by the inline installer and the "Browse all versions" fallback sheet:
@@ -858,20 +824,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         val target = applyTarget
         if (target != null) {
             scope.launch {
-                val resolved = withContext(Dispatchers.IO) {
-                    val installed = com.winlator.star.communityconfigs.InstalledComponents.read(context)
-                    // Try the exact wanted version first. If the user installed a CLOSEST build instead
-                    // (e.g. a date-stamped FEX like "Fex-20260103" that has no exact catalog match), the
-                    // wanted string never re-resolves — so fall back to the NEWEST installed build of this
-                    // type, i.e. the one that was just installed, and apply that.
-                    if (CommunityConfigApply.applyResolvedComponent(target, mc, installed)) {
-                        true
-                    } else {
-                        val newest = CommunityConfigApply.installedTypeKey(mc.type)?.let { installed.newestToken(it) }
-                        newest != null &&
-                            CommunityConfigApply.applyResolvedComponent(target, mc.copy(wanted = newest), installed)
-                    }
-                }
+                val resolved = withContext(Dispatchers.IO) { applyCommunityComponentAfterInstall(context, target, mc) }
                 if (resolved) {
                     if (mc.label !in resolvedMissing) resolvedMissing.add(mc.label)
                     vm.refresh()
@@ -879,7 +832,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                 } else {
                     Toast.makeText(
                         context,
-                        "已安装，但无法自动应用 — 请打开“浏览所有版本”以完成操作。",
+                        "Installed, but couldn't auto-apply — open \"Browse all versions\" to finish.",
                         Toast.LENGTH_LONG,
                     ).show()
                 }
@@ -903,7 +856,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         Toast.makeText(context, "Backing up saves for \"$name\"…", Toast.LENGTH_SHORT).show()
         CustomSaveVault.manualBackup(context, shortcut.container, shortcut, layout) { r ->
             if (r.wholeContainer && r.ok) {
-                Toast.makeText(context, "未检测到按游戏的存档 — 已备份整个容器。", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "No per-game saves detected — backed up the whole container.", Toast.LENGTH_LONG).show()
             }
             Toast.makeText(
                 context,
@@ -915,10 +868,10 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     }
 
 
-    // The ⋮ menu's "恢复存档" (ShortcutActions.startSaveRestore) goes through this launcher.
+    // The ⋮ menu's "Restore saves" (ShortcutActions.startSaveRestore) goes through this launcher.
     SideEffect {
         actions.launchRestorePicker = {
-            restoreSaveLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "选择一个save.zip"))
+            restoreSaveLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.SAVE, "Select a save .zip"))
         }
     }
 
@@ -952,11 +905,16 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     // Open the My-account sheet (Phase 2), the globe browser's person-icon entry point.
     val openMyAccount: () -> Unit = { showMyAccount = true }
 
+    // Lab draws the game menu's Remove, Clone, Copy to Drive C, Change executable, Move, save backup / restore and
+    // Properties itself (LabGameActions.kt), on the same state and steps; the Classic dialogs below are skipped there.
+    val lab = com.winlator.star.ui.theme.AppThemeState.simpleLook
+    if (lab) com.winlator.star.ui.simple.LabShortcutActionDialogs(actions) { s, layout -> runCustomBackup(s, layout) }
+
     // Remove confirmation
-    confirmRemove?.let { s ->
+    if (!lab) confirmRemove?.let { s ->
         OutlinedAlertDialog(
             onDismissRequest = { confirmRemove = null },
-            title = { Text("移除快捷方式?") },
+            title = { Text("Remove shortcut?") },
             text = { Text("Remove \"${s.name}\"?") },
             confirmButton = {
                 TextButton(onClick = {
@@ -964,10 +922,10 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     confirmRemove = null
                     Toast.makeText(
                         context,
-                        if (ok) "快捷方式已删除。" else "移除快捷方式失败。",
+                        if (ok) "Shortcut removed." else "Failed to remove shortcut.",
                         Toast.LENGTH_SHORT,
                     ).show()
-                }) { Text("移除") }
+                }) { Text("Remove") }
             },
             dismissButton = { TextButton(onClick = { confirmRemove = null }) { Text("Cancel") } },
         )
@@ -975,11 +933,11 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
 
     // Clone-to-container dialog. The copy is MoveGameToContainer with keepCopy: no overwrite of a same-name
     // game, the cover and exe drive follow, and the copy gets its own home-screen id.
-    cloneTarget?.let { s ->
+    if (!lab) cloneTarget?.let { s ->
         val containers = vm.containers().filter { it.id != s.container.id }
         OutlinedAlertDialog(
             onDismissRequest = { cloneTarget = null },
-            title = { Text("选择容器") },
+            title = { Text("Select container") },
             text = {
                 // Scroll so a long container list isn't clipped in landscape / on short screens.
                 Column(
@@ -1016,23 +974,23 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         )
     }
 
-    // "复制到C盘…" — the shared confirm→copy→repoint flow, fed by the ⋮ menu item and the
+    // "Copy to Drive C…" — the shared confirm→copy→repoint flow, fed by the ⋮ menu item and the
     // editor's Storage row. Owns its own dialogs/progress; clears the target and refreshes on finish.
-    CopyToDriveCCoordinator(
+    if (!lab) CopyToDriveCCoordinator(
         target = copyToDriveCTarget,
         onFinished = { copyToDriveCTarget = null; vm.refresh() },
     )
 
-    // "更改可执行文件…" — pick a different .exe/.lnk in the game's folder and repoint the shortcut
+    // "Change executable…" — pick a different .exe/.lnk in the game's folder and repoint the shortcut
     // at it (shared Exec-rewrite with copy-to-C). Fed by the ⋮ item and the editor's Executable row.
-    ChangeExecutableCoordinator(
+    if (!lab) ChangeExecutableCoordinator(
         target = changeExeTarget,
         onFinished = { changeExeTarget = null; vm.refresh() },
     )
 
     // "Container" — move this game to another container (or copy it there). Fed by the editor's Container
     // row and the Deck settings hand-off; clears the target and refreshes on finish.
-    MoveToContainerCoordinator(
+    if (!lab) MoveToContainerCoordinator(
         target = moveTarget,
         containers = { vm.containers() },
         // Copied saves can carry an emulator account id the target already has a different one of.
@@ -1042,7 +1000,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
 
     // Save Restore: a backup .zip has been picked — choose the TARGET container to restore it into,
     // then hand off to GameSaveBackup.restore (which unzips into that container and remaps the user).
-    restoreZipUri?.let { uri ->
+    if (!lab) restoreZipUri?.let { uri ->
         ContainerPickerDialog(
             gameName = restoreForName,
             containers = vm.containers(),
@@ -1063,7 +1021,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         )
     }
 
-    EmuAccountConflictDialog(conflicts = emuConflicts) { applied, _ ->
+    if (!lab) EmuAccountConflictDialog(conflicts = emuConflicts) { applied, _ ->
         emuConflicts = emptyList()
         if (applied > 0) {
             Toast.makeText(
@@ -1076,7 +1034,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
 
     // Save Backup: choose the archive layout before backing up (mirrors the Containers backup menu's
     // GameHub / Winlator-native choice), then run the scoped backup into the per-game folder.
-    backupFormatShortcut?.let { s ->
+    if (!lab) backupFormatShortcut?.let { s ->
         OutlinedAlertDialog(
             onDismissRequest = { backupFormatShortcut = null },
             title = { Text(stringResource(R.string.save_backup_format_title)) },
@@ -1119,12 +1077,12 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         )
     }
 
-    // "查看日志" — straight to this game's logs, no trip through App Settings.
+    // "View logs" — straight to this game's logs, no trip through App Settings.
     //
     // Three outcomes, and it matters that they read differently: per-game folders off (nothing is
     // filed per game, so we cannot show "this game's" logs at all), on but nothing captured yet, or
     // the viewer. Silently opening an empty viewer for the first two would look like a bug.
-    logsShortcut?.let { s ->
+    if (!labPages) logsShortcut?.let { s ->
         val entry = remember(s.name) { LogInventory.forGame(context, s.name) }
         val perGameOff = remember { !LogLocation.isPerGameEnabled(context) }
         if (entry != null) {
@@ -1160,7 +1118,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     }
 
     // Shortcut properties dialog
-    propertiesShortcut?.let { s ->
+    if (!lab) propertiesShortcut?.let { s ->
         val playtimePrefs = context.getSharedPreferences("playtime_stats", Context.MODE_PRIVATE)
         val playtimeKey = "${s.name}_playtime"
         val playCountKey = "${s.name}_play_count"
@@ -1174,18 +1132,18 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         var didReset by remember { mutableStateOf(false) }
         OutlinedAlertDialog(
             onDismissRequest = { propertiesShortcut = null },
-            title = { Text("属性") },
+            title = { Text("Properties") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(if (didReset) "游玩次数: 0" else "Number of times played: $playCount")
-                    Text(if (didReset) "游玩时间: 0d 00h 00m 00s" else "Playtime: $formatted")
+                    Text(if (didReset) "Number of times played: 0" else "Number of times played: $playCount")
+                    Text(if (didReset) "Playtime: 0d 00h 00m 00s" else "Playtime: $formatted")
                     Button(
                         onClick = {
                             playtimePrefs.edit().remove(playtimeKey).remove(playCountKey).apply()
                             didReset = true
                         },
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text("重置属性") }
+                    ) { Text("Reset Properties") }
                 }
             },
             confirmButton = { TextButton(onClick = { propertiesShortcut = null }) { Text("Close") } }
@@ -1200,9 +1158,9 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
             title = { Text("Scrape cover for \"${sc.name}\"") },
             text = {
                 if (scrapeLoading) {
-                    Text("正在搜索 SteamGridDB...", color = OnSurfaceVariant)
+                    Text("Searching SteamGridDB...", color = OnSurfaceVariant)
                 } else if (scrapeCovers.isEmpty()) {
-                    Text("没有找到封面。", color = OnSurfaceVariant)
+                    Text("No covers found.", color = OnSurfaceVariant)
                 } else {
                     Column(
                         modifier = Modifier
@@ -1260,7 +1218,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     }
 
     // Community configs dialog (Phase 1 — match + suggest, read-only)
-    if (!communityDialogsGated) communityTarget?.let { s ->
+    if (!communityDialogsGated && !labPages) communityTarget?.let { s ->
         val dismiss = { communityTarget = null; communityResult = null }
         val communityDialogShape = RoundedCornerShape(28.dp)
         OutlinedAlertDialog(
@@ -1273,7 +1231,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
             // Outline the whole dialog box (AlertDialog has no border param) so it reads as a bordered
             // panel like the catalog browser, matched to the dialog's rounded shape.
             modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline, communityDialogShape),
-            title = { Text("社区配置") },
+            title = { Text("Community configs") },
             text = {
                 val result = communityResult
                 val game = result?.match
@@ -1287,7 +1245,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     ) {
                         Icon(Icons.Filled.Share, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("分享配置")
+                        Text("Share config")
                     }
                     OutlinedButton(
                         onClick = { launchConfigImport(s) },
@@ -1295,7 +1253,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     ) {
                         Icon(Icons.Filled.FileUpload, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("导入")
+                        Text("Import")
                     }
                 }
                 // Phase 3 (online sharing) — UPLOAD this shortcut's effective config to OUR community repo
@@ -1329,7 +1287,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     } else {
                         Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("上传到社区")
+                        Text("Upload to community")
                     }
                 }
                 // Manage the configs the user has shared (list / delete / edit description). Reinstall-
@@ -1340,7 +1298,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                 ) {
                     Icon(Icons.Filled.AccountCircle, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text("我的上传")
+                    Text("My uploads")
                 }
                 Divider(color = DividerColor)
                 OutlinedTextField(
@@ -1350,7 +1308,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                         if (q.trim().length >= 2) vm.searchCommunityGames(q) { communitySearchResults = it }
                         else communitySearchResults = emptyList()
                     },
-                    label = { Text("搜索所有游戏") },
+                    label = { Text("Search all games") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -1412,7 +1370,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                             val tieOptions = result?.alternatives.orEmpty()
                             if (tieOptions.size > 1) {
                                 Text(
-                                    text = "这是哪个游戏?",
+                                    text = "Which game is this?",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = OnSurface,
                                 )
@@ -1465,7 +1423,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                 style = MaterialTheme.typography.bodySmall,
                                 color = OnSurfaceVariant,
                             )
-                            // "匹配我的设备" — filters the per-config list to configs whose
+                            // "Matches my device" — filters the per-config list to configs whose
                             // device/soc match your hardware. Mirrors the catalog browser's chip; enabled
                             // only when we actually detected a SoC/GPU to compare against.
                             val uSoc = result?.userSoc
@@ -1474,7 +1432,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                             FilterChip(
                                 selected = matchesMine,
                                 onClick = { matchesMine = !matchesMine },
-                                label = { Text("匹配我的设备") },
+                                label = { Text("Matches my device") },
                                 enabled = uSoc != null || uGpu != null,
                             )
                             Divider(color = DividerColor)
@@ -1488,7 +1446,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                             val myFolder = s.name.replace(Regex("[^a-zA-Z0-9_\\-]"), "_")
                             val cfg = rememberGameConfigs(vm, game, extraBannerlatorFolders = listOf(myFolder))
                             when {
-                                cfg.loading -> Text("加载配置…", color = OnSurfaceVariant)
+                                cfg.loading -> Text("Loading configs…", color = OnSurfaceVariant)
                                 cfg.entries.isNotEmpty() -> {
                                     val shown = if (!matchesMine) cfg.entries
                                         else cfg.entries.filter {
@@ -1513,7 +1471,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                 result?.rankedDevices.isNullOrEmpty() -> Text("No device configs listed.", color = OnSurfaceVariant)
                                 else -> {
                                     Text(
-                                        "显示设备配置（离线时投票数不可用）。",
+                                        "Showing device configs (vote counts unavailable offline).",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = OnSurfaceVariant,
                                     )
@@ -1573,7 +1531,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
             }
             OutlinedAlertDialog(
                 onDismissRequest = dismissReplace,
-                title = { Text("替换您的共享配置?") },
+                title = { Text("Replace your shared config?") },
                 text = {
                     Text(
                         "You already shared a config for \"${s.name}\". Replace it?",
@@ -1584,7 +1542,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     TextButton(onClick = {
                         replaceUploadPrompt = null
                         proceed()
-                    }) { Text("替换") }
+                    }) { Text("Replace") }
                 },
                 dismissButton = {
                     TextButton(onClick = dismissReplace) { Text("Cancel") }
@@ -1614,7 +1572,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             shape = myUploadsShape,
             modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline, myUploadsShape),
-            title = { Text("我的上传") },
+            title = { Text("My uploads") },
             text = {
                 when (val rows = myUploads) {
                     null -> Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1623,7 +1581,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                         Text("Loading…", color = OnSurfaceVariant)
                     }
                     else -> if (rows.isEmpty()) {
-                        Text("您还没有共享任何配置。", color = OnSurfaceVariant)
+                        Text("You haven't shared any configs yet.", color = OnSurfaceVariant)
                     } else {
                         Column(
                             modifier = Modifier.fillMaxWidth().heightIn(max = 460.dp).verticalScroll(rememberScrollState()),
@@ -1677,7 +1635,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                         if (expanded) {
                                             Spacer(Modifier.height(8.dp))
                                             Text(
-                                                if (row.stillOnline) "● 在线" else "● 已移除",
+                                                if (row.stillOnline) "● Online" else "● Removed",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = if (row.stillOnline) Color(0xFF3BA55D) else MaterialTheme.colorScheme.error,
                                             )
@@ -1685,7 +1643,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                             OutlinedTextField(
                                                 value = uploadDescText,
                                                 onValueChange = { if (it.length <= 500) uploadDescText = it },
-                                                label = { Text(if (uploadDescLoading) "加载描述…" else "Description") },
+                                                label = { Text(if (uploadDescLoading) "Loading description…" else "Description") },
                                                 enabled = !uploadDescLoading,
                                                 modifier = Modifier.fillMaxWidth(),
                                             )
@@ -1699,7 +1657,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                                 OutlinedButton(onClick = { deleteUploadRow = row }) {
                                                     Icon(Icons.Filled.Delete, null, modifier = Modifier.size(18.dp))
                                                     Spacer(Modifier.width(6.dp))
-                                                    Text("删除")
+                                                    Text("Delete")
                                                 }
                                                 Spacer(Modifier.weight(1f))
                                                 Button(
@@ -1709,7 +1667,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                                                         vm.editMyUploadDescription(row, text) { ok ->
                                                             Toast.makeText(
                                                                 context,
-                                                                if (ok) "描述已更新。" else "无法访问服务器。",
+                                                                if (ok) "Description updated." else "Couldn't reach the server.",
                                                                 Toast.LENGTH_SHORT,
                                                             ).show()
                                                         }
@@ -1733,7 +1691,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     deleteUploadRow?.let { row ->
         OutlinedAlertDialog(
             onDismissRequest = { deleteUploadRow = null },
-            title = { Text("删除共享配置?") },
+            title = { Text("Delete shared config?") },
             text = { Text("Delete your shared config for \"${row.record.game}\"?", color = OnSurface) },
             confirmButton = {
                 TextButton(onClick = {
@@ -1741,32 +1699,32 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     vm.deleteMyUpload(row) { ok ->
                         if (ok) {
                             myUploads = myUploads?.filterNot { it.record.sha == row.record.sha }
-                            Toast.makeText(context, "已删除您的共享配置。", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Deleted your shared config.", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "无法访问服务器。", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Couldn't reach the server.", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }) { Text("删除") }
+                }) { Text("Delete") }
             },
             dismissButton = { TextButton(onClick = { deleteUploadRow = null }) { Text("Cancel") } },
         )
     }
 
     // Catalog browser (Part A) — full-catalog entry from the header button.
-    if (showCommunityBrowser && !communityDialogsGated) {
+    if (showCommunityBrowser && !communityDialogsGated && !labPages) {
         CommunityCatalogBrowser(
             vm = vm,
             onDismiss = { showCommunityBrowser = false },
-            // No in-context shortcut from the browser (null) → chooser's "应用到游戏…" runs the picker.
+            // No in-context shortcut from the browser (null) → chooser's "Apply to game…" runs the picker.
             onPick = { pick -> configAction = pick to null },
-            // My account — the global entry point (Phase 2); the sheet hosts the "我的上传" button.
+            // My account — the global entry point (Phase 2); the sheet hosts the "My uploads" button.
             onMyAccount = openMyAccount,
         )
     }
 
-    // Phase 2 (optional accounts) — the My-account sheet. Its "我的上传" button dismisses this and opens
+    // Phase 2 (optional accounts) — the My-account sheet. Its "My uploads" button dismisses this and opens
     // the existing My-uploads manager (the per-game dialog still opens My uploads directly, unchanged).
-    if (showMyAccount) {
+    if (showMyAccount && !labPages) {
         MyAccountDialog(
             vm = vm,
             onDismiss = { showMyAccount = false },
@@ -1786,8 +1744,8 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     // open install sheet (it IS one of the layers communityDialogsGated hides beneath itself).
     if (!installSheetOpen) configAction?.let { (pick, ctxShortcut) ->
         val subtitle = when (pick) {
-            is CommunityPick.File -> "Config from ${pick.entry.device.ifBlank { pick.entry.soc.ifBlank { "该设备" } }}."
-            is CommunityPick.Device -> "Config from ${pick.device.model.ifBlank { "该设备" }}."
+            is CommunityPick.File -> "Config from ${pick.entry.device.ifBlank { pick.entry.soc.ifBlank { "that device" } }}."
+            is CommunityPick.Device -> "Config from ${pick.device.model.ifBlank { "that device" }}."
         }
         OutlinedAlertDialog(
             onDismissRequest = { configAction = null },
@@ -1799,13 +1757,13 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                 TextButton(onClick = {
                     configAction = null
                     startConfigApply(pick, ctxShortcut)
-                }) { Text("应用到游戏…") }
+                }) { Text("Apply to game…") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     configAction = null
                     detailFor = pick to ctxShortcut
-                }) { Text("查看详情") }
+                }) { Text("View details") }
             },
         )
     }
@@ -1860,7 +1818,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         }
         OutlinedAlertDialog(
             onDismissRequest = { applyPicker = null },
-            title = { Text("应用到游戏…") },
+            title = { Text("Apply to game…") },
             text = {
                 if (shortcutList.isEmpty()) {
                     Text("You have no shortcuts yet.", color = OnSurfaceVariant)
@@ -1930,7 +1888,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     TextButton(onClick = { shareExport(res) }) {
                         Icon(Icons.Filled.Share, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("分享")
+                        Text("Share")
                     }
                 }
             },
@@ -2027,7 +1985,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     // the closest catalog versions, with "Browse all versions" as the full-menu fallback.
                     if (res.missingComponents.isNotEmpty()) {
                         Divider(color = DividerColor)
-                        Text("需要一个组件", style = MaterialTheme.typography.labelLarge, color = OnSurface)
+                        Text("Needs a component", style = MaterialTheme.typography.labelLarge, color = OnSurface)
                         res.missingComponents.forEach { mc ->
                             SmartComponentInstallRow(
                                 mc = mc,
@@ -2045,7 +2003,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     // then the full driver browser. Adreno-only (the apply engine gates emission).
                     if (res.missingDrivers.isNotEmpty()) {
                         Divider(color = DividerColor)
-                        Text("需要GPU驱动程序", style = MaterialTheme.typography.labelLarge, color = OnSurface)
+                        Text("Needs a GPU driver", style = MaterialTheme.typography.labelLarge, color = OnSurface)
                         res.missingDrivers.forEach { md ->
                             SmartDriverInstallRow(
                                 md = md,
@@ -2076,7 +2034,7 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
                     }
                     if (res.advisories.isNotEmpty()) {
                         Divider(color = DividerColor)
-                        Text("注意", style = MaterialTheme.typography.labelLarge, color = OnSurface)
+                        Text("Heads up", style = MaterialTheme.typography.labelLarge, color = OnSurface)
                         res.advisories.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant) }
                     }
                 }
@@ -2134,10 +2092,10 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
         ShortcutSettingsDialogScreen(
             shortcut = s,
             onDismiss = { settingsShortcut = null; vm.refresh() },
-            // "移动到C盘" (Storage row, General tab): close the editor and hand this game to
-            // the shared coordinator. Same destination as the ⋮ "复制到C盘…" item.
+            // "Move to Drive C" (Storage row, General tab): close the editor and hand this game to
+            // the shared coordinator. Same destination as the ⋮ "Copy to Drive C…" item.
             onMoveToDriveC = { settingsShortcut = null; copyToDriveCTarget = s },
-            // "更改可执行文件…" (Executable row): close the editor and hand off to the coordinator.
+            // "Change executable…" (Executable row): close the editor and hand off to the coordinator.
             onChangeExe = { settingsShortcut = null; changeExeTarget = s },
             // Container row: the editor has stored its edits (a rename re-points s.file), so re-read the entry.
             onChangeContainer = { settingsShortcut = null; moveTarget = Shortcut(s.container, s.file) },
@@ -2145,13 +2103,78 @@ internal fun ShortcutActionDialogs(actions: ShortcutActions) {
     }
 
     // Game Details editor (Edit Game): name + Steam link/search + genres/description/year/metacritic.
-    gameDetailsShortcut?.let { s ->
+    if (!labPages) gameDetailsShortcut?.let { s ->
         GameDetailsSheet(
             shortcut = s,
             onDismiss = { gameDetailsShortcut = null },
             onSaved = { vm.refresh() },
         )
     }
+}
+
+/**
+ * Shares an exported config: written to cacheDir/community_configs/export/<file> off the main thread, then handed to
+ * the system share sheet through the app's FileProvider (${applicationId}.tileprovider, as the save share and the
+ * updater use). Shared by Classic's export sheet and Lab's.
+ */
+internal fun shareCommunityExport(context: Context, scope: CoroutineScope, res: ShortcutExporter.ExportResult) {
+    scope.launch(Dispatchers.IO) {
+        val dir = File(context.cacheDir, "community_configs/export").apply { mkdirs() }
+        val file = File(dir, res.fileName)
+        file.writeText(res.json)
+        withContext(Dispatchers.Main) {
+            try {
+                val authority = context.packageName + ".tileprovider"
+                val uri = FileProvider.getUriForFile(context, authority, file)
+                val send = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    putExtra(Intent.EXTRA_SUBJECT, res.game)
+                    putExtra(Intent.EXTRA_TEXT, "Bannerlator config for ${res.game}")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(send, "Share config"))
+            } catch (e: Exception) {
+                Toast.makeText(context, "Couldn't share the config.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+/** Saves an exported config to the public Download/bannerlator/game-configs/ folder and says where. Shared by Classic and Lab. */
+internal fun saveCommunityExportToDownloads(context: Context, scope: CoroutineScope, res: ShortcutExporter.ExportResult) {
+    scope.launch(Dispatchers.IO) {
+        val ok = try {
+            val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            // Exported configs live under Download/bannerlator/game-configs/ (created if absent).
+            val exportDir = File(downloads, "bannerlator/game-configs")
+            if (!exportDir.exists()) exportDir.mkdirs()
+            val out = File(exportDir, res.fileName)
+            out.writeText(res.json)
+            out.setReadable(true, false)
+            MediaScannerConnection.scanFile(context, arrayOf(out.absolutePath), null, null)
+            out.absolutePath
+        } catch (e: Exception) {
+            null
+        }
+        withContext(Dispatchers.Main) {
+            if (ok != null) Toast.makeText(context, "Saved to $ok", Toast.LENGTH_LONG).show()
+            else Toast.makeText(context, "Couldn't save the config.", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+/**
+ * After a config's missing component was installed: writes the build now on disk to [target]. Tries the exact wanted
+ * version first. If the user installed a CLOSEST build instead (e.g. a date-stamped FEX like "Fex-20260103" that has no
+ * exact catalog match), the wanted string never re-resolves — so it falls back to the NEWEST installed build of this
+ * type, i.e. the one that was just installed, and applies that. BLOCKING. Shared by Classic and Lab.
+ */
+internal fun applyCommunityComponentAfterInstall(context: Context, target: Shortcut, mc: CommunityConfigApply.MissingComponent): Boolean {
+    val installed = com.winlator.star.communityconfigs.InstalledComponents.read(context)
+    if (CommunityConfigApply.applyResolvedComponent(target, mc, installed)) return true
+    val newest = CommunityConfigApply.installedTypeKey(mc.type)?.let { installed.newestToken(it) }
+    return newest != null && CommunityConfigApply.applyResolvedComponent(target, mc.copy(wanted = newest), installed)
 }
 
 // Small "BANNERLATOR" source pill for configs shared through our own repo (app_source=bannerlator), so
@@ -2194,23 +2217,23 @@ internal fun CommunityStoreBadge(isSteam: Boolean) {
 
 // Map a worker account error code to a human message. Reset reads "invalid" as a bad recovery key; every
 // other flow reads it as bad credentials; unknown / "network" collapses to a connection message.
-private fun accountErrorMessage(code: String, isReset: Boolean): String = when (code) {
+internal fun accountErrorMessage(code: String, isReset: Boolean): String = when (code) {
     "invalid_username" -> "Usernames are 3–20 characters: letters, numbers, _ or -."
     "username_reserved" -> "That username is reserved — pick another."
     "weak_password" -> "Password must be at least 6 characters."
-    "username_taken" -> "该用户名已被占用。"
+    "username_taken" -> "That username is taken."
     "rate_limited" -> "Too many attempts — please wait a bit and try again."
     "invalid" -> if (isReset) "That recovery key isn't right for this username." else "Wrong username or password."
-    else -> "无法访问服务器。请检查您的网络连接并重试。"
+    else -> "Couldn't reach the server. Check your connection and try again."
 }
 
 /** Phase 3 (optional accounts) — the worker's typed avatar-upload rejections, in plain language. */
-private fun avatarErrorMessage(code: String): String = when (code) {
+internal fun avatarErrorMessage(code: String): String = when (code) {
     "bad_type" -> "That image type isn't supported — pick a JPEG, PNG, or WebP."
     "bad_size" -> "That image is too large — pick a smaller one."
     "bad_image" -> "That file isn't a valid image."
-    "not_signed_in" -> "请先登录以设置个人资料图片。"
-    else -> "无法访问服务器。请检查您的网络连接并重试。"
+    "not_signed_in" -> "Sign in first to set a profile picture."
+    else -> "Couldn't reach the server. Check your connection and try again."
 }
 
 /**
@@ -2219,7 +2242,7 @@ private fun avatarErrorMessage(code: String): String = when (code) {
  * off the main thread (bitmap work + IO); returns null on any read/decode failure so the caller degrades
  * to a toast rather than crashing.
  */
-private fun compressAvatar(context: Context, uri: Uri): ByteArray? {
+internal fun compressAvatar(context: Context, uri: Uri): ByteArray? {
     return try {
         val bitmap = com.winlator.star.core.ImageUtils.getBitmapFromUri(context, uri, 512) ?: return null
         val maxBytes = 512 * 1024
@@ -2237,14 +2260,14 @@ private fun compressAvatar(context: Context, uri: Uri): ByteArray? {
     }
 }
 
-// Phase 2 (optional accounts) — the "我的账户" sheet. Accounts are OPTIONAL: they only let a user
+// Phase 2 (optional accounts) — the "My account" sheet. Accounts are OPTIONAL: they only let a user
 // recover / attribute the community configs they share. Styled like the other community dialogs (outlined
 // box, orange accent). Three states:
 //  - LOGGED OUT: a Create / Login tab pair, plus a "Forgot password?" reset (username + recovery key +
 //    new password). Passwords go only to the worker over HTTPS — never logged, never stored locally.
-//  - AFTER CREATE: the one-time recovery key with a Copy button + an "我已保存" confirm.
-//  - LOGGED IN: the avatar (tap or "更换图片" → system image picker → ≤512KB JPEG → upload) + the
-//    username, "显示我的恢复密钥", "我的上传", and "退出登录".
+//  - AFTER CREATE: the one-time recovery key with a Copy button + an "I've saved it" confirm.
+//  - LOGGED IN: the avatar (tap or "Change picture" → system image picker → ≤512KB JPEG → upload) + the
+//    username, "Show my recovery key", "My uploads", and "Log out".
 @Composable
 internal fun MyAccountDialog(
     vm: ShortcutsViewModel,
@@ -2300,7 +2323,7 @@ internal fun MyAccountDialog(
                     // displayAvatarUrl, and refresh() propagates it to the ☰ / drawer / browser 👤 too.
                     account = AccountManager.current(context)
                     AccountUiBus.refresh(context)
-                    Toast.makeText(context, "个人资料图片已更新。", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Profile picture updated.", Toast.LENGTH_SHORT).show()
                 }
                 is AccountManager.AccountResult.Error ->
                     Toast.makeText(context, avatarErrorMessage(result.code), Toast.LENGTH_LONG).show()
@@ -2323,7 +2346,7 @@ internal fun MyAccountDialog(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(Icons.Filled.AccountCircle, contentDescription = null, tint = orange)
-                Text("我的账户")
+                Text("My account")
             }
         },
         text = {
@@ -2340,7 +2363,7 @@ internal fun MyAccountDialog(
                             style = MaterialTheme.typography.bodyMedium,
                             color = OnSurface,
                         )
-                        Text("您的恢复密钥", style = MaterialTheme.typography.labelLarge, color = orange)
+                        Text("Your recovery key", style = MaterialTheme.typography.labelLarge, color = orange)
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
                             shape = RoundedCornerShape(10.dp),
@@ -2355,7 +2378,7 @@ internal fun MyAccountDialog(
                             )
                         }
                         Text(
-                            "⚠️ 请保存此信息——这是您在忘记密码时重置密码的唯一方法。",
+                            "⚠️ Save this — it's the only way to reset your password if you forget it.",
                             style = MaterialTheme.typography.bodySmall,
                             color = OnSurfaceVariant,
                         )
@@ -2366,14 +2389,14 @@ internal fun MyAccountDialog(
                             }) {
                                 Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(6.dp))
-                                Text("拷贝")
+                                Text("Copy")
                             }
                             Spacer(Modifier.weight(1f))
                             Button(onClick = {
                                 justCreated = null
                                 account = AccountManager.current(context)
                                 AccountUiBus.refresh(context)
-                            }) { Text("我已保存") }
+                            }) { Text("I've saved it") }
                         }
                     }
 
@@ -2408,14 +2431,14 @@ internal fun MyAccountDialog(
                                     onClick = { avatarPicker.launch("image/*") },
                                     enabled = !avatarBusy,
                                     contentPadding = PaddingValues(vertical = 2.dp),
-                                ) { Text("更换图片", style = MaterialTheme.typography.labelMedium) }
+                                ) { Text("Change picture", style = MaterialTheme.typography.labelMedium) }
                             }
                         }
                         Divider(color = DividerColor)
                         OutlinedButton(
                             onClick = { revealRecovery = !revealRecovery },
                             modifier = Modifier.fillMaxWidth(),
-                        ) { Text(if (revealRecovery) "隐藏我的恢复密钥" else "显示我的恢复密钥") }
+                        ) { Text(if (revealRecovery) "Hide my recovery key" else "Show my recovery key") }
                         if (revealRecovery) {
                             val key = AccountManager.recoveryKey(context)
                             if (key != null) {
@@ -2433,7 +2456,7 @@ internal fun MyAccountDialog(
                                         IconButton(onClick = {
                                             clipboard.setText(AnnotatedString(key))
                                             Toast.makeText(context, "Recovery key copied.", Toast.LENGTH_SHORT).show()
-                                        }) { Icon(Icons.Filled.ContentCopy, contentDescription = "复制恢复密钥", modifier = Modifier.size(18.dp)) }
+                                        }) { Icon(Icons.Filled.ContentCopy, contentDescription = "Copy recovery key", modifier = Modifier.size(18.dp)) }
                                     }
                                 }
                             } else {
@@ -2447,7 +2470,7 @@ internal fun MyAccountDialog(
                         OutlinedButton(onClick = onOpenMyUploads, modifier = Modifier.fillMaxWidth()) {
                             Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("我的上传")
+                            Text("My uploads")
                         }
                         OutlinedButton(
                             onClick = {
@@ -2458,7 +2481,7 @@ internal fun MyAccountDialog(
                                 AccountUiBus.refresh(context)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                        ) { Text("退出登录") }
+                        ) { Text("Log out") }
                     }
 
                     // --- LOGGED OUT: reset flow ---------------------------------------------------
@@ -2472,7 +2495,7 @@ internal fun MyAccountDialog(
                         OutlinedTextField(
                             value = username,
                             onValueChange = { username = it; error = null },
-                            label = { Text("用户名") },
+                            label = { Text("Username") },
                             singleLine = true,
                             enabled = !busy,
                             modifier = Modifier.fillMaxWidth(),
@@ -2517,7 +2540,7 @@ internal fun MyAccountDialog(
                                         }
                                     }
                                 },
-                            ) { if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Text("重置") }
+                            ) { if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Text("Reset") }
                         }
                     }
 
@@ -2530,7 +2553,7 @@ internal fun MyAccountDialog(
                         OutlinedTextField(
                             value = username,
                             onValueChange = { username = it; error = null },
-                            label = { Text("用户名") },
+                            label = { Text("Username") },
                             singleLine = true,
                             enabled = !busy,
                             modifier = Modifier.fillMaxWidth(),
@@ -2546,7 +2569,7 @@ internal fun MyAccountDialog(
                         )
                         if (tab == 0) {
                             Text(
-                                "这仅用于恢复您共享的配置——请使用一个临时密码，不要使用您在其他地方使用的密码。",
+                                "This is just to recover your shared configs — use a throwaway password, not one you use elsewhere.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = OnSurfaceVariant,
                             )
@@ -2580,7 +2603,7 @@ internal fun MyAccountDialog(
                                                 // Phase 4: the login already folded the account's uploads into
                                                 // the local store — refresh My uploads if that sheet is open.
                                                 onLoggedIn()
-                                                Toast.makeText(context, "已登录。", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, "Signed in.", Toast.LENGTH_SHORT).show()
                                             }
                                             is AccountManager.AccountResult.Error ->
                                                 error = accountErrorMessage(result.code, isReset = false)
@@ -2596,7 +2619,7 @@ internal fun MyAccountDialog(
                             onClick = { showReset = true; error = null },
                             enabled = !busy,
                             modifier = Modifier.align(Alignment.End),
-                        ) { Text("忘记密码？使用恢复密钥重置") }
+                        ) { Text("Forgot password? Reset with recovery key") }
                     }
                 }
             }
@@ -2610,7 +2633,7 @@ internal fun MyAccountDialog(
 // config's wanted version against the downloadable catalog and offers the shortest path:
 //  - exact match  → "Install" → a small confirm → inline download+install → auto-apply → checkmark.
 //  - no exact      → "Install" reveals the ~3 closest versions (press = install, no confirm) plus a
-//                    "浏览所有版本…" link that opens the full single-type download sheet.
+//                    "Browse all versions…" link that opens the full single-type download sheet.
 // Download + install reuse the same downloadToCache / installContent path as the sheet; the actual
 // version write-back (auto-apply) happens in the parent via [onProfileInstalled].
 @Composable
@@ -2650,7 +2673,7 @@ private fun SmartComponentInstallRow(
             }
             if (uri == null) {
                 busy = false
-                Toast.makeText(context, "下载失败。", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Download failed.", Toast.LENGTH_SHORT).show()
                 return@launch
             }
             installing = true
@@ -2659,7 +2682,7 @@ private fun SmartComponentInstallRow(
             installContent(context, cm, uri, onProgress = { f, _ -> progress = maxOf(progress, f) }) { ok ->
                 busy = false
                 if (ok) onProfileInstalled()
-                else Toast.makeText(context, "安装失败。", Toast.LENGTH_SHORT).show()
+                else Toast.makeText(context, "Install failed.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -2699,7 +2722,7 @@ private fun SmartComponentInstallRow(
         if (busy) {
             val frac = progress.coerceIn(0f, 1f)
             Text(
-                if (installing) "正在安装…" else "Downloading ${(frac * 100).toInt()}%…",
+                if (installing) "Installing…" else "Downloading ${(frac * 100).toInt()}%…",
                 style = MaterialTheme.typography.labelSmall,
                 color = OnSurfaceVariant,
                 modifier = Modifier.padding(start = 10.dp, top = 2.dp),
@@ -2729,7 +2752,7 @@ private fun SmartComponentInstallRow(
                     )
                 }
                 Text(
-                    "浏览所有版本…",
+                    "Browse all versions…",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
@@ -2758,7 +2781,7 @@ private fun SmartComponentInstallRow(
 // and the pick axis is repo-source at a given mesa version:
 //  - "Install" fetches+ranks, then reveals EVERY exact-version repo-variant as its own quick-install
 //    (labelled "<source> · <displayName>" so identical versions are distinguishable), the ~3 closest
-//    OTHER versions, and a "浏览所有驱动程序…" link to the full driver browser.
+//    OTHER versions, and a "Browse all drivers…" link to the full driver browser.
 //  - each quick-install → a small confirm → inline download+install → auto-apply → checkmark.
 // Only reached on Adreno GPUs (the apply engine only emits MissingDriver there).
 @Composable
@@ -2823,7 +2846,7 @@ private fun SmartDriverInstallRow(
                     file.delete()
                     busy = false
                     if (driverId.isNotEmpty()) onApplied(driverId)
-                    else Toast.makeText(context, "安装失败 — 无效的驱动程序包", Toast.LENGTH_LONG).show()
+                    else Toast.makeText(context, "Install failed — invalid driver package", Toast.LENGTH_LONG).show()
                 },
                 onFailure = { t ->
                     busy = false
@@ -2861,7 +2884,7 @@ private fun SmartDriverInstallRow(
         if (busy) {
             val frac = (progress / 100f).coerceIn(0f, 1f)
             Text(
-                if (installing) "正在安装…" else "Downloading $progress%…",
+                if (installing) "Installing…" else "Downloading $progress%…",
                 style = MaterialTheme.typography.labelSmall,
                 color = OnSurfaceVariant,
                 modifier = Modifier.padding(start = 10.dp, top = 2.dp),
@@ -2904,7 +2927,7 @@ private fun SmartDriverInstallRow(
                     )
                 }
                 Text(
-                    "浏览所有驱动程序…",
+                    "Browse all drivers…",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
@@ -3123,7 +3146,7 @@ internal fun CommunityCatalogBrowser(
                             OutlinedTextField(
                                 value = query,
                                 onValueChange = { query = it },
-                                label = { Text("搜索所有游戏") },
+                                label = { Text("Search all games") },
                                 leadingIcon = { Icon(Icons.Filled.Search, null) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth()
@@ -3155,15 +3178,15 @@ internal fun CommunityCatalogBrowser(
                             FilterChip(
                                 selected = matchesMyDevice,
                                 onClick = { matchesMyDevice = !matchesMyDevice; leftZone = true; leftRow = 2 },
-                                label = { Text("匹配我的设备") },
+                                label = { Text("Matches my device") },
                                 enabled = userSoc != null || userGpu != null,
                             )
                         }
                         // Left-pane control 3 — sort group (Left/Right cycles the focused chip).
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("排序方式:", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+                            Text("Sort:", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
                             DpadHighlight(focused = leftZone && leftRow == 3 && sortChipFocus == 0) {
-                                FilterChip(selected = sort == CatalogSort.CONFIGS, onClick = { sort = CatalogSort.CONFIGS; leftZone = true; leftRow = 3; sortChipFocus = 0 }, label = { Text("配置") })
+                                FilterChip(selected = sort == CatalogSort.CONFIGS, onClick = { sort = CatalogSort.CONFIGS; leftZone = true; leftRow = 3; sortChipFocus = 0 }, label = { Text("Configs") })
                             }
                             DpadHighlight(focused = leftZone && leftRow == 3 && sortChipFocus == 1) {
                                 FilterChip(selected = sort == CatalogSort.NAME, onClick = { sort = CatalogSort.NAME; leftZone = true; leftRow = 3; sortChipFocus = 1 }, label = { Text("Name") })
@@ -3185,7 +3208,7 @@ internal fun CommunityCatalogBrowser(
                 fun GameList(modifier: Modifier) {
                     if (visible.isEmpty()) {
                         Text(
-                            "没有游戏符合您的筛选条件。",
+                            "No games match your filters.",
                             color = OnSurfaceVariant,
                             modifier = Modifier.padding(24.dp),
                         )
@@ -3220,7 +3243,7 @@ internal fun CommunityCatalogBrowser(
                             }
                         }
                         Text(
-                            text = selectedGame?.name ?: "社区配置",
+                            text = selectedGame?.name ?: "Community configs",
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -3269,7 +3292,7 @@ internal fun CommunityCatalogBrowser(
                                 if (myAvatarUrl != null) {
                                     AccountAvatar(avatarUrl = myAvatarUrl, size = 28.dp)
                                 } else {
-                                    Icon(Icons.Filled.AccountCircle, contentDescription = "我的账户")
+                                    Icon(Icons.Filled.AccountCircle, contentDescription = "My account")
                                 }
                             }
                         }
@@ -3477,7 +3500,7 @@ internal fun deviceHeaderLabel(model: String?, hardware: String?): String {
 }
 
 // Per-uploaded-config list for a browser-selected game: one card per config the worker returns (votes
-// desc), each whole-row-tappable → the Apply-to-game… | View-details chooser. A "匹配我的设备"
+// desc), each whole-row-tappable → the Apply-to-game… | View-details chooser. A "Matches my device"
 // toggle filters to configs matching your hardware. Offline / bucket miss falls back to the per-device
 // index rows (apply-by-device, no vote counts). Header sits on top in portrait, in the left column in
 // landscape; the two-column landscape layout is preserved.
@@ -3519,7 +3542,7 @@ private fun CommunityDevicePanel(
     }
     LaunchedEffect(orderedPicks) { onPicks(orderedPicks) }
 
-    // Header (counts + store badge + your-device + the "匹配我的设备" toggle). Sits on top in
+    // Header (counts + store badge + your-device + the "Matches my device" toggle). Sits on top in
     // portrait, in the left column in landscape.
     @Composable
     fun Header() {
@@ -3540,7 +3563,7 @@ private fun CommunityDevicePanel(
         FilterChip(
             selected = matchesMyDevice,
             onClick = { matchesMyDevice = !matchesMyDevice },
-            label = { Text("匹配我的设备") },
+            label = { Text("Matches my device") },
             enabled = hwEnabled,
         )
     }
@@ -3553,7 +3576,7 @@ private fun CommunityDevicePanel(
                 cfg.loading -> {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        Text("加载配置…", color = OnSurfaceVariant)
+                        Text("Loading configs…", color = OnSurfaceVariant)
                     }
                 }
                 cfg.entries.isNotEmpty() -> {
@@ -3571,11 +3594,11 @@ private fun CommunityDevicePanel(
                         }
                     }
                 }
-                fallback.isEmpty() -> Text("没有列出的配置。", color = OnSurfaceVariant)
+                fallback.isEmpty() -> Text("No configs listed.", color = OnSurfaceVariant)
                 else -> {
                     // Offline fallback: per-device index rows (best-matching file resolved at apply).
                     Text(
-                        "显示设备配置（离线时投票数不可用）。",
+                        "Showing device configs (vote counts unavailable offline).",
                         style = MaterialTheme.typography.labelSmall,
                         color = OnSurfaceVariant,
                     )
@@ -3747,14 +3770,14 @@ private fun CommunityConfigDetailDialog(
                 if (voting) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                 } else {
-                    Text(if (voted) "已投票 ✓" else "赞同")
+                    Text(if (voted) "Voted ✓" else "Upvote")
                 }
             }
         }
 
-        Text("评论", style = MaterialTheme.typography.labelLarge, color = OnSurface)
+        Text("Comments", style = MaterialTheme.typography.labelLarge, color = OnSurface)
         if (comments.isEmpty()) {
-            Text("暂无评论。", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
+            Text("No comments yet.", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
         } else {
             comments.forEach { c ->
                 Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
@@ -3772,7 +3795,7 @@ private fun CommunityConfigDetailDialog(
             OutlinedTextField(
                 value = commentText,
                 onValueChange = { if (it.length <= 500) commentText = it },
-                label = { Text("添加评论") },
+                label = { Text("Add a comment") },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 3,
             )
@@ -3794,7 +3817,7 @@ private fun CommunityConfigDetailDialog(
                         }
                     },
                     enabled = commentText.isNotBlank() && !commenting,
-                ) { Text(if (commenting) "正在发送…" else "Send") }
+                ) { Text(if (commenting) "Sending…" else "Send") }
             }
         }
     }
@@ -3857,7 +3880,7 @@ private fun CommunityConfigDetailDialog(
         }
     }
 
-    // "此配置设置的内容" + (when previewed) the pre-apply diff against the in-context shortcut.
+    // "What this config sets" + (when previewed) the pre-apply diff against the in-context shortcut.
     @Composable
     fun Body(modifier: Modifier) {
         Column(
@@ -3868,7 +3891,7 @@ private fun CommunityConfigDetailDialog(
                 loading -> {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        Text("加载配置…", color = OnSurfaceVariant)
+                        Text("Loading config…", color = OnSurfaceVariant)
                     }
                 }
                 failed || detail == null -> {
@@ -3878,7 +3901,7 @@ private fun CommunityConfigDetailDialog(
                     )
                 }
                 else -> {
-                    Text("此配置设置的内容", style = MaterialTheme.typography.labelLarge, color = OnSurface)
+                    Text("What this config sets", style = MaterialTheme.typography.labelLarge, color = OnSurface)
                     val lines = configSummaryLines(detail.config)
                     if (lines.isEmpty()) {
                         Text("Nothing this app can set.", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
@@ -3905,22 +3928,22 @@ private fun CommunityConfigDetailDialog(
                         Text("Changes to \"${game.name}\"", style = MaterialTheme.typography.labelLarge, color = OnSurface)
                         Text(pre.message, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
                         if (pre.changed.isNotEmpty()) {
-                            Text("会更改", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                            Text("Would change", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                             pre.changed.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant) }
                         }
                         if (pre.missingComponents.isNotEmpty()) {
-                            Text("需要一个组件", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                            Text("Needs a component", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                             pre.missingComponents.forEach { Text("• ${it.label}", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant) }
                         }
                         if (pre.missingDrivers.isNotEmpty()) {
-                            Text("需要GPU驱动程序", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                            Text("Needs a GPU driver", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                             pre.missingDrivers.forEach {
                                 val had = it.current?.let { c -> " (you have $c)" } ?: ""
                                 Text("• Turnip ${it.wanted}$had", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
                             }
                         }
                         if (pre.advisories.isNotEmpty()) {
-                            Text("注意", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                            Text("Heads up", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                             pre.advisories.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant) }
                         }
                     }
@@ -3951,7 +3974,7 @@ private fun CommunityConfigDetailDialog(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            "配置详情",
+                            "Config details",
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.weight(1f),
                         )
@@ -4021,7 +4044,7 @@ internal fun steamAppIdOf(shortcut: Shortcut): Int =
     shortcut.getExtra("steamAppId", "").toIntOrNull() ?: 0
 
 // A shortcut is "custom" (exe/folder import) when it is NOT a genuine Steam-library game. Steam games
-// get the "云端存档" item; custom games get the local-only "Back up / Restore saves" items.
+// get the "Cloud Saves" item; custom games get the local-only "Back up / Restore saves" items.
 internal fun isCustomShortcut(shortcut: Shortcut): Boolean =
     !isSteamOriginShortcut(shortcut) && !AndroidGames.isAndroidEntry(shortcut) && !LinuxShortcuts.isLinuxEntry(shortcut)
 
@@ -4031,9 +4054,12 @@ internal fun isWineEntry(shortcut: Shortcut): Boolean =
     !AndroidGames.isAndroidEntry(shortcut) && !LinuxShortcuts.isLinuxEntry(shortcut)
 
 internal fun launchSaveManager(context: Context, focusAppId: Int) {
+    // Lab: its own Save Manager page on this game, in the Lab frame (the Activity, Lab-skinned, when the frame is not up).
+    if (com.winlator.star.ui.simple.LabNav.go(com.winlator.star.ui.simple.LabCommunityRoutes.saves(focusAppId))) return
     context.startActivity(
         Intent(context, SteamSaveManagerActivity::class.java)
-            .putExtra(SteamSaveManagerActivity.EXTRA_FOCUS_APP_ID, focusAppId),
+            .putExtra(SteamSaveManagerActivity.EXTRA_FOCUS_APP_ID, focusAppId)
+            .putExtra(SteamSaveManagerActivity.EXTRA_LAB, com.winlator.star.ui.theme.AppThemeState.simpleLook),
     )
 }
 
@@ -4256,7 +4282,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
             }
             DropdownMenuItem(
-                text = { Text("移除") },
+                text = { Text("Remove") },
                 leadingIcon = { Icon(Icons.Filled.Delete, null) },
                 onClick = { menuExpanded = false; onRemove() },
             )
@@ -4264,7 +4290,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("复制到容器") },
+                    text = { Text("Clone to container") },
                     leadingIcon = { Icon(Icons.Filled.ContentCopy, null) },
                     onClick = { menuExpanded = false; onClone() },
                 )
@@ -4273,7 +4299,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("复制到C盘…") },
+                    text = { Text("Copy to Drive C…") },
                     leadingIcon = { Icon(Icons.Filled.DriveFileMove, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onCopyToDriveC() },
                 )
@@ -4282,7 +4308,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("更改可执行文件…") },
+                    text = { Text("Change executable…") },
                     leadingIcon = { Icon(Icons.Filled.SwapHoriz, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onChangeExe() },
                 )
@@ -4290,7 +4316,7 @@ private fun ShortcutOverflowButton(
             MenuItemDivider()
             DropdownMenuItem(
                     enabled = installed,
-                text = { Text("添加到主屏幕") },
+                text = { Text("Add to home screen") },
                 leadingIcon = { Icon(Icons.Filled.AddToHomeScreen, null) },
                 onClick = { menuExpanded = false; onAddToHome() },
             )
@@ -4298,14 +4324,14 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("导出") },
+                    text = { Text("Export") },
                     leadingIcon = { Icon(Icons.Filled.Upload, null) },
                     onClick = { menuExpanded = false; onExport() },
                 )
             }
             MenuItemDivider()
             DropdownMenuItem(
-                text = { Text("游戏详情") },
+                text = { Text("Game Details") },
                 leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) },
                 onClick = { menuExpanded = false; onGameDetails() },
             )
@@ -4314,7 +4340,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("云端存档") },
+                    text = { Text("Cloud Saves") },
                     leadingIcon = { Icon(Icons.Filled.CloudSync, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onCloudSaves() },
                 )
@@ -4324,7 +4350,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("备份存档") },
+                    text = { Text("Back up saves") },
                     leadingIcon = { Icon(Icons.Filled.Archive, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onBackupSaves() },
                 )
@@ -4333,14 +4359,14 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("恢复存档") },
+                    text = { Text("Restore saves") },
                     leadingIcon = { Icon(Icons.Filled.Unarchive, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onRestoreSaves() },
                 )
             }
             MenuItemDivider()
             DropdownMenuItem(
-                text = { Text("获取封面") },
+                text = { Text("Scrape cover") },
                 leadingIcon = { Icon(Icons.Filled.Search, null, tint = MaterialTheme.colorScheme.primary) },
                 onClick = { menuExpanded = false; onScrapeCover() },
             )
@@ -4348,7 +4374,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("社区配置") },
+                    text = { Text("Community configs") },
                     leadingIcon = { Icon(Icons.Filled.Public, null, tint = MaterialTheme.colorScheme.primary) },
                     onClick = { menuExpanded = false; onCommunityConfigs() },
                 )
@@ -4357,7 +4383,7 @@ private fun ShortcutOverflowButton(
                 MenuItemDivider()
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("查看日志") },
+                    text = { Text("View logs") },
                     leadingIcon = { Icon(Icons.Filled.Description, null) },
                     onClick = { menuExpanded = false; onViewLogs() },
                 )
@@ -4365,7 +4391,7 @@ private fun ShortcutOverflowButton(
             if (onShareLogs != null) {
                 DropdownMenuItem(
                     enabled = installed,
-                    text = { Text("属性") },
+                    text = { Text("Share logs") },
                     leadingIcon = { Icon(Icons.Filled.Share, null) },
                     onClick = { menuExpanded = false; onShareLogs() },
                 )
@@ -4373,7 +4399,7 @@ private fun ShortcutOverflowButton(
             MenuItemDivider()
             DropdownMenuItem(
                     enabled = installed,
-                text = { Text("属性") },
+                text = { Text("Properties") },
                 leadingIcon = { Icon(Icons.Filled.Info, null) },
                 onClick = { menuExpanded = false; onProperties() },
             )
@@ -4594,63 +4620,63 @@ private fun ShortcutGridItem(
                 DropdownMenuItem(text = { Text("Settings") }, leadingIcon = { Icon(Icons.Filled.Settings, null) }, onClick = { menuExpanded = false; onSettings() })
                 MenuItemDivider()
             }
-            DropdownMenuItem(text = { Text("移除") }, leadingIcon = { Icon(Icons.Filled.Delete, null) }, onClick = { menuExpanded = false; onRemove() })
+            DropdownMenuItem(text = { Text("Remove") }, leadingIcon = { Icon(Icons.Filled.Delete, null) }, onClick = { menuExpanded = false; onRemove() })
             if (onClone != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("复制到容器") }, leadingIcon = { Icon(Icons.Filled.ContentCopy, null) }, onClick = { menuExpanded = false; onClone() })
+                DropdownMenuItem(enabled = installed, text = { Text("Clone to container") }, leadingIcon = { Icon(Icons.Filled.ContentCopy, null) }, onClick = { menuExpanded = false; onClone() })
             }
             if (onCopyToDriveC != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("复制到C盘…") }, leadingIcon = { Icon(Icons.Filled.DriveFileMove, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCopyToDriveC() })
+                DropdownMenuItem(enabled = installed, text = { Text("Copy to Drive C…") }, leadingIcon = { Icon(Icons.Filled.DriveFileMove, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCopyToDriveC() })
             }
             if (onChangeExe != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("更改可执行文件…") }, leadingIcon = { Icon(Icons.Filled.SwapHoriz, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onChangeExe() })
+                DropdownMenuItem(enabled = installed, text = { Text("Change executable…") }, leadingIcon = { Icon(Icons.Filled.SwapHoriz, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onChangeExe() })
             }
             MenuItemDivider()
-            DropdownMenuItem(enabled = installed, text = { Text("添加到主屏幕") }, leadingIcon = { Icon(Icons.Filled.AddToHomeScreen, null) }, onClick = { menuExpanded = false; onAddToHome() })
+            DropdownMenuItem(enabled = installed, text = { Text("Add to home screen") }, leadingIcon = { Icon(Icons.Filled.AddToHomeScreen, null) }, onClick = { menuExpanded = false; onAddToHome() })
             if (onExport != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("导出") }, leadingIcon = { Icon(Icons.Filled.Upload, null) }, onClick = { menuExpanded = false; onExport() })
+                DropdownMenuItem(enabled = installed, text = { Text("Export") }, leadingIcon = { Icon(Icons.Filled.Upload, null) }, onClick = { menuExpanded = false; onExport() })
             }
             MenuItemDivider()
-            DropdownMenuItem(text = { Text("游戏详情") }, leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onGameDetails() })
+            DropdownMenuItem(text = { Text("Game Details") }, leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onGameDetails() })
             // Steam-origin only — opens the Save Manager focused on this game.
             if (onCloudSaves != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("云端存档") }, leadingIcon = { Icon(Icons.Filled.CloudSync, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCloudSaves() })
+                DropdownMenuItem(enabled = installed, text = { Text("Cloud Saves") }, leadingIcon = { Icon(Icons.Filled.CloudSync, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCloudSaves() })
             }
             // Custom-import games only — local save backup/restore (the non-Steam equivalent).
             if (onBackupSaves != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("备份存档") }, leadingIcon = { Icon(Icons.Filled.Archive, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onBackupSaves() })
+                DropdownMenuItem(enabled = installed, text = { Text("Back up saves") }, leadingIcon = { Icon(Icons.Filled.Archive, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onBackupSaves() })
             }
             if (onRestoreSaves != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("恢复存档") }, leadingIcon = { Icon(Icons.Filled.Unarchive, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onRestoreSaves() })
+                DropdownMenuItem(enabled = installed, text = { Text("Restore saves") }, leadingIcon = { Icon(Icons.Filled.Unarchive, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onRestoreSaves() })
             }
             MenuItemDivider()
-            DropdownMenuItem(text = { Text("获取封面") }, leadingIcon = { Icon(Icons.Filled.Search, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onScrapeCover() })
+            DropdownMenuItem(text = { Text("Scrape cover") }, leadingIcon = { Icon(Icons.Filled.Search, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onScrapeCover() })
             if (onCommunityConfigs != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("社区配置") }, leadingIcon = { Icon(Icons.Filled.Public, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCommunityConfigs() })
+                DropdownMenuItem(enabled = installed, text = { Text("Community configs") }, leadingIcon = { Icon(Icons.Filled.Public, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onCommunityConfigs() })
             }
             if (onViewLogs != null) {
                 MenuItemDivider()
-                DropdownMenuItem(enabled = installed, text = { Text("查看日志") }, leadingIcon = { Icon(Icons.Filled.Description, null) }, onClick = { menuExpanded = false; onViewLogs() })
+                DropdownMenuItem(enabled = installed, text = { Text("View logs") }, leadingIcon = { Icon(Icons.Filled.Description, null) }, onClick = { menuExpanded = false; onViewLogs() })
             }
             if (onShareLogs != null) {
-                DropdownMenuItem(enabled = installed, text = { Text("属性") }, leadingIcon = { Icon(Icons.Filled.Share, null) }, onClick = { menuExpanded = false; onShareLogs() })
+                DropdownMenuItem(enabled = installed, text = { Text("Share logs") }, leadingIcon = { Icon(Icons.Filled.Share, null) }, onClick = { menuExpanded = false; onShareLogs() })
             }
             MenuItemDivider()
-            DropdownMenuItem(enabled = installed, text = { Text("属性") }, leadingIcon = { Icon(Icons.Filled.Info, null) }, onClick = { menuExpanded = false; onProperties() })
+            DropdownMenuItem(enabled = installed, text = { Text("Properties") }, leadingIcon = { Icon(Icons.Filled.Info, null) }, onClick = { menuExpanded = false; onProperties() })
         }
     }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * "编辑游戏" details editor — a full-screen dialog (matching [ShortcutSettingsDialogScreen]'s idiom)
+ * "Edit Game" details editor — a full-screen dialog (matching [ShortcutSettingsDialogScreen]'s idiom)
  * that lets the user set a shortcut's name + link it to a Steam app and accumulate editorial details
  * (genres, description, release year, metacritic) shown on the launch overlay. Ported from the
  * BannersComponentInjector `GameEditSheet`, adapted to this app's shortcut/extras model.
@@ -4834,7 +4860,7 @@ private fun GameDetailsSheet(
                             Icon(Icons.Default.Close, contentDescription = "Cancel", tint = OnSurface)
                         }
                         Text(
-                            text = "编辑游戏",
+                            text = "Edit Game",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = OnSurface,
@@ -4876,12 +4902,12 @@ private fun GameDetailsSheet(
                                 if (model != null) {
                                     SubcomposeAsyncImage(
                                         model = ImageRequest.Builder(context).data(model).memoryCachePolicy(CachePolicy.DISABLED).build(),
-                                        contentDescription = "游戏图像",
+                                        contentDescription = "Game art",
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier.fillMaxSize(),
                                     )
                                 } else {
-                                    Text("点击以\n添加图像", fontSize = 11.sp, color = OnSurfaceVariant, textAlign = TextAlign.Center)
+                                    Text("Tap to\nadd art", fontSize = 11.sp, color = OnSurfaceVariant, textAlign = TextAlign.Center)
                                 }
                             }
                             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -4896,7 +4922,7 @@ private fun GameDetailsSheet(
                                             CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                                         } else {
                                             IconButton(onClick = { doSearch() }, enabled = nameField.isNotBlank()) {
-                                                Icon(Icons.Default.Search, contentDescription = "搜索 Steam")
+                                                Icon(Icons.Default.Search, contentDescription = "Search Steam")
                                             }
                                         }
                                     },
@@ -4908,7 +4934,7 @@ private fun GameDetailsSheet(
                                         Text("Steam app $id", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                                         Text("  ·  ", fontSize = 12.sp, color = OnSurfaceVariant)
                                         Text(
-                                            "解除关联",
+                                            "Unlink",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.error,
                                             modifier = Modifier.clickable { linkedAppId = null },
@@ -4924,7 +4950,7 @@ private fun GameDetailsSheet(
                                 // Art actions, in one line.
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        "更改图像",
+                                        "Change art",
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.clickable { showArtPicker = true },
@@ -4932,7 +4958,7 @@ private fun GameDetailsSheet(
                                     if (linkedAppId != null && (pickedArt != null || (userArt && !useSteamArt))) {
                                         Text("  ·  ", fontSize = 12.sp, color = OnSurfaceVariant)
                                         Text(
-                                            "使用 Steam 图像",
+                                            "Use Steam art",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.clickable { pickedArt = null; useSteamArt = true },
@@ -4944,14 +4970,14 @@ private fun GameDetailsSheet(
                                         if (pickedArt!!.startsWith("http")) "New art is applied on Save" else File(pickedArt!!).name,
                                         fontSize = 11.sp, color = OnSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
                                     )
-                                    useSteamArt -> Text("保存时应用 Steam 的图像", fontSize = 11.sp, color = OnSurfaceVariant)
+                                    useSteamArt -> Text("Steam's art is applied on Save", fontSize = 11.sp, color = OnSurfaceVariant)
                                 }
                             }
                         }
 
                         searchError?.let { Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error) }
                         if (searchResults.isNotEmpty()) {
-                            Text("点击结果以自动填充所有字段:", fontSize = 11.sp, color = OnSurfaceVariant)
+                            Text("Tap a result to auto-fill all fields:", fontSize = 11.sp, color = OnSurfaceVariant)
                             searchResults.forEach { hit ->
                                 Row(
                                     modifier = Modifier
@@ -4977,8 +5003,8 @@ private fun GameDetailsSheet(
                         OutlinedTextField(
                             value = genresField,
                             onValueChange = { genresField = it },
-                            label = { Text("类型") },
-                            placeholder = { Text("描述") },
+                            label = { Text("Genres") },
+                            placeholder = { Text("Action, RPG, Strategy") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -4986,7 +5012,7 @@ private fun GameDetailsSheet(
                             OutlinedTextField(
                                 value = yearField,
                                 onValueChange = { if (it.length <= 4) yearField = it.filter { c -> c.isDigit() } },
-                                label = { Text("发行年份") },
+                                label = { Text("Release year") },
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f),
@@ -4994,7 +5020,7 @@ private fun GameDetailsSheet(
                             OutlinedTextField(
                                 value = metaField,
                                 onValueChange = { if (it.length <= 3) metaField = it.filter { c -> c.isDigit() } },
-                                label = { Text("Metacritic评分") },
+                                label = { Text("Metacritic") },
                                 placeholder = { Text("1–100") },
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -5010,7 +5036,7 @@ private fun GameDetailsSheet(
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Text(
-                            "显示在游戏的启动屏幕上。类型以逗号分隔；将 Metacritic 留空以隐藏它。",
+                            "Shown on the game's launch screen. Genres are comma-separated; leave Metacritic blank to hide it.",
                             fontSize = 11.sp,
                             color = OnSurfaceVariant,
                         )
@@ -5188,7 +5214,7 @@ private fun OverrideDrop(
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { onHelp(helpRes) }) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
         }
     }
 }
@@ -5288,7 +5314,7 @@ private fun GameModsRow(dp: SettingsDpad, setting: GameModsSetting) {
     val enabled = (setting.mods.filter { setting.on[it.id] == true }.map { it.name } +
         listOfNotNull(setting.startWith.trim().substringAfterLast('\\').ifEmpty { null })).joinToString()
     DpButton(dp, "mods", onActivate = { open = true }) {
-        OutlinedButton(onClick = { open = true }) { Text(if (enabled.isEmpty()) "浏览文件" else "Mods: $enabled") }
+        OutlinedButton(onClick = { open = true }) { Text(if (enabled.isEmpty()) "Mods" else "Mods: $enabled") }
     }
     if (open) GameModsDialog(setting) { open = false }
 }
@@ -5298,7 +5324,7 @@ private fun GameModsDialog(setting: GameModsSetting, onDismiss: () -> Unit) {
     val filesDir = LocalContext.current.filesDir
     OutlinedAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("浏览文件") },
+        title = { Text("Mods") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (mod in setting.mods) {
@@ -5330,7 +5356,7 @@ private fun GameModsDialog(setting: GameModsSetting, onDismiss: () -> Unit) {
                 OutlinedTextField(
                     value = setting.startWith,
                     onValueChange = { setting.startWith = it },
-                    label = { Text("从系统选取…") },
+                    label = { Text("Start with the game") },
                     placeholder = { Text("F:\\Trainers\\Trainer.exe") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -5343,12 +5369,12 @@ private fun GameModsDialog(setting: GameModsSetting, onDismiss: () -> Unit) {
 
 // Labels for the six root perf keys (extraData name -> display label), matching PerfRootApplier.KEY_*.
 private val ROOT_PERF_LABELS = mapOf(
-    "rootCpuGovernorPerf" to "CPU 调度器 → 性能模式",
-    "rootCpuFreqLockMax" to "锁定 CPU 最高频率",
-    "rootAllCoresOnline" to "保持所有核心在线",
-    "rootGpuMaxClockLock" to "锁定 GPU 最高频率",
+    "rootCpuGovernorPerf" to "CPU governor → performance",
+    "rootCpuFreqLockMax" to "Lock CPU frequency to max",
+    "rootAllCoresOnline" to "Keep all cores online",
+    "rootGpuMaxClockLock" to "Lock GPU to max clock",
     "rootThermalDisable" to "Disable thermal throttling",
-    "rootFanMax" to "风扇最大转速",
+    "rootFanMax" to "Fan to maximum",
 )
 
 /** Per-game override value to persist, or null (clear the extra) when it equals the global default. */
@@ -5360,7 +5386,7 @@ internal fun perfExtraOrNull(value: Boolean, global: Boolean): String? =
 private fun PerfEditRow(dp: SettingsDpad, id: String, label: String, checked: Boolean, global: Boolean, onChange: (Boolean) -> Unit) {
     val overridden = checked != global
     // Compact single-line row: switch + label, with a trailing state hint. Overridden → an accent
-    // "重置" tap; otherwise a faint "default" marker. (Full explanation lives in the section "?" help.)
+    // "Reset" tap; otherwise a faint "default" marker. (Full explanation lives in the section "?" help.)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)
@@ -5369,7 +5395,7 @@ private fun PerfEditRow(dp: SettingsDpad, id: String, label: String, checked: Bo
         Spacer(Modifier.width(8.dp))
         Text(label, fontSize = 13.sp, modifier = Modifier.weight(1f))
         if (overridden) Text(
-            "● 重置", fontSize = 11.sp, color = MaterialTheme.colorScheme.primary,
+            "● Reset", fontSize = 11.sp, color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onChange(global) }.padding(start = 8.dp)
         ) else Text(
             "default", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -5444,7 +5470,7 @@ private fun DpTabs(dp: SettingsDpad, id: String, selected: Int, count: Int, onSe
 private fun LinuxHelp(show: Boolean, textResId: Int, onOpen: (Int) -> Unit) {
     if (!show) return
     IconButton(onClick = { onOpen(textResId) }) {
-        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
     }
 }
 
@@ -5466,12 +5492,12 @@ internal fun ShortcutSettingsDialogScreen(
     shortcut: Shortcut,
     onDismiss: () -> Unit,
     // Non-null when the host can run the "Copy to Drive C" flow (the Games list). The Storage row's
-    // "移动到C盘" button calls this; it stays hidden for a game already on C:.
+    // "Move to Drive C" button calls this; it stays hidden for a game already on C:.
     onMoveToDriveC: (() -> Unit)? = null,
     // Non-null when the host can run the "Change executable" flow (the Games list). The Executable
-    // row's "更改…" button calls this.
+    // row's "Change…" button calls this.
     onChangeExe: (() -> Unit)? = null,
-    // Non-null when the host can run the move-to-container flow. The Container row's "更改…" button
+    // Non-null when the host can run the move-to-container flow. The Container row's "Change…" button
     // stores pending edits, then calls this.
     onChangeContainer: (() -> Unit)? = null,
 ) {
@@ -5512,7 +5538,7 @@ internal fun ShortcutSettingsDialogScreen(
 
     // Async-loaded state
     var isArm64EC by remember { mutableStateOf(false) }
-    // A Box64EC component is installed, so the per-game "转译器 (64位)" override is offered.
+    // A Box64EC component is installed, so the per-game "Emulator (64-bit)" override is offered.
     var box64ECInstalled by remember { mutableStateOf(false) }
     // isArm64EC is resolved asynchronously (WineInfo load below). Until it lands we must not
     // relabel the Emulator field, or an arm64ec container would flash "Box64" on first frame.
@@ -5610,8 +5636,8 @@ internal fun ShortcutSettingsDialogScreen(
     // renderer overrides below are greyed (mirrors the container settings screen).
     //
     // Wayland needs the container's Proton layer to ship winewayland.so + its bundled Wayland Turnip
-    // (WineWaylandSupport). On any other layer "强制 Wayland" is disabled, a stored "强制 Wayland"
-    // displays (and saves) as X11, and "使用容器默认" resolves to the container's EFFECTIVE
+    // (WineWaylandSupport). On any other layer "Force Wayland" is disabled, a stored "Force Wayland"
+    // displays (and saves) as X11, and "Use container default" resolves to the container's EFFECTIVE
     // backend — X11 when the container says wayland but its layer can't drive it. Keyed on the wine
     // version so the cached probe only re-runs when the layer changes.
     var displayBackendOverride by remember { mutableStateOf(shortcut.getExtra("displayBackend", "")) }
@@ -5862,7 +5888,7 @@ internal fun ShortcutSettingsDialogScreen(
     }
 
     // Single guest-side refresh control (per-game override). Backed by two extras that the merged
-    // "游戏内刷新率" dropdown drives together: unlockGameRefreshRate ("" inherit / "1" / "0")
+    // "In-game refresh rate" dropdown drives together: unlockGameRefreshRate ("" inherit / "1" / "0")
     // and maxGameRefreshRate ("" inherit / "0" unlimited / "N" cap). Both empty = inherit container.
     // See Container.isUnlockGameRefreshRate / getMaxGameRefreshRate.
     var maxGameRefreshRate by remember {
@@ -5946,7 +5972,7 @@ internal fun ShortcutSettingsDialogScreen(
     }
     // x86-64 translator override. Entry 0 = no extra, so the game follows the container
     // (existing shortcuts never carry the extra and keep doing exactly that).
-    val emulator64Entries = remember { listOf("容器默认", "FEXCore", "Box64EC") }
+    val emulator64Entries = remember { listOf("Container default", "FEXCore", "Box64EC") }
     var selectedEmulator64 by remember {
         val id = shortcut.getExtra("emulator64", "") ?: ""
         mutableStateOf(emulator64Entries.drop(1).firstOrNull { StringUtils.parseIdentifier(it) == id }
@@ -6132,7 +6158,7 @@ internal fun ShortcutSettingsDialogScreen(
             .getOrNull()
     }
     // The game's .exe on the Android side — feeds DependencyDetector's game-root resolution for the
-    // "推荐组件" chips in the Win Components tab.
+    // "Recommended components" chips in the Win Components tab.
     val gameExe = remember(shortcut) {
         runCatching { WinePath.resolveAndroidPath(shortcut.container, shortcut.path) }.getOrNull()
     }
@@ -6154,7 +6180,7 @@ internal fun ShortcutSettingsDialogScreen(
     var showWaylandDriverCfg by remember { mutableStateOf(false) }
     var showDxvkConfig by remember { mutableStateOf(false) }
     var showWineD3DConfig by remember { mutableStateOf(false) }
-    // Per-field "?" help (helpRes) + the newcomer glossary ("这些是什么?"), mirrored from the
+    // Per-field "?" help (helpRes) + the newcomer glossary ("What is all this?"), mirrored from the
     // container editor. null = hidden; glossaryQuery == "" opens the glossary unfiltered.
     var helpRes by remember { mutableStateOf<Int?>(null) }
     var glossaryQuery by remember { mutableStateOf<String?>(null) }
@@ -6330,7 +6356,7 @@ internal fun ShortcutSettingsDialogScreen(
             putExtra("graphicsDriver", StringUtils.parseIdentifier(selectedGfxDriver))
             putExtra("graphicsDriverConfig", graphicsDriverConfig)
             // Display backend override: "" clears the extra (use container default) via putExtra(null).
-            // A "强制 Wayland" the container's layer can't honour displayed as X11, so X11 is saved.
+            // A "Force Wayland" the container's layer can't honour displayed as X11, so X11 is saved.
             // Not for a Linux entry: its backend isn't shown as a choice and the launch path pins
             // Wayland regardless, so saving must hand back exactly what the entry already carried.
             putExtra("displayBackend",
@@ -6367,7 +6393,7 @@ internal fun ShortcutSettingsDialogScreen(
             putExtra("nativeBackend", vkNativeBackend)
             putExtra("rendererDriverId", vkRendererDriverId)
             putExtra("renderScale", if (renderScale == "1.0") null else renderScale)
-            // "游戏内刷新率" per-game override: both extras written together, "" = inherit the
+            // "In-game refresh rate" per-game override: both extras written together, "" = inherit the
             // container (store null so the extra is cleared, not left empty → keeps the shortcut default).
             putExtra("maxGameRefreshRate", maxGameRefreshRate.ifEmpty { null })
             putExtra("unlockGameRefreshRate", unlockGameRefreshRate.ifEmpty { null })
@@ -6520,7 +6546,7 @@ internal fun ShortcutSettingsDialogScreen(
         onChangeContainer()
     }
 
-    // Panel refresh rates (drives whether the "游戏内刷新率" row exists) — hoisted so the D-pad
+    // Panel refresh rates (drives whether the "In-game refresh rate" row exists) — hoisted so the D-pad
     // order list below can account for that conditional row.
     val panelRates = remember {
         com.winlator.star.widget.XServerView.getSupportedRefreshRates(
@@ -6733,7 +6759,7 @@ internal fun ShortcutSettingsDialogScreen(
                         }
 
                         // Storage — where this game's files currently live, and (unless it's already on
-                        // C:) a one-tap "移动到C盘" that copies the folder onto native app storage.
+                        // C:) a one-tap "Move to Drive C" that copies the folder onto native app storage.
                         // Games that stream assets over FUSE-backed shared storage stall; from C: they run.
                         // Both this and Executable below describe a Windows install under a drive letter;
                         // a Linux entry has neither, and the client owns where its games live.
@@ -6767,7 +6793,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.size(18.dp),
                                     )
                                     Spacer(Modifier.width(6.dp))
-                                    Text("更改…")
+                                    Text("Change…")
                                 }
                             }
                         }
@@ -6793,7 +6819,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_screen_size else R.string.help_screen_size }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (selectedScreenSize == "Custom") {
@@ -6858,15 +6884,15 @@ internal fun ShortcutSettingsDialogScreen(
                             Box(modifier = Modifier.weight(1f)) {
                                 DpButton(dp, "selectIcon", onActivate = { showIconPickMenu = true }, modifier = Modifier.fillMaxWidth()) {
                                     OutlinedButton(onClick = { showIconPickMenu = true }, modifier = Modifier.fillMaxWidth()) {
-                                        Text("选择图标")
+                                        Text("Select Icon")
                                     }
                                 }
                                 DropdownMenu(expanded = showIconPickMenu, onDismissRequest = { showIconPickMenu = false }) {
-                                    DropdownMenuItem(text = { Text("浏览文件") }, onClick = {
+                                    DropdownMenuItem(text = { Text("Browse files") }, onClick = {
                                         showIconPickMenu = false
-                                        iconPickerInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.IMAGES, "选择图标图像"))
+                                        iconPickerInAppLauncher.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.IMAGES, "Select icon image"))
                                     })
-                                    DropdownMenuItem(text = { Text("从系统选取…") }, onClick = {
+                                    DropdownMenuItem(text = { Text("Pick via system…") }, onClick = {
                                         showIconPickMenu = false
                                         iconPickerLauncher.launch("image/*")
                                     })
@@ -6875,10 +6901,10 @@ internal fun ShortcutSettingsDialogScreen(
                             LinuxHelp(isLinuxEntry, R.string.help_linux_icon) { helpRes = it }
                         }
 
-                        // "这些是什么?" — the same newcomer glossary the container editor shows,
+                        // "What is all this?" — the same newcomer glossary the container editor shows,
                         // reused verbatim so the per-game editor's terms match the container's.
                         TextButton(onClick = { glossaryQuery = "" }) {
-                            Text("❔  这些是什么?")
+                            Text("❔  What is all this?")
                         }
 
                         // Sync (esync / ntsync / fsync / wineserver) — follows the container unless this game
@@ -6916,9 +6942,9 @@ internal fun ShortcutSettingsDialogScreen(
                         // gamescope is a Wayland client and the launch path pins the backend to Wayland
                         // for a Linux entry whatever this says, so there is no choice left to offer.
                         if (!isLinuxEntry) {
-                            val dbLabels = listOf("使用容器默认", "强制 X11", "强制 Wayland")
+                            val dbLabels = listOf("Use container default", "Force X11", "Force Wayland")
                             val dbValues = listOf("", Container.DISPLAY_BACKEND_X11, Container.DISPLAY_BACKEND_WAYLAND)
-                            // A stored "强制 Wayland" the container's layer can't honour shows as the
+                            // A stored "Force Wayland" the container's layer can't honour shows as the
                             // effective backend (Force X11); see containerWaylandCapable above.
                             val waylandStoredUnusable =
                                 displayBackendOverride == Container.DISPLAY_BACKEND_WAYLAND && !containerWaylandCapable
@@ -6926,7 +6952,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         else dbValues.indexOf(displayBackendOverride).coerceAtLeast(0)
                             DpDrop(
                                 dp, "displayBackend",
-                                label = "显示后端",
+                                label = "Display backend",
                                 options = dbLabels,
                                 selected = dbLabels[dbIdx],
                                 disabledOptions = if (containerWaylandCapable) emptySet() else setOf(dbLabels[2]),
@@ -6958,9 +6984,9 @@ internal fun ShortcutSettingsDialogScreen(
                                 if (waylandStoredUnusable || shortcut.container.isWaylandBackend) {
                                     Text(
                                         if (waylandStoredUnusable)
-                                            "此游戏被设置为Force Wayland，但容器的Proton层不支持Wayland：它在X11上运行，并将保存为Force X11。"
+                                            "This game was set to Force Wayland, but the container's Proton layer is not Wayland-capable: it runs on X11 and will be saved as Force X11."
                                         else
-                                            "容器被设置为Wayland，但其Proton层不支持Wayland：游戏在X11上运行。",
+                                            "The container is set to Wayland, but its Proton layer is not Wayland-capable: the game runs on X11.",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.error
                                     )
@@ -7008,7 +7034,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.dpadBringIntoView(dp, "openglHelp"),
                             ) {
                                 com.winlator.star.ui.components.OpenGLCardRow(
-                                    com.winlator.star.ui.components.OPENGL_FAST_ICON, "快速",
+                                    com.winlator.star.ui.components.OPENGL_FAST_ICON, "Fast",
                                     com.winlator.star.ui.components.openGLFastNote(fastGlLocked),
                                     focused = dp.isFocused("fastOpenGL"),
                                     modifier = Modifier.dpadBringIntoView(dp, "fastOpenGL"),
@@ -7017,7 +7043,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         autoOn = containerFast || effectiveWaylandShortcut, locked = fastGlLocked != null, onPick = pickFastGl)
                                 }
                                 com.winlator.star.ui.components.OpenGLCardRow(
-                                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "显示 FPS", null,
+                                    com.winlator.star.ui.components.OPENGL_FPS_ICON, "Show FPS", null,
                                     focused = dp.isFocused(fpsSw.extra),
                                     modifier = Modifier.dpadBringIntoView(dp, fpsSw.extra),
                                 ) {
@@ -7072,7 +7098,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     // Named for what it does on each path. On a Linux entry the distinction
                                     // matters: this is the Android driver that DISPLAYS the session, while a
                                     // separate Linux driver inside the runtime is what draws it.
-                                    label = if (isLinuxEntry) "显示驱动程序（Android 端）" else stringResource(R.string.graphics_driver),
+                                    label = if (isLinuxEntry) "Display driver (Android side)" else stringResource(R.string.graphics_driver),
                                     options = compositorChoices,
                                     selected = compositorDriverLabel(compositorVersion, compositorChoices, compositorChoicesLoaded),
                                     onSelect = { graphicsDriverConfig = withGraphicsDriverVersion(graphicsDriverConfig, it) },
@@ -7093,7 +7119,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 helpRes = if (isLinuxEntry) R.string.help_linux_display_driver
                                           else R.string.help_graphics_driver
                             }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                             // Wrappers are X11 game-driver shims: nothing on the Wayland path uses them,
                             // so the manager button is left out there (the "?" stays).
@@ -7147,20 +7173,20 @@ internal fun ShortcutSettingsDialogScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     DpDrop(
                                         dp, "linuxVulkanDriver",
-                                        label = "Draw 驱动（Linux runtime）",
+                                        label = "Draw driver (Linux runtime)",
                                         options = linuxLabels,
                                         selected = linuxLabels[linuxValues.indexOf(linuxVulkanDriverOverride).coerceAtLeast(0)],
                                         onSelect = { linuxVulkanDriverOverride = linuxValues[linuxLabels.indexOf(it)] },
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_linux_draw_driver }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 Text(
                                     com.winlator.star.core.LinuxVulkanDriver.HELP_TEXT
                                             + if (linuxVulkanDriverValues.size > 1) ""
-                                              else " 尚未导入任何内容：内容 → 已安装 → Linux runtime驱动程序。",
+                                              else " Nothing imported yet: Contents \u2192 Installed \u2192 Linux runtime drivers.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -7170,10 +7196,10 @@ internal fun ShortcutSettingsDialogScreen(
                                 // They make that chain cheaper rather than asking for more hardware.
                                 // None of them is device-proven.
                                 // Change ONE, launch, and read the HUD; the session's device.txt says what was set when the number was taken.
-                                Text("性能（实验性）", style = MaterialTheme.typography.titleSmall)
+                                Text("Performance (experimental)", style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_GLTHREAD,
-                                    "线程化 GL (mesa_glthread)", linuxGlThread,
+                                    "Threaded GL (mesa_glthread)", linuxGlThread,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_GLTHREAD)) { linuxGlThread = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_LAZY_DESCRIPTORS,
@@ -7185,7 +7211,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_NO_GL_ERROR)) { linuxNoGlError = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_STEAMDECK,
-                                    "Steam Deck 模式 (-steamdeck)", linuxDeckMode,
+                                    "Steam Deck mode (-steamdeck)", linuxDeckMode,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_STEAMDECK)) { on ->
                                     if (on) confirmDeckMode = true else linuxDeckMode = false
@@ -7212,7 +7238,7 @@ internal fun ShortcutSettingsDialogScreen(
                                             )
                                         },
                                         confirmButton = {
-                                            TextButton(onClick = { linuxDeckMode = true; confirmDeckMode = false }) { Text("DX Wrapper 配置") }
+                                            TextButton(onClick = { linuxDeckMode = true; confirmDeckMode = false }) { Text("Turn on anyway") }
                                         },
                                         dismissButton = {
                                             TextButton(onClick = { confirmDeckMode = false }) { Text("Keep it off") }
@@ -7221,14 +7247,14 @@ internal fun ShortcutSettingsDialogScreen(
                                 }
                                 val channelLabels = com.winlator.star.linux.LinuxTuning.STEAM_CHANNELS.map {
                                     when (it) {
-                                        "" -> if (linuxDeckMode) "Automatic (Steam Deck beta, for Deck mode)" else "自动（公开测试版）"
-                                        "publicbeta" -> "公开测试版"
-                                        else -> "Steam Deck 测试版"
+                                        "" -> if (linuxDeckMode) "Automatic (Steam Deck beta, for Deck mode)" else "Automatic (public beta)"
+                                        "publicbeta" -> "Public beta"
+                                        else -> "Steam Deck beta"
                                     }
                                 }
                                 DpDrop(
                                     dp, com.winlator.star.linux.LinuxTuning.EXTRA_STEAM_CHANNEL,
-                                    label = "Steam 客户端更新通道",
+                                    label = "Steam client update channel",
                                     options = channelLabels,
                                     selected = channelLabels[com.winlator.star.linux.LinuxTuning.STEAM_CHANNELS.indexOf(linuxSteamChannel).coerceAtLeast(0)],
                                     onSelect = { linuxSteamChannel = com.winlator.star.linux.LinuxTuning.STEAM_CHANNELS[channelLabels.indexOf(it).coerceAtLeast(0)] }
@@ -7250,14 +7276,14 @@ internal fun ShortcutSettingsDialogScreen(
                                 }
                                 DpDrop(
                                     dp, com.winlator.star.linux.LinuxTuning.EXTRA_FILTER,
-                                    label = "缩放滤镜",
+                                    label = "Scaling filter",
                                     options = filterLabels,
                                     selected = filterLabels[com.winlator.star.linux.LinuxTuning.FILTERS.indexOf(linuxFilter).coerceAtLeast(0)],
                                     onSelect = { linuxFilter = com.winlator.star.linux.LinuxTuning.FILTERS[filterLabels.indexOf(it).coerceAtLeast(0)] }
                                 )
                                 Text(
                                     "Scaling mode and filter only matter when a game renders below the session's resolution. "
-                                        + "FSR、NIS 和 SGSR 可放大并锐化；SGSR 是高通的，专为 Adreno 打造。",
+                                        + "FSR, NIS and SGSR upscale and sharpen; SGSR is Qualcomm's, made for Adreno.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -7265,30 +7291,30 @@ internal fun ShortcutSettingsDialogScreen(
 
                                 // The Steam client switches. The in-game drawer's Steam client section shows the same
                                 // ones and saves to the same extras; there they apply live where they can.
-                                Text("Steam 客户端", style = MaterialTheme.typography.titleSmall)
+                                Text("Steam client", style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
-                                val touchLabels = listOf("应用设置（触摸屏开关）", "Touchscreen", "Touchpad")
+                                val touchLabels = listOf("App setting (the Touchscreen switch)", "Touchscreen", "Touchpad")
                                 DpDrop(
                                     dp, com.winlator.star.linux.LinuxTuning.EXTRA_TOUCH,
-                                    label = "触摸",
+                                    label = "Touch",
                                     options = touchLabels,
                                     selected = touchLabels[com.winlator.star.linux.LinuxTuning.TOUCH_CHOICES.indexOf(linuxTouch).coerceAtLeast(0)],
                                     onSelect = { linuxTouch = com.winlator.star.linux.LinuxTuning.TOUCH_CHOICES[touchLabels.indexOf(it).coerceAtLeast(0)] }
                                 )
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_STEAM_BUTTONS,
-                                    "屏幕上的 Steam 和快速访问按钮", linuxSteamButtons,
+                                    "On-screen Steam and Quick Access buttons", linuxSteamButtons,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_STEAM_BUTTONS)) { linuxSteamButtons = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_DOUBLE_BACK_QAM,
-                                    "双击返回打开快速访问", linuxDoubleBackQam,
+                                    "Double Back opens Quick Access", linuxDoubleBackQam,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_DOUBLE_BACK_QAM)) { linuxDoubleBackQam = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_FILL_SCREEN,
-                                    "拉伸游戏以填满屏幕", linuxFillScreen,
+                                    "Stretch games to fill the screen", linuxFillScreen,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_FILL_SCREEN)) { linuxFillScreen = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_IDTECH3,
-                                    "Quake 引擎游戏窗口化", linuxIdTech3,
+                                    "Quake-engine games windowed", linuxIdTech3,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_IDTECH3)) { linuxIdTech3 = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_OFFLINE,
-                                    "离线模式（不登录 Valve）", linuxOffline,
+                                    "Offline mode (no sign-in to Valve)", linuxOffline,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_OFFLINE)) { linuxOffline = it }
                                 Text(
                                     "Touchscreen sends fingers to Steam as real touches (Big Picture scrolls under one); Touchpad moves the pointer with a drag and clicks with a tap. "
@@ -7302,15 +7328,15 @@ internal fun ShortcutSettingsDialogScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(Modifier.height(8.dp))
-                                Text("故障排除", style = MaterialTheme.typography.titleSmall)
+                                Text("Troubleshooting", style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_NO_XALIA,
-                                    "离线模式（不登录 Valve）", linuxNoXalia,
+                                    "Xalia off (PROTON_USE_XALIA=0)", linuxNoXalia,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_NO_XALIA)) { linuxNoXalia = it }
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_PROOT_NO_SECCOMP,
                                     "proot without seccomp (PROOT_NO_SECCOMP)", linuxProotNoSeccomp,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(com.winlator.star.linux.LinuxTuning.EXTRA_PROOT_NO_SECCOMP)) { linuxProotNoSeccomp = it }
-                                val sysmemLabels = listOf("自动（A710/A720/A722 驱动程序）", "On", "Off")
+                                val sysmemLabels = listOf("Automatic (A710/A720/A722 drivers)", "On", "Off")
                                 DpDrop(
                                     dp, com.winlator.star.linux.LinuxTuning.EXTRA_TU_SYSMEM,
                                     label = "Turnip sysmem rendering (TU_DEBUG=sysmem)",
@@ -7330,15 +7356,15 @@ internal fun ShortcutSettingsDialogScreen(
                                 Spacer(Modifier.height(8.dp))
 
                                 // The app's own games in the client's library (LinuxAppGames and the runtime's bannerlator-steam-shortcuts).
-                                Text("您在 Steam 中的游戏", style = MaterialTheme.typography.titleSmall)
+                                Text("Your games in Steam", style = MaterialTheme.typography.titleSmall)
                                 Spacer(Modifier.height(4.dp))
                                 PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_APP_GAMES,
-                                    "在 Steam 中显示我游戏选项卡中的游戏", linuxAppGames,
+                                    "Show my Games-tab games in Steam", linuxAppGames,
                                     com.winlator.star.linux.LinuxTuning.defaultOn(
                                         com.winlator.star.linux.LinuxTuning.EXTRA_APP_GAMES)) { linuxAppGames = it }
                                 if (linuxAppGames) {
                                     PerfEditRow(dp, com.winlator.star.linux.LinuxTuning.EXTRA_SHARE_SAVES,
-                                        "与应用共享存档", linuxShareSaves,
+                                        "Share saves with the app", linuxShareSaves,
                                         com.winlator.star.linux.LinuxTuning.defaultOn(
                                             com.winlator.star.linux.LinuxTuning.EXTRA_SHARE_SAVES)) { linuxShareSaves = it }
                                 }
@@ -7351,21 +7377,21 @@ internal fun ShortcutSettingsDialogScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(Modifier.height(4.dp))
-                                Text("游戏文件夹", fontSize = 13.sp)
+                                Text("Games folders", fontSize = 13.sp)
                                 for (folder in linuxGamesFolders) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                                         Text(folder, fontSize = 12.sp, modifier = Modifier.weight(1f))
                                         DpButton(dp, "linuxGamesFolderRemove:$folder",
                                             onActivate = { linuxGamesFolders = linuxGamesFolders - folder }) {
-                                            TextButton(onClick = { linuxGamesFolders = linuxGamesFolders - folder }) { Text("移除") }
+                                            TextButton(onClick = { linuxGamesFolders = linuxGamesFolders - folder }) { Text("Remove") }
                                         }
                                     }
                                 }
                                 DpButton(dp, "linuxGamesFolderAdd", onActivate = { gamesFolderPicker.launch(null) }) {
-                                    TextButton(onClick = { gamesFolderPicker.launch(null) }) { Text("添加游戏文件夹…") }
+                                    TextButton(onClick = { gamesFolderPicker.launch(null) }) { Text("Add a games folder\u2026") }
                                 }
                                 Text(
-                                    "游戏文件夹内的每个文件夹即为一款游戏；应用会选择其中要启动的程序。它们以相同方式显示在 Steam 中。",
+                                    "Each folder inside a games folder is one game; the app picks the program to start in it. They show in Steam the same way.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -7402,7 +7428,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     blobPicked -> "Qualcomm's own driver cannot put Wayland frames on screen, so the screen uses a " +
                                         "bundled Turnip automatically" + (if (waylandAdapterChoice) " and the game renders on the bundled " +
                                         "Wayland Turnip (the adapter needs a Turnip driver here)." else ".")
-                                    adapterActive -> "用于游戏（通过Wayland适配器）以及将其帧放到屏幕上。"
+                                    adapterActive -> "Used for the game (through the Wayland adapter) and for putting its frames on screen."
                                     else -> "Used by the Wayland compositor to put frames on screen; the game renders on the " +
                                         "Wayland game driver under Advanced."
                                 },
@@ -7426,7 +7452,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     if (overrideShown.isEmpty() || overrideShown in waylandGameDriverValues) waylandGameDriverValues
                                     else waylandGameDriverValues + overrideShown)
                                 val labels = values.map {
-                                    if (it.isEmpty()) "使用容器默认 (" + com.winlator.star.core.WaylandGameDriver.optionLabel(gfxContext, containerChoice, waylandAutoPick) + ")"
+                                    if (it.isEmpty()) "Use container default (" + com.winlator.star.core.WaylandGameDriver.optionLabel(gfxContext, containerChoice, waylandAutoPick) + ")"
                                     else com.winlator.star.core.WaylandGameDriver.optionLabel(gfxContext, it, waylandAutoPick)
                                 }
                                 val selectedLabel = labels[values.indexOf(overrideShown).coerceAtLeast(0)]
@@ -7438,7 +7464,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     )
                                     DpButton(dp, "waylandDriverCfg", onActivate = { showWaylandDriverCfg = true }, onLeftId = "waylandAdvanced") {
                                         IconButton(onClick = { showWaylandDriverCfg = true }) {
-                                            Icon(Icons.Default.Settings, contentDescription = "Wayland 适配器设置")
+                                            Icon(Icons.Default.Settings, contentDescription = "Wayland adapter settings")
                                         }
                                     }
                                 }
@@ -7463,7 +7489,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     )
                                     DpDrop(
                                         dp, "waylandGameDriver",
-                                        label = "Wayland游戏驱动程序",
+                                        label = "Wayland game driver",
                                         options = labels,
                                         selected = selectedLabel,
                                         onSelect = { waylandGameDriverOverride = values[labels.indexOf(it)] },
@@ -7491,7 +7517,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 val hdrUnavailable = remember { com.winlator.star.display.WaylandHdr.unavailableReason(gfxContext) }
                                 val containerHdr = shortcut.container.isWaylandHdr()
                                 val values = listOf("", "1", "0")
-                                val labels = listOf("使用容器默认 (" + (if (containerHdr) "On" else "Off") + ")", "On", "Off")
+                                val labels = listOf("Use container default (" + (if (containerHdr) "On" else "Off") + ")", "On", "Off")
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     DpDrop(
                                         dp, com.winlator.star.display.WaylandHdr.EXTRA,
@@ -7533,7 +7559,7 @@ internal fun ShortcutSettingsDialogScreen(
                             val containerMode = com.winlator.star.core.UnrealHdr.containerMode(shortcut.container)
                             val values = listOf("") + com.winlator.star.core.UnrealHdr.MODES
                             val labels = values.map {
-                                if (it.isEmpty()) "使用容器默认 (" + com.winlator.star.core.UnrealHdr.label(containerMode) + ")"
+                                if (it.isEmpty()) "Use container default (" + com.winlator.star.core.UnrealHdr.label(containerMode) + ")"
                                 else com.winlator.star.core.UnrealHdr.label(it)
                             }
                             DpDrop(
@@ -7581,7 +7607,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = R.string.dxwrapper_help_content }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                         }
                         DpButton(dp, "dxConfig", onActivate = {
@@ -7596,7 +7622,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     else showWineD3DConfig = true
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("DX Wrapper 配置") }
+                            ) { Text("DX Wrapper Config") }
                         }
 
                         // Renderer (host) — per-game override of the container's OpenGL/Vulkan choice.
@@ -7619,7 +7645,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = R.string.help_renderer }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (showSfWarning) {
@@ -7642,7 +7668,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     )
                                 }
                                 IconButton(onClick = { helpRes = R.string.help_renderer_sf_compat }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                                 DpSwitch(dp, "sfCompat", checked = sfCompatMode, onCheckedChange = { sfCompatMode = it })
                             }
@@ -7653,7 +7679,7 @@ internal fun ShortcutSettingsDialogScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.renderer_native), Modifier.weight(1f))
                                 IconButton(onClick = { helpRes = R.string.help_renderer_native }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                                 DpSwitch(dp, "vkNative", checked = vkNative, onCheckedChange = { vkNative = it })
                             }
@@ -7671,7 +7697,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_renderer_colors }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Present mode is ignored under Native Rendering (direct scanout), so grey it out.
@@ -7693,7 +7719,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = (if (vkNative) Modifier.alpha(0.5f) else Modifier).weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.renderer_present_mode_help_content }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Native backend — which native path Native Rendering uses. Only meaningful when
@@ -7716,7 +7742,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_renderer_native_backend }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -7738,7 +7764,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_renderer_driver }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // FG temporarily forces Mailbox; caption the field so FIFO-while-FG-selected isn't confusing.
@@ -7753,15 +7779,15 @@ internal fun ShortcutSettingsDialogScreen(
 
                         // Render scale (supersampling) — per-game override of the container default.
                         // Greyed on Wayland (downscale lives in the X11 Vulkan renderer only); displays
-                        // "在Wayland上不使用" while the stored value is left untouched.
+                        // "Not used on Wayland" while the stored value is left untouched.
                         run {
                             val renderScaleValues = listOf("1.0", "1.25", "1.5", "2.0")
                             val renderScaleLabels = listOf("Off", "1.25x", "1.5x", "2x")
                             val rsIdx = renderScaleValues.indexOf(renderScale).coerceAtLeast(0)
-                            val rsShown = if (effectiveWaylandShortcut) "在Wayland上不使用" else renderScaleLabels[rsIdx]
+                            val rsShown = if (effectiveWaylandShortcut) "Not used on Wayland" else renderScaleLabels[rsIdx]
                             DpDrop(
                                 dp, "renderScale",
-                                label = "渲染缩放（超采样）",
+                                label = "Render scale (supersampling)",
                                 options = if (effectiveWaylandShortcut) listOf(rsShown) else renderScaleLabels,
                                 selected = rsShown,
                                 onSelect = { renderScale = renderScaleValues[renderScaleLabels.indexOf(it)] },
@@ -7769,7 +7795,7 @@ internal fun ShortcutSettingsDialogScreen(
                             )
                             if (effectiveWaylandShortcut) {
                                 Text(
-                                    "在Wayland上不使用：合成器没有超采样降分辨率。存储的值在X11上恢复。",
+                                    "Not used on Wayland: the compositor has no supersampling downscale. The stored value returns on X11.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -7849,7 +7875,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = (if (!fgVulkan) Modifier.alpha(0.5f) else Modifier).weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_frame_generation }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                             }
                             if (!fgVulkan) {
@@ -7874,7 +7900,7 @@ internal fun ShortcutSettingsDialogScreen(
                             Spacer(Modifier.width(8.dp))
                             Text(stringResource(R.string.fps_limiter), modifier = Modifier.weight(1f))
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_fps_limiter else R.string.help_fps_limiter }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                         }
 
@@ -7900,7 +7926,7 @@ internal fun ShortcutSettingsDialogScreen(
                         // dialog instead of focusing the text field.
                         Box(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                             OutlinedTextField(
-                                value = if (perfOverrideCount > 0) "$perfOverrideCount overridden" else "全局默认值",
+                                value = if (perfOverrideCount > 0) "$perfOverrideCount overridden" else "Global defaults",
                                 onValueChange = {},
                                 readOnly = true,
                                 label = { Text("Performance") },
@@ -7955,11 +7981,11 @@ internal fun ShortcutSettingsDialogScreen(
                             val scAudioId = StringUtils.parseIdentifier(selectedAudioDriver)
                             if (scAudioId == "pulseaudio" || scAudioId == "alsa" || scAudioId == "directaudio") {
                                 IconButton(onClick = { showScAudioSettings = true }) {
-                                    Icon(Icons.Default.Settings, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Settings, contentDescription = "Audio settings", modifier = Modifier.size(18.dp))
                                 }
                             }
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_audio_driver else R.string.help_audio_driver }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (!directAudioSupported && directAudioEntry != null) {
@@ -7973,7 +7999,7 @@ internal fun ShortcutSettingsDialogScreen(
                         if (showScAudioSettings) {
                             AudioSettingsDialog(
                                 initial = audioConfigFromEnv(envVarsStr, StringUtils.parseIdentifier(selectedAudioDriver)),
-                                scopeLabel = "此游戏",
+                                scopeLabel = "this game",
                                 latencyLive = true,
                                 driverLabel = when (StringUtils.parseIdentifier(selectedAudioDriver)) {
                                     "alsa" -> "ALSA"; "pulseaudio" -> "PulseAudio"; "directaudio" -> "DirectAudio"
@@ -8004,7 +8030,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     envVarsStr = com.winlator.star.core.DirectAudioSupport.withMicEnabled(envVarsStr, true)
                                 } else {
                                     envVarsStr = com.winlator.star.core.DirectAudioSupport.withMicEnabled(envVarsStr, false)
-                                    Toast.makeText(micCtx, "麦克风权限被拒绝 — 麦克风保持关闭。", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(micCtx, "Microphone permission denied — mic stays off.", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -8027,12 +8053,12 @@ internal fun ShortcutSettingsDialogScreen(
                                 Spacer(Modifier.width(8.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(
-                                        "麦克风",
+                                        "Microphone",
                                         color = if (micDriverActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        if (micDriverActive) "让游戏使用麦克风（DirectAudio捕获输入）"
-                                        else "可在DirectAudio驱动程序上使用",
+                                        if (micDriverActive) "Let games use the mic (DirectAudio captures input)"
+                                        else "Available on the DirectAudio driver",
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 11.5.sp
                                     )
@@ -8053,7 +8079,7 @@ internal fun ShortcutSettingsDialogScreen(
                             else EmulatorLabels.display(selectedEmulator, isArm64EC)
                         DpDrop(
                             dp, "emulator",
-                            label = "转译器 (32位)",
+                            label = "Emulator (32-bit)",
                             options = EmulatorLabels.options(emulatorEntries, isArm64EC),
                             selected = emulatorShown,
                             onSelect = {
@@ -8063,12 +8089,12 @@ internal fun ShortcutSettingsDialogScreen(
                         )
 
                         // x86-64 translator override (arm64ec only, once a Box64EC component exists).
-                        // "容器默认" stores no extra: the game follows the container's
+                        // "Container default" stores no extra: the game follows the container's
                         // Emulator (64-bit) choice, which is what every existing shortcut does.
                         if (isArm64EC && box64ECInstalled) {
                             DpDrop(
                                 dp, "emulator64",
-                                label = "转译器 (64位)",
+                                label = "Emulator (64-bit)",
                                 options = emulator64Entries,
                                 selected = selectedEmulator64,
                                 onSelect = { selectedEmulator64 = it }
@@ -8080,7 +8106,7 @@ internal fun ShortcutSettingsDialogScreen(
                             val midiDisplay = midiList.firstOrNull { it == selectedMidi } ?: midiList.first()
                             DpDrop(
                                 dp, "midi",
-                                label = "MIDI音色库",
+                                label = "MIDI Sound Font",
                                 options = midiList,
                                 selected = midiDisplay,
                                 onSelect = { selectedMidi = it }
@@ -8133,7 +8159,7 @@ internal fun ShortcutSettingsDialogScreen(
                         if (!isLinuxEntry) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 DpCheck(dp, "autoClose", checked = autoCloseOnExit, onCheckedChange = { autoCloseOnExit = it })
-                                Text("游戏退出时关闭")
+                                Text("Close when game exits")
                             }
                         }
                         if (!isLinuxEntry) GameModsRow(dp, gameMods)
@@ -8186,7 +8212,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 Spacer(Modifier.width(8.dp))
                                 Text(stringResource(R.string.bannerin_xinput_over_game_dll), modifier = Modifier.weight(1f))
                                 IconButton(onClick = { helpRes = R.string.help_bannerin_xinput_over_game_dll }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Stick updates (core.StickPacing): the mode here, this game's rate on the slider.
@@ -8224,7 +8250,7 @@ internal fun ShortcutSettingsDialogScreen(
                             ) { helpRes = it }
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 DpCheck(dp, "disableXInput", checked = disabledXInput, onCheckedChange = { disabledXInput = it })
-                                Text("禁用XInput")
+                                Text("Disable XInput")
                             }
                         }
                         }
@@ -8286,13 +8312,13 @@ internal fun ShortcutSettingsDialogScreen(
                         SectionBox(title = "Input") {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 DpCheck(dp, "simTouch", checked = simTouchScreen, onCheckedChange = { simTouchScreen = it })
-                                Text("触摸屏模式")
+                                Text("Touchscreen Mode")
                                 LinuxHelp(isLinuxEntry, R.string.help_linux_touchscreen_mode) { helpRes = it }
                             }
                             if (!isLinuxEntry) {
                                 DpDrop(
                                     dp, "numControllers",
-                                    label = "控制器数量",
+                                    label = "Num Controllers",
                                     options = numControllersEntries,
                                     selected = selectedNumControllers,
                                     onSelect = { selectedNumControllers = it }
@@ -8302,11 +8328,11 @@ internal fun ShortcutSettingsDialogScreen(
                             // #333 per-game auto-hide override (tri-state): inherit container / On / Off.
                             Spacer(Modifier.height(12.dp))
                             run {
-                                val autoHideLabels = listOf("使用容器默认", "On", "Off")
+                                val autoHideLabels = listOf("Use container default", "On", "Off")
                                 val autoHideIdx = when (autoHideControlsOnPad) { "1" -> 1; "0" -> 2; else -> 0 }
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     LabeledDropdown(
-                                        label = "当控制器连接时隐藏屏幕控制",
+                                        label = "Hide on-screen controls when a controller connects",
                                         options = autoHideLabels,
                                         selectedOption = autoHideLabels[autoHideIdx],
                                         onSelect = {
@@ -8324,19 +8350,19 @@ internal fun ShortcutSettingsDialogScreen(
                             // empty override starts from an all-auto ("{}") view.
                             Spacer(Modifier.height(12.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("玩家槽位", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
+                                Text("Player Slots", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
                                 IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_player_slots else R.string.help_player_slots }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                 }
                                 if (controllerSlotOverridesJson.isNotEmpty()) {
                                     TextButton(onClick = { controllerSlotOverridesJson = "" }) {
-                                        Text("使用容器默认")
+                                        Text("Use container default")
                                     }
                                 }
                             }
                             if (controllerSlotOverridesJson.isEmpty()) {
                                 Text(
-                                    "继承容器的玩家槽位。在下方固定一个控制器以设置每个游戏的覆盖。",
+                                    "Inheriting the container's Player Slots. Pin a controller below to set a per-game override.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -8378,7 +8404,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_mode }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 Spacer(Modifier.height(8.dp))
@@ -8403,7 +8429,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_target }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 val gyroActivatorLabels = listOf(
@@ -8425,7 +8451,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_activator }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 // Hold vs Toggle for that button — hidden under "Always On", which has no
@@ -8447,7 +8473,7 @@ internal fun ShortcutSettingsDialogScreen(
                                             modifier = Modifier.weight(1f)
                                         )
                                         IconButton(onClick = { helpRes = R.string.help_gyro_activation_mode }) {
-                                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                         }
                                     }
                                 }
@@ -8458,7 +8484,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_sensitivity }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 DpSlider(
@@ -8494,7 +8520,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 // the game's container (the same list as the container's Win Components tab).
                                 var showAllComponents by remember { mutableStateOf(false) }
                                 OutlinedButton(onClick = { showAllComponents = true }, modifier = Modifier.fillMaxWidth()) {
-                                    Text("所有组件")
+                                    Text("All components")
                                 }
                                 if (showAllComponents) {
                                     ComponentsSheet(
@@ -8600,8 +8626,8 @@ internal fun ShortcutSettingsDialogScreen(
                         val contentIndex = tabIndices[position]
                         RailItem(tab, shortcutTabIcon(tab), contentIndex == selectedTab) { selectedTab = contentIndex }
                     }
-                    // Same "这些是什么?" glossary link the container editor surfaces on its rail.
-                    val railLinks = listOf(RailLink("这些是什么?", Icons.Filled.Help) { glossaryQuery = "" })
+                    // Same "What is all this?" glossary link the container editor surfaces on its rail.
+                    val railLinks = listOf(RailLink("What is all this?", Icons.Filled.Help) { glossaryQuery = "" })
                     if (isPortrait) {
                         Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
                             // Left/Right and L1/R1 step through the strip, so DpTabs works in POSITIONS.
@@ -8841,7 +8867,7 @@ private fun ScTvTab(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             if (display != null) com.winlator.star.display.ExternalDisplay.title(display)
-                            else "无外部显示器",
+                            else "No external display",
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
                         )
                         Text(
@@ -8884,7 +8910,7 @@ private fun ScTvTab(
 
         // ── The one switch that matters ─────────────────────────────────────────────────────────
         TvSettingRow(
-            title = "在电视上启动此游戏",
+            title = "Launch this game on the TV",
             subtitle = com.winlator.star.display.ExternalDisplay.HELP_LAUNCH,
         ) {
             DpSwitch(dp, "tvLaunch", checked = tvLaunch, onCheckedChange = onTvLaunchChange)
@@ -8895,24 +8921,24 @@ private fun ScTvTab(
         // plain row (and stays out of the D-pad order — see dpadIds).
         if (modes.size > 1) {
             val values = listOf(0) + modes.map { it.modeId }
-            val labels = listOf("默认（保持电视原样）") +
+            val labels = listOf("Default (leave the TV as it is)") +
                 modes.map { com.winlator.star.display.ExternalDisplay.modeLabel(it) }
             DpDrop(
                 dp, "tvModeId",
-                label = "输出模式",
+                label = "Output mode",
                 options = labels,
                 selected = labels[values.indexOf(tvModeId).coerceAtLeast(0)],
                 onSelect = { onTvModeIdChange(values[labels.indexOf(it)]) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                "告诉电视以什么模式运行。",
+                "What the TV is told to run at.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
             TvSettingRow(
-                title = "输出模式",
+                title = "Output mode",
                 subtitle = if (display != null) "This screen advertises one output mode."
                            else "Plug a screen in to choose an output mode.",
             ) {
@@ -8926,7 +8952,7 @@ private fun ScTvTab(
 
         // ── Render resolution ───────────────────────────────────────────────────────────────────
         TvSettingRow(
-            title = "匹配电视的分辨率",
+            title = "Match the TV's resolution",
             subtitle = run {
                 val tvRes = com.winlator.star.display.ExternalDisplay.resolutionOf(
                     com.winlator.star.display.ExternalDisplay.effectiveMode(display, tvModeId))
@@ -8940,9 +8966,9 @@ private fun ScTvTab(
 
         // ── HDR: reported, never asked ──────────────────────────────────────────────────────────
         TvSettingRow(
-            title = "在电视上使用 HDR",
+            title = "Use HDR on the TV",
             subtitle = hdrReason
-                ?: "自动。此屏幕接受 HDR10，因此为此游戏开启 HDR 输出。",
+                ?: "Automatic. This screen accepts HDR10, so HDR output switches on for this game.",
             dimSubtitle = !hdrOk,
         ) {
             // Deliberately a bare Switch, not a DpSwitch: it is a readout, so it must not be
@@ -9045,7 +9071,7 @@ private fun ScWinComponentsTab(components: androidx.compose.runtime.snapshots.Sn
         if (codecs.isNotEmpty()) {
             SectionBox(title = "Codecs") {
                 Text(
-                    "内置解码器：Wine 的媒体基础使用哪个后端播放过场动画 — GStreamer（默认）或 FFmpeg（winedmo；仅限 arm64ec 层 — 在 x86_64 上会回退到 GStreamer）。软件解码使视频帧不经过 GPU；对于有声音但黑屏的视频，可以尝试此选项。",
+                    "Builtin decoder: which backend Wine's Media Foundation plays cutscenes with — GStreamer (default) or FFmpeg (winedmo; arm64ec layers only — on x86_64 it falls back to GStreamer). Software decoding keeps video frames off the GPU; try it for black video with sound.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -9190,7 +9216,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Components", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             DpButton(dp, "cmpRefresh", onActivate = { refreshCatalog() }) {
-                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "检查中…" else "检查 Nightlies") }
+                TextButton(onClick = { refreshCatalog() }, enabled = !checking) { Text(if (checking) "Checking…" else "Check the Nightlies") }
             }
         }
         Text(
@@ -9205,7 +9231,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
             snapshot == null -> Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp)) {
                 CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(12.dp))
-                Text("正在读取 Proton…", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Reading the Protons…", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             view == null -> Text(
                 "No Proton is installed in the Linux runtime yet. Start the Steam client once so it downloads its ARM64 Proton, "
@@ -9225,10 +9251,10 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
                 )
                 Text(
                     listOfNotNull(
-                        if (p.valve) "Valve 自带的 Proton，Steam 更新它时会被替换；其原始文件按构建保留" else "已安装于 compatibilitytools.d",
-                        "有游戏正在其上运行".takeIf { view.inUseByGame },
+                        if (p.valve) "Valve's own Proton, replaced when Steam updates it; its originals are kept per build" else "Installed in compatibilitytools.d",
+                        "a game is running on it".takeIf { view.inUseByGame },
                         view.reappliedAt.takeIf { it > 0 }?.let {
-                            "启动时重新应用 " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(it * 1000))
+                            "re-applied at launch " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(it * 1000))
                         },
                     ).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
@@ -9283,9 +9309,9 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
                 }
                 Spacer(Modifier.height(8.dp))
 
-                Text("已存储", style = MaterialTheme.typography.titleSmall)
+                Text("Stored", style = MaterialTheme.typography.titleSmall)
                 if (olderOriginals.isEmpty() && packages.isEmpty()) Text(
-                    "尚未存储任何内容。打开此选项卡时，每个 Proton 自身的文件已保存为其原始版本。",
+                    "Nothing stored yet. Each Proton's own files were saved as its original when this tab opened.",
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 for (o in olderOriginals) {
@@ -9300,7 +9326,7 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
                             Text("${labelOf[o.comp]} · Original · ${o.protonVersion}", fontSize = 13.sp)
                             Text("earlier build of ${p.name} · " + String.format("%.1f MB", o.size / 1048576.0), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        DpButton(dp, id, onActivate = remove) { TextButton(onClick = remove) { Text("删除") } }
+                        DpButton(dp, id, onActivate = remove) { TextButton(onClick = remove) { Text("Delete") } }
                     }
                 }
                 for (s in packages) {
@@ -9314,21 +9340,21 @@ private fun ScLinuxComponentsTab(dp: SettingsDpad, onDpadIds: (List<String>) -> 
                         Column(Modifier.weight(1f)) {
                             Text("${labelOf[s.comp]} · ${s.version}", fontSize = 13.sp)
                             Text(
-                                String.format("%.1f MB", s.size / 1048576.0) + (if (inUseBy.isNotEmpty()) " · 使用过 " + inUseBy.joinToString(", ") else ""),
+                                String.format("%.1f MB", s.size / 1048576.0) + (if (inUseBy.isNotEmpty()) " · in use by " + inUseBy.joinToString(", ") else ""),
                                 fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        DpButton(dp, "cmpDel:${s.file}", onActivate = remove) { TextButton(onClick = remove, enabled = inUseBy.isEmpty()) { Text("删除") } }
+                        DpButton(dp, "cmpDel:${s.file}", onActivate = remove) { TextButton(onClick = remove, enabled = inUseBy.isEmpty()) { Text("Delete") } }
                     }
                 }
-                val pickFile = { importLauncher.launch(InAppFilePicker.buildIntent(context, arrayOf("wcp"), "选择组件包 (-linux .wcp)")) }
-                DpButton(dp, "cmpImport", onActivate = pickFile) { TextButton(onClick = pickFile) { Text("导入 .wcp…") } }
+                val pickFile = { importLauncher.launch(InAppFilePicker.buildIntent(context, arrayOf("wcp"), "Choose a component package (-linux .wcp)")) }
+                DpButton(dp, "cmpImport", onActivate = pickFile) { TextButton(onClick = pickFile) { Text("Import a .wcp…") } }
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("在 Nightlies 上", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                    Text("On the Nightlies", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
                     Text(
-                        if (checking) "检查中…" else if (catalogAt > 0) "已检查 " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(catalogAt * 1000)) else "never checked",
+                        if (checking) "checking…" else if (catalogAt > 0) "checked " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(catalogAt * 1000)) else "never checked",
                         fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -9387,7 +9413,7 @@ private fun ScEnvVarsTab(
     Column {
         if (isLinuxEntry) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("环境变量", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
+                Text("Environment variables", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
                 LinuxHelp(true, R.string.help_linux_env_vars) { helpRes = it }
             }
         }
@@ -9554,11 +9580,11 @@ private fun ScAdvancedTab(
         // one runs). Per-game build override; the first entry keeps the container's choice.
         if (isArm64EC && !isLinuxEntry) {
             SectionBox(title = "Box64EC") {
-                val containerDefault = "容器默认"
+                val containerDefault = "Container default"
                 val ecOptions = listOf(containerDefault) + box64ECVersions
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     LabeledDropdown(
-                        label = "Box64EC 版本",
+                        label = "Box64EC Version",
                         options = ecOptions,
                         selectedOption = if (selectedBox64ECVersion.isEmpty() || selectedBox64ECVersion !in box64ECVersions)
                             containerDefault else selectedBox64ECVersion,
@@ -9573,12 +9599,12 @@ private fun ScAdvancedTab(
                         contentPadding = PaddingValues(0.dp),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(Icons.Default.Settings, contentDescription = "拷贝", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.Settings, contentDescription = "Download Box64EC", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
                 Text(
-                    if (box64ECVersions.isEmpty()) "未安装 Box64EC。使用齿轮按钮导入 Box64EC .wcp。"
-                    else "当模拟器（64位）设置为 Box64EC 时运行 64 位游戏。预设：WOWBox64 预设的 BOX64_* 变量也适用于 Box64EC。",
+                    if (box64ECVersions.isEmpty()) "No Box64EC installed. Import a Box64EC .wcp with the gear button."
+                    else "Runs 64-bit games when Emulator (64-bit) is set to Box64EC. Presets: the WOWBox64 preset's BOX64_* variables apply to Box64EC too.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.5.sp
                 )
@@ -9601,7 +9627,7 @@ private fun ScAdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                     }
                     OutlinedButton(
                         onClick = onShowFexCoreDownloadSheet,
@@ -9610,7 +9636,7 @@ private fun ScAdvancedTab(
                         contentPadding = PaddingValues(0.dp),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(Icons.Default.Settings, contentDescription = "更改文件夹…", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.Settings, contentDescription = "Download FEXCore", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -9631,7 +9657,7 @@ private fun ScAdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_fexcore_preset else R.string.help_fexcore_preset }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                     }
                     if (fexCustomised) PresetCustomBadge()
                 }
@@ -9668,7 +9694,7 @@ private fun ScAdvancedTab(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_force_ssbs }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
                         }
                     }
                     Text(
@@ -9684,7 +9710,7 @@ private fun ScAdvancedTab(
         profileNames.addAll(controlsProfiles.map { it.getName() })
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LabeledDropdown(
-                label = "控制器配置",
+                label = "Controls Profile",
                 options = profileNames,
                 selectedOption = profileNames.getOrElse(selectedControlsProfileIndex) { profileNames.first() },
                 onSelect = { opt -> onControlsProfileChange(profileNames.indexOf(opt).coerceAtLeast(0)) },
@@ -9704,7 +9730,7 @@ private fun ScAdvancedTab(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_startup_selection }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "What is this?", modifier = Modifier.size(18.dp))
             }
         }
 
@@ -9723,7 +9749,7 @@ private fun ScAdvancedTab(
         // The Wine path has the one process tree, so it keeps the single section below.
         if (isLinuxEntry) {
             // Each section's title is drawn by SectionBox, so the "?" goes in that box's own top corner.
-            SectionBox(title = "Steam 客户端核心") {
+            SectionBox(title = "Steam client cores") {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     LinuxHelp(true, R.string.help_linux_client_cores) { helpRes = it }
                 }
@@ -9768,9 +9794,9 @@ private fun ScAdvancedTab(
         // vkBasalt (sharpness) and the ReShade loadout are Vulkan layers switched on through the Wine
         // environment, which the gamescope path never builds; the client's games load neither.
         if (!isLinuxEntry) {
-        SectionBox(title = "锐化度 (VKBasalt)") {
+        SectionBox(title = "Sharpness (VKBasalt)") {
             LabeledDropdown(
-                label = "滤镜效果",
+                label = "Effect",
                 options = sharpnessEffectEntries,
                 selectedOption = selectedSharpnessEffect,
                 onSelect = onSharpnessEffectChange
@@ -9794,7 +9820,7 @@ private fun ScAdvancedTab(
 
         // ReShade multi-effect loadout (vkBasalt drop-in). Multi-select picker + solo/stack mode + a
         // collapsible per-effect param block. Only applies to DXVK/VKD3D (Vulkan) games — a hint shows.
-        SectionBox(title = "ReShade 滤镜配置") {
+        SectionBox(title = "ReShade loadout") {
             ReshadeLoadoutEditor(
                 state = reshadeLoadout,
                 effects = reshadeEffects,
@@ -9964,9 +9990,9 @@ internal fun launchShortcutNow(activity: Activity, shortcut: Shortcut, preflight
 internal const val EXTRA_LAST_PLAYED = "lastPlayed"
 
 /**
- * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "上次游玩" line
+ * Stamps [EXTRA_LAST_PLAYED] on the shortcut; the Deck's "Continue playing" order and "Last played" line
  * read it. saveData() rewrites the .desktop file, so its modified time is put back afterwards, since the
- * Deck's "最近添加" shelf sorts on it. Best-effort: a failed write never blocks the launch.
+ * Deck's "Recently added" shelf sorts on it. Best-effort: a failed write never blocks the launch.
  */
 internal fun recordLastPlayed(shortcut: Shortcut) {
     runCatching {
@@ -9978,7 +10004,7 @@ internal fun recordLastPlayed(shortcut: Shortcut) {
 }
 
 /**
- * "在电视上启动此游戏" (the shortcut's TV tab — see display.ExternalDisplay): start the session
+ * "Launch this game on the TV" (the shortcut's TV tab — see display.ExternalDisplay): start the session
  * ON the external display instead of the handheld. Returns true when it did, false when the caller
  * should launch normally.
  *
@@ -10102,7 +10128,7 @@ internal fun exportShortcut(context: Context, shortcut: Shortcut) {
             Toast.LENGTH_LONG,
         ).show()
     } catch (_: IOException) {
-        Toast.makeText(context, "导出快捷方式失败", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Failed to export shortcut", Toast.LENGTH_LONG).show()
     }
 }
 
@@ -10364,10 +10390,10 @@ private val AMAZON_ROOT_RE = Regex("""(^|[\\/])Amazon[\\/]""")
 internal enum class ImportKind { EXE, FOLDER, WINDOWS_STEAM }
 
 /** Shown when the game's container is the only one. */
-private const val NO_OTHER_CONTAINER = "There's no other container. Create one in Containers first."
+internal const val NO_OTHER_CONTAINER = "There's no other container. Create one in Containers first."
 
 /**
- * Shared coordinator for the editor's Container row and the Deck "移动到另一个容器" hand-off.
+ * Shared coordinator for the editor's Container row and the Deck "Move to another container" hand-off.
  * Picks the target container and whether to keep a copy in this one (off: a move), then offers what
  * can come along to that target ([MoveGameToContainer.plan]: saves, the game's C: folder, the extras
  * the target lacks), shows why a choice can't be used, and runs [MoveGameToContainer] off the main
@@ -10435,7 +10461,7 @@ private fun MoveToContainerCoordinator(
                     Text(NO_OTHER_CONTAINER, color = OnSurfaceVariant)
                     return@Column
                 }
-                Text("移动到", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                Text("Move to", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                 others.forEach { c ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -10508,7 +10534,7 @@ private fun MoveToContainerCoordinator(
                 onClick = {
                     val copy = keepCopy
                     val opts = options
-                    stage = if (copy) "正在复制…" else "Moving…"
+                    stage = if (copy) "Copying…" else "Moving…"
                     scope.launch {
                         val r = withContext(Dispatchers.IO) {
                             MoveGameToContainer.run(context, target, c, copy, opts, p) { s -> stage = s }
@@ -10524,7 +10550,7 @@ private fun MoveToContainerCoordinator(
                         }
                     }
                 },
-            ) { Text(if (keepCopy) "拷贝" else "Move") }
+            ) { Text(if (keepCopy) "Copy" else "Move") }
         },
         dismissButton = { TextButton(enabled = !busy, onClick = onFinished) { Text("Cancel") } },
     )
@@ -10548,7 +10574,7 @@ private fun MoveBringRow(checked: Boolean, enabled: Boolean, title: String, subt
 private enum class CopyToCPhase { CONFIRM, OVERWRITE, COPYING, DELETE_ORIGINAL }
 
 /**
- * Shared coordinator for "复制到C盘…". Fed a [target] shortcut by either entry point (the ⋮
+ * Shared coordinator for "Copy to Drive C…". Fed a [target] shortcut by either entry point (the ⋮
  * menu item or the editor's Storage-row button); [onFinished] clears that target and refreshes the
  * list. Owns the whole flow and all its dialogs:
  *   1. Locate the exe on disk. Already on C: (or unmappable) → toast + finish, no dialogs.
@@ -10638,7 +10664,7 @@ private fun CopyToDriveCCoordinator(
                 onSuccess = { phase = CopyToCPhase.DELETE_ORIGINAL },
                 onFailure = { e ->
                     if (e is CopyGameToDriveC.CancelledException) {
-                        Toast.makeText(context, "复制已取消 — 未做任何更改。", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Copy cancelled — nothing was changed.", Toast.LENGTH_SHORT).show()
                     } else {
                         android.util.Log.e("CopyToDriveC", "copy/repoint failed for ${target.name}", e)
                         Toast.makeText(
@@ -10684,7 +10710,7 @@ private fun CopyToDriveCCoordinator(
                         style = MaterialTheme.typography.bodySmall,
                         color = OnSurfaceVariant,
                     )
-                    Text("要复制的文件夹", style = MaterialTheme.typography.labelMedium, color = OnSurface)
+                    Text("Folder to copy", style = MaterialTheme.typography.labelMedium, color = OnSurface)
                     Text(
                         sourceRoot.absolutePath,
                         style = MaterialTheme.typography.bodySmall,
@@ -10700,7 +10726,7 @@ private fun CopyToDriveCCoordinator(
                         color = OnSurfaceVariant,
                     )
                     Text(
-                        "选择包含游戏所需所有内容的文件夹，而不仅仅是.exe文件。",
+                        "Pick the folder that holds everything the game needs, not just the .exe.",
                         style = MaterialTheme.typography.bodySmall,
                         color = OnSurfaceVariant,
                     )
@@ -10718,7 +10744,7 @@ private fun CopyToDriveCCoordinator(
                     }) {
                         Icon(Icons.Filled.Folder, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("更改文件夹…")
+                        Text("Change folder…")
                     }
                 }
             },
@@ -10726,14 +10752,14 @@ private fun CopyToDriveCCoordinator(
                 TextButton(
                     onClick = { confirmAndCopy() },
                     enabled = validationError == null && sourceSize != null,
-                ) { Text("拷贝") }
+                ) { Text("Copy") }
             },
             dismissButton = { TextButton(onClick = onFinished) { Text("Cancel") } },
         )
 
         CopyToCPhase.OVERWRITE -> OutlinedAlertDialog(
             onDismissRequest = onFinished,
-            title = { Text("已在C盘") },
+            title = { Text("Already on Drive C") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
@@ -10753,7 +10779,7 @@ private fun CopyToDriveCCoordinator(
             confirmButton = {
                 TextButton(onClick = {
                     startCopy(CopyGameToDriveC.destRootFor(target.container, sourceRoot.name), cleanFirst = true)
-                }) { Text("覆盖") }
+                }) { Text("Overwrite") }
             },
             dismissButton = { TextButton(onClick = onFinished) { Text("Cancel") } },
         )
@@ -10802,7 +10828,7 @@ private fun CopyToDriveCCoordinator(
                 Toast.makeText(context, "\"${target.name}\" now runs from Drive C.", Toast.LENGTH_SHORT).show()
                 onFinished()
             },
-            title = { Text("已复制到C盘") },
+            title = { Text("Copied to Drive C") },
             text = {
                 Text(
                     "\"${target.name}\" now runs from Drive C. Delete the original folder to free " +
@@ -10816,16 +10842,16 @@ private fun CopyToDriveCCoordinator(
                     val src = sourceRoot
                     scope.launch {
                         withContext(Dispatchers.IO) { runCatching { src.deleteRecursively() } }
-                        Toast.makeText(context, "已移动到C盘 — 原始文件已删除。", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Moved to Drive C — original deleted.", Toast.LENGTH_SHORT).show()
                         onFinished()
                     }
-                }) { Text("删除原始文件", color = DangerRed) }
+                }) { Text("Delete original", color = DangerRed) }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    Toast.makeText(context, "已复制到C盘 — 原始文件已保留。", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Copied to Drive C — original kept.", Toast.LENGTH_SHORT).show()
                     onFinished()
-                }) { Text("保留原始文件") }
+                }) { Text("Keep original") }
             },
         )
     }
@@ -10992,7 +11018,7 @@ internal fun ShortcutBadgeOverlay(
         Row(modifier = modifier) { AndroidBadge() }
         return
     }
-    // Valve's Windows Steam client ("添加游戏" → Add Windows Steam client x64): its own pill only.
+    // Valve's Windows Steam client ("Add games" → Add Windows Steam client x64): its own pill only.
     if (showWindowsSteam) {
         Row(modifier = modifier) { WindowsSteamBadge() }
         return
@@ -11227,7 +11253,7 @@ private fun loadPickedArt(path: String): Bitmap? = if (path.startsWith("http")) 
     null
 }
 
-/** The classic editor's "使用应用的 Xbox 运行时" row (its own function: the editor's body is at the JVM method size limit). */
+/** The classic editor's "Use the app's Xbox runtime" row (its own function: the editor's body is at the JVM method size limit). */
 @Composable
 private fun XboxRuntimeRow(checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(
@@ -11235,7 +11261,7 @@ private fun XboxRuntimeRow(checked: Boolean, onChange: (Boolean) -> Unit) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text("使用应用的 Xbox 运行时", fontSize = 14.sp)
+            Text("Use the app's Xbox runtime", fontSize = 14.sp)
             Text(
                 "This game ships Microsoft's own Xbox runtime, which needs Windows' Gaming Services. " +
                         "Turn off only to try the game's own.",
@@ -11274,7 +11300,7 @@ private fun StorageRow(shortcut: Shortcut, onMoveToDriveC: (() -> Unit)?) {
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("移动到C盘")
+                Text("Move to Drive C")
             }
         }
     }
@@ -11306,7 +11332,7 @@ private fun ContainerRow(dp: SettingsDpad, containerName: String, onChange: () -
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("更改…")
+                Text("Change…")
             }
         }
     }
@@ -11335,7 +11361,7 @@ private fun StoreOptionRows(
             Column(modifier = Modifier.weight(1f)) {
                 Text("Start in Big Picture", fontSize = 14.sp)
                 Text(
-                    "以大屏幕模式打开 Steam",
+                    "Opens Steam in Big Picture mode",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -11354,9 +11380,9 @@ private fun StoreOptionRows(
             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Epic在线服务(EOS)认证", fontSize = 14.sp)
+                Text("Epic Online Services (EOS) auth", fontSize = 14.sp)
                 Text(
-                    "使用您的Epic账户登录EOS游戏",
+                    "Sign EOS games in with your Epic account",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -11371,9 +11397,9 @@ private fun StoreOptionRows(
             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("强制Denuvo所有权令牌", fontSize = 14.sp)
+                Text("Force Denuvo ownership token", fontSize = 14.sp)
                 Text(
-                    "为我们未自动检测的Denuvo游戏强制所有权令牌",
+                    "Force the ownership token for Denuvo games we don't auto-detect",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -11390,9 +11416,9 @@ private fun StoreOptionRows(
             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("离线启动", fontSize = 14.sp)
+                Text("Launch offline", fontSize = 14.sp)
                 Text(
-                    "跳过此游戏的Epic登录（无在线功能）",
+                    "Skip Epic sign-in for this game (no online features)",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -11412,7 +11438,7 @@ private fun StoreOptionRows(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Epic 好友覆盖层", fontSize = 14.sp)
+                    Text("Epic Friends Overlay", fontSize = 14.sp)
                     Text(
                         "Experimental — in-game Epic overlay on Shift+F3 (a draggable pill " +
                                 "can summon it too). Needs the container to allow full services.",

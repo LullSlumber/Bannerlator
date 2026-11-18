@@ -70,6 +70,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
+import com.winlator.star.ui.deck.deckShape
 
 class AmazonGameDetailActivity : ComponentActivity() {
 
@@ -492,7 +493,9 @@ class AmazonGameDetailActivity : ComponentActivity() {
     private fun onUninstallClicked() {
         val dir = prefs!!.getString("amazon_dir_$productId", null) ?: return
         lifecycleScope.launch(Dispatchers.IO) {
-            StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.AMAZON, File(dir))
+            val refused = StoreShortcutCleanup.keptBySafeDelete(applicationContext, StoreInstallLocations.Store.AMAZON, File(dir))
+            val gone = StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.AMAZON, File(dir))
+            productId?.let { StoreShortcutCleanup.afterDelete(applicationContext, Store.AMAZON, it, dir, gone, refused) }
             // Purge the FULL native install record (exe/dir/manifest-version/size) via the one
             // canonical helper so the store list, detail page and DL manager all agree — not
             // just exe+dir, which left stale manifest/size keys behind.
@@ -997,7 +1000,7 @@ private fun AmazonDlcContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(deckShape(8.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(10.dp),
         ) {

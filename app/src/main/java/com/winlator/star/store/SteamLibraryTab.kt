@@ -33,7 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material3.Button
+import com.winlator.star.ui.theme.LabButton as Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,9 +43,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import com.winlator.star.ui.theme.LabOutlinedButton as OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.winlator.star.ui.theme.LabTextButton as TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -88,6 +88,7 @@ import com.winlator.star.store.compose.AddToShortcutsRequest
 import com.winlator.star.store.compose.ContainerPickerDialog
 import com.winlator.star.store.compose.openShortcutsScreen
 import com.winlator.star.ui.screens.OutlinedAlertDialog
+import com.winlator.star.ui.deck.deckShape
 
 /**
  * The **Library** tab: the owned-games grid, moved here out of [SteamGamesActivity] so the tab host
@@ -622,7 +623,7 @@ fun SteamLibraryTab(
         uninstallingName = game.name
         // Found in another Steam client's library: those files and that manifest are the client's.
         val imported = SteamLibraryImport.isImported(ctx, game.appId)
-        StoreUninstaller.run(
+        StoreUninstaller.runReporting(
             installDir = game.installDir,
             mark = {
                 if (imported) SteamLibraryImport.releaseImported(ctx, game.appId)
@@ -631,8 +632,10 @@ fun SteamLibraryTab(
             },
             // Another game (a demo / server sharing this installdir) still uses the folder: keep it.
             keepFolder = { imported || SteamInstallPaths.folderSharedWithOtherGame(ctx.applicationContext, java.io.File(game.installDir), game.appId) },
-        ) { ok ->
+        ) { ok, kept ->
             uninstallingName = null
+            // The game's shortcuts go with it, as from the Download Manager.
+            StoreShortcutCleanup.remove(ctx, com.winlator.star.store.download.Store.STEAM, game.appId.toString(), game.installDir, shortcutRemovalFor(ok, kept, imported))
             if (ok) StorefrontLog.i(StorefrontLog.LIBRARY, "uninstalled app ${game.appId} (${game.name})" + if (imported) ", files kept (another client's library)" else "")
             else StorefrontLog.w(StorefrontLog.LIBRARY, "uninstall INCOMPLETE for app ${game.appId} (${game.name}) — files remain at ${game.installDir}")
             onMessage(when {
@@ -906,7 +909,7 @@ private fun LibrarySortButton(
     Box {
         IconButton(
             onClick = { expanded = true },
-            modifier = Modifier.steamFocusRing(RoundedCornerShape(24.dp)),
+            modifier = Modifier.steamFocusRing(deckShape(24.dp)),
         ) {
             Icon(
                 imageVector = Icons.Filled.Sort,
@@ -1031,7 +1034,7 @@ private fun LibraryCapsuleCard(
         )
         return
     }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = deckShape(10.dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -1062,8 +1065,8 @@ private fun LibraryCapsuleCard(
             if (game.isInstalled) {
                 Button(
                     onClick = onAction,
-                    modifier = Modifier.fillMaxWidth().steamFocusRing(RoundedCornerShape(7.dp)),
-                    shape = RoundedCornerShape(7.dp),
+                    modifier = Modifier.fillMaxWidth().steamFocusRing(deckShape(7.dp)),
+                    shape = deckShape(7.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
                 ) { Text("Play", style = MaterialTheme.typography.labelSmall, maxLines = 1) }
             } else {
@@ -1098,8 +1101,8 @@ private fun LibraryDetailRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
-            .steamFocusRing(RoundedCornerShape(12.dp)),
-        shape = RoundedCornerShape(12.dp),
+            .steamFocusRing(deckShape(12.dp)),
+        shape = deckShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
@@ -1119,7 +1122,7 @@ private fun LibraryDetailRowXmb(
     onLaunch: () -> Unit,
     onUninstall: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(12.dp)
+    val shape = deckShape(12.dp)
     val cs = MaterialTheme.colorScheme
     // Room for the panel's shadow between the rows.
     val outer = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
@@ -1151,7 +1154,7 @@ private fun LibraryDetailBody(
         ) {
             GameCoverArt(
                 appId = game.appId,
-                modifier = Modifier.size(width = 60.dp, height = 80.dp).clip(RoundedCornerShape(6.dp)),
+                modifier = Modifier.size(width = 60.dp, height = 80.dp).clip(deckShape(6.dp)),
             )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -1191,24 +1194,24 @@ private fun LibraryDetailBody(
                         if (LocalXmbGroup.current != null) {
                             OutlinedButton(
                                 onClick = onOpen,
-                                shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier.height(32.dp).steamFocusRing(RoundedCornerShape(8.dp)).xmbInner(first = true),
+                                shape = deckShape(8.dp),
+                                modifier = Modifier.height(32.dp).steamFocusRing(deckShape(8.dp)).xmbInner(first = true),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
                             ) { Text(stringResource(R.string.xmb_store_details), style = MaterialTheme.typography.labelSmall) }
                         }
                         Button(
                             onClick = onLaunch,
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.height(32.dp).steamFocusRing(RoundedCornerShape(8.dp)).xmbInner(),
+                            shape = deckShape(8.dp),
+                            modifier = Modifier.height(32.dp).steamFocusRing(deckShape(8.dp)).xmbInner(),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
                         ) { Text("启动 / 添加", style = MaterialTheme.typography.labelSmall) }
                         OutlinedButton(
                             onClick = onUninstall,
-                            shape = RoundedCornerShape(8.dp),
+                            shape = deckShape(8.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = MaterialTheme.colorScheme.error,
                             ),
-                            modifier = Modifier.height(32.dp).steamFocusRing(RoundedCornerShape(8.dp)).xmbInner(),
+                            modifier = Modifier.height(32.dp).steamFocusRing(deckShape(8.dp)).xmbInner(),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
                         ) { Text("Uninstall", style = MaterialTheme.typography.labelSmall) }
                     }
@@ -1262,7 +1265,7 @@ private fun ExePickerDialog(
                     val label = if (parent != null) "${parent.name}/${f.name}" else f.name
                     TextButton(
                         onClick = { onSelected(path) },
-                        modifier = Modifier.fillMaxWidth().steamFocusRing(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.fillMaxWidth().steamFocusRing(deckShape(8.dp)),
                     ) { Text(label, modifier = Modifier.weight(1f)) }
                 }
             }

@@ -34,7 +34,7 @@ import com.winlator.star.widget.HudMetrics
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
-private const val WATCHDOG_WHATS_THIS =
+internal const val WATCHDOG_WHATS_THIS =
     "A safety backstop. If your device gets too hot, it automatically undoes the performance " +
     "settings you've turned on and restores your device to how it was.\n\n" +
     "It is NOT what throttles your device. Your device has its own built-in thermal protection " +
@@ -56,7 +56,7 @@ private const val WATCHDOG_WHATS_THIS =
  *  - ON/OFF toggle with a DYNAMIC label showing the resolved ceiling + mode; turning it OFF requires
  *    the hard scroll+checkbox disclaimer, turning it ON does not.
  *  - Aggressiveness preset selector (Conservative / Balanced / Aggressive / Manual). Selecting one of
- *    the three presets shows an informational dialog (single "知道了") with the actual °C on THIS
+ *    the three presets shows an informational dialog (single "Got it") with the actual °C on THIS
  *    device. Manual reveals a slider (60–device top trip).
  */
 @Composable
@@ -83,7 +83,7 @@ fun WatchdogSection() {
         }
     }
 
-    // Dynamic ON/OFF row with a "这是什么?" info button.
+    // Dynamic ON/OFF row with a "What's this?" info button.
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text(
             "Thermal auto-revert (~$ceiling °C · ${modeLabel(mode)})",
@@ -91,7 +91,7 @@ fun WatchdogSection() {
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { showWhatsThis = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Outlined.Info, "什么是温度看门狗?",
+            Icon(Icons.Outlined.Info, "What is the Temperature Watchdog?",
                 tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
         }
         Spacer(Modifier.width(4.dp))
@@ -121,7 +121,7 @@ fun WatchdogSection() {
     }
 
     // Preset selector.
-    Text("阈值", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+    Text("Threshold", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
     ThresholdMode.values().forEach { m ->
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -163,10 +163,10 @@ fun WatchdogSection() {
         )
     }
 
-    // "什么是温度看门狗?" explainer.
+    // "What is the Temperature Watchdog?" explainer.
     if (showWhatsThis) {
         PerfInfoDialog(
-            title = "什么是温度看门狗?",
+            title = "What is the Temperature Watchdog?",
             body = WATCHDOG_WHATS_THIS,
             onDismiss = { showWhatsThis = false }
         )
@@ -184,23 +184,23 @@ fun WatchdogSection() {
     // Hard disclaimer to disarm the watchdog.
     if (showOffDisclaimer) {
         PerfDisclaimerDialog(
-            title = "禁用温度保护?",
+            title = "Disable thermal safety?",
             body = PerfDisclaimerCopy.WATCHDOG_OFF,
-            confirmLabel = "关闭看门狗",
+            confirmLabel = "Turn watchdog OFF",
             onDismiss = { showOffDisclaimer = false },
             onConfirm = { showOffDisclaimer = false; TempWatchdog.setWatchdogEnabled(false) }
         )
     }
 }
 
-private fun modeLabel(mode: ThresholdMode): String = when (mode) {
-    ThresholdMode.CONSERVATIVE -> "保守"
+internal fun modeLabel(mode: ThresholdMode): String = when (mode) {
+    ThresholdMode.CONSERVATIVE -> "Conservative"
     ThresholdMode.BALANCED -> "Balanced"
-    ThresholdMode.AGGRESSIVE -> "激进"
-    ThresholdMode.MANUAL -> "手动"
+    ThresholdMode.AGGRESSIVE -> "Aggressive"
+    ThresholdMode.MANUAL -> "Manual"
 }
 
-private fun presetInfo(mode: ThresholdMode): String {
+internal fun presetInfo(mode: ThresholdMode): String {
     val first = TempWatchdog.firstTripC ?: TempWatchdog.FALLBACK_CEILING_C
     val ceiling = TempWatchdog.resolvedCeilingFor(mode)
     return when (mode) {
@@ -213,6 +213,6 @@ private fun presetInfo(mode: ThresholdMode): String {
             "Maximum sustained clocks, only ~3°C of margin before the hard limit (~$ceiling°C). " +
                 "For users who know their device."
         ThresholdMode.MANUAL ->
-            "您自行选择精确的还原温度。"
+            "You choose the exact revert temperature."
     }
 }

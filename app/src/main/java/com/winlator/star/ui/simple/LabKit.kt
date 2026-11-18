@@ -48,6 +48,7 @@ import com.winlator.star.ui.deck.xmbHighlightHostOrNull
 import com.winlator.star.ui.deck.xmbRevealRoom
 import com.winlator.star.ui.theme.AppThemeState
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 
 // Lab: Bannerlator's own interface (the successor of the Simple style). A dashboard of live tiles, a rail in landscape
 // and a drawer in portrait, the game's main settings one press away, on a graph-paper wallpaper with signals running
@@ -66,20 +67,39 @@ internal object LabRoutes {
 
 internal class LabSection(val label: String, val short: String, val icon: ImageVector, val route: String)
 
-internal val LAB_SECTIONS = listOf(
-    LabSection(T("主页"), T("主页"), Icons.Filled.Home, DeckRoutes.HOME),
+private val ALL_LAB_SECTIONS = listOf(
+    LabSection(T("Home"), T("Home"), Icons.Filled.Home, DeckRoutes.HOME),
     LabSection(T("Library"), T("Library"), Icons.Filled.GridView, LabRoutes.LIBRARY),
-    LabSection(T("商店"), T("商店"), Icons.Filled.Storefront, LabRoutes.STORES),
-    LabSection(T("容器管理"), T("容器管理"), Icons.Filled.Inventory2, SimpleRoutes.CONTAINERS),
-    LabSection(T("内容管理"), T("内容管理"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
+    LabSection(T("Stores"), T("Stores"), Icons.Filled.Storefront, LabRoutes.STORES),
+    LabSection(T("Containers"), T("Containers"), Icons.Filled.Inventory2, SimpleRoutes.CONTAINERS),
+    LabSection(T("Contents"), T("Contents"), Icons.Filled.Memory, SimpleRoutes.DRIVERS),
     LabSection(T("Controls"), T("Controls"), Icons.Filled.SportsEsports, SimpleRoutes.CONTROLS),
-    LabSection(T("Files & tools"), T("工具"), Icons.Filled.FolderOpen, SimpleRoutes.TOOLS),
-    LabSection(T("存档管理器"), T("Saves"), Icons.Filled.Save, SimpleRoutes.SAVES),
+    LabSection(T("Files & tools"), T("Tools"), Icons.Filled.FolderOpen, SimpleRoutes.TOOLS),
+    LabSection(T("Save Manager"), T("Saves"), Icons.Filled.Save, SimpleRoutes.SAVES),
     LabSection(T("Settings"), T("Settings"), Icons.Filled.Settings, DeckSettingsRoutes.APP),
 )
 
-/** Which section a route belongs to, for the rail and the drawer. */
+/** Appearance › Show game stores, as Compose state, so the rail and the drawer follow a change at once. */
+private object LabStoresShown {
+    private val state = androidx.compose.runtime.mutableStateOf(AppThemeState.showStores.value)
+    val on: Boolean get() = state.value
+    init {
+        kotlinx.coroutines.MainScope().launch { AppThemeState.showStores.collect { state.value = it } }
+    }
+}
+
+/** The sections of the rail and the drawer, in order. Stores is left out while Appearance › Show game stores is off. */
+internal val LAB_SECTIONS: List<LabSection>
+    get() = if (LabStoresShown.on) ALL_LAB_SECTIONS else ALL_LAB_SECTIONS.filter { it.route != LabRoutes.STORES }
+
+/** Which section a route belongs to, for the rail and the drawer: its index in [LAB_SECTIONS] (Home when it is not listed). */
 internal fun labSectionOf(route: String?): Int {
+    val i = labSectionIndexOf(route)
+    return LAB_SECTIONS.indexOf(ALL_LAB_SECTIONS[i]).coerceAtLeast(0)
+}
+
+/** [route]'s section, as an index in [ALL_LAB_SECTIONS]. */
+private fun labSectionIndexOf(route: String?): Int {
     val r = route ?: return 0
     return when {
         r == DeckRoutes.HOME -> 0
@@ -88,9 +108,11 @@ internal fun labSectionOf(route: String?): Int {
         r.startsWith("simple_containers") || r.startsWith("deck_settings_container") || r == DeckSettingsRoutes.DEFAULTS || r.startsWith("container_detail") -> 3
         r.startsWith("simple_driver") || r.startsWith("simple_component") || r.startsWith("adreno") || r.startsWith("contents") -> 4
         r.startsWith("simple_controls") || r.startsWith("input_controls") -> 5
-        r.startsWith("simple_tools") || r.startsWith("simple_files") || r.startsWith("simple_logs") || r.startsWith("wrappers") -> 6
+        r.startsWith("simple_tools") || r.startsWith("simple_files") || r.startsWith("simple_logs") || r.startsWith("wrapper_manager") ||
+            r.startsWith(LabParityRoutes.WRAPPERS) -> 6
         r.startsWith("simple_saves") || r.startsWith("save_manager") -> 7
-        r.startsWith("deck_settings_app") || r.startsWith("simple_appearance") || r.startsWith("settings") || r.startsWith("appearance") -> 8
+        r.startsWith("deck_settings_app") || r.startsWith("simple_appearance") || r.startsWith("settings") || r.startsWith("appearance") ||
+            r.startsWith("lab_settings") -> 8
         else -> 0
     }
 }

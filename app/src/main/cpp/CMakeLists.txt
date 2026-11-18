@@ -139,6 +139,18 @@ target_link_libraries(hostname_fix
         dl
 )
 
+# Network games (test): streams a game's files from a network drive as Wine reads them. Loaded via LD_PRELOAD for
+# network games only (see netfs.c and netdrive/NetStream.kt).
+add_library(netfs SHARED
+        winlator/netfs.c
+)
+
+target_compile_options(netfs PRIVATE -Wall -Wextra -fvisibility=hidden)
+
+target_link_libraries(netfs
+        dl
+)
+
 add_library(vulkan_renderer SHARED
         winlator/vulkan_jni.cpp
         winlator/stream_jni.cpp
@@ -334,6 +346,10 @@ add_library(gpuclock SHARED
         gpuclock/kgsl_clock.c
         gpuclock/kgsl_busy.c
 )
+
+# The phone's own Vulkan driver for the device details pop-up (deviceinfo/VulkanInfo.kt). Ported from DroidDeck.
+add_library(deviceinfo SHARED deviceinfo/vkinfo.c)
+target_link_libraries(deviceinfo dl)
 
 # Embedded Wayland compositor (experimental parallel runtime) — see waylandcomp/CMakeLists.txt.
 add_subdirectory(waylandcomp)

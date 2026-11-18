@@ -175,24 +175,25 @@ private fun NameDialog(title: String, initial: String, onDismiss: () -> Unit, on
 
 // ───────────────────────────── Tools ─────────────────────────────
 
-/** Tools: the file manager, save backups, logs, wrappers and drivers, and the account, About and help. */
+/** Tools: the file manager, save backups, Winlator's saves, logs, wrappers and drivers, and the account, About and help. */
 @Composable
 internal fun SimpleToolsPage(onNavigate: (String) -> Unit, onBack: () -> Unit, onMyAccount: () -> Unit, onAbout: () -> Unit) {
     val context = LocalContext.current
     var showHelp by remember { mutableStateOf(false) }
     SimpleMenuPage(
         overline = L("Manage"),
-        title = L("工具"),
+        title = L("Tools"),
         sections = listOf(
             MenuSection(
                 key = "tools",
-                title = L("工具"),
+                title = L("Tools"),
                 icon = Icons.Filled.Build,
                 entries = listOf(
                     MenuEntry("files", L("File manager"), L("Internal storage, SD card and every container's drives"), icon = Icons.Filled.FolderOpen, onA = { onNavigate(SimpleRoutes.FILES) }),
-                    MenuEntry("saves", L("存档管理器"), L("Back up, restore and sync game saves"), icon = Icons.Filled.Save, onA = { onNavigate(SimpleRoutes.SAVES) }),
+                    MenuEntry("saves", L("Save Manager"), L("Back up, restore and sync game saves"), icon = Icons.Filled.Save, onA = { onNavigate(SimpleRoutes.SAVES) }),
+                    MenuEntry("winsaves", L("Winlator saves"), L("Save slots kept with a container"), icon = Icons.Filled.Inventory2, onA = { onNavigate(LabToolRoutes.WINLATOR_SAVES) }),
                     MenuEntry("logs", L("Game logs"), L("What each game printed while it ran"), icon = Icons.Filled.Description, onA = { onNavigate(SimpleRoutes.LOGS) }),
-                    MenuEntry("wrappers", L("Wrappers"), L("Graphics wrappers"), icon = Icons.Filled.Layers, onA = { onNavigate(Screen.Wrappers.route) }),
+                    MenuEntry("wrappers", L("Wrappers"), L("Graphics wrappers"), icon = Icons.Filled.Layers, onA = { onNavigate(LabParityRoutes.WRAPPERS) }),
                     MenuEntry("drivers", L("GPU drivers"), L("Turnip and Qualcomm drivers"), icon = Icons.Filled.Memory, onA = { onNavigate(SimpleRoutes.contents("installed")) }),
                 ),
             ),
@@ -201,10 +202,10 @@ internal fun SimpleToolsPage(onNavigate: (String) -> Unit, onBack: () -> Unit, o
                 title = L("Help"),
                 icon = Icons.Filled.Info,
                 entries = listOf(
-                    MenuEntry("account", L("我的账户"), L("登录以管理您的共享配置"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
-                    MenuEntry("about", L("关于"), L("版本、更新和鸣谢"), icon = Icons.Filled.Info, onA = onAbout),
-                    MenuEntry("help", L("帮助与支持"), L("GitHub、问题追踪器和 Discord"), icon = Icons.Filled.HelpOutline, onA = { showHelp = true }),
-                    MenuEntry("setup", L("再次运行设置"), L("Permissions, theme and stores"), icon = Icons.Filled.RestartAlt, onA = { DeckSetup.requestRerun() }),
+                    MenuEntry("account", L("My account"), L("Sign in to manage your shared configs"), icon = Icons.Filled.AccountCircle, onA = onMyAccount),
+                    MenuEntry("about", L("About"), L("Version, updates and credits"), icon = Icons.Filled.Info, onA = onAbout),
+                    MenuEntry("help", L("Help and Support"), L("GitHub, issue tracker and Discord"), icon = Icons.Filled.HelpOutline, onA = { showHelp = true }),
+                    MenuEntry("setup", L("Run setup again"), L("Permissions, theme and stores"), icon = Icons.Filled.RestartAlt, onA = { DeckSetup.requestRerun() }),
                 ),
             ),
         ),
@@ -238,19 +239,20 @@ internal fun NavGraphBuilder.simpleRoutes(
         LabGameDetailsPage(path = e.arguments?.getString("path").orEmpty(), tab = e.arguments?.getInt("tab") ?: 0, onNavigate = open, onBack = back)
     }
     composable(SimpleRoutes.TOOLS) { SimpleToolsPage(onNavigate = open, onBack = back, onMyAccount = onMyAccount, onAbout = onAbout) }
-    composable(SimpleRoutes.FILES) { FileManagerScreen() }
+    composable(SimpleRoutes.FILES) { LabFileManagerPage(onBack = back) }
     composable(SimpleRoutes.SAVES) { SaveManagerScreen(onBack = back, lab = AppThemeState.simpleLook) }
-    composable(SimpleRoutes.LOGS) { LogManagerScreen(onClose = back) }
+    composable(SimpleRoutes.LOGS) { LabLogManagerPage(onOpen = open, onBack = back) }
     composable(SimpleRoutes.CONTAINERS) { SimpleContainersPage(onNavigate = open, onBack = back) }
     composable(SimpleRoutes.COMPONENT_SOURCE, arguments = listOf(navArgument("i") { type = NavType.IntType; defaultValue = 0 })) { e ->
         SimpleComponentSourcePage(index = e.arguments?.getInt("i") ?: 0, onBack = back)
     }
-    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "内容管理". SimpleRoutes.DRIVERS opens it too.
+    // Lab's Contents (Classic's Contents screen as Lab lists); the rail's "Contents". SimpleRoutes.DRIVERS opens it too.
     composable(SimpleRoutes.CONTENTS_PAGE, arguments = listOf(navArgument("tab") { type = NavType.StringType; defaultValue = "" })) { e ->
         SimpleContentsPage(onNavigate = open, onBack = back, startSection = e.arguments?.getString("tab")?.ifBlank { null })
     }
     composable(SimpleRoutes.CONTROLS) { SimpleControlsPage(onBack = back) }
     composable(SimpleRoutes.APPEARANCE) { SimpleAppearancePage(onBack = back) }
+    labParityRoutes(open, back)
 }
 
 // ───────────────────────────── Appearance ─────────────────────────────
@@ -282,7 +284,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
         MenuAction(mark("XMB", style == "XMB"), { AppThemeState.setDeckXmbHome(true); AppThemeState.setUiStyle(AppThemeState.UI_STYLE_DECK) }),
         MenuAction(mark("Classic", style == "Classic"), { AppThemeState.setUiStyle(AppThemeState.UI_STYLE_CLASSIC) }),
     )
-    val orientations = listOf(AppOrientation.AUTO to L("Auto"), AppOrientation.PORTRAIT to L("竖屏"), AppOrientation.LANDSCAPE to L("横屏"))
+    val orientations = listOf(AppOrientation.AUTO to L("Auto"), AppOrientation.PORTRAIT to L("Portrait"), AppOrientation.LANDSCAPE to L("Landscape"))
     fun pct(f: Float) = "${(f * 100).roundToInt()}%"
 
     val langTag = LabLang.tag(context)
@@ -298,9 +300,9 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
                 )
             },
         ),
-        MenuEntry("style", L("界面风格"), L("Lab, Deck, XMB or Classic"), trailing = style, icon = Icons.Filled.Dashboard, actions = styles),
+        MenuEntry("style", L("Interface style"), L("Lab, Deck, XMB or Classic"), trailing = style, icon = Icons.Filled.Dashboard, actions = styles),
         MenuEntry(
-            "look", L("外观"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
+            "look", L("Look"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
             actions = listOf(
                 MenuAction(mark(L("Dark"), !AppThemeState.labLight), { AppThemeState.setLabLight(false) }),
                 MenuAction(mark(L("Light"), AppThemeState.labLight), { AppThemeState.setLabLight(true) }),
@@ -338,7 +340,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
                 })
             },
         ),
-        MenuEntry("ui", L("界面大小"), trailing = pct(uiScale), icon = Icons.Filled.ZoomIn,
+        MenuEntry("ui", L("Interface size"), trailing = pct(uiScale), icon = Icons.Filled.ZoomIn,
             actions = labScaleSteps(uiScale).map { f -> MenuAction(mark(pct(f), (f * 100).roundToInt() == (uiScale * 100).roundToInt()), { AppThemeState.setUiScale(f) }) }),
         MenuEntry("font", L("Text size"), trailing = pct(fontScale), icon = Icons.Filled.TextFields,
             actions = labScaleSteps(fontScale).map { f -> MenuAction(mark(pct(f), (f * 100).roundToInt() == (fontScale * 100).roundToInt()), { AppThemeState.setFontScale(f) }) }),
@@ -357,10 +359,10 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("外观"),
+        title = L("Appearance"),
         sections = listOf(
-            MenuSection("look", L("外观"), Icons.Filled.Dashboard, look),
-            MenuSection("theme", L("主题"), Icons.Filled.Palette, themes),
+            MenuSection("look", L("Look"), Icons.Filled.Dashboard, look),
+            MenuSection("theme", L("Theme"), Icons.Filled.Palette, themes),
         ),
         onBack = onBack,
     )
@@ -394,7 +396,7 @@ internal fun displayNameOf(ctx: android.content.Context, uri: Uri): String =
 @Composable
 internal fun SimpleControlsPage(onBack: () -> Unit) {
     // Classic's Controls screen as Lab lists: the same four tabs (On-screen, Controller, Assign, Device) on the same
-    // data (InputControlsManager, the profile's controllers); Assign and Device are Classic's own sections.
+    // data (InputControlsManager, the profile's controllers); Assign and Device are Lab rows (rememberLabControlsExtra).
     val context = LocalContext.current
     val manager = remember { InputControlsManager(context) }
     var tick by remember { mutableIntStateOf(0) }
@@ -443,9 +445,14 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
         importFrom(uri)
     }
     val systemImporter = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) importFrom(uri) }
-    fun editLayout(p: ControlsProfile) = context.startActivity(Intent(context, ControlsEditorActivity::class.java).putExtra("profile_id", p.id))
-    fun bindings(p: ControlsProfile, controllerId: String = ControlsProfile.DEFAULT_CONTROLLER_ID) =
+    // As Classic: the editors slide up over the page.
+    fun slideUp() = (context as? Activity)?.overridePendingTransition(com.winlator.star.R.anim.slide_in_up, com.winlator.star.R.anim.slide_out_down)
+    fun editLayout(p: ControlsProfile) { context.startActivity(Intent(context, ControlsEditorActivity::class.java).putExtra("profile_id", p.id)); slideUp() }
+    fun bindings(p: ControlsProfile, controllerId: String = ControlsProfile.DEFAULT_CONTROLLER_ID) {
         context.startActivity(Intent(context, ExternalControllerBindingsActivity::class.java).putExtra("profile_id", p.id).putExtra("controller_id", controllerId))
+        slideUp()
+    }
+    val extra = rememberLabControlsExtra(tick)
     fun copyBindings(fromId: String, to: ExternalController) {
         val p = sel ?: return
         p.loadControllers()
@@ -463,7 +470,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             key = "p${p.id}", title = p.name,
             subtitle = if (layouts[p.id] == true) L("On-screen layout") else L("No on-screen layout yet"),
             trailing = if (on) L("Selected") else null, current = on,
-            icon = Icons.Filled.Gamepad, group = L("配置文件"),
+            icon = Icons.Filled.Gamepad, group = L("Profiles"),
             thumb = if (layouts[p.id] == true) ({ LabProfileThumb(p.id, tick) { selId = p.id; editLayout(p) } }) else null,
             onA = { selId = p.id },
             play = { selId = p.id; editLayout(p) }, playIcon = Icons.Filled.Edit, playLabel = L("Edit layout"),
@@ -471,16 +478,16 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
                 MenuAction(L("Edit the on-screen layout"), { selId = p.id; editLayout(p) }),
                 MenuAction(L("Controller bindings"), { selId = p.id; bindings(p) }),
                 MenuAction(L("Rename"), { renaming = p }),
-                MenuAction(L("复制"), { manager.duplicateProfile(p); tick++ }, confirm = L("Make a copy of %1\$s?", p.name)),
+                MenuAction(L("Duplicate"), { manager.duplicateProfile(p); tick++ }, confirm = L("Make a copy of %1\$s?", p.name)),
                 MenuAction(L("Export (.icpx)"), { exported(runCatching { manager.exportProfile(p) }.getOrNull()) }),
                 MenuAction(L("Export (.icp, older versions)"), { exported(runCatching { manager.exportLegacyProfile(p) }.getOrNull()) }),
-                MenuAction(L("删除"), { manager.removeProfile(p); if (selId == p.id) selId = -1; tick++ }, danger = true, confirm = L("Delete %1\$s?", p.name)),
+                MenuAction(L("Delete"), { manager.removeProfile(p); if (selId == p.id) selId = -1; tick++ }, danger = true, confirm = L("Delete %1\$s?", p.name)),
             ),
         )
     } + listOf(
         MenuEntry("import", L("Import a profile"), L(".icp or .icpx file"), icon = Icons.Filled.Add, group = L("Share / transfer"),
             onA = { importer.launch(InAppFilePicker.buildIntent(context, InAppFilePicker.ICP, L("Select controls profile"))) }),
-        MenuEntry("import-system", L("从系统选取…"), icon = Icons.Filled.FolderOpen, group = L("Share / transfer"),
+        MenuEntry("import-system", L("Pick via system…"), icon = Icons.Filled.FolderOpen, group = L("Share / transfer"),
             onA = { systemImporter.launch(arrayOf("*/*")) }),
         MenuEntry("community", L("Download community profiles"), L("The online list"), icon = Icons.Filled.CloudDownload, group = L("Share / transfer"),
             onA = {
@@ -498,13 +505,18 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             }),
     )
 
-    // ── Controller: the selected profile's bindings for each controller ──
-    val controllerTab = if (sel == null) emptyList() else buildList {
+    // ── Controller: the controller test (no profile needed, as in Classic), then the selected profile's bindings ──
+    val controllerTab = buildList {
+        if (sel == null) {
+            add(MenuEntry("test", L("Test and bind controllers"), L("Remap buttons and check every input"), icon = Icons.Filled.SportsEsports, onA = { testOpen = true }))
+            add(MenuEntry("noprof", L("No profile yet"), L("Make one to bind controllers (On-screen tab)."), icon = Icons.Filled.Add, onA = { creating = true }))
+            return@buildList
+        }
         add(MenuEntry("prof", L("Profile: %1\$s", sel.name), L("The bindings below belong to this profile"), icon = Icons.Filled.Gamepad,
             actions = profiles.map { p -> MenuAction(p.name, { selId = p.id }) }))
         add(MenuEntry("test", L("Test and bind controllers"), L("Remap buttons and check every input"), icon = Icons.Filled.SportsEsports, onA = { testOpen = true }))
         add(MenuEntry("default", L("Default / Any controller"), L("%1\$s bindings · new controllers inherit these", defaultBinds), icon = Icons.Filled.SportsEsports,
-            group = L("控制器"), onA = { bindings(sel) }))
+            group = L("Controllers"), onA = { bindings(sel) }))
         controllers.forEach { c ->
             val dev = if (c.isConnected) android.view.InputDevice.getDevice(c.deviceId) else null
             val battery = runCatching {
@@ -513,7 +525,7 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             val vib = runCatching { dev?.vibrator?.takeIf { it.hasVibrator() } }.getOrNull()
             add(
                 MenuEntry(
-                    key = "c${c.id}", title = c.name ?: c.id, group = L("控制器"),
+                    key = "c${c.id}", title = c.name ?: c.id, group = L("Controllers"),
                     subtitle = listOfNotNull(L("%1\$s bindings", c.controllerBindingCount), if (c.isConnected) L("Connected") else L("Not connected"), battery?.let { L("Battery %1\$s%%", it) }).joinToString(" · "),
                     current = c.isConnected,
                     icon = Icons.Filled.SportsEsports,
@@ -538,27 +550,16 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
         overline = L("Manage"),
         title = L("Controls"),
         sections = listOf(
-            MenuSection("onscreen", L("On-screen"), Icons.Filled.TouchApp, onScreen, empty = L("No profiles yet."), primary = MenuAction(L("新配置"), { creating = true })),
-            MenuSection("controller", L("Controller"), Icons.Filled.SportsEsports, controllerTab, empty = L("Make a profile first (On-screen tab).")),
-            MenuSection("assign", L("分配"), Icons.Filled.People, emptyList(), content = {
-                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-                    com.winlator.star.ui.screens.GlobalPlayerSlotsSection()
-                }
-            }),
-            MenuSection("device", L("Device"), Icons.Filled.Build, emptyList(), content = {
-                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-                    com.winlator.star.ui.screens.GyroscopeSection()
-                    Spacer(Modifier.height(16.dp))
-                    com.winlator.star.ui.screens.SteamControllerSection()
-                    Spacer(Modifier.height(16.dp))
-                    com.winlator.star.ui.screens.MenuButtonSection()
-                }
-            }),
+            MenuSection("onscreen", L("On-screen"), Icons.Filled.TouchApp, onScreen, empty = L("No profiles yet."), primary = MenuAction(L("New profile"), { creating = true })),
+            MenuSection("controller", L("Controller"), Icons.Filled.SportsEsports, controllerTab),
+            MenuSection("assign", L("Assign"), Icons.Filled.People, extra.assign),
+            MenuSection("device", L("Device"), Icons.Filled.Build, extra.device),
         ),
         onBack = onBack,
     )
-    if (creating) NameDialog(L("新配置"), L("Profile %1\$s", profiles.size + 1), onDismiss = { creating = false }) { name -> creating = false; manager.createProfile(name)?.let { selId = it.id }; tick++ }
-    renaming?.let { p -> NameDialog(L("Rename"), p.name, onDismiss = { renaming = null }) { name -> renaming = null; p.name = name; p.save(); tick++ } }
+    extra.dialogs()
+    if (creating) LabTextEntryDialog(L("New profile"), L("Profile %1\$s", profiles.size + 1), L("OK"), onDismiss = { creating = false }) { name -> creating = false; manager.createProfile(name)?.let { selId = it.id }; tick++ }
+    renaming?.let { p -> LabTextEntryDialog(L("Rename"), p.name, L("OK"), onDismiss = { renaming = null }) { name -> renaming = null; p.name = name; p.save(); tick++ } }
     if (communityOpen) LabCommunityProfilesDialog(items = community, manager = manager, onDismiss = { communityOpen = false }, onImported = { tick++ })
     if (testOpen) {
         SettingsControllerTestDialog(
@@ -569,7 +570,8 @@ internal fun SimpleControlsPage(onBack: () -> Unit) {
             onCreateProfile = { name -> manager.createProfile(name); tick++ },
             onRenameProfile = { sel?.let { renaming = it } },
             onBindingsChanged = { tick++ },
-            onOpenAllBindings = { sel?.let { bindings(it) } },
+            // As Classic: the first connected controller's bindings, else Default / Any controller.
+            onOpenAllBindings = { sel?.let { bindings(it, ExternalController.getControllers().firstOrNull()?.id ?: ControlsProfile.DEFAULT_CONTROLLER_ID) } },
         )
     }
 }

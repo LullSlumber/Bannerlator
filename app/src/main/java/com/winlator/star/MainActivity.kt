@@ -211,6 +211,9 @@ class MainActivity : AppCompatActivity() {
             ?: when {
                 prefs.getBoolean("enable_big_picture_mode", false) -> Screen.BigPicture.route
                 prefs.getString("default_landing_screen", "games") == "containers" -> Screen.Containers.route
+                // Lab: "Library" (stored as "games") opens the Library page; "Home" or never set, the Home page.
+                AppThemeState.uiStyle.value == AppThemeState.UI_STYLE_DECK && AppThemeState.simpleLook &&
+                    prefs.getString("default_landing_screen", null) == "games" -> com.winlator.star.ui.simple.LabRoutes.LIBRARY
                 else -> Screen.Games.route
             }
 
@@ -290,6 +293,9 @@ class MainActivity : AppCompatActivity() {
                     com.winlator.star.ui.screens.ComponentInstallResume(
                         onNavigateToGames = { pendingRoute.value = Screen.Games.route },
                     )
+
+                    // Which drivers of a zip that holds several (DroidDeck's Android + Linux) to install.
+                    com.winlator.star.ui.DriverPartsPromptHost()
 
                     // The Deck first-run covers the app (and owns the install screen as its step 5) while it is due or re-run from Tools.
                     val uiStyle by AppThemeState.uiStyle.collectAsState()
@@ -705,12 +711,15 @@ private fun AppShell(
                 )
             }
             if (showAboutDialog) {
-                AboutDialog(onDismiss = onDismissAboutDialog)
+                // Lab draws its own About box (same content).
+                if (AppThemeState.simpleLook) com.winlator.star.ui.simple.LabAboutDialog(onDismiss = onDismissAboutDialog)
+                else AboutDialog(onDismiss = onDismissAboutDialog)
             }
         }
     } else {
         ClassicAppShell(
-            startRoute = startRoute,
+            // Lab's own start page has no Classic screen (the style was changed since launch): the games list.
+            startRoute = if (startRoute.startsWith("lab_")) Screen.Games.route else startRoute,
             pendingRoute = pendingRoute,
             onPendingRouteConsumed = onPendingRouteConsumed,
             showAllFilesDialog = showAllFilesDialog,

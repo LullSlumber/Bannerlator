@@ -1,5 +1,391 @@
 # Star-Compose — Progress Log
 
+## 2026-11-15 18:05 EST — 3.2.1 STABLE RELEASED + VERIFIED (Latest)
+- release.yml 43770791882 SUCCESS on main 8d38b006; tag 3.2.1 → 8d38b006 (== main == built); "Bannerlator 3.2.1", not prerelease, not draft, published 23:03:54 UTC; releases/latest = 3.2.1.
+- Assets: 4 APKs (574.8 MiB each: antutu, ludashi, pubg, standard) + update.json. Body 17.5k chars, says NAS streaming is experimental, includes "Every change since 3.2.0".
+- Manifest branch: update.json and update-pre.json = 3.2.1 / vc 108, 32 patches; Bannerlator-updates 3.2.1 = 32 .bldp. Link preview (og:description) starts "Bannerlator 3.2.1 Run Windows apps and games on Android…".
+- Backup refs/backup/20261115/main-before-3.2.1 = e9ea9ebd. Size scan branch tmp/size-3.2.1 still on GitHub (delete on the user's word).
+
+## 2026-11-15 18:05 EST — 3.2.1 STABLE CUT (user: "cut it")
+- Backup refs/backup/20261115/main-before-3.2.1 = e9ea9ebd; main fast-forwards to release/3.2.1 (vc 108 / 3.2.1, notes, README); release.yml: tag 3.2.1, title "Bannerlator 3.2.1", number 3.2.1, make_prerelease false. No main pushes until it ends (root-a3, root-36 told).
+
+## 2026-11-15 18:00 EST — 3.2.1 STABLE PREPARED (release/3.2.1, not published)
+- Why: user 11-15: "build main as artifacts only then prep a stable release for 3.2.1"; "make sure the release description states nas storage streaming is experimental still and a work in progress"; "everything has been tested and works for me added for this release".
+- Main artifacts: CI 43769358474 on e9ea9ebd GREEN ×4 (artifacts only).
+- Built: release/3.2.1 off main e9ea9ebd — 758905d8 vc 107→108 / versionName 3.2.1; f4e59c6b + 9b62beb6 + d1096d93 docs/releases/3.2.1.md (everything since 3.2.0; NAS streaming experimental/work in progress in the badge, intro, its section and a warning; device-tested per the user) + README (version row, contents, 3.2.1 section, credits). RC build CI 43769491336 GREEN ×4. Size scan tmp/size-3.2.1 (CI 43770400048): 3.2.0→3.2.1 patch 17.7 MB (pubg 17,739,021 / standard 17,749,093 bytes), full 602.8 MB, rebuild byte-exact. Local scripts/release_notes.py 3.2.1: layout OK, 25 changes appended.
+- Next: the user's "cut it" → backup main, cut log, FF main to release/3.2.1, release.yml (tag 3.2.1, make_prerelease false), verify; delete tmp/size-3.2.1 on the user's word. root-a3 holds main merges until then.
+
+## 2026-11-15 17:26 EST — PR #671 (MGamer404) MERGED into main (cd897954)
+- What: XMB Game Details "Add your own wide cover" / "Add your own background" (Steam, SteamGridDB, a file from storage, automatic; Lab's "wide"/"bg" slots); the XMB Home's covers and opened game view follow Interface scale; XMB tab labels keep the tuned Font size. Lab: four LabGameDetails helpers made internal.
+- Review (root-27): at 100 % the layout is unchanged (old 1280x800 test still holds); thumbnails decode then shrink (fitCoverArt, no crop); minor: picker sub-menu strings are hardcoded English; build-artifacts runs no unit tests, so the two new tests are not run by CI.
+- Checks: PR CI 43757468548 green ×4; merged onto main 4eeb94f0 on feat/pr671-check, CI 43768105475 green ×4; no file overlap with 45ca9b3b (device-info pop-up).
+- Merge: user "yes merge it"; GitHub merge commit (author credit kept); backup refs/backup/20261115/main-before-pr671 = 45ca9b3b. Not device-tested by us.
+
+## 2026-11-15 17:24 EST — feat/device-info-popup MERGED into main (7b63e6ff), DEVICE-PROVEN on the Pocket FIT
+
+- **User:** "merge it" with screenshots 17:23:30 (portrait drawer) and 17:23:43 (landscape top line): the pop-up shows Chip (SoC) (Snapdragon 8 Gen 3 family, SG8350P, QTI, pineapple, qcom, 682 · SG_PINEAPPLE, Snapdragon), GPU (Adreno 750, Adreno 7xx, model from the Vulkan driver, kernel name Adreno33v2, 231–1050 MHz 14 steps, load, 53 °C), CPU and the rest below.
+- **Checks:** no DeviceInfo / LabDeviceDetails / VulkanInfo warnings in logcat (no section failed); crash buffer clean since the 17:22 install.
+- **Merge:** backup `refs/backup/20261115/main-before-device-info-popup` = 4eeb94f0 (pushed); `--no-ff` merge 7b63e6ff (parents 4eeb94f0 + 1d2bc1a4); merged tree == branch tip; code == device-tested 18b50320 (only PROGRESS_LOG.md differs). No release workflow running.
+- **Proof level:** CI-green (43767835605) + device-proven (sections shown, both entry points). Not checked by me: Copy's pasted text, controller focus through the sections.
+- **Branch kept.** Main CI starts on this push.
+
+## 2026-11-15 17:22 EST — feat/device-info-popup 18b50320 (fix + main 4eeb94f0) CI GREEN, installing (user: "install when done")
+
+- **CI:** build-artifacts 43767835605, headSha 18b50320, ×4 success; no compiler warnings in the changed files; libdeviceinfo.so in the APK. (43767472392 and 43767759407 on 12d2bddc cancelled by me.)
+- **Staged:** `/sdcard/Download/Bannerlator-device-info-popup-18b50320.apk` (pubg), sha256 6de2fb27… host == device.
+- **Before install:** FIT ran root-27's c81d9869 (contained in this build); Discord in front, Bannerlator not on screen. Peers told.
+- **Resume:** user taps the device name again; check every section shows, Copy, ✕ / B; logcat DeviceInfo warnings name any section that failed.
+
+## 2026-11-15 17:15 EST — feat/lab-start-screen-home-row MERGED into main
+- User: "works, merge it to main" (after installing c81d9869 on the FIT, 17:07 EST).
+- What: Lab "Open the app on" offers Home / Library / Containers and opens that page ("games" = Library, "home" or never set = Home); Home's library row starts at the game played last.
+- Merge: backup refs/backup/20261115/main-before-lab-start-screen-home-row = 4b5ffbfd; --no-ff; merged code == c81d9869 (CI 43766218001 green ×4).
+
+## 2026-11-15 17:20 EST — feat/lab-start-screen-home-row: Lab start page choice + Home row starts at the latest game (branch, CI running)
+- Why: user 11-15 (screenshots 164804/164811): set to "Games" the app opened Home; wants Lab options Home / Library / Containers that open those pages; Home's Library row always showed the far end ("Add a game") instead of the latest game.
+- Found: AppSettingsRegistry "app.general.landing" (Games/Containers/Big Picture, hint "In the Deck interface, Games and Big Picture both open on Home"); MainActivity → Screen.Games.route → DeckShell keeps Deck home for Games. Home row LazyRow had no state: the list arrives after the page opens and the row keeps its only item ("Add a game") in view.
+- Built: c81d9869 — labDefs override labLanding() (Home "home" / Library "games" / Containers "containers", no hint, never-set = Home); MainActivity: Lab + "games" → LabRoutes.LIBRARY; Classic shell sanitises lab_ routes; Classic radio treats "home" as games; LabHome row rememberLazyListState + scrollToItem(0) when the list changes.
+- CI: 43766218001. Not device-tested.
+
+## 2026-11-15 17:07 EST — feat/device-info-popup: fix for the empty pop-up (branch, CI next)
+
+- **Device test (user, screenshots 17:04:28 portrait / 17:04:57 landscape):** tapping "Pocket FIT" opens the pop-up (title, ✕, Copy) but NO sections. User: "I see no info".
+- **Cause:** BL `FileUtils.readString(File)` = `new String(read(file))` throws NullPointerException when the file cannot be read; DroidDeck's returns null and the ported code expects that, so one unreadable sysfs node failed `DeviceInfo.collect` and my `runCatching` hid it (empty list). The native lib loaded (no VulkanInfo warning in logcat).
+- **Fix:** 39157150a — `readSys()` (null on missing/unreadable), used everywhere in deviceinfo/; each section built on its own (`safe()`, failures logged as DeviceInfo warnings); the dialog logs a total failure and shows "The device details could not be read." instead of an empty panel.
+- **Lesson:** when porting, check the helpers the code calls behave the same in the target app (null vs throw); never swallow an exception without a log.
+
+## 2026-11-15 17:03 EST — feat/device-info-popup CI GREEN, installing on the FIT (user: "install when done")
+
+- **CI:** build-artifacts 43765983107, headSha c0989e10, pubg/standard/ludashi/antutu success; no compiler warnings in the changed files; lib/arm64-v8a/libdeviceinfo.so (8904 B) in the APK.
+- **Staged:** `/sdcard/Download/Bannerlator-device-info-popup-c0989e10.apk` (pubg), sha256 b6b9dfad… host == device.
+- **Before install:** FIT ran root-27's 3ded5770 (contained in this build); Termux in front, Bannerlator not on screen. Peers told.
+- **Resume:** after install → user taps the device name (landscape top line / portrait drawer); check every section, Copy, ✕ / B, logcat FATAL.
+
+## 2026-11-15 16:51 EST — feat/device-info-popup: tap the device's name for device details (branch, CI next)
+
+- **Why:** user (screenshots 16:26 / 16:26 / 16:27): tap the device name at the top (Lab landscape top line, Lab portrait drawer) to open a pop-up with all the device's information, like DroidDeck's GPU card details. User: "build it on a new branch off main".
+- **Built:** eeaa89f79 — ui/simple/LabDeviceDetails.kt (LabDeviceName tile, LabDeviceDetailsHost in LabTopLine, LabDialog wide: title = Build.MODEL, ✕, Copy + "Copy these details into a bug report.", sections as focusable tiles); LabFrame.kt: both names → LabDeviceName. deviceinfo/ (DeviceInfo, SocNames, VulkanInfo, GpuInfo trimmed) + cpp/deviceinfo/vkinfo.c + CMake add_library(deviceinfo). Last section = BL's installed Graphics / Linux runtime / Wayland game drivers; System adds the Bannerlator version.
+- **Credit:** ported from DroidDeck (GPL-3.0, same as BL): The412Banner #295, Kurt Himebauch, Danbro007, ASEbrahim, openMali, MaxsTechReview.
+- **Next:** CI, stage APK, ask before install; test: tap the name (landscape top line + portrait drawer), every section filled on the FIT, Copy pastes the text, ✕ / B close, controller focus, logcat FATAL check.
+
+## 2026-11-15 17:05 EST — feat/lab-library-tile-outline MERGED into main
+- User: "works, merge it to main" (after installing 3ded5770 on the FIT, 16:45 EST).
+- What: a 1 dp outline (strong ink at 35 %) round each Library card in all three styles; the focus ring stays on top.
+- Merge: backup refs/backup/20261115/main-before-lab-library-tile-outline = 5ad52cec; --no-ff; merged code == 3ded5770 (CI 43764497846 green ×4).
+
+## 2026-11-15 16:55 EST — feat/lab-library-tile-outline: a thin outline round each Library card (branch, CI running)
+- Why: user 11-15 (screenshot Screenshot_20261115-163218): "in library, each game art needs a thin outline".
+- Built: 3ded5770 — LabGridCard (all three styles: covers, wide, icons) gets a 1 dp border in SimpleStrong at 35 % (white on dark, near-black on light), card-shaped; labTile's focus ring stays on top.
+- CI: 43764497846. Not device-tested. User: "install when green".
+
+## 2026-11-15 16:45 EST — feat/network-games-spike MERGED into main (f8a58bc9)
+- User: "works, merge it to main" → asked what; user picked "Everything incl. streaming".
+- What: streaming games from a network drive (Add to Games → Stream (test): a stand-in folder of sparse files, libnetfs.so first in LD_PRELOAD fetching parts as the game reads them, whole small files / folder batches, "Loading from NAS" tag, Streamed games window with size limit, Free up space and per-game keep mode, *.vdf install scripts prefetched, installers skipped); Add to Games program picker (game exe over a launcher, user can choose); store-page Uninstall removes the game's shortcuts (fix/store-uninstall-shortcuts); plus main's store ✕ leaves the store (already on main).
+- Merge: backup refs/backup/20261115/main-before-network-games = bb8dcfaa; --no-ff; merged tree == 87cb84fb (CI 43763031266 green ×4, installed on the FIT 16:28 EST).
+- Device proof: Cyberpunk 2077 streamed to its menu, Darksiders/SoRR start streamed, read checks 0 empty reads (11-15); user tested the combined build ("works": store ✕, uninstall shortcut removal). Not device-tested: installer skip, cache-size fix, every store's uninstall path.
+- Known game issues (not streaming): GTA V crash GTA5.exe+0x121fa24, Darksiders title video freeze.
+
+## 2026-11-15 15:50 EST — Add to Games picks the game exe (user can choose), setup skips installers, true cache size (feat/network-games-spike 95335172, CI)
+- Why: user 11-15 "do 1 2 and 3 … let the user select game exe files found if multiple are present".
+- Built: 95335172 — GameFolderScanner.rankListed (same scoring as a local scan, from a drive listing); AddReq lists the folder's exes on open / folder change, picks the best (a clicked launcher gives way to a game exe ranked above it), "Game program" line with the others to choose (Classic + Lab); prefetch skips installer/uninstaller exes; cachedBytes counts a ≤1-block file only when SEEK_DATA finds data.
+- CI: 43758966389. Not device-tested yet. User: "install it when done".
+- Note: the exe picker and installer rules also help Copy (merged to main without them); port to main when the user wants.
+
+## 2026-11-15 15:35 EST — Streaming: Cyberpunk 2077 plays from the NAS (feat/network-games-spike dc05ae85 = FIT 58aa6260)
+- User: "cyberpunk worked" — streamed (Keep what's loaded), 311 loads from the NAS at ~14 MB/s in the first 2 minutes; read check 6680 reads, 0 on a hole.
+- GTA V (re-added with the *.vdf prefetch): same crash at GTA5.exe+0x121fa24; read check 1625 reads, 0 on a hole → the game's own issue; user: drop it. Darksiders: title video freezes with a full local copy too → not streaming.
+- Open: adding a whole folder picked Cyberpunk's REDprelauncher.exe over bin/x64/Cyberpunk2077.exe (prefer the game exe); installer exes prefetched (GTA's "Social club", 129 MB); the cache total counts 4 KB per tiny empty file; remove the test tools from the FIT (tracefs instance netfs, /data/local/tmp/ino, /sdcard/Download/ino). Streaming stays a test branch until the user says merge.
+
+## 2026-11-15 — Streamed games: the missed-read bug found and fixed (feat/network-games-spike, CI)
+- Why: GTA V and Darksiders (both Steam-emulator copies) stopped at start ("steam_api.dll failed to initialize"); their steam_api.ini was never fetched.
+- Found: inotify showed the game READ steam_api.ini; trace builds of libnetfs (read/pread/mmap/open/recvmsg/sendfile/copy_file_range/splice/fread/_chk hooks) saw no read; fanotify = ENOSYS; tracefs f2fs_dataread_start named darksiders1.exe (4096 + 2326-byte reads). Cause: **libfakeinput.so (earlier in LD_PRELOAD) exports read() and sends every non-controller read to syscall(SYS_read)** — libnetfs never saw read(). Same cause behind SoRR needing the whole SorR.dat.
+- Proof: test helper that also hooked syscall() → Darksiders got past the check, fetched its small files (4 in 473 ms) and media, reached its title screen (124 fps); user then saw it sit on the title logo (still loading, stream-only mode).
+- Built: cc371af1 — libnetfs first in LD_PRELOAD for network games; stdio hooks (fopen/fdopen/freopen fetch at open; fclose/closedir forget). CI 43752408660.
+- Also seen: GTA V with its small files filled by hand ran, streamed rpf data, then crashed twice at GTA5.exe+0x121fa24 (maybe the same bug: read() data came back empty) — retest on cc371af1.
+- Test leftovers on the FIT (undo!): imagefs/usr/lib/libnetfs.so = test build, chattr +i; tracefs instance instances/netfs; /data/local/tmp/ino. Lessons: a preloaded library that hooks a call must forward it with RTLD_NEXT, never a raw syscall, or later preloads are skipped; check every preload's exports (llvm-readelf) before trusting a hook.
+- Device test 11-15 14:36 EST on cc371af1 (installed 14:35, sha256 7f330349): LD_PRELOAD starts with libnetfs.so; Darksiders passes the Steam check; kernel trace of every read of the stand-in files checked against holes afterwards: **3685 reads, 0 on a hole**. Darksiders still sits on its title logo (no prompt) — not a streaming fault.
+- A/B 14:48 EST: the user's full local copy of Darksiders (no streaming) freezes on the title video the same way → a Darksiders/Bannerlator video issue, not streaming. CORRECTION: nothing was replaced — the full copy had never been added; added at 14:49 it was named "darksiders1" because the importer's Steam-name rename refuses a taken name. Fix b760d5a4: the next free "Name (2)" instead (importer only), CI 43754849082.
+- GTA V retest 14:56 EST on cc371af1: passes the Steam check on its own now; streams; crashes at GTA5.exe+0x121fa24 as before. Read check: 2944 reads, the game got data for all of its own; the only 2 empty reads were BL's own (InstallScriptRedists, thread DefaultDispatch) of _CommonRedist installscript.vdf → GTA V crash is not streaming. Fix 8a3df9d6: *.vdf ≤ 512 KB fetched with the stand-in (redist folders too) and kept. CI 43755565176 (with b760d5a4).
+- Resume: FIT has cc371af1. Test tools left on the FIT: tracefs instance instances/netfs, /data/local/tmp/ino (holecheck, ino, fan), /sdcard/Download/ino.
+
+## 2026-11-15 — GTA V streamed launch A/B (feat/network-games-spike, testing)
+- Why: the user's streamed GTA V (03:54 EST) quit at start: `"steam_api64.dll" failed to initialize`, c0000142. Only exe/dll were in the stand-in; its small settings files (steam_api.ini, steam*.wow, …) were never fetched.
+- Test: the 7 small top-level files filled from the NAS (sha1 match, mtime kept), relaunch. Past the error → libnetfs misses the crack's reads; same error → not streaming.
+- Also seen: create() prefetched 129 MB of "Social club" installer exes → skip installer folders.
+- Resume: FIT has 4bf309cf (a8c1a9be). Temp files /sdcard/Download/gta-small-tmp.
+
+## 2026-11-15 00:25 EST — feat/network-games-spike: copy AND stream NAS games in one build (branch, CI running)
+
+- **User:** "both go" (Add to Games by copying: must ask where to copy, also on NAS folder menus; streaming spike) → "make both options available to test both in one apk".
+- **Branch:** feat/network-games-spike off feat/fm-network-drives (6f947bf2 = Network drives + Add to Games copy, CI 43678806335 green ×4). Code e924b017.
+- **Copy (6f947bf2):** NAS exe/folder ⋮ → Add to Games… → game folder (exe: GameIdentifier.gameFolderOf rule; every level up to 6 pickable), size, How, Copy to (each volume's Winlator/Games or a chosen folder), container → copy in the app scope (leaving the file manager doesn't stop it; Cancel; rerun fetches only what's missing) → exe added to Games (the one started on, else GameFolderScanner.gameIn).
+- **Stream (e924b017):** How = Stream from the network (test) → stand-in in files/netgames/<Game> (folders + sparse files at real sizes + dates; exes/dlls/files ≤ 4 MB fetched whole) → drive letter for files/netgames added to the container once (WinePath.ensureDrive) → exe added to Games; registry netdrives/streams.json. Launch: GuestProgramLauncherComponent → NetStream.launchEnv → rcd (now --rc-serve) + private stream.conf (port, prefix, auth) → libnetfs.so in LD_PRELOAD with BLNETFS_ROOT/BLNETFS_CONF.
+- **libnetfs.so (cpp/winlator/netfs.c):** hooks read/pread(64)/readv/preadv(64)/mmap(64)/write*/close/dup2/dup3; fds classified by fstat + /proc/self/fd (wineserver's socket-passed fds work); holes found with SEEK_HOLE; missing 8 MB chunks fetched as up to 8 parallel ranged GETs and pwritten into the sparse file (shared by all processes); 2-chunk read-ahead (≤ 4 background threads); writes fetch the whole file first; retries ~15 s then EIO; atfork resets locks.
+- **Proof so far (Pocket FIT proot, glibc build of netfs.c + rclone rcd --rc-serve + Nighthawk NAS):** pread / read / mmap at 5 offsets of Bayonetta data10.cpk (853 MB, sparse stand-in) == the NAS's bytes (FNV-64 match); only fetched chunks use disk; sequential 28.8 MB/s (one 8 MB GET alone ~7 MB/s; NAS raw 33.8 MB/s).
+- **CI:** build-artifacts 43679956619 (headSha e924b017 asserted) — running.
+- **Not done / limits:** NOT device-tested in the app; x86_64 (Box64) containers unproven (arm64ec first); new files the game writes into its folder stay local; removing a streamed game leaves its stand-in (files/netgames); the NAS must stay reachable while playing (a fetch that fails for ~15 s gives the game a read error).
+- **Resume:** worktree /root/src/Bannerlator-wt/network-games; test = FIT, pubg APK, file manager → NAS → Bayonetta.exe → Add to Games → Stream → launch → game log lines "netfs: …".
+## 2026-11-15 16:18 EST — fix/store-close-leaves-store MERGED into main (9b98c499), NOT device-tested
+
+- **User:** "merge to main if green". CI 43761896820 (c3f2999a) success ×4, no compiler warnings in StoreSectionHost.kt.
+- **Merge:** backup `refs/backup/20261115/main-before-store-close-leaves-store` = d115c396 (pushed); `--no-ff` merge 9b98c499 (parents d115c396 + c3f2999a); merged tree == branch tip == the CI-tested commit. No release workflow running.
+- **Proof level:** CI-green; NOT device-tested. Main CI starts on this push. root-27 will build main + fix/store-uninstall-shortcuts into its streaming branch for the FIT.
+- **Open:** device test (✕ in each store's menu leaves the store; B / tap outside close only the list). Branch kept.
+
+## 2026-11-15 16:07 EST — fix/store-close-leaves-store: the store menu's ✕ closes the store (branch, CI next)
+
+- **Why:** user feedback on the ✕ from 75d304a7 (on the FIT in root-27's a6ef5dce = main d115c396), relayed by root-27: "I see the close button but it just closes the menu not the store".
+- **Built:** 01eb2ccee — StoreSectionHost.kt StoreSwitcher: the ✕ closes the list and finishes the store's Activity (= every store's onClose: Steam, GOG, Epic, Amazon, Xbox); B and a tap outside still close only the list. Only this file (root-27 is in store/*Activity.kt etc. on fix/store-uninstall-shortcuts).
+- **Next:** CI, stage APK, ask before install; test: ✕ in each store leaves it back to Bannerlator, picking a store still switches, B closes the list only.
+## 2026-11-15 16:15 EST — fix/store-uninstall-shortcuts: a store page's Uninstall removes the game's shortcuts (branch, CI running)
+- Why: user 11-15: "when a game is downloaded from one of the app stores and creates a shortcut, after uninstalling that game it leaves the game shortcut behind". Verified: only DownloadActions.uninstall removed shortcuts; SteamLibraryTab.uninstall, XboxDownloads.uninstall (Xbox page), Epic/GOG pages, Amazon list + page did not. FIT library check found 6 such dead shortcuts (Among Us, 5 Steam NFS) + 1 hand-added (RE2, folder gone) + 2 empty leftovers; removed with the user's yes (backups in Download/Bannerlator-backup/removed-shortcuts-20261115).
+- Built: d9d79936 — StoreShortcutCleanup (DownloadActions' removal moved out; real-path comparison) called from every store uninstall; Xbox confirm text updated.
+- CI: 43762035530. Not device-tested.
+- Not mine: the store menu ✕ closing only the menu (user report) — root-a3 is fixing it on fix/store-close-leaves-store.
+
+## 2026-11-15 15:49 EST — Correction: wrong times on six of my entries today (log only)
+
+- **Mistake:** I wrote times in six headings from guesses instead of reading the clock. The commit times (local, `git log --date=format-local`) are: dd-driver-import built 14:01 (written 13:50), CI green 14:14 (14:20), merged 15:02 (14:45); store-switcher-close built 15:23 (15:30), CI green 15:34 (15:52), merged 15:40 (15:58). Headings fixed in place, each marked "corrected". No code change.
+- **Lesson:** run `date` right before writing a time into the log or memory; same slip as the 11-14 Streets of Rage entries.
+
+## 2026-11-15 15:40 EST (corrected; first written as 15:58) — fix/store-switcher-close MERGED into main (75d304a7), NOT device-tested
+
+- **User:** "merge to main" (after "Not now" to installing the test APK). Merged before a device test by the user's choice.
+- **Merge:** backup `refs/backup/20261115/main-before-store-switcher-close` = 4af0e8d5 (pushed); `--no-ff` merge 75d304a7 (parents 4af0e8d5 + 64ef7656); merged tree == branch tip; code == CI-tested 43fc9e31 (only PROGRESS_LOG.md differs). No release workflow running.
+- **Proof level:** CI-green (43757794950, ×4); NOT device-tested. Main CI starts on this push.
+- **Open:** device test (✕ in each store's menu closes it, picking still switches, B still closes). Branch kept.
+
+## 2026-11-15 15:34 EST (corrected; first written as 15:52) — fix/store-switcher-close CI GREEN, APK staged (branch, awaiting install go)
+
+- **CI:** build-artifacts 43757794950, headSha 43fc9e31, pubg/standard/ludashi/antutu success; no compiler warnings in StoreSectionHost.kt.
+- **Staged:** `/sdcard/Download/Bannerlator-store-switcher-close-43fc9e31.apk` (pubg), sha256 bd0882d4… host == device.
+- **Note:** the FIT runs root-27's 58aa6260 (network-games-spike, 21 commits not on main); this APK replaces it. Bannerlator was open on screen at 15:52.
+- **Next:** user's yes → install → test the ✕ in each store's menu.
+
+## 2026-11-15 15:23 EST (corrected; first written as 15:30) — fix/store-switcher-close: close button in the store menu (branch, CI next)
+
+- **Why:** user (screenshot 15:13, Steam store, portrait): the store menu under the top-left store name ("Steam ▾": Steam / GOG / Epic Games / Amazon Games / Xbox) "lacks a close button". Lab rule: every pop-up needs a tappable close.
+- **Built:** b044de50a — StoreSectionHost.kt StoreSwitcher: a header row with LabCloseButton (✕, not focusable, the controller keeps B) and a divider above the stores. One shared menu: Steam (SteamMainActivity) and GOG/Epic/Amazon/Xbox (StoreSectionHost) all get it.
+- **Next:** CI, stage APK, ask before install; test: open the menu in each store, ✕ closes it, picking a store still switches, controller B still closes.
+
+## 2026-11-15 15:25 EST — feat/fm-network-drives MERGED into main (a27b69bd)
+- What: Network drives in the file manager — rclone engine downloaded from BFE's release, auto-search of the home network (mDNS + port sweep, open shares listed), add/edit drives (SMB/SFTP/WebDAV/FTP, logins kept encrypted), browse, copy both ways, rename/delete/new folder; Add to Games by copying a game folder from a drive (Copy to shown first and remembered; game root found from an exe several folders deep); a second copy of a game is named "Name (2)".
+- Merge: backup refs/backup/20261115/main-before-fm-network-drives = 887201c6; --no-ff; merged tree == feat/fm-network-drives (CI 43756467755 green ×4 on 00f79eac + a log commit).
+- Device proof: browse + SFTP login + Add to Games copy used by the user on test builds 11-14/15 (user: "we know nas copy works"); this exact build not installed.
+- Not in main: streaming games from a drive (feat/network-games-spike, continues as a test branch).
+
+## 2026-11-15 15:20 EST — feat/fm-network-drives: the NAS part, ready to merge on its own (branch, CI running)
+- Why: user 11-15: merge "add NAS, browse and copy games to device from NAS" into main; streaming continues separately on feat/network-games-spike.
+- Built: backup refs/backup/20261115/feat-fm-network-drives-before-main-merge-887201c6 = 6f947bf2; merged main 887201c6 (ff236200; only PROGRESS_LOG conflicted, both kept; main's files identical); cherry-picked "Name (2)" for a second copy (1c14bcc6 = b760d5a4); Copy to first + last place remembered (00f79eac = the copy half of 91d807bc). No streaming code (no NetStream/libnetfs/launcher changes).
+- CI: 43756467755.
+- Device proof so far: network drives browse + SFTP login (user, 11-14/15), Add to Games dialog (user video). To do before merge: Add to Games → Copy of a small game on this build, launch it.
+- Next: install (ask), test, merge to main (backup main first), then merge main into feat/network-games-spike.
+
+## 2026-11-14 23:22 EST — feat/fm-network-drives: Network drives in the file manager (branch, CI running)
+
+- **User:** "so what now, how do we add a network drives section to the app file manager that will download the required package and automatically scan home networks for open Nas and an option to add NAS drives or storage" + "it should automatically detect and list available open network storage drives if detected after being added and downloading as an outside package" → plan given → "yes go".
+- **Why:** step 1 of running games from the home NAS (see memory bannerlator-network-games): browse / add / log in / copy, greyed when unreachable. Running games in place is NOT part of this.
+- **Checked first (live, from the Pocket FIT on home Wi-Fi):** BFE's rclone release asset still published (`rclone-v1.75.2-android-arm64.gz`, sha256 259868b5… = BFE's pin, unpacks to 190151335b…); the bionic binary runs; guest SMB on the Nighthawk NAS (192.168.1.216) lists share `usb` → 14TB-HDD + Seagate-5TB; SFTP login on 2222 works; wrong password → "unable to authenticate"; rcd `core/obscure` + `operations/list` with on-the-fly remotes work and leave the config file empty. Discovery: mDNS `_smb._tcp` and WS-Discovery got no answer from the NAS (its wsdd2 is installed but not running); a TCP sweep of port 445 over 192.168.1.1–254 found it in 8.3 s.
+- **Built e0baf52a (off main 1ed649e7):**
+  - `netdrive/`: `NetEngine` (download on tap from BFE's release, sha256-checked, self-test, filesDir/netdrives/rclone), `NetDaemon` (one rcd on 127.0.0.1, random port + password, idle stop 90 s, `--contimeout 8s --timeout 60s`), `RcClient` (BFE's), `NetDrive` + `NetDriveStore` (Keystore AES-GCM sealed list, Xbox store pattern), `NetFs` (list/mkdir/delete/rename/transfer jobs with progress + cancel, obscured passwords, `scrub` cuts passwords and remote strings out of errors and logs, plain-words errors), `NetScan` (NsdManager `_smb._tcp` + 445 sweep of the /24, reverse-DNS names, guest check → Open / Needs login), `NetHub` (Compose state: saved, reach, found, scanning; rescan after 60 s / network change / install).
+  - File manager (Classic + XMB + Lab): `FmLoc.Net` / `FmItem.Net`; Home "Network" section (Set up → Downloading % → saved drives, found shares, Search again, Add drive); unreachable saved drive greyed + not openable (menu still works: Edit, Check again, Remove); open file = fetch to cache then open; copy/move device → drive, copy drive → device or drive (paste, Copy over / Copy to, conflict prompt, progress, Cancel); new folder, rename, delete, properties; add/edit/log-in form (SMB/SFTP/WebDAV/FTP, blank user = guest/anonymous, Save tests the connection first, "Save anyway"). Pickers leave Network out (they return a path).
+  - `network_security_config.xml`: cleartext to 127.0.0.1/localhost only (for rcd). `NOTICE_RCLONE.txt` added.
+- **CI:** build-artifacts 43676398104 (headSha e0baf52a asserted) — running.
+- **Open / next:** green CI → stage APK in /sdcard/Download with sha256 → ASK before install → device test on the FIT against the NAS (setup download, auto-find, browse, copy both ways, greyed when the NAS is unplugged, Lab + Classic). Known limits: copies stop if the file manager page is left (same as local copies); SFTP host keys not checked; mDNS/sweep only on Wi-Fi/Ethernet.
+- **Resume:** worktree /root/src/Bannerlator-wt/fm-network-drives, branch feat/fm-network-drives.
+## 2026-11-15 15:02 EST (corrected; first written as 14:45) — feat/dd-driver-import MERGED into main (a8c7a987), NOT device-tested
+
+- **User:** "merge to main" (after "Not now" to installing the test APK). The user chose to merge before a device test; recorded here as their decision.
+- **Merge:** backup `refs/backup/20261115/main-before-dd-driver-import` = 6fab62da (pushed); `--no-ff` merge a8c7a987 (parents 6fab62da + 93a0b9e5); merged tree == branch tip; code == CI-tested 82d85c13 (only PROGRESS_LOG.md differs). No release workflow running.
+- **Proof level:** CI-green (43750239230, ×4); NOT device-tested. Main CI starts on this push.
+- **Open:** device test (DroidDeck list → download → picker Android only / both / Cancel; install from file `/sdcard/Download/DD-Turnip-v0.7.0.zip`; Lab + Classic; Linux runtime import of the DD zip; logcat FATAL check). Branch feat/dd-driver-import kept.
+
+## 2026-11-15 14:14 EST (corrected; first written as 14:20) — feat/dd-driver-import CI GREEN, APK staged (branch, awaiting install go)
+
+- **Correction:** CI 43750095575 (361e72c6) cancelled by me before it finished: two Kotlin 2.0.21 compile risks in the new code (`catch (_: …)`, an early `return@key` in a composable). Fixed in 82d85c13.
+- **CI:** build-artifacts 43750239230, headSha 82d85c13, standard/antutu/ludashi/pubg all success; no compiler warnings in the changed files.
+- **Staged:** `/sdcard/Download/Bannerlator-dd-driver-import-82d85c13.apk` (pubg flavor = the FIT's com.tencent.ig), sha256 4ce4dffc… host == device. DD zip `/sdcard/Download/DD-Turnip-v0.7.0.zip` sha256 502ea8aa….
+- **Note:** the FIT now runs root-27's network-games test build 4bf309cf (not on main); this APK replaces it.
+- **Next:** user's yes → install → test plan in the previous entry.
+
+## 2026-11-15 14:01 EST (corrected; first written as 13:50) — feat/dd-driver-import: DroidDeck drivers in the lists + Android/Linux pick (branch, CI next)
+
+- **Why:** user asked whether BL can use DroidDeck's drivers: DD-Turnip zips (android/ + linux/ + manifest.json) were refused ("No meta.json in the zip"). User: "android ticked by default, call it DroidDeck, build it".
+- **Built:** 3d1f5a2a — built-in driver source "DroidDeck" (Droid-Deck/Drivers releases, DD-Turnip-v*.zip); a manifest.json bundle asks which parts on every DriverInstaller.install (downloads + install from file, Classic + Lab: one host in MainActivity, Lab look in Lab), Android ticked, Linux not; Android → Graphics Driver list, Linux → Linux runtime drivers (same-name refused / replaced under the same id); AdrenoTools refuses glibc libraries; the Linux importer picks the glibc library out of several; the Wayland importer refuses bundles; per-URL records hold every part.
+- **Checked:** DD-Turnip-v0.7.0.zip sha256 OK, android .so has no "libc.so.6", linux .so has; FIT drivers (Banners-AIO r4, turnip-sdk36, Qualcomm v819) have none (glibc guard no false positive).
+- **Not run:** unit test DriverBundleTest (no CI step runs unit tests; no local SDK).
+- **Next:** CI build, stage APK, ask before install; device test: DroidDeck list → download → picker (Android only / both / Cancel), install from file, Lab + Classic, logcat FATAL check.
+- **Resume:** worktree /root/src/Bannerlator-wt/dd-driver-import, branch feat/dd-driver-import; DD zip in session scratchpad ddzip/.
+
+## 2026-11-15 00:27 EST — Streets of Rage Remake: controller confirmed (no code change)
+
+- **User:** "controller worked after setting it before launch" — the game's "DirectInput games can see the controller" switch on before launch (SDL 1.2 reads pads through winmm, which Wine builds on DirectInput). Closed.
+- **Idea (not started):** spot winmm/SDL 1.2 games (SDL.dll importing joyGetPosEx) and turn DirectInput on for them, or name the case in controller.txt.
+
+## 2026-11-15 00:24 EST — fix/wayland-desktop-clip MERGED into main (b543ec0e)
+
+- **User:** "merge it".
+- **Merge:** backup `refs/backup/20261115/main-before-wayland-desktop-clip` = 9270d6b4; `--no-ff` merge b543ec0e (parents 9270d6b4 + 2a30852d); tree == branch tip; code vs device-tested ac39da17: only PROGRESS_LOG.md differs. Main CI 43680928632.
+- **Streets of Rage Remake on the Wayland path:** full screen in every Fit mode (2ead3b84) and no console-window strip (b543ec0e), both device-proven on the Pocket FIT. Open: whether the controller works with DirectInput on (user to confirm); a Wine-side viewport reset in wayland_desktop_resize (would need a new Proton layer) not done.
+
+## 2026-11-15 00:22 EST — fix/wayland-desktop-clip DEVICE-PROVEN on the Pocket FIT (branch, awaiting the user)
+
+- **Run:** user, 00:20:35-00:21:20 EST, Streets of Rage Remake. Wayland log still shows the 640x480 resize being followed.
+- **Screenshots:** Fit (00:21:04) picture 240-1680 with plain black beyond, no console strip; Stretch (00:21:09) full screen; Pixel-perfect (00:21:14) 320-1600, no strip.
+- **Crash check:** crash buffer empty for the app; no new tombstone; exit EXIT_SELF code 0.
+- **Next:** merge to main on the user's go.
+
+## 2026-11-15 00:08 EST — fix/wayland-desktop-clip installed on the Pocket FIT (branch, device test next)
+
+- **CI:** compositor-only 43679223288 success; full APK 43679225801 success ×4 (ac39da17), no compositor.c warnings. Main CI 43679054889 (2ead3b84) success ×4.
+- **User:** "Yes, install now". Installed 00:08:17 EST, base.apk sha256 034000ee… == staged `/sdcard/Download/Bannerlator-wayland-desktop-clip-ac39da17.apk`.
+- **Test:** user launches Streets of Rage Remake, Fit + Pixel-perfect screenshots; pass = no strip past the picture's right edge, picture unchanged, 640x480 resize line still in the wayland log, no crash. Undo = the 6f7f0929 APK in Download (= main code).
+
+## 2026-11-15 00:05 EST — fix/wayland-desktop-clip: windows cut off at the desktop edge (branch, CI running)
+
+- **Why:** user "fix the console strip too": Streets of Rage Remake's console window (665x434) sticks out past its 640x480 desktop, a strip with title-bar buttons in the letterbox bars (Original/Fit/Pixel-perfect).
+- **Built:** ac39da17 — compositor.c `add_surface`: with a desktop, each draw is clipped to the scene (the desktop), the source rectangle cut by the same share; a window wholly outside is not drawn (its feedback is discarded like any surface outside the scene). Translucency is decided on the full size before the cut. layer_candidate is unaffected (it needs a draw that covers the whole scene uncut).
+- **CI:** compositor-only 43679223288, full APK 43679225801 (headSha ac39da17).
+- **Test plan:** stage pubg APK, ask before install, SorR in Fit + Pixel-perfect: strip gone, picture unchanged; crash check.
+
+## 2026-11-14 23:59 EST — fix/wayland-desktop-resize MERGED into main (2ead3b84)
+
+- **User:** "merge it and fix the console strip too".
+- **Merge:** backup `refs/backup/20261114/main-before-wayland-desktop-resize` = bbf21021; `--no-ff` merge 2ead3b84 (parents bbf21021 + 3baafd3e); tree == branch tip; code vs device-tested 6f7f0929: only PROGRESS_LOG.md differs. Main CI 43679054889.
+- **Next:** console-window strip (windows drawn outside the Windows desktop) on a new branch.
+
+## 2026-11-14 23:55 EST — fix/wayland-desktop-resize DEVICE-PROVEN on the Pocket FIT (branch, awaiting the user)
+
+- **Run:** user, 23:52:26-23:53:12 EST, Streets of Rage Remake, game resolution 1280x720 unchanged.
+- **Log:** `23:52:28.861 desktop resized to 640x480: old 1280x720 viewport dropped (it no longer fits the buffer)` then `desktop size 640x480`. Modes: Original/Fit 1440x1080 at 240,0; Stretch 1920x1080; Fill 1920x1440 at 0,-180; Pixel-perfect 1280x960 at 320,60. The 5 screenshots (23:52:48-23:53:06) show the same.
+- **Crash check:** crash buffer empty for the app; newest tombstone is from 11-13 (qcrosvm, unrelated); exit reason EXIT_SELF code 0.
+- **Leftover (pre-existing, cosmetic):** the game's console window (665x434) sticks out past the right edge of the 640x480 desktop, so a small strip with its title-bar buttons shows in the black bars (Original/Fit/Pixel-perfect). The compositor does not clip windows to the desktop; possible follow-up.
+- **Not tested:** other games that change resolution; X11 sessions are not touched by this change.
+- **Next:** merge to main on the user's go.
+
+## 2026-11-14 23:51 EST — fix/wayland-desktop-resize installed on the Pocket FIT (branch, device test next)
+
+- **User:** "Yes, install now". Installed 23:51:04 EST, base.apk sha256 2bfa4ab7… == staged APK. Replaced the parallel session's fm-network-drives e0baf52a (sessions told).
+- **Test:** the user launches Streets of Rage Remake with the game resolution left at 1280x720 (so the fix itself is tested) and tries Fit / Stretch. Pass = wayland log shows `resized to 640x480: old 1280x720 viewport dropped` and `desktop  size 640x480`, the picture fills the screen per mode, no crash in the crash buffer / exit reasons.
+- **Resume:** read the newest wayland log + screenshots; undo = reinstall e0baf52a or main.
+
+## 2026-11-14 23:48 EST — fix/wayland-desktop-resize: CI green, APK staged (branch, awaiting install go)
+
+- **CI:** compositor-only 43677919630 success; full APK 43677922141 success ×4 (headSha 6f7f0929). No compiler warnings from compositor.c (the 5 warnings are adrenotools).
+- **Staged:** `/sdcard/Download/Bannerlator-wayland-desktop-resize-6f7f0929.apk` (pubg), sha256 2bfa4ab7… host == device; its libbannerwayland.so carries the new "viewport dropped" log text.
+- **Device test:** not yet; install needs the user's yes (the FIT has a parallel session's fm-network-drives e0baf52a build).
+- **Correction:** the entry below was written at about 23:35 EST, not 23:55 (header fixed).
+
+## 2026-11-14 23:35 EST — fix/wayland-desktop-resize: desktop follows a game's display-mode change (branch, CI running)
+
+- **Why:** Streets of Rage Remake switches to 640x480; the picture stayed in the top-left of a 1280x720 scene and no Fit-to-screen mode could fill the screen (entries below).
+- **Cause (code-read):** on the virtual desktop explorer paints the desktop window through a wayland window surface, which sets a wp_viewport at the desktop size (wayland_surface_reconfigure_size + attach_shm). winewayland's `wayland_desktop_resize` later attaches a buffer of the new size without viewport requests, and the game window covers the desktop so it never repaints: the compositor keeps the old viewport, so `scene_size` stays 1280x720.
+- **Built:** 6f7f0929 — compositor.c `desktop_drop_stale_viewport`: a desktop commit that changes the buffer size without viewport requests, or whose source no longer fits the buffer, drops the viewport. Log: `desktop  resized to 640x480: old 1280x720 viewport dropped (...)`.
+- **CI:** compositor-only 43677919630, full APK 43677922141 (headSha 6f7f0929 both).
+- **Device test:** not yet. Plan: stage pubg APK, ask the user before install (FIT has a parallel session's fm-network-drives e0baf52a test build), launch SorR, check the two log lines + full-screen picture in each Fit mode, logcat FATAL check.
+- **Open:** a Wine-side fix (reset the viewport in wayland_desktop_resize) would need a new Proton layer; not done.
+- **Correction:** the "23:45 EST" entry below was written at about 23:28 EST.
+
+## 2026-11-14 23:35 EST — Streets of Rage Remake: in-game Fit to screen modes do not help (logs read, no code change)
+
+- **User:** 5 screenshots 23:22-23:31 (run 23:30:47-23:31:47): cycled Fit to screen Original/Fit/Stretch/Fill/Pixel-perfect.
+- **Log:** every mode is applied to a "1280x720 scene"; the game stays in that scene's top-left 640x480 corner (Pixel-perfect: scene 1280x720 at 320,180). Confirms the 23:45 diagnosis: the desktop never follows the game's 640x480 switch.
+- **Device:** game exited itself 23:31:47; a parallel session then installed feat/fm-network-drives e0baf52a (23:31:49). Workaround (Game resolution 640x480) still untried.
+
+## 2026-11-14 23:45 EST — Streets of Rage Remake: picture not full screen (logs read, no code change)
+
+- **User:** "why isn't it full screen?" (same game, Pocket FIT, main code).
+- **Seen:** the game switches to 640x480. Wine logs `winewayland: virtual desktop resized to 640x480` (run 23:20: 640x480 → 1280x720 → 640x480), but the compositor's wayland log never logs a new desktop size: the scene stays 1280x720 (container Game resolution), so the 640x480 game sits at 0,0 and is scaled 1.5x = 960x720 in the top-left (matches the 23:15:30 screenshot).
+- **Code read:** proton-wine proton_11.12.3-DroidDeck window.c `wayland_desktop_resize` attaches a fresh 640x480 shm buffer to the desktop surface; compositor.c `scene_size` takes the desktop's surface size (viewport destination/source first, else the buffer size). Where the new size is lost is not pinned yet.
+- **Workaround offered (untested):** this game's Game resolution = 640x480 (+ Fill the screen Fit/Stretch), relaunch.
+- **Controls:** the user turned the game's DirectInput switch on (inputType=12) and played 23:20-23:22; result not reported yet.
+- **Resume:** user's go to find + fix the desktop-resize path (compositor + winewayland), or result of the workaround.
+
+## 2026-11-14 23:25 EST — Streets of Rage Remake: controller not found (logs read, no code change)
+
+- **User:** controls did not work in Streets of Rage Remake (Pocket FIT, main code d2e208d3); screenshot 23:15:30 shows the game's "GAMEPAD 1 NOT FOUND".
+- **Cause:** the game (BennuGD + SDL 1.2, 32-bit) reads pads only through winmm `joyGetPosEx` (SDL.dll imports), and Wine's winmm joystick code sits on DirectInput8 (dlls/winmm/joystick.c). The game's own extras `exclusiveXInput=1 inputType=4` = "DirectInput games can see the controller" off → `Joysticks` = "disabled" hides the pad from winmm too. SDL 1.2 counts pads once at start, so the in-game switch (run 1, +35.6 s on, +55.3 s off) could not help.
+- **App side fine:** run 1 (22:46, 90 s) app sent 1889 updates, Wine read 367 frames; run 2 (23:15) same picture with DirectInput off throughout.
+- **Told the user:** turn the switch on in the game's settings (Controls › Controllers, Advanced) and relaunch. Nothing changed on the device.
+- **Seen, not looked at:** the picture only fills the top-left ~960x720 of the screen after the game switches to 640x480. The game's envVars carry a WINEDLLOVERRIDES list the game folder has no DLLs for (no effect).
+- **Idea:** controller.txt could name winmm games (SDL 1.2) in its XINPUT/DINPUT hints, or BL could turn DirectInput on for them.
+- **Resume:** user's result after the relaunch; if still not found, read the new controller.txt (DINPUT line should say "no entry") + wine_debug.log.
+
+## 2026-11-14 14:15 EST — fix/lab-test-fixes MERGED into main (d33d619e)
+
+- **User:** "merge it".
+- **Merge:** backup `refs/backup/20261114/main-before-lab-test-fixes` = f59ed643; `--no-ff` merge commit d33d619e (parents f59ed643 + d2e208d3). Code vs the tested build d2e208d3: only PROGRESS_LOG.md differs → main code = the build device-tested on the Pocket FIT (CI 43629051037 green ×4). Main push CI: 43630414466.
+- **In main now:** Lab pop-up buttons back (LabActionButton), light-look focus without the offset box, Add game EXE never overwrites a same-name game, restore confirm names the game, file picker follows Orientation.
+- **Open:** Steam pre-flight / EA setup, Ubisoft pop-up, Linux sessions, community upload still not device-tested (reasons in the 14:06 entry); pre-existing: two-tap Lab rows, Remove leaves cover/icon files. Branch fix/lab-test-fixes kept.
+
+## 2026-11-14 14:06 EST — Lab untried-areas device test DONE + fix/lab-test-fixes (branch, awaiting the user)
+
+- **User:** "test the untried areas first, device is yours and finish it". Tested on the Pocket FIT on main code (d03ed0da), then on the fix builds.
+- **Worked (device):** Lab light look (Settings, Updates, Tools, file manager, Wrappers, Library, game page, VEGAS editor, pickers readable); controller only (gamepad B/A/X/R1/R2/L2/D-pad: rail sections, lists, tabs, options, pop-ups); VEGAS editor (4 tabs, delete confirm, real delete of a downloaded build, Save-the-config? on Back); VEGAS builds download (1.11.2 installed, progress shown); stock VEGAS configs list; Turnip download (sources + Banners-Turnip releases); Lab file picker incl. search in subfolders; save backup (DiRT Showdown, 67 files, zip) and the restore confirm (cancelled); community configs: matched game, config detail, Apply to a test game (41 changes), My uploads; Lab Remove confirm. Crash buffer empty throughout.
+- **Bugs found and fixed on fix/lab-test-fixes (off main 0a8b88d7):**
+  - e9c05840 — **from the lp2 merge:** `LabDialogButton` was both a composable (game actions) and a class (LabPanelDialog buttons); calls like `LabDialogButton(L("Cancel"), onClick = x)` built the class and drew nothing → Add games, container picker, Properties, Copy/Move, Confirm game etc. had no Cancel/Close/Save/Skip. Composable renamed `LabActionButton`. Light look: no lift shadow under the focused row / selected tab (showed as a second offset box).
+  - cab202ed — pre-existing (Classic too): Add game EXE wrote over an existing game with the same name (CursorTest.exe in AIO-2.2.0 was named "AIO" and replaced AIO's shortcut and its settings during the test; AIO.desktop restored from backup, the art it wrote removed). New game now gets "Name (2)".
+  - cf97cc79 — pre-existing: restore confirm said "the backup of backup" for a zip picked in the app's picker (file:// Uri); now the game name.
+  - d2e208d3 — pre-existing: the file picker ignored the app's Orientation setting.
+  - CI 43629051037 green ×4 (d2e208d3). Device-proven (d2e208d3 installed 14:04 EST, sha256 e6ee7312): Properties Close, Add games Cancel, container picker Cancel, Confirm game Skip/Save, "AIO (2)" with AIO untouched, restore confirm names DiRT Showdown, picker stays landscape, light focus one box.
+- **Not tested:** Steam pre-flight + EA setup (pre-flight launches the game by itself when its checks pass; Need for Speed Heat would start), Ubisoft pop-up (no Ubisoft-published Steam/Epic game), Linux sessions (754 MB runtime + Android "Disable child process restrictions" developer option needed), community upload (one tap publishes, as in Classic).
+- **Seen, not changed (pre-existing):** Lab menu rows open on the second tap (first tap selects); Remove leaves the game's cover/icon files behind (Classic too).
+- **Cleanup:** test games removed, downloaded VEGAS build + config removed, test backup zip removed (copies in /sdcard/Download/lp2-test/), Look Dark, Orientation Auto, NFS Heat shortcut unchanged. FIT runs d2e208d3. Not merged.
+
+## 2026-11-14 13:15 EST — main: device test of the Lab areas not tried yet (in progress)
+
+- **User:** "test the untried areas first, device is yours and finish it". FIT runs d03ed0da (= main c36fb172 code).
+- **Plan:** Lab light look, controller-only navigation, VEGAS editor, Turnip/VEGAS downloads, Add games, save backup/restore, community browse/apply (+ upload walked to the last step, not sent), EA setup + Steam pre-flight pop-ups via Need for Speed Heat (its .desktop backed up first: the launch request writes launchMode=RealSteam). Not reachable on this device: Ubisoft pop-up (no Ubisoft-published Steam/Epic game), Linux sessions (no Linux runtime installed).
+- **Resume:** restore Lab look + orientation Auto + rotation, NFS Heat .desktop from /sdcard/Download/lp2-test/NFSHeat.desktop.bak, remove test shortcut/configs/downloads, Termux to the front.
+
+## 2026-11-14 12:50 EST — feat/lab-parity-2 MERGED into main (c36fb172)
+
+- **User:** "merge it" (after the 05:23 EST device test of d03ed0da).
+- **Merge:** backup `refs/backup/20261114/main-before-lab-parity-2` = 1a8728a2 (main had not moved since the branch started); `--no-ff` merge commit c36fb172 (parents 1a8728a2 + 75587252). Merged tree = branch tip tree; vs the tested build d03ed0da only PROGRESS_LOG.md differs, so main code = the code device-tested on the Pocket FIT (CI 43583931789 green ×4). Main push CI: 43623964637.
+- **In main now:** Lab pages/rows/pop-ups for every Classic option from the 11-14 audit (settings, game actions + extras, containers, contents, tools, in-game menu, theme), Save Manager Settings scroll (Shuvam's bug), Box64EC download line, full-screen Lab pages (`LabFullScreenWindow`), tappable back/close buttons + tappable hints (`LabTouch.kt`), AGENTS.md removed.
+- **Open (follow-ups, not started):** still Classic: controller test window, layout/bindings editors' pop-ups, TextEditorActivity/UnpackArchiveActivity, store pages without the Lab background, Add games "Recommended components". Not device-tested: VEGAS editor, Turnip/VEGAS downloads, save backup/restore, community upload/apply, add games, EA/Ubisoft/pre-flight pop-ups, Linux sessions, Lab light look, controller-only navigation. User decisions pending: End process confirm, Steam pre-flight B = Cancel, VEGAS delete confirm, Lab VEGAS editor fork (~400 lines). Sub-branches feat/lab-parity-2-* + worktrees kept (delete only on the user's word).
+
+## 2026-11-14 05:25 EST — feat/lab-parity-2: touch back buttons + tappable hints (branch, awaiting the user)
+
+- **User:** "these portrait menus need simple back buttons that are touch screen tappable since portrait is more touch screen driven and landscape is more controller navigation also with touch".
+- **52950295:** new `ui/simple/LabTouch.kt` — `LabHint` (a button hint you can tap; it presses that controller button through the window the way a real press goes; an unhandled B is sent as Back), `LabBackButton` (the Lab top line's ← for pages in their own window), `LabCloseButton`. `SimpleLegend` draws every hint as `LabHint`; the hand-drawn hint rows of `SimpleActionSheet`, `SimplePicker`, the sound-pack list and the download lists too. Full-screen Lab pages (`LabOverlay`: glossary, audio fine-tune, VEGAS editor, editor wrapper manager) get the ← arrow; Lab tool dialogs (`LabDialog`) get a ✕. CI 43582411251.
+- **d03ed0da:** a hint whose button acts on the focused item did nothing after touch (nothing focused): `LabHintFallback` lets a page give the default — Home and Library X opens the shown game's menu, audio page X saves, Start explains the chosen preset. CI 43583931789.
+- **Device (Pocket FIT, touch, portrait + landscape, crash buffer empty):** ← on the glossary and audio page; B Close / Cancel / Back hints (glossary, audio page without saving, picker unchanged, Containers → Home); Y New container (left with B Back, nothing created); X Game menu on Home and Library; Start ? on the audio page. Restored: Lab orientation Auto, system rotation. FIT runs d03ed0da (7d56a946). Not merged.
+
+## 2026-11-14 04:45 EST — feat/lab-parity-2: the 3 small issues (branch, awaiting the user)
+
+- **User:** "fix the 3 small issues first".
+- **Box64EC version row had no download line:** e4cb86bc — `LabDownloads` knows `performance.box64ecVersion`; its "+ Download from source" opens the Lab Box64EC download list (`LabContentDownloadSheet`, same as Translator downloads). Device-proven 04:17 EST (list opens, "In use" right).
+- **Full-screen Lab pages showed the page underneath (its top line, last row and button hints) in a strip above and below:** dumpsys showed the Compose Dialog window at 1080×1764 centred on the 1920 screen — Compose 1.6.2's DialogLayout measures with `screenHeightDp` (screen minus bar areas) and re-sets the window size on every layout, so `setLayout(MATCH_PARENT)`, `decorFitsSystemWindows = false` and hiding the bars (a89536b8) changed nothing. d997b93f: `LabFullScreenWindow` = `androidx.activity.ComponentDialog` (DeviceDefault NoActionBar Fullscreen, transparent, no dim, cutout short edges, hides the bars the activity hides) with a `ComposeView` in the caller's composition; Back runs the page's own BackHandler first, then closes. Used by `LabOverlay` (glossary, audio fine-tune, VEGAS editor, editor wrapper manager). Device-proven 04:43 EST: glossary + audio page fill the screen, one row of hints, Back/B close without saving, d-pad focus moves; crash buffer empty.
+- **Back past the Lab file picker left the app:** reproduced step by step — picker → its Home → closes to Contents → Lab Home → leaves the app; Android's normal Back, Classic has no "press Back again" guard either. Not a bug, no change.
+- **CI:** e4cb86bc 43578791791, a89536b8 43579870047, d997b93f 43580930006 — all green ×4. FIT runs d997b93f (73761c0e). Not merged.
+
+## 2026-11-14 04:00 EST — feat/lab-parity-2: full build installed + device-tested (branch, awaiting the user)
+
+- **Build:** 05036caa (all 8 areas + merge fixes), CI 43577134770 green ×4; `/sdcard/Download/Bannerlator-lab-parity-2-05036caa-pubg.apk` sha256 616995b4… (host = device, cert a40da80a), installed 03:56:19 EST.
+- **Seen working (touch, landscape + portrait, crash buffer empty):** Lab Manage Wrappers (tabs, update badge, Reset all); container card details; "What is all this?" glossary; audio fine-tune page; Translator downloads › Box64EC Lab download window (community switch, sources, install from file); in-game menu (AIO Vulkan): Screen, Performance, Effects, Controls chips, Tools + Task Manager tiles, Performance dashboard pop-up, Exit confirm. Pass-1 items on 8fc677b5 listed in the 03:55 entry.
+- **Found:** audio fine-tune shows its button hints twice (own + the editor's behind it); the Box64EC version row has no download line (downloads live under Advanced › More › Performance › Translator downloads); Back pressed past the Lab file picker's root leaves the app.
+- **Not tried on the device:** VEGAS editor, Turnip/VEGAS downloads, save backup/restore, community upload/apply, add games, EA/Ubisoft/pre-flight pop-ups, Linux sessions, store page skins, Lab light look, controller-only navigation.
+- **Restored after tests:** AIO.desktop (md5 d7398638), Show game stores on, Lab orientation Auto. Not merged; the user decides.
+
+## 2026-11-14 03:55 EST — feat/lab-parity-2: device pass 1 (8fc677b5), in-game menu launch next (branch)
+
+- **Seen working on the Pocket FIT (8fc677b5, no crash):** Lab Settings › Updates page (the original Classic-jump bug), Storage and folders, Root controls and heat safety, new Settings rows (download engines, Steam connection tests, Steam library locations, MIDI banks); Appearance › Show game stores off/on (Stores leaves the side menu; restored on); Tools › Lab file manager + folder listing, Lab Log Manager + Lab log viewer; Save Manager › Settings in landscape scrolls to the last switch (Shuvam's bug); Contents › Linux runtime + Installed (Install GPU driver warning + Browse/Pick via system, Wayland/Linux zip rows), Lab file picker; Controls › Assign + Device; game menu › Community configs page, Properties pop-up; game settings info lines (exe, SD card, container) + Direct XInput row. Wrappers still Classic in this build (containers merge not in it).
+- **Next:** AIO launch (container 1, shortcut execArgs temporarily `--cube vk`, backup /sdcard/Download/lp2-test/AIO.desktop.bak) to check the Lab in-game menu; then full build 05036caa (CI 43577134770).
+
+## 2026-11-14 05:25 EST — feat/lab-parity-2: all 8 areas merged, first device test (branch)
+
+- **Merged** (backup `refs/backup/20261114/lab-parity-2-before-merges` = f6f2e98c): settings, gameactions, gameextras, contents, tools, ingame, theme, containers (each CI-green on its sub-branch). Merge fixes: duplicate `val lab` in ShortcutActionDialogs (game extras' one → `labPages`), SimpleOneMenu Logs tab conflict (kept the settings side: the tab is gone, Lab Settings links to the Lab Log Manager), duplicate internal Lab dialog helpers renamed per area (`LabAction*`, `LabTool*`, `LabSheetDialog`), SimpleClassicEditor link/tool lines combined. Plus root-27's Save Manager scroll fix (bcbb0940 → f6f2e98c).
+- **CI:** 7-area merge 8fc677b5 → 43576106412 green ×4; full 05036caa → 43577134770 running.
+- **Device:** 8fc677b5 pubg staged `/sdcard/Download/Bannerlator-lab-parity-2-8fc677b5-pubg.apk` (sha256 8b1f4341…, host = device, cert a40da80a), installing on the Pocket FIT for a first pass. Undo: `/sdcard/Download/Bannerlator-sound-startup-own-pack-cd44d9c2.apk`.
+
+## 2026-11-14 03:05 EST — feat/lab-parity-2: Lab as a 1:1 equal of Classic (branch, in progress)
+
+- **Why:** user (after Lab Settings › Check for updates opened the Classic Settings page): "lab is supposed to be a 1:1 equal to classic to offer all classic has but all in lab ui style/theme". Audit of main 1a8728a2 (5 areas, code reading, top claims spot-checked): ~15 options missing from Lab, ~45 places where Lab opens a Classic page or pop-up, ~20 partial. User: "do it all on one new branch off main, then install and test to verify"; also remove AGENTS.md.
+- **Built so far:** beb3b1c5 removes AGENTS.md (upstream agent persona incl. an auto `git add/commit/push` rule under another author). d40d4bd1 route groundwork: `ui/simple/LabParity.kt` + one route file per area; Lab redirects the Classic wrapper route and Deck's Stores page to Lab routes; Tools › Wrappers uses the Lab route; side-rail highlight on the wrapper page. CI 43571860249.
+- **Plan:** one helper per area on sub-branches `feat/lab-parity-2-<area>` (settings, game actions, game extras, containers/downloads/wrappers, contents/controls, files/logs/saves/search, in-game menu, Lab theme + store pages), each CI-built, merged here, then one APK, install on the Pocket FIT, drive every area, logcat check. Merge to main only on the user's go.
+- **Resume:** `git ls-remote origin 'refs/heads/feat/lab-parity-2*'`, CI per sub-branch.
+
 ## 2026-11-14 01:56 EST — fix/sound-startup-own-pack MERGED (main 1ad771c0)
 
 - **User:** "sounds right, [no] more start up sound. merge it" — listened on the Pocket FIT with the Switch pack after restarting the app (installed build cd44d9c2, base.apk cbb41ae5; app started 01:35:45 EST, after the 01:32:38 install). Device-proven by the user.

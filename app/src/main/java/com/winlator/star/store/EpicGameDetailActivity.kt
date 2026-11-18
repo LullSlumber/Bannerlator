@@ -72,6 +72,7 @@ import org.json.JSONObject
 import androidx.lifecycle.lifecycleScope
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
+import com.winlator.star.ui.deck.deckShape
 
 class EpicGameDetailActivity : ComponentActivity() {
 
@@ -547,7 +548,9 @@ class EpicGameDetailActivity : ComponentActivity() {
                 val dir = prefs!!.getString("epic_dir_$an", null) ?: return@setPositiveButton
                 lifecycleScope.launch(Dispatchers.IO) {
                     // Only a game folder inside an Epic download location; a library root or a user's folder stays.
-                    StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.EPIC, File(dir))
+                    val refused = StoreShortcutCleanup.keptBySafeDelete(applicationContext, StoreInstallLocations.Store.EPIC, File(dir))
+                    val gone = StoreInstallLocations.safeDelete(applicationContext, StoreInstallLocations.Store.EPIC, File(dir))
+                    StoreShortcutCleanup.afterDelete(applicationContext, Store.EPIC, an, dir, gone, refused)
                     // Purge the FULL native install record via the canonical helper + clear the DL
                     // manager's registry/library row, so the store list and Download Manager stay in
                     // sync. Mirrors Amazon/GOG.
@@ -1135,7 +1138,7 @@ private fun EpicGameDetailScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(deckShape(8.dp))
                                     .background(MaterialTheme.colorScheme.surface)
                                     .padding(10.dp),
                             ) {

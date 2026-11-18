@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.view.KeyEvent
@@ -279,12 +278,17 @@ private fun LabTopIcon(icon: ImageVector, label: String, badge: Int = 0, onClick
 internal fun LabTopLine(portrait: Boolean, onMenu: () -> Unit, onBack: (() -> Unit)?, modifier: Modifier = Modifier, onSearch: (() -> Unit)? = null) {
     val dev = rememberLabDevice()
     val context = LocalContext.current
-    // The Community configs browser and its flows are Classic's (ShortcutActionDialogs), mounted here so the drawer
-    // can open it too: the top line stays on screen when the drawer closes.
+    // Community configs opens Lab's page (ShortcutActionDialogs hands it over, see LabActionHandoffs); it is asked for
+    // here so the drawer can open it too: the top line stays on screen when the drawer closes.
     val vm: ShortcutsViewModel = viewModel()
     val actions = rememberShortcutActions(vm)
     LaunchedEffect(LabTopRequests.community) {
         if (LabTopRequests.community) { LabTopRequests.community = false; actions.showCommunityBrowser = true }
+    }
+    // While the frame is up, game actions and the Save Manager launch can open Lab pages (LabNav).
+    DisposableEffect(Unit) {
+        LabNav.frameShown()
+        onDispose { LabNav.frameGone() }
     }
     val steam = rememberSteamSignedIn()
     Row(
@@ -310,7 +314,8 @@ internal fun LabTopLine(portrait: Boolean, onMenu: () -> Unit, onBack: (() -> Un
             "Bannerlator", color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 1,
             overflow = TextOverflow.Ellipsis, modifier = if (portrait) Modifier.weight(1f) else Modifier,
         )
-        if (!portrait) Text(Build.MODEL ?: "", color = SimpleMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        // The device's name opens the device details (LabDeviceDetails.kt).
+        if (!portrait) Box(Modifier.weight(1f)) { LabDeviceName() }
         LabTopIcon(Icons.Filled.Search, L("Search")) { onSearch?.invoke() ?: labOpenSearch() }
         if (!portrait) {
             LabTopIcon(Icons.Filled.Public, L("社区配置")) { actions.showCommunityBrowser = true }
@@ -325,6 +330,10 @@ internal fun LabTopLine(portrait: Boolean, onMenu: () -> Unit, onBack: (() -> Un
         if (!portrait) LabAccountButton()
     }
     ShortcutActionDialogs(actions)
+    // The community configs pop-ups (apply, its result and installs, share, upload) over whichever Lab page is up.
+    LabCommunityHost(vm)
+    // The device details, opened from the device's name here or in the drawer.
+    LabDeviceDetailsHost()
 }
 
 /**
@@ -411,7 +420,7 @@ internal fun LabDrawer(current: Int, onSection: (Int) -> Unit, onClose: () -> Un
                             Spacer(Modifier.weight(1f))
                             LabAccountButton(onOpen = onClose)
                         }
-                        Text(Build.MODEL ?: "", color = SimpleMuted, fontSize = 12.sp)
+                        LabDeviceName(Modifier.padding(top = 2.dp))
                         if (dev != null) {
                             val showInternal by com.winlator.star.ui.theme.AppThemeState.showInternalStorage.collectAsState()
                             val showSd by com.winlator.star.ui.theme.AppThemeState.showSdStorage.collectAsState()
