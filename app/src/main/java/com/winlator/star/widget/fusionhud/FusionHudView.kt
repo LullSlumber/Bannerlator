@@ -1115,8 +1115,8 @@ class FusionHudView(
         val h = sp(26f)
         // Phones have rounded screen corners; the strip spans the full parent width, so
         // inset both ends further than DroidDeck's 10sp pad to keep the first/last item clear.
-        // The left corner radius eats deeper in practice — give the first item extra room.
-        val endPad = sp(16f)
+        // Both corner radii eat deep in practice (verified on-device) — pad both ends symmetrically.
+        val endPad = sp(34f)
         val startPad = sp(34f)
 
         // Full parent width. Parent wins over displayMetrics when attached (real, current size);
