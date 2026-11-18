@@ -355,8 +355,8 @@ class FusionHudView(
     private fun withAlpha(color: Int, alpha: Int): Int =
         Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
-    /** Cap height of "0" at [px] — DroidDeckHudView.capHeight(), used to baseline the Strip. */
-    private val inkRect = android.graphics.Rect()
+    /** Cap height of "0" at [px] — DroidDeckHudView.capHeight(), used to baseline the Strip.
+     *  (The inkRect scratch rect is the one already declared with the pill-fit helpers.) */
     private fun capHeight(px: Float): Float {
         measurePaint.textSize = px
         measurePaint.getTextBounds("0", 0, 1, inkRect)
