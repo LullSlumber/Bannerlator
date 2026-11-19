@@ -71,6 +71,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -176,7 +177,7 @@ internal fun LabBar(fraction: Float, modifier: Modifier = Modifier) {
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun LabRail(current: Int, onSection: (Int) -> Unit, modifier: Modifier = Modifier) {
+internal fun LabRail(current: Int, onSection: (Int) -> Unit, modifier: Modifier = Modifier, cutoutStart: Dp = 0.dp) {
     val accent = MaterialTheme.colorScheme.primary
     // Wider with bigger text (Android's font size times the app's Font size), so the labels keep fitting.
     val textGrow = LocalDensity.current.fontScale.coerceAtLeast(1f)
@@ -184,12 +185,14 @@ internal fun LabRail(current: Int, onSection: (Int) -> Unit, modifier: Modifier 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
-            .width(80.dp * textGrow)
+            // Landscape: the camera hole sits on a short edge; like the Deck rail, the glass runs under it and the
+            // icons keep clear of it (2026-11-19: the rail used to draw straight through the hole).
+            .width(80.dp * textGrow + cutoutStart)
             .fillMaxHeight()
             .background(SimplePanelBrush, RectangleShape)
             .drawBehind { drawRect(SimpleLineDraw, topLeft = androidx.compose.ui.geometry.Offset(size.width - 1f, 0f), size = Size(1f, size.height)) }
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 10.dp),
+            .padding(start = cutoutStart, top = 10.dp, bottom = 10.dp, end = 0.dp),
     ) {
         LAB_SECTIONS.forEachIndexed { i, s ->
             val on = i == current

@@ -690,7 +690,7 @@ private fun DeckShellContent(
                     XmbHighlightHost(enabled = xmbHome, modifier = Modifier.weight(1f).fillMaxWidth()) {
                     Row(modifier = Modifier.fillMaxSize().padding(horizontal = frame)) {
                         if (simpleHome && rails) {
-                            com.winlator.star.ui.simple.LabRail(current = com.winlator.star.ui.simple.labSectionOf(currentRoute), onSection = labGo)
+                            com.winlator.star.ui.simple.LabRail(current = com.winlator.star.ui.simple.labSectionOf(currentRoute), onSection = labGo, cutoutStart = cutoutStart)
                         }
                         if (rails && !full) {
                             if (!topTabs && !simpleHome) {
