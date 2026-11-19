@@ -425,9 +425,10 @@ private fun DeckShellContent(
         if (currentRoute != DeckRoutes.HOME) nav.back() else homeBack()
     }
 
-    // Landscape hides Android's navigation bar; a swipe in from the edge shows it for a moment, as in a game.
+    // Landscape hides Android's system bars; a swipe in from the edge shows them for a moment, as in a game.
     // It comes back on leaving the Deck style or turning to portrait. Games and stores are other activities with their own windows,
-    // and it is hidden again whenever this one resumes. The status bar stays (except in the XMB mode, below).
+    // and they are hidden again whenever this one resumes. All three shells (Deck / Lab / XMB) hide both bars, like a console:
+    // the plain Deck used to keep the status bar, which read as a black strip on the left in landscape (2026-11-19).
     val activity = context as? android.app.Activity
     val lifecycleOwner = LocalLifecycleOwner.current
     // The XMB mode locks the app to its own orientation (AppOrientation.deckMode). Turning it off, or switching back to
@@ -440,19 +441,18 @@ private fun DeckShellContent(
     // Re-run when the full-screen XMB closes: it shows the system bars again on its way out. XMB only: the Simple home
     // sets the same flag, and re-running this on every page change flashed the system bars (they stay hidden in Simple).
     val xmbShown = if (xmbHome) deckActions.fullscreen.value else false
-    // The Simple style is a console-style full screen on every page: no status bar (Home and the page frame show a clock).
+    // The Lab style is a console-style full screen on every page: no status bar (Home and the page frame show a clock).
     val simpleShown = simpleHome
-    // XMB mode: the status bar goes too, on every tab and in both orientations, like a console.
     DisposableEffect(rails, xmbHome, activity, lifecycleOwner, xmbShown, simpleShown) {
         val window = activity?.window
         if (!(rails || xmbHome || simpleShown) || window == null) return@DisposableEffect onDispose {}
         val controller = WindowCompat.getInsetsController(window, window.decorView)
-        val bars = if (xmbHome || simpleShown) WindowInsetsCompat.Type.systemBars() else WindowInsetsCompat.Type.navigationBars()
+        val bars = WindowInsetsCompat.Type.systemBars()
         val hide = {
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             controller.hide(bars)
             DeckWindow.setNavBarHidden(activity)
-            DeckWindow.setStatusBarHidden(xmbHome || simpleShown)
+            DeckWindow.setStatusBarHidden(true)
         }
         hide()
         val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) hide() }
@@ -464,12 +464,12 @@ private fun DeckShellContent(
             controller.show(bars)
         }
     }
-    // XMB mode: the shell lays itself out edge to edge (the window no longer pads for the bars) and reaches under the
+    // All three shells lay themselves out edge to edge (the window no longer pads for the bars) and reach under the
     // camera hole on every tab, so Android never adds its own black strip and switching tabs doesn't resize the screen.
-    // Only Home draws its content into the hole; every other page keeps clear of it through the insets below.
-    DisposableEffect(xmbHome, activity) {
+    // Only the XMB Home draws its content into the hole; the rail and pages keep clear of it through the insets below.
+    DisposableEffect(xmbHome, simpleShown, rails, activity) {
         val window = activity?.window
-        if (!xmbHome || window == null) return@DisposableEffect onDispose {}
+        if (!(xmbHome || simpleShown || rails) || window == null) return@DisposableEffect onDispose {}
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val cutoutBefore = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) window.attributes.layoutInDisplayCutoutMode else 0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -645,8 +645,8 @@ private fun DeckShellContent(
                 val cutoutEnd = if (rails && !framed) cutout.calculateEndPadding(dir) else 0.dp
                 val baseInsets = if (rails) WindowInsets.systemBars.union(WindowInsets.displayCutout.only(WindowInsetsSides.Vertical))
                     else WindowInsets.systemBars.union(WindowInsets.displayCutout)
-                // Edge to edge (XMB home) the window no longer makes room for the keyboard, so the pages do.
-                val insets = if (xmbHome) baseInsets.union(WindowInsets.ime) else baseInsets
+                // Edge to edge (all three shells) the window no longer makes room for the keyboard, so the pages do.
+                val insets = if (xmbHome || simpleShown || rails) baseInsets.union(WindowInsets.ime) else baseInsets
                 // Home's XMB takes the whole screen, under the camera hole too; the shell floats its tabs and Search over it.
                 Column(modifier = Modifier.fillMaxSize().then(if (homeBleed) Modifier else Modifier.windowInsetsPadding(insets))) {
                     // The My-account sheet opens over the current page (DeckGameActionsHost).
