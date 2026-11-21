@@ -217,7 +217,7 @@ internal class DeckAudioSection(
             val scopeLabel = when (env.scope) {
                 EditorScope.GAME -> L("此游戏")
                 EditorScope.DEFAULTS -> L("新容器")
-                else -> L("此容器")
+                else -> L("这容器")
             }
             // Lab draws the same fine-tune as a Lab page.
             if (com.winlator.star.ui.theme.AppThemeState.simpleLook) com.winlator.star.ui.simple.LabAudioTune(

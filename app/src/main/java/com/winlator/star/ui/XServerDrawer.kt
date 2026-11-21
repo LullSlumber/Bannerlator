@@ -588,7 +588,7 @@ internal fun TvContent(state: XServerDrawerState) {
     val capOptions = listOf("Off", "30 FPS", "60 FPS", "90 FPS", "120 FPS")
     val capValues = listOf(0, 30, 60, 90, 120)
     val capIdx = if (!fpsLimiterEnabled) 0 else capValues.indexOf(fpsLimit).let { if (it >= 0) it else 0 }
-    ReshadeDropdown("帧率上限", capOptions, capIdx) { i ->
+    ReshadeDropdown("帧数上限", capOptions, capIdx) { i ->
         val v = capValues[i]
         state.setFpsLimiterEnabled(v > 0)
         if (v > 0) state.setFpsLimit(v)
@@ -1455,7 +1455,7 @@ internal fun LinuxSteamSection(state: XServerDrawerState) {
     val touch by state.linuxTouch.collectAsState()
     Text("触摸", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        listOf("" to "应用设置", "1" to "Touchscreen", "0" to "Touchpad").forEach { (value, label) ->
+        listOf("" to "应用设置s", "1" to "Touchscreen", "0" to "Touchpad").forEach { (value, label) ->
             val selected = touch == value
             Box(
                 contentAlignment = Alignment.Center,
@@ -2947,7 +2947,7 @@ private fun LooksRow(selected: Int?, enabled: Boolean, onPick: (Int) -> Unit) {
     } + if (selected == null) listOf(ToggleChipItem(ScreenEffectLooks.CUSTOM_LABEL, true, enabled) { }) else emptyList<ToggleChipItem>()
 
     Text(
-        "外观",
+        "外型",
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         modifier = Modifier.padding(bottom = 4.dp)
@@ -3074,7 +3074,7 @@ private fun ScalingModeHeader(title: String, color: Color, modifier: Modifier = 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(title, color = color, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置", tint = color, modifier = Modifier.size(16.dp))
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？", tint = color, modifier = Modifier.size(16.dp))
         }
     }
     if (showHelp) HelpDialog(R.string.help_scaling_mode) { showHelp = false }
@@ -3140,7 +3140,7 @@ private fun RumbleMotorsHeader() {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
         }
     }
@@ -3814,19 +3814,19 @@ internal fun HudContent(state: XServerDrawerState, embedded: Boolean = false) {
             ModeChipGrid(metricChips, perRow = 3)
         }
 
-        CollapsibleSection("外观") {
+        CollapsibleSection("外型") {
             LabeledSlider("HUD大小", scaleValue, 50f..150f, { scaleValue = it }, { apply() }, format = { "${it.toInt()}%" })
-            if (rich) LabeledSlider("HUD透明度", opacityValue, 0f..100f, { opacityValue = it }, { apply() }, format = { "${it.toInt()}%" })
-            else LabeledSlider("HUD透明度", transValue, 0f..50f, { transValue = it }, { apply() }, format = { "${it.toInt()}" })
+            if (rich) LabeledSlider("HUD透明程度", opacityValue, 0f..100f, { opacityValue = it }, { apply() }, format = { "${it.toInt()}%" })
+            else LabeledSlider("HUD透明程度", transValue, 0f..50f, { transValue = it }, { apply() }, format = { "${it.toInt()}" })
             if (gameHub) {
                 HudChipRow("HUD皮肤", listOf("Classic", "霓虹", "黑白"), skins.indexOf(skin)) { skin = skins[it]; apply() }
                 HudChipRow("HUD颜色", listOf("柔和", "适中", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
                 LabeledSlider("HUD轮廓", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
-                HudChipRow("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
+                HudChipRow("轮廓颜色度", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
             } else if (gameNative || fusion) {
                 HudChipRow("HUD颜色", listOf("柔和", "适中", "鲜艳"), colors.indexOf(color)) { color = colors[it]; apply() }
                 LabeledSlider("HUD轮廓", outlineValue, 0f..100f, { outlineValue = it }, { apply() }, format = { "${it.toInt()}" })
-                HudChipRow("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
+                HudChipRow("轮廓颜色度", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1; apply() }
             }
         }
 
@@ -4071,7 +4071,7 @@ internal fun ControlsContent(
     // "Pad" (live controller settings) exists only where LiveControllerSession runs: a Wine session.
     val padSupported = XServerDialogState.pad.collectAsState().value.supported
     val subTabs = listOf(
-        0 to "触摸", 1 to "Mouse", 2 to "震动", 3 to "陀螺仪", 4 to "玩家", 5 to stringResource(R.string.swipe_tab),
+        0 to "触摸", 1 to "Mouse", 2 to "振动", 3 to "陀螺传感器", 4 to "玩家", 5 to stringResource(R.string.swipe_tab),
         6 to "Pad",
     ).filter { (i, _) -> (pointerAndTouch || i !in setOf(0, 1, 5)) && (playerSlots || i != 4) && (padSupported || i != 6) }
     // A sub-tab this session doesn't offer falls back to the first one it does.
@@ -4104,7 +4104,7 @@ internal fun ControlsContent(
                 OutlinedTextField(
                     value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
                     onValueChange = {}, readOnly = true,
-                    label = { Text("配置", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    label = { Text("布局", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                     modifier = Modifier.fillMaxWidth().menuAnchor().focusRequester(anchorFocus0).dpadDropdown { dropdownExpanded = true },
                     singleLine = true,
@@ -4236,7 +4236,7 @@ internal fun ControlsContent(
             // drawer keeps rendering so the chip's new on/off state is visible where you tapped it.
             ToggleChipGrid(
                 listOf(
-                    ToggleChipItem("禁用鼠标", isMouseDisabled) {
+                    ToggleChipItem("禁用光标", isMouseDisabled) {
                         state.onDisableMouse?.run()
                     },
                     ToggleChipItem("自动隐藏光标", cursorAutoHide) {
@@ -4274,7 +4274,7 @@ internal fun ControlsContent(
 
         // ── Vibration ──
         2 -> {
-            Text("震动", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+            Text("振动", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             Spacer(Modifier.height(4.dp))
 
             // Master kill-switch — off suppresses ALL controller rumble regardless of slot (and hides the
@@ -4431,7 +4431,7 @@ private fun PlayersSection() {
     // Devices hot-plug, so pull a fresh snapshot whenever this sub-tab is shown.
     LaunchedEffect(Unit) { XServerDialogState.onPlayerSlotsRefresh?.run() }
 
-    Text("玩家槽位", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+    Text("玩家位置", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
     Spacer(Modifier.height(4.dp))
     Text(
         "将每个设备分配给一个玩家，或将其忽略。立即应用并为此容器保存。",
@@ -4526,7 +4526,7 @@ private fun PlayerSlotRowItem(row: XServerDialogState.PlayerSlotRow) {
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            subtitle + if (row.isOnScreen) " · 屏幕控制" else "",
+            subtitle + if (row.isOnScreen) " · 此屏幕控制" else "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -4586,7 +4586,7 @@ private fun PadRowHeader(title: String, apply: PadApply, helpRes: Int) {
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         )
         IconButton(onClick = { showHelp = true }, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
         }
     }
@@ -4834,7 +4834,7 @@ private fun TouchGestureSettings(state: XServerDrawerState) {
     }
 }
 
-// ───── Gyro (motion aim) section — Controls tab, "陀螺仪" sub-tab ─────
+// ───── Gyro (motion aim) section — Controls tab, "陀螺传感器" sub-tab ─────
 // Progressive disclosure: the master chip is always visible; everything downstream only appears once
 // the gyro is on, so the tab isn't a wall of dead controls. Order is by how often a control is
 // touched — Enable, target, sensitivity, activation, then the set-once fine tuning. Hidden entirely

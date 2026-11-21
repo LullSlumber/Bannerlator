@@ -1044,7 +1044,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                                 containerColor = androidx.compose.ui.graphics.Color(0xFF4CAF50)
                             ),
                             modifier = androidx.compose.ui.Modifier.fillMaxWidth()
-                        ) { Text("立即更新", color = androidx.compose.ui.graphics.Color.White) }
+                        ) { Text("立刻更新", color = androidx.compose.ui.graphics.Color.White) }
                     }
 
                     Spacer(androidx.compose.ui.Modifier.height(4.dp))

@@ -127,7 +127,7 @@ internal class DeckInputSection(val env: SettingsEnv, val source: SettingsSource
             GroupCard(first = true, last = false, highlight = false) {
                 DeckLine(label = L("将控制器固定到玩家"), hint = "Two on one player share it. $info") {
                     if (own && editable) {
-                        DeckSmallButton(if (game) L("使用容器的") else L("使用所有容器的"), Icons.Filled.Restore) { source.reset(def) }
+                        DeckSmallButton(if (game) L("使用此容器的") else L("使用所有容器的"), Icons.Filled.Restore) { source.reset(def) }
                     }
                     DeckSmallButton("", Icons.Filled.Refresh) { refresh++ }
                 }
@@ -142,7 +142,7 @@ internal class DeckInputSection(val env: SettingsEnv, val source: SettingsSource
                         else -> L("自动（按连接顺序）")
                     }
                     val where = when {
-                        row.isOnScreen -> L(" · 屏幕控制")
+                        row.isOnScreen -> L(" · 此屏幕控制")
                         !row.connected -> L(" · not connected (saved pin)")
                         else -> ""
                     }

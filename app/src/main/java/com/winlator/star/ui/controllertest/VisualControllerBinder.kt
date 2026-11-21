@@ -110,7 +110,7 @@ fun VisualControllerBinder(
     Column(modifier.verticalScroll(rememberScrollState())) {
         // ── Toolbar: profile picker + new/rename + All-bindings ──
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("配置", fontSize = 11.sp, color = cs.onSurfaceVariant)
+            Text("布局", fontSize = 11.sp, color = cs.onSurfaceVariant)
             Spacer(Modifier.width(8.dp))
             Box {
                 OutlinedButton(

@@ -112,7 +112,7 @@ val AUDIO_PRESETS = listOf(
         "为性能较弱设备或高要求游戏提供最大的安全余量。",
         AudioConfig(PRESET_STABLE, 0, true, 0, 0, 144), 0.90f,
         "最大爆音保护；音频延迟最高。", R.string.help_audio_preset_stable),
-    AudioPreset(PRESET_CUSTOM, "🎛️", "Custom", "微调",
+    AudioPreset(PRESET_CUSTOM, "🎛️", "Custom", "微调动",
         "自行设置每个旋钮。",
         AudioConfig(PRESET_CUSTOM, 1, true, 0, 0, 100), 0.46f,
         "手动控制每个缓冲区旋钮。", R.string.help_audio_preset_custom)
@@ -307,7 +307,7 @@ fun audioConfigFromEnv(env: String, driverId: String = ""): AudioConfig {
 }
 
 /**
- * The audio popup. `scopeLabel` names the target ("此容器" / "此游戏" / "live · this
+ * The audio popup. `scopeLabel` names the target ("这容器" / "此游戏" / "live · this
  * session"). `latencyLive`=false shows the guest-buffer row tagged "next launch" (in-game).
  */
 @Composable
@@ -417,7 +417,7 @@ fun AudioSettingsDialog(
                             }
                         }
 
-                        Text(if (custom) "微调" else "微调 — 此预设应用的内容（自定义可编辑）",
+                        Text(if (custom) "微调动" else "微调 — 此预设应用的内容（自定义可编辑）",
                             color = cs.onSurfaceVariant, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(4.dp, 16.dp, 0.dp, 8.dp))
                         val ftAlpha = if (custom) 1f else 0.4f

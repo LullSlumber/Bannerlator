@@ -2267,7 +2267,7 @@ internal fun compressAvatar(context: Context, uri: Uri): ByteArray? {
 //    new password). Passwords go only to the worker over HTTPS — never logged, never stored locally.
 //  - AFTER CREATE: the one-time recovery key with a Copy button + an "我已保存" confirm.
 //  - LOGGED IN: the avatar (tap or "更换图片" → system image picker → ≤512KB JPEG → upload) + the
-//    username, "显示我的恢复密钥", "我的上传", and "退出登录".
+//    username, "显示我的恢复密钥", "我的上传", and "注销登录".
 @Composable
 internal fun MyAccountDialog(
     vm: ShortcutsViewModel,
@@ -2481,7 +2481,7 @@ internal fun MyAccountDialog(
                                 AccountUiBus.refresh(context)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                        ) { Text("退出登录") }
+                        ) { Text("注销登录") }
                     }
 
                     // --- LOGGED OUT: reset flow ---------------------------------------------------
@@ -3186,7 +3186,7 @@ internal fun CommunityCatalogBrowser(
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text("排序方式:", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
                             DpadHighlight(focused = leftZone && leftRow == 3 && sortChipFocus == 0) {
-                                FilterChip(selected = sort == CatalogSort.CONFIGS, onClick = { sort = CatalogSort.CONFIGS; leftZone = true; leftRow = 3; sortChipFocus = 0 }, label = { Text("配置") })
+                                FilterChip(selected = sort == CatalogSort.CONFIGS, onClick = { sort = CatalogSort.CONFIGS; leftZone = true; leftRow = 3; sortChipFocus = 0 }, label = { Text("布局") })
                             }
                             DpadHighlight(focused = leftZone && leftRow == 3 && sortChipFocus == 1) {
                                 FilterChip(selected = sort == CatalogSort.NAME, onClick = { sort = CatalogSort.NAME; leftZone = true; leftRow = 3; sortChipFocus = 1 }, label = { Text("Name") })
@@ -4331,7 +4331,7 @@ private fun ShortcutOverflowButton(
             }
             MenuItemDivider()
             DropdownMenuItem(
-                text = { Text("游戏详情") },
+                text = { Text("游戏明细") },
                 leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) },
                 onClick = { menuExpanded = false; onGameDetails() },
             )
@@ -4640,7 +4640,7 @@ private fun ShortcutGridItem(
                 DropdownMenuItem(enabled = installed, text = { Text("导出") }, leadingIcon = { Icon(Icons.Filled.Upload, null) }, onClick = { menuExpanded = false; onExport() })
             }
             MenuItemDivider()
-            DropdownMenuItem(text = { Text("游戏详情") }, leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onGameDetails() })
+            DropdownMenuItem(text = { Text("游戏明细") }, leadingIcon = { Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.primary) }, onClick = { menuExpanded = false; onGameDetails() })
             // Steam-origin only — opens the Save Manager focused on this game.
             if (onCloudSaves != null) {
                 MenuItemDivider()
@@ -5214,7 +5214,7 @@ private fun OverrideDrop(
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { onHelp(helpRes) }) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
         }
     }
 }
@@ -5470,7 +5470,7 @@ private fun DpTabs(dp: SettingsDpad, id: String, selected: Int, count: Int, onSe
 private fun LinuxHelp(show: Boolean, textResId: Int, onOpen: (Int) -> Unit) {
     if (!show) return
     IconButton(onClick = { onOpen(textResId) }) {
-        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
     }
 }
 
@@ -6180,7 +6180,7 @@ internal fun ShortcutSettingsDialogScreen(
     var showWaylandDriverCfg by remember { mutableStateOf(false) }
     var showDxvkConfig by remember { mutableStateOf(false) }
     var showWineD3DConfig by remember { mutableStateOf(false) }
-    // Per-field "?" help (helpRes) + the newcomer glossary ("这些是什么?"), mirrored from the
+    // Per-field "?" help (helpRes) + the newcomer glossary ("这些都是什么?"), mirrored from the
     // container editor. null = hidden; glossaryQuery == "" opens the glossary unfiltered.
     var helpRes by remember { mutableStateOf<Int?>(null) }
     var glossaryQuery by remember { mutableStateOf<String?>(null) }
@@ -6819,7 +6819,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_screen_size else R.string.help_screen_size }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (selectedScreenSize == "Custom") {
@@ -6901,7 +6901,7 @@ internal fun ShortcutSettingsDialogScreen(
                             LinuxHelp(isLinuxEntry, R.string.help_linux_icon) { helpRes = it }
                         }
 
-                        // "这些是什么?" — the same newcomer glossary the container editor shows,
+                        // "这些都是什么?" — the same newcomer glossary the container editor shows,
                         // reused verbatim so the per-game editor's terms match the container's.
                         TextButton(onClick = { glossaryQuery = "" }) {
                             Text("❔  这些是什么?")
@@ -7119,7 +7119,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 helpRes = if (isLinuxEntry) R.string.help_linux_display_driver
                                           else R.string.help_graphics_driver
                             }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                             // Wrappers are X11 game-driver shims: nothing on the Wayland path uses them,
                             // so the manager button is left out there (the "?" stays).
@@ -7180,7 +7180,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_linux_draw_driver }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 Text(
@@ -7607,7 +7607,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = R.string.dxwrapper_help_content }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                         }
                         DpButton(dp, "dxConfig", onActivate = {
@@ -7645,7 +7645,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { helpRes = R.string.help_renderer }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (showSfWarning) {
@@ -7668,7 +7668,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     )
                                 }
                                 IconButton(onClick = { helpRes = R.string.help_renderer_sf_compat }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                                 DpSwitch(dp, "sfCompat", checked = sfCompatMode, onCheckedChange = { sfCompatMode = it })
                             }
@@ -7679,7 +7679,7 @@ internal fun ShortcutSettingsDialogScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.renderer_native), Modifier.weight(1f))
                                 IconButton(onClick = { helpRes = R.string.help_renderer_native }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                                 DpSwitch(dp, "vkNative", checked = vkNative, onCheckedChange = { vkNative = it })
                             }
@@ -7697,7 +7697,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_renderer_colors }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Present mode is ignored under Native Rendering (direct scanout), so grey it out.
@@ -7719,7 +7719,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = (if (vkNative) Modifier.alpha(0.5f) else Modifier).weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.renderer_present_mode_help_content }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Native backend — which native path Native Rendering uses. Only meaningful when
@@ -7742,7 +7742,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_renderer_native_backend }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -7764,7 +7764,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_renderer_driver }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // FG temporarily forces Mailbox; caption the field so FIFO-while-FG-selected isn't confusing.
@@ -7875,7 +7875,7 @@ internal fun ShortcutSettingsDialogScreen(
                                     modifier = (if (!fgVulkan) Modifier.alpha(0.5f) else Modifier).weight(1f)
                                 )
                                 IconButton(onClick = { helpRes = R.string.help_frame_generation }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             if (!fgVulkan) {
@@ -7900,7 +7900,7 @@ internal fun ShortcutSettingsDialogScreen(
                             Spacer(Modifier.width(8.dp))
                             Text(stringResource(R.string.fps_limiter), modifier = Modifier.weight(1f))
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_fps_limiter else R.string.help_fps_limiter }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                         }
 
@@ -7981,11 +7981,11 @@ internal fun ShortcutSettingsDialogScreen(
                             val scAudioId = StringUtils.parseIdentifier(selectedAudioDriver)
                             if (scAudioId == "pulseaudio" || scAudioId == "alsa" || scAudioId == "directaudio") {
                                 IconButton(onClick = { showScAudioSettings = true }) {
-                                    Icon(Icons.Default.Settings, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Settings, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_audio_driver else R.string.help_audio_driver }) {
-                                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                             }
                         }
                         if (!directAudioSupported && directAudioEntry != null) {
@@ -8212,7 +8212,7 @@ internal fun ShortcutSettingsDialogScreen(
                                 Spacer(Modifier.width(8.dp))
                                 Text(stringResource(R.string.bannerin_xinput_over_game_dll), modifier = Modifier.weight(1f))
                                 IconButton(onClick = { helpRes = R.string.help_bannerin_xinput_over_game_dll }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                             }
                             // Stick updates (core.StickPacing): the mode here, this game's rate on the slider.
@@ -8350,9 +8350,9 @@ internal fun ShortcutSettingsDialogScreen(
                             // empty override starts from an all-auto ("{}") view.
                             Spacer(Modifier.height(12.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("玩家槽位", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
+                                Text("玩家位置", modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
                                 IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_player_slots else R.string.help_player_slots }) {
-                                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                 }
                                 if (controllerSlotOverridesJson.isNotEmpty()) {
                                     TextButton(onClick = { controllerSlotOverridesJson = "" }) {
@@ -8404,7 +8404,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_mode }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 Spacer(Modifier.height(8.dp))
@@ -8429,7 +8429,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_target }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 val gyroActivatorLabels = listOf(
@@ -8451,7 +8451,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_activator }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 // Hold vs Toggle for that button — hidden under "Always On", which has no
@@ -8473,7 +8473,7 @@ internal fun ShortcutSettingsDialogScreen(
                                             modifier = Modifier.weight(1f)
                                         )
                                         IconButton(onClick = { helpRes = R.string.help_gyro_activation_mode }) {
-                                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                         }
                                     }
                                 }
@@ -8484,7 +8484,7 @@ internal fun ShortcutSettingsDialogScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { helpRes = R.string.help_gyro_sensitivity }) {
-                                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 DpSlider(
@@ -8626,8 +8626,8 @@ internal fun ShortcutSettingsDialogScreen(
                         val contentIndex = tabIndices[position]
                         RailItem(tab, shortcutTabIcon(tab), contentIndex == selectedTab) { selectedTab = contentIndex }
                     }
-                    // Same "这些是什么?" glossary link the container editor surfaces on its rail.
-                    val railLinks = listOf(RailLink("这些是什么?", Icons.Filled.Help) { glossaryQuery = "" })
+                    // Same "这些都是什么?" glossary link the container editor surfaces on its rail.
+                    val railLinks = listOf(RailLink("这些都是什么?", Icons.Filled.Help) { glossaryQuery = "" })
                     if (isPortrait) {
                         Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
                             // Left/Right and L1/R1 step through the strip, so DpTabs works in POSITIONS.
@@ -9627,7 +9627,7 @@ private fun ScAdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                     OutlinedButton(
                         onClick = onShowFexCoreDownloadSheet,
@@ -9657,7 +9657,7 @@ private fun ScAdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = if (isLinuxEntry) R.string.help_linux_fexcore_preset else R.string.help_fexcore_preset }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                     if (fexCustomised) PresetCustomBadge()
                 }
@@ -9694,7 +9694,7 @@ private fun ScAdvancedTab(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_force_ssbs }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     Text(
@@ -9730,7 +9730,7 @@ private fun ScAdvancedTab(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_startup_selection }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
 
@@ -11018,7 +11018,7 @@ internal fun ShortcutBadgeOverlay(
         Row(modifier = modifier) { AndroidBadge() }
         return
     }
-    // Valve's Windows Steam client ("添加游戏" → Add Windows Steam client x64): its own pill only.
+    // Valve's Windows Steam client ("添加游戏s" → Add Windows Steam client x64): its own pill only.
     if (showWindowsSteam) {
         Row(modifier = modifier) { WindowsSteamBadge() }
         return

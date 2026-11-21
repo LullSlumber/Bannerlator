@@ -145,7 +145,7 @@ class AmazonMainActivity : ComponentActivity() {
 private val AMAZON_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "布局", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -221,7 +221,7 @@ private fun AmazonStorefrontHost(
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "注销登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {

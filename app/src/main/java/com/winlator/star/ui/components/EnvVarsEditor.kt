@@ -529,7 +529,7 @@ internal fun EnvVarsEditor(
                 Column(Modifier.weight(1f)) {
                     Text("优先使用游戏文件夹中的 DLL")
                     Text(
-                        "加载游戏自带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
+                        "加载游戏自身带的 " + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
                             " instead of Wine's. Needed by many wrappers and mod loaders. Graphics DLLs are " +
                             "never included — DXVK/VKD3D own those. A Microsoft xinput DLL in a game folder " +
                             "does not work under Wine (it needs a Windows-only driver); leave it off.",
@@ -656,7 +656,7 @@ internal fun EnvVarsEditor(
             Button(onClick = { showAddPicker = true }, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(4.dp))
-                Text("添加变量")
+                Text("添加一个变量")
             }
             TextButton(onClick = { rawMode = !rawMode }) {
                 Text(if (rawMode) "Done" else "以文本形式编辑")

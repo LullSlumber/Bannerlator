@@ -236,7 +236,7 @@ enum class SteamTab(val label: String, val icon: ImageVector) {
     STORE("Store", Icons.Filled.Storefront),
     LIBRARY("Library", Icons.Filled.VideoLibrary),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("配置", Icons.Filled.AccountCircle),
+    PROFILE("布局", Icons.Filled.AccountCircle),
 }
 
 /** Pre-storefront spinner: shown for the frame or two before the login gate resolves. */
@@ -672,7 +672,7 @@ private fun RailStatusDot(status: SteamRepository.SteamStatus, onReconnect: () -
         SteamRepository.SteamStatus.OFFLINE ->
             RailStatus(MaterialTheme.colorScheme.error, "Offline", "Steam: offline — tap to reconnect", true)
         SteamRepository.SteamStatus.SIGNED_OUT ->
-            RailStatus(MaterialTheme.colorScheme.onSurfaceVariant, "已登出", "Steam: signed out", false)
+            RailStatus(MaterialTheme.colorScheme.onSurfaceVariant, "已经登出", "Steam: signed out", false)
     }
 
     val shape = deckShape(10.dp)
@@ -780,7 +780,7 @@ private fun RailOverflow(
             )
             HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
             DropdownMenuItem(
-                text = { Text("退出登录", color = MaterialTheme.colorScheme.error) },
+                text = { Text("注销登录", color = MaterialTheme.colorScheme.error) },
                 leadingIcon = {
                     Icon(
                         Icons.AutoMirrored.Filled.Logout,
@@ -856,7 +856,7 @@ private fun StorefrontActions(
             Icon(Icons.Filled.Settings, contentDescription = "好友与聊天设置", tint = accent)
         }
         IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = accent)
+            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "注销登录", tint = accent)
         }
     }
 

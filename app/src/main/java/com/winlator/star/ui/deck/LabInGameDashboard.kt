@@ -213,7 +213,7 @@ internal fun LabPerformanceDashboardDialog(state: XServerDrawerState, onDismiss:
         // ── Power profile ──
         IgSectionLabel(L("电源配置"))
         IgCard {
-            IgRow(L("配置"), scopes = perfScopes, wideControl = true) {
+            IgRow(L("布局"), scopes = perfScopes, wideControl = true) {
                 IgChips(
                     options = listOf(
                         "Off" to L("Off"),
@@ -803,7 +803,7 @@ internal fun LabAudioSettingsDialog(
     }
 
     LabInGameDialog(
-        title = L("音频设置"),
+        title = L("这个是什么？"),
         onDismiss = onDismiss,
         subtitle = L("Balance crackle-free vs low delay") + "  ·  " + scopeLabel,
         maxWidth = 680.dp,
@@ -838,7 +838,7 @@ internal fun LabAudioSettingsDialog(
         }
 
         // ── Fine-tune ──
-        IgSectionLabel(if (custom) L("微调") else L("Fine-tune — what this preset applies (Custom to edit)"))
+        IgSectionLabel(if (custom) L("微调动") else L("Fine-tune — what this preset applies (Custom to edit)"))
         // Greyed rows show what the engine will really use (effectiveConfigFor); edits still go to cfg, and the two are
         // equal whenever the rows are editable.
         val shown = effectiveConfigFor(cfg, driverId)

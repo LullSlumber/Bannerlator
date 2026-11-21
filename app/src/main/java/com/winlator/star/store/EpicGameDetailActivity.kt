@@ -1072,7 +1072,7 @@ private fun EpicGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新") {
+                StoreSection(title = "更新s") {
                     if (!installed) {
                         StoreStatusText("请先安装游戏以检查更新。")
                     } else {
@@ -1086,7 +1086,7 @@ private fun EpicGameDetailScreen(
                         Spacer(Modifier.height(8.dp))
                         if (updateBtnVisible) {
                             StoreActionButton(
-                                text = "立即更新",
+                                text = "立刻更新",
                                 onClick = onUpdateClick,
                                 modifier = Modifier.fillMaxWidth(),
                             )

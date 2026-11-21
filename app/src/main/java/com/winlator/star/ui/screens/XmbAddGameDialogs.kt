@@ -58,7 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-// The XMB mode's versions of the "添加游戏" popups, drawn with the XmbDialogKit. Every one takes the state and the handlers of
+// The XMB mode's versions of the "添加游戏s" popups, drawn with the XmbDialogKit. Every one takes the state and the handlers of
 // the stock dialog it replaces (GameActionsHost, AndroidGamePicker, AddToShortcutsFlow) as plain parameters: it holds no state of
 // its own about the flow. The stock dialogs stay as they are for Classic, Lab and plain Deck.
 
@@ -68,7 +68,7 @@ internal class XmbChoice(val title: String, val subtitle: String? = null, val no
 private class XmbMethod(val title: String, val subtitle: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val onClick: () -> Unit)
 
 /**
- * "添加游戏": what to add. The four options are cards with an icon, in two columns when the dialog is wide enough (landscape)
+ * "添加游戏s": what to add. The four options are cards with an icon, in two columns when the dialog is wide enough (landscape)
  * and one column otherwise; Cancel in the footer.
  */
 @Composable
@@ -81,12 +81,12 @@ internal fun XmbImportMethodDialog(
 ) {
     val options = listOf(
         XmbMethod("添加游戏EXE", "选择一个游戏的.exe文件", Icons.Filled.InsertDriveFile, onExe),
-        XmbMethod("添加游戏文件夹", "Scan a folder that holds all your games for their .exe files", Icons.Filled.Folder, onFolder),
+        XmbMethod("添加一个游戏文件夹", "Scan a folder that holds all your games for their .exe files", Icons.Filled.Folder, onFolder),
         XmbMethod("添加 Android 游戏", "安装在这台手机上的游戏，作为普通 Android 应用打开", Icons.Filled.Android, onAndroid),
         XmbMethod("添加 Windows Steam 客户端 x64", "Valve 的 64 位 Windows 版 Steam，从 Steam 下载", Icons.Filled.DesktopWindows, onWindowsSteam),
     )
     XmbDialogFrame(
-        title = "添加游戏",
+        title = "添加游戏s",
         subtitle = "选择要加入游戏库的内容",
         onDismiss = onDismiss,
         footer = { XmbDialogButton("Cancel", onDismiss) },

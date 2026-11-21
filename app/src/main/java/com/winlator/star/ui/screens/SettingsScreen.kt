@@ -558,7 +558,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // ── Updates ──────────────────────────────────────────────────
-        FieldSetLabel("更新")
+        FieldSetLabel("更新s")
         FieldSet {
             val latest = updateInfo
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -888,7 +888,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         // ── FEXCore Preset ────────────────────────────────────────────
         FieldSetLabel("FEXCore 设置")
         FieldSet {
-            Text("FEXCore 预设", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+            Text("FEXCore 预设值", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
             Spacer(Modifier.height(8.dp))
             Box {
                 Button(onClick = { showFEXCoreDropdown = true },
@@ -1095,7 +1095,7 @@ fun SettingsScreen(onSaved: () -> Unit = {}) {
         }
 
         // ── Big Picture Mode ──────────────────────────────────────────
-        FieldSetLabel("大屏幕模式")
+        FieldSetLabel("大屏模式")
         FieldSet {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = bigPictureMode, onCheckedChange = { bigPictureMode = it })

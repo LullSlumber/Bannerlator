@@ -53,20 +53,20 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Lab's versions of the "添加游戏" popups (GameActionsHost, AndroidGamePicker): the same state and handlers as the stock
+// Lab's versions of the "添加游戏s" popups (GameActionsHost, AndroidGamePicker): the same state and handlers as the stock
 // and XMB dialogs they stand in for, passed as plain parameters, drawn with the Lab dialog kit (LabGameActions.kt).
 
-/** "添加游戏": what to add (one .exe, a games folder, Android games, Windows Steam x64). */
+/** "添加游戏s": what to add (one .exe, a games folder, Android games, Windows Steam x64). */
 @Composable
 internal fun LabImportMethodDialog(onDismiss: () -> Unit, onExe: () -> Unit, onFolder: () -> Unit, onAndroid: () -> Unit, onWindowsSteam: () -> Unit) {
     val first = rememberLabFirstFocus()
     LabActionDialog(
-        title = L("添加游戏"),
+        title = L("添加游戏s"),
         onDismiss = onDismiss,
         buttons = { LabActionButton(L("Cancel"), onClick = onDismiss) },
     ) {
         LabActionRow(L("添加游戏EXE"), subtitle = L("选择一个游戏的.exe文件"), icon = Icons.Filled.InsertDriveFile, requester = first, onClick = onExe)
-        LabActionRow(L("添加游戏文件夹"), subtitle = L("选择存放所有游戏的文件夹——每个游戏都会扫描其.exe文件"), icon = Icons.Filled.Folder, onClick = onFolder)
+        LabActionRow(L("添加一个游戏文件夹"), subtitle = L("选择存放所有游戏的文件夹——每个游戏都会扫描其.exe文件"), icon = Icons.Filled.Folder, onClick = onFolder)
         LabActionRow(L("添加 Android 游戏"), subtitle = L("选择安装在此手机上的游戏 — 它们会作为普通 Android 应用打开"), icon = Icons.Filled.Android, onClick = onAndroid)
         LabActionRow(L("添加 Windows Steam 客户端 x64"), subtitle = L("Valve 的 64 位 Windows 版 Steam，从 Steam 下载"), icon = Icons.Filled.DesktopWindows, onClick = onWindowsSteam)
     }

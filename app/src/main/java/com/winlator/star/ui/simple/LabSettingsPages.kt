@@ -171,15 +171,15 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
             }
         }
         add(MenuEntry(
-            "check", if (checking) L("检查中…") else L("检查更新"), icon = Icons.Filled.Refresh, group = L("更新"),
+            "check", if (checking) L("检查中…") else L("检查更新"), icon = Icons.Filled.Refresh, group = L("更新s"),
             onA = { if (!checking) check(force = true, report = true) },
         ))
-        add(MenuEntry("notify", L("告知我新版本"), group = L("更新"), toggle = notify, onA = {
+        add(MenuEntry("notify", L("告知我新版本"), group = L("更新s"), toggle = notify, onA = {
             notify = !notify
             UpdateManager.setNotifyEnabled(context, notify)
         }))
         // A channel switch re-checks at once, as Classic does.
-        add(MenuEntry("pre", L("包含测试版构建"), L("预发布版本可能不太稳定。"), group = L("更新"), toggle = pre, onA = {
+        add(MenuEntry("pre", L("包含测试版构建"), L("预发布版本可能不太稳定。"), group = L("更新s"), toggle = pre, onA = {
             pre = !pre
             UpdateManager.setIncludePrereleases(context, pre)
             check(force = true, report = false)
@@ -187,8 +187,8 @@ internal fun LabUpdatesPage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("更新"),
-        sections = listOf(MenuSection("updates", L("更新"), Icons.Filled.SystemUpdate, entries)),
+        title = L("更新s"),
+        sections = listOf(MenuSection("updates", L("更新s"), Icons.Filled.SystemUpdate, entries)),
         onBack = onBack,
     )
     reading?.let { (t, b) -> LabSetInfo(t, b) { reading = null } }
@@ -233,9 +233,9 @@ internal fun LabStoragePage(onBack: () -> Unit) {
         )
     }
     val folders = listOf(
-        MenuEntry("data", L("应用数据文件夹"), dataPath, icon = Icons.Filled.Folder, group = L("文件夹"),
+        MenuEntry("data", L("应用数据文件夹"), dataPath, icon = Icons.Filled.Folder, group = L("文件夹s"),
             onA = { treeKey = "winlator_path_uri"; tree.launch(null) }),
-        MenuEntry("export", L("快捷方式导出文件夹"), exportPath, icon = Icons.Filled.Folder, group = L("文件夹"),
+        MenuEntry("export", L("快捷方式导出文件夹"), exportPath, icon = Icons.Filled.Folder, group = L("文件夹s"),
             onA = { treeKey = "shortcuts_export_path_uri"; tree.launch(null) }),
         MenuEntry("imagefs", L("重装基础系统（ImageFS）"), L("恢复系统文件。你的容器不受影响。"),
             icon = Icons.Filled.Storage, group = L("Base system"), onA = { askImageFs = true }),

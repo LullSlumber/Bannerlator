@@ -197,7 +197,7 @@ class XboxMainActivity : ComponentActivity() {
 private val XBOX_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "布局", Icons.Filled.AccountCircle),
 )
 
 /** The library as the tabs see it: cached at once, refreshed from Microsoft in the background. */
@@ -313,7 +313,7 @@ private fun XboxStorefrontHost(
                 Icon(Icons.Filled.Cloud, contentDescription = "Xbox Cloud Gaming", tint = MaterialTheme.colorScheme.primary)
             }
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "注销登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -371,7 +371,7 @@ private fun XboxLibraryTab(state: XboxLibraryState, wide: Boolean, onOpen: (Xbox
             state.games.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(title = "尚未找到游戏",
                     body = "列出具有 PC 版本或可通过 Xbox Cloud Gaming 串流的游戏。",
-                    actionLabel = "立即同步", onAction = { state.refresh(true) })
+                    actionLabel = "立刻同步", onAction = { state.refresh(true) })
             }
             shown.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 StoreNotice(title = "无匹配项", body = "您的库中没有匹配该过滤条件的内容。")

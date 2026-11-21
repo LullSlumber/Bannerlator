@@ -209,7 +209,7 @@ internal fun LabPerformancePage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings › Performance"),
-        title = L("Root 控制与散热保护"),
+        title = L("Root 控制和温度安全"),
         sections = listOf(
             MenuSection("root", L("Root and memory"), Icons.Filled.Speed, root),
             MenuSection("heat", L("温度看门狗"), Icons.Outlined.Thermostat, heat),

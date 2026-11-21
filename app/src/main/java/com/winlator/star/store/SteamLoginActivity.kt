@@ -424,7 +424,7 @@ private fun SteamLoginScreen(
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = deckShape(8.dp),
-        ) { Text("登录") }
+        ) { Text("登入") }
         Spacer(Modifier.height(12.dp))
 
         // QR sign-in re-enabled: a QR-originated session stores the same

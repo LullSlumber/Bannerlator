@@ -126,7 +126,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Games wall — a landscape-locked, 10-foot "大屏幕模式" library. This is the presentation the app now
+// Games wall — a landscape-locked, 10-foot "大屏模式" library. This is the presentation the app now
 // uses for the main library route (Screen.Games); it swaps the phone-grid ShortcutsScreen for a couch
 // launcher that mirrors the approved mockup: a rail header (brand + search + status), a left nav rail,
 // a centre-highlighted 2:3 cover wall (LazyRow), and a footer launch bar. Data + launch reuse the
@@ -953,7 +953,7 @@ private fun WallPowerSheet(onDismiss: () -> Unit, onSettings: () -> Unit, onQuit
     WallSheetScaffold(
         title = "Power",
         rows = listOf(
-            WallSheetRow(Icons.Filled.Settings, "应用设置", onSettings),
+            WallSheetRow(Icons.Filled.Settings, "应用设置s", onSettings),
             WallSheetRow(Icons.Filled.PowerSettingsNew, "退出", onQuit),
         ),
         onDismiss = onDismiss,

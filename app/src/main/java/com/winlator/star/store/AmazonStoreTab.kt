@@ -177,7 +177,7 @@ private fun EmptyLibraryNotice(state: AmazonLibraryState) {
         StoreNotice(
             title = "尚无Amazon游戏",
             body = "在Prime Gaming上领取游戏并同步 — 它们会在此显示为可安装。",
-            actionLabel = "立即同步",
+            actionLabel = "立刻同步",
             onAction = { state.refresh(true) },
         )
     }

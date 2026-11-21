@@ -178,7 +178,7 @@ internal object PerformanceRows {
         val raw = WineUtils.startupServiceRawName(entry)
         val label = WineUtils.STARTUP_SERVICE_LABELS.getOrElse(i) { raw }
         return SettingDef(
-            id = "performance.service.$raw", category = "performance", group = L("自定义服务"), level = ADVANCED,
+            id = "performance.service.$raw", category = "performance", group = L("自定义服务支持"), level = ADVANCED,
             label = label, tech = raw,
             hint = when {
                 i == 0 -> L("Custom starts with every service off: turn on only what the game needs.")
@@ -474,7 +474,7 @@ internal class DeckPerformanceSection(
     private fun bottomItems(): List<PageExtra> = buildList {
         val kinds = kinds()
         if (kinds.isNotEmpty()) {
-            add(PageExtra("perf-presets-label") { GroupLabel(L("翻译器预设值")) })
+            add(PageExtra("perf-presets-label") { GroupLabel(L("转译器预设值")) })
             kinds.forEachIndexed { i, kind ->
                 add(PageExtra("perf-preset:${kind.name}") {
                     GroupCard(first = i == 0, last = i == kinds.lastIndex, highlight = false) { PresetLines(this@DeckPerformanceSection, kind) }

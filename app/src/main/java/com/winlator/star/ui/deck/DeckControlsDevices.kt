@@ -96,7 +96,7 @@ private fun CtlHelpButton(onClick: () -> Unit) {
     IconButton(onClick = onClick, modifier = Modifier.size(36.dp).xmbBtn(CircleShape)) {
         Icon(
             Icons.Filled.Help,
-            contentDescription = "音频设置",
+            contentDescription = "这个是什么？",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp),
         )
@@ -194,7 +194,7 @@ internal fun DeckAssignTab(s: InputControlsDeckState) {
                     },
                 )
                 DeckRowDivider()
-                CtlNote("仅对新容器生效；现有容器保留各自设置。同一玩家的两台设备共享操控。游戏内菜单仍可实时更改。")
+                CtlNote("仅适用于新容器；现有容器保留自己的设置。一个玩家上的两个设备共享控制。游戏内菜单仍可实时更改它。")
             }
         },
         leftWeight = 1.2f,
@@ -213,7 +213,7 @@ private fun SlotRow(title: String, slot: Int, rows: List<PlayerSlotEditorRow>, o
         CtlRow(onClick = { open = true }) { cs ->
             Text(title, color = cs.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.width(76.dp))
             Text(
-                text = if (here.isEmpty()) (if (slot >= 0) "Open" else "没有忽略任何内容") else here.joinToString(", ") { slotName(it) },
+                text = if (here.isEmpty()) (if (slot >= 0) "Open" else "没有忽略项") else here.joinToString(", ") { slotName(it) },
                 color = if (here.isEmpty()) cs.onSurfaceVariant else cs.onSurface,
                 fontSize = 13.sp,
                 modifier = Modifier.weight(1f),
@@ -284,7 +284,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
             CtlCardTitle("已连接的控制器") { CtlChip("${pads.size}", MaterialTheme.colorScheme.primary) }
         }
         if (pads.isEmpty()) {
-            CtlNote("未连接手柄。请插入 USB 或通过蓝牙配对。")
+            CtlNote("未连接控制器。请插入一个或通过蓝牙配对。")
         } else {
             Spacer(Modifier.height(4.dp))
             for (c in pads) {
@@ -297,7 +297,7 @@ private fun ConnectedDevicesCard(s: InputControlsDeckState) {
                         Text(deviceLine(pad), color = cs.onSurfaceVariant, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
                     if (dev != null && pad.vibrator) {
-                        DeckButton("震动", Icons.Filled.Vibration, { pulsePad(dev) })
+                        DeckButton("振动", Icons.Filled.Vibration, { pulsePad(dev) })
                     }
                 }
             }
@@ -363,10 +363,10 @@ private fun GyroCard() {
                 sensor == null -> "No gyroscope on this device"
                 !calibrated -> "未校准"
                 abs(biasX) < GyroCalibrator.NEGLIGIBLE_BIAS && abs(biasY) < GyroCalibrator.NEGLIGIBLE_BIAS ->
-                    "漂移极小：设备已在自行补偿"
+                    "漂移很小：设备已自行补偿"
                 else -> "已移除偏差：x %.4f，y %.4f 弧度/秒".format(biasX, biasY)
             }
-            CtlCardTitle("陀螺仪")
+            CtlCardTitle("陀螺传感器")
             Text(summary, color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
             if (sensor != null) {
                 Text(
@@ -425,7 +425,7 @@ private fun MenuButtonCard() {
                 CtlHelpButton { helpRes = R.string.help_menu_button }
             }
             Text(
-                "在没有返回键的手持设备上打开游戏内菜单。该按键不会再发送给游戏。",
+                "在没有返回键的掌机上打开游戏内菜单。该按钮之后不会发送给游戏。",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
@@ -489,7 +489,7 @@ private fun SteamControllerCard() {
         CtlToggleRow(
             label = "Steam控制器支持",
             checked = enabled,
-            sub = "像 Steam 一样直接读取。在蓝牙设置中配对或直接插入。从下次游戏启动时生效。",
+            sub = "像 Steam 那样直接读取它。请在蓝牙设置中配对或插入。从下次游戏启动开始应用。",
             onChange = { on ->
                 enabled = on
                 prefs.setSteamControllerEnabled(context, on)
@@ -506,7 +506,7 @@ private fun SteamControllerCard() {
                     trackpadMode = trackpadModes[i.coerceIn(0, trackpadModes.size - 1)]
                     prefs.setSteamTrackpadMouseMode(context, trackpadMode)
                 },
-                sub = "点击为左键；两个都接时，左边那个是右键",
+                sub = "点击它相当于左键单击；若选择双触控板，则左触控板点击为右键。",
             )
             for (i in STEAM_PADDLE_NAMES.indices) {
                 DeckRowDivider()
@@ -533,7 +533,7 @@ private fun SteamControllerCard() {
                     if (Build.VERSION.SDK_INT >= 31) Text("Allow", color = cs.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
-            CtlNote("返回类按键和 … 按键在所有游戏中生效。其余按键使用「默认 / 任意手柄」的按键映射。")
+            CtlNote("背键和 … 按钮在每个游戏中都有效。其他按钮使用默认 / 任何控制器绑定。")
         }
         Spacer(Modifier.height(4.dp))
     }

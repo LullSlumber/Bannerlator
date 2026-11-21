@@ -974,7 +974,7 @@ fun ShortcutLaunchDialogs(launcher: ShortcutLauncher, onRemove: (Shortcut) -> Bo
             },
             confirmButton = {
                 TextButton(onClick = { launcher.steamUpdateOffer = null; launcher.runSteamMaintenance(s, verify = false) }) {
-                    Text(if (available) "立即更新" else "Check online", color = MaterialTheme.colorScheme.primary)
+                    Text(if (available) "立刻更新" else "Check online", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {

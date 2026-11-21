@@ -85,7 +85,7 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
     // The Classic sub-tab list. "Pad" (live controller settings) exists only where LiveControllerSession runs.
     val subTab by state.controlsSubTab.collectAsState()
     val subTabs = listOf(
-        0 to L("触摸"), 1 to L("Mouse"), 2 to L("震动"), 3 to L("陀螺仪"), 4 to L("玩家"),
+        0 to L("触摸"), 1 to L("Mouse"), 2 to L("振动"), 3 to L("陀螺传感器"), 4 to L("玩家"),
         5 to stringResource(R.string.swipe_tab), 6 to L("Pad"),
     ).filter { (i, _) -> pad.supported || i != 6 }
     // A sub-tab this session doesn't offer falls back to the first one it does.
@@ -117,8 +117,8 @@ internal fun LabControlsPanel(state: XServerDrawerState, kind: InGameSessionKind
             IgSectionLabel(L("Input controls"))
             IgCard {
                 // A layout applies for this session; choosing none is remembered (smart_default_touch_optout).
-                IgRow(L("配置"), scopes = listOf(if (selectedIdx == 0) SaveScope.ALL else SaveScope.SESSION), wideControl = true) {
-                    IgPickButton(L("配置"), allItems, if (selectedIdx in allItems.indices) selectedIdx else 0) { i ->
+                IgRow(L("布局"), scopes = listOf(if (selectedIdx == 0) SaveScope.ALL else SaveScope.SESSION), wideControl = true) {
+                    IgPickButton(L("布局"), allItems, if (selectedIdx in allItems.indices) selectedIdx else 0) { i ->
                         selectedIdx = i
                         confirm()
                     }
@@ -249,7 +249,7 @@ private fun LabCtlMouseSection(state: XServerDrawerState) {
         }
         IgDivider()
         // The activity flips its own flag (onDisableMouse toggles), as the Classic chip does.
-        IgToggleRow(L("禁用鼠标"), isMouseDisabled, scopes = listOf(SaveScope.SESSION)) {
+        IgToggleRow(L("禁用光标"), isMouseDisabled, scopes = listOf(SaveScope.SESSION)) {
             state.onDisableMouse?.run()
         }
         IgDivider()
@@ -327,7 +327,7 @@ private fun LabCtlVibrationSection() {
     val vibrationMasterOn by XServerDialogState.vibrationMasterEnabled.collectAsState()
     val vibrationSlots by XServerDialogState.vibrationSlots.collectAsState()
 
-    IgSectionLabel(L("震动"))
+    IgSectionLabel(L("振动"))
     IgCard {
         IgToggleRow(L("Enabled"), vibrationMasterOn, scopes = listOf(SaveScope.ALL)) {
             XServerDialogState.setVibrationMasterEnabled(it)
@@ -618,7 +618,7 @@ private fun LabCtlPlayersSection() {
     // Devices hot-plug, so pull a fresh snapshot whenever this sub-tab is shown.
     LaunchedEffect(Unit) { XServerDialogState.onPlayerSlotsRefresh?.run() }
 
-    IgSectionLabel(L("玩家槽位"))
+    IgSectionLabel(L("玩家位置"))
     IgCard {
         IgRow(
             L("物理控制器测试/绑定"),
@@ -669,7 +669,7 @@ private fun LabCtlPlayerSlotRow(row: XServerDialogState.PlayerSlotRow, scope: Sa
     }
     IgRow(
         row.displayName,
-        hint = subtitle + if (row.isOnScreen) L(" · 屏幕控制") else "",
+        hint = subtitle + if (row.isOnScreen) L(" · 此屏幕控制") else "",
         scopes = listOf(scope),
         wideControl = true,
     ) {

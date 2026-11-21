@@ -160,7 +160,7 @@ private fun PanelContent(
     }
 
     if (section == null || section == "picture") Section("Picture", "Shader effects on the stream; the profiles are shared with the Wine games' screen effects.") {
-        Choice("配置", listOf("" to "None") + profiles.keys.map { it to it }, settings.profile) { name ->
+        Choice("布局", listOf("" to "None") + profiles.keys.map { it to it }, settings.profile) { name ->
             onChange(if (name.isEmpty()) settings.copy(profile = "") else settings.withEffects(profiles.getValue(name), name))
         }
         Step("亮度", "${settings.brightness}", { onChange(settings.copy(brightness = (settings.brightness - 5).coerceAtLeast(-50))) },
@@ -180,7 +180,7 @@ private fun PanelContent(
         Toggle("复古电视显像管滤镜", "扫描线和彩色边缘。", settings.crt) { onChange(settings.copy(crt = it)) }
         Toggle("NTSC电视滤镜", "旧电视信号外观。", settings.ntsc) { onChange(settings.copy(ntsc = it)) }
         Toggle("卡通风格", "卡通轮廓。", settings.toon) { onChange(settings.copy(toon = it)) }
-        Choice("帧率上限", listOf(0 to "Off", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps"), settings.maxFps) { onChange(settings.copy(maxFps = it)) }
+        Choice("帧数上限", listOf(0 to "Off", 30 to "30 fps", 45 to "45 fps", 60 to "60 fps"), settings.maxFps) { onChange(settings.copy(maxFps = it)) }
         Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { naming = true }) { Text("保存为配置") }
             OutlinedButton(onClick = { onChange(settings.withoutEffects()) }) { Text("重置画面") }
@@ -199,7 +199,7 @@ private fun PanelContent(
             "dropped frames, server.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (section != "overlay-native") Step("Volume", "${settings.volume}%", { onChange(settings.copy(volume = (settings.volume - 25).coerceAtLeast(100))) },
             { onChange(settings.copy(volume = (settings.volume + 25).coerceAtMost(300))) })
-        Step("控制器震动", if (settings.rumble == 0) "Off" else "${settings.rumble}%", { onChange(settings.copy(rumble = (settings.rumble - 25).coerceAtLeast(0))) },
+        Step("控制器振动", if (settings.rumble == 0) "Off" else "${settings.rumble}%", { onChange(settings.copy(rumble = (settings.rumble - 25).coerceAtLeast(0))) },
             { onChange(settings.copy(rumble = (settings.rumble + 25).coerceAtMost(100))) })
     }
 

@@ -589,7 +589,7 @@ internal fun DeckHome(
                     focusTick = if (xmbHome) deckActions.enterTick.intValue + tabsPageClosed else 0,
                     // The peek tabs highlight the one the page last showed; Down and a tap on one open the page (the tabs' own actions).
                     homeTabSel = tabsPageTab,
-                    // Start / the shell's "添加游戏" hint work on the Home too (not while the tabs page is up: it has its own).
+                    // Start / the shell's "添加游戏s" hint work on the Home too (not while the tabs page is up: it has its own).
                     onAddGame = if (xmbHome && !tabsPageOpen) ({ addGame() }) else null,
                 )
             }
@@ -658,7 +658,7 @@ private fun LibraryToolbar(
             Spacer(Modifier.width(8.dp))
         }
         DeckButton(if (filterCount > 0) "Filters · $filterCount" else "筛选与排序", Icons.Filled.FilterList, onFilter)
-        DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
+        DeckButton("添加游戏s", Icons.Filled.Add, onAddGame)
         IconTile(Icons.Filled.Public, "社区配置", onCommunity)
         // Steam friends and chat; renders only while signed in to Steam.
         Box(
@@ -667,7 +667,7 @@ private fun LibraryToolbar(
         ) {
             SteamFriendsAction(tint = cs.onSurface)
         }
-        IconTile(Icons.Filled.Tv, "大屏幕模式", onBigPicture)
+        IconTile(Icons.Filled.Tv, "大屏模式", onBigPicture)
     }
 }
 
@@ -722,7 +722,7 @@ private fun FilteredEmpty(onClear: () -> Unit, onAddGame: () -> Unit) {
         Text("Clear the filters to see your whole library.", color = cs.onSurfaceVariant, fontSize = 14.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             DeckButton("清除筛选", Icons.Filled.Close, onClear, primary = true)
-            DeckButton("添加游戏", Icons.Filled.Add, onAddGame)
+            DeckButton("添加游戏s", Icons.Filled.Add, onAddGame)
         }
     }
 }

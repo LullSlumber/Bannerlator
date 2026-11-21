@@ -63,7 +63,7 @@ fun InputControlsDialog(state: XServerDialogState) {
                         value = allItems.getOrElse(selectedIdx) { "-- 已禁用 --" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("配置") },
+                        label = { Text("布局") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()

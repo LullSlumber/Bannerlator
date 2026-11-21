@@ -136,7 +136,7 @@ private fun PlayerSlotEditorRowItem(row: PlayerSlotEditorRow, onChange: (Int) ->
         else -> "自动（按启动顺序分配）"
     }
     val suffix = when {
-        row.isOnScreen -> " · 屏幕控制"
+        row.isOnScreen -> " · 此屏幕控制"
         !row.connected -> " · not connected (saved pin)"
         else -> ""
     }

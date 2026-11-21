@@ -97,7 +97,7 @@ internal object AppSettingsRows {
         id: String, label: String, hint: String, get: () -> Float, set: (Float) -> Unit,
         visible: (SettingsEnv, (String) -> String) -> Boolean = { _, _ -> true },
     ) = row(
-        id, CAT_APPEARANCE, T("大小与方向"), label, ADVANCED, hint = hint,
+        id, CAT_APPEARANCE, T("大小和方向"), label, ADVANCED, hint = hint,
         control = { Control.Slider(0.5f, 1.5f, 0.05f, { "${(it * 100).roundToInt()}%" }, { String.format(Locale.ENGLISH, "%.2f", it) }) },
         binding = AppBinding(
             get = { _ -> String.format(Locale.ENGLISH, "%.2f", get()) },
@@ -110,14 +110,14 @@ internal object AppSettingsRows {
         // ── Appearance (Settings > Appearance; AppearanceScreen keeps serving the Classic shell) ──
         row(
             ID_STYLE, CAT_APPEARANCE, T("界面风格"), T("界面风格"), SIMPLE,
-            hint = T("Classic 保留侧边菜单，Deck 是主机风格标签布局，XMB 增加全屏主页，Lab 是全屏启动器。"),
-            help = T("Classic 保留侧边菜单。Deck 是顶部标签的主机风格布局，为手柄设计。XMB 是 Deck 加全屏 XMB 主页：标签悬浮于所有页面之上（用 L1/R1 或触屏切换）。Lab 是为手柄设计的全屏启动器，以你的游戏艺术图为背景。主题和强调色应用于全部四种。更改立即生效。"),
+            hint = T("Classic 保留侧边菜单，Deck 是主机风格的选项卡布局，XMB 增加全屏主页，Lab 是全屏启动器。"),
+            help = T("Classic 保留侧边菜单。Deck 是主机风格的布局，顶部带有选项卡，专为控制器打造。XMB 是 Deck 加上全屏 XMB 主页：选项卡悬浮在每个页面上方（用 L1/R1 或触摸切换）。Lab 是为控制器设计的全屏启动器，以您的游戏图像作为背景。您的主题和强调色对这四种风格均适用。更改立即生效。"),
             control = { Control.Segmented(listOf(Opt(STYLE_CLASSIC, T("Classic")), Opt(STYLE_DECK, T("Deck")), Opt(STYLE_XMB, T("XMB")), Opt(STYLE_LAB, T("Lab")))) },
             binding = AppBinding(get = { _ -> styleNow() }, set = { _, v -> setStyle(v) }),
         ),
         row(
             "app.appearance.labLook", CAT_APPEARANCE, T("界面风格"), T("Lab look"), ADVANCED,
-            hint = T("Lab 启动器的深色或浅色外观。"),
+            hint = T("Lab 启动器的深色或浅色。"),
             control = { Control.Segmented(listOf(Opt("dark", T("Dark")), Opt("light", T("Light")))) },
             binding = AppBinding(
                 get = { _ -> if (AppThemeState.labLight) "light" else "dark" },
@@ -127,7 +127,7 @@ internal object AppSettingsRows {
         ),
         row(
             "app.appearance.preset", CAT_APPEARANCE, T("主题"), T("主题预设"), SIMPLE,
-            hint = T("所有界面的配色。在自定义强调色下选择颜色会切换到自定义预设。"),
+            hint = T("每个屏幕的颜色。在自定义强调色下选择颜色会切换到自定义预设。"),
             control = { Control.Select(themePresets.map { Opt(it.name, it.name) }) },
             binding = AppBinding(
                 get = { _ -> themePresets.getOrElse(AppThemeState.presetIndex.value) { themePresets.first() }.name },
@@ -138,8 +138,8 @@ internal object AppSettingsRows {
             ),
         ),
         row(
-            "app.appearance.orientation", CAT_APPEARANCE, T("大小与方向"), T("应用方向"), ADVANCED,
-            hint = T("仅对应用自身界面生效：游戏保持各自的方向。自动会跟随设备。"),
+            "app.appearance.orientation", CAT_APPEARANCE, T("大小和方向"), T("应用方向"), ADVANCED,
+            hint = T("仅适用于应用自身的屏幕：游戏保持自己的方向。自动跟随设备。"),
             control = { Control.Segmented(listOf(Opt(AppOrientation.AUTO, T("Auto")), Opt(AppOrientation.PORTRAIT, T("竖屏")), Opt(AppOrientation.LANDSCAPE, T("横屏")))) },
             binding = AppBinding(
                 get = { c -> AppOrientation.mode(c) },
@@ -152,33 +152,33 @@ internal object AppSettingsRows {
             visible = { _, values -> values(ID_STYLE) != STYLE_XMB },
         ),
         // The XMB is drawn on a fixed scale of its own (XmbScale.kt) with its own saved sliders; the other styles keep the shared pair.
-        scale("app.appearance.uiScale", T("界面缩放"), T("缩放应用自身界面：游戏保持各自大小。"),
+        scale("app.appearance.uiScale", T("界面缩放"), T("缩放应用自身的屏幕：游戏保持自己的大小。"),
             { AppThemeState.uiScale.value }, { AppThemeState.setUiScale(it) },
             visible = { _, values -> values(ID_STYLE) != STYLE_XMB }),
-        scale("app.appearance.fontScale", T("字体大小"), T("缩放应用自身文字。"),
+        scale("app.appearance.fontScale", T("字体大小"), T("缩放应用自身的文字。"),
             { AppThemeState.fontScale.value }, { AppThemeState.setFontScale(it) },
             visible = { _, values -> values(ID_STYLE) != STYLE_XMB }),
-        scale("app.appearance.xmbUiScale", T("界面缩放"), T("缩放应用自身界面：游戏保持各自大小。100% 在所有设备上占屏幕比例相同。"),
+        scale("app.appearance.xmbUiScale", T("界面缩放"), T("缩放应用自身的屏幕：游戏保持自己的大小。100% 在每台设备上占屏幕的比例相同。"),
             { AppThemeState.xmbUiScale.value }, { AppThemeState.setXmbUiScale(it) },
             visible = { _, values -> values(ID_STYLE) == STYLE_XMB }),
-        scale("app.appearance.xmbFontScale", T("字体大小"), T("缩放应用自身文字。手机系统的字体大小在此不生效。"),
+        scale("app.appearance.xmbFontScale", T("字体大小"), T("缩放应用自身的文字。手机自身的字体大小在此不适用。"),
             { AppThemeState.xmbFontScale.value }, { AppThemeState.setXmbFontScale(it) },
             visible = { _, values -> values(ID_STYLE) == STYLE_XMB }),
         row(
-            "app.appearance.showStores", CAT_APPEARANCE, T("侧边菜单与商店"), T("显示游戏商店"), ADVANCED,
-            hint = T("GOG、Epic、Amazon 和 Steam 的快捷方式（侧边菜单、商店标签）。"),
+            "app.appearance.showStores", CAT_APPEARANCE, T("侧边菜单和商店"), T("显示游戏商店"), ADVANCED,
+            hint = T("GOG、Epic、Amazon 和 Steam 快捷方式（侧边菜单、商店选项卡）。"),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showStores.value) }, { _, v -> AppThemeState.setShowStores(v == "1") }),
         ),
         row(
-            "app.appearance.showInternal", CAT_APPEARANCE, T("侧边菜单与商店"), T("显示内部存储"), ADVANCED,
+            "app.appearance.showInternal", CAT_APPEARANCE, T("侧边菜单和商店"), T("显示内部存储"), ADVANCED,
             hint = T("侧边菜单底部的存储条。"),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showInternalStorage.value) }, { _, v -> AppThemeState.setShowInternalStorage(v == "1") }),
         ),
         row(
-            "app.appearance.showSd", CAT_APPEARANCE, T("侧边菜单与商店"), T("显示 SD card 存储"), ADVANCED,
-            hint = T("仅当设备中插有存储卡时显示。"),
+            "app.appearance.showSd", CAT_APPEARANCE, T("侧边菜单和商店"), T("显示 SD card 存储"), ADVANCED,
+            hint = T("仅在设备中插入卡时显示。"),
             control = { Control.Toggle },
             binding = AppBinding({ _ -> onOff(AppThemeState.showSdStorage.value) }, { _, v -> AppThemeState.setShowSdStorage(v == "1") }),
         ),
@@ -186,8 +186,8 @@ internal object AppSettingsRows {
         // ── Steam connection region (the test actions are page extras: AppSettingsExtras) ──
         row(
             "app.steam.region", CAT_STEAM, T("Steam 连接"), T("Steam连接区域"), ADVANCED,
-            hint = T("商店、下载和游戏内 Steam 会话连接的 Steam 数据中心。自动按延迟选最近。"),
-            help = T("自动测试每个数据中心的延迟，保留一天内最快的，连接失败后会重新测试。只有当自动一直选得不理想时才需要手动指定。商店会在下次连接时应用。"),
+            hint = T("商店、下载和游戏内 Steam 会话连接到哪个 Steam 数据中心。自动使用 ping 最近的一个。"),
+            help = T("自动会 ping 每个数据中心并保留最快的一个一天，在连接失败后重新测试。仅当自动持续选择不佳时才选择特定一个。商店会在下次连接时应用它。"),
             control = { Control.Select(listOf(Opt(SteamRegion.AUTO, T("自动（按延迟选最近）"))) + SteamRegion.CATALOG.map { Opt(it.code, it.name + " (" + it.code + ")") }) },
             binding = AppBinding(get = { c -> SteamRegion.mode(c) }, set = { c, v -> SteamRegion.setMode(c, v) }),
         ),
@@ -195,20 +195,20 @@ internal object AppSettingsRows {
         // ── Download engines and speed (were inside the Log Manager) ──
         switch("app.downloads.steamEngine", CAT_DOWNLOADS, T("下载引擎"), T("原生Steam引擎（需要重启）"), ADVANCED,
             BlSteamEngineFlag.PREF_KEY, BlSteamEngineFlag.DEFAULT,
-            hint = T("默认开启：整个 Steam 会话（登录、游戏库、下载、云、成就、好友）都跑在原生引擎上。关闭则使用旧版 Java 引擎。"),
+            hint = T("默认开启：整个 Steam 会话（登录、库、下载、云、成就、好友）在原生引擎上运行。关闭：旧版 Java 引擎。"),
             help = LogCopy.RUST_ENGINE),
         switch("app.downloads.epicEngine", CAT_DOWNLOADS, T("下载引擎"), T("原生引擎：Epic 下载"), ADVANCED,
             BlStoreEngineFlag.PREF_KEY_EPIC, BlStoreEngineFlag.DEFAULT,
-            hint = T("默认开启，对下次下载生效。关闭则使用 Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
+            hint = T("默认开启。应用于下次下载。关闭：Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
         switch("app.downloads.gogEngine", CAT_DOWNLOADS, T("下载引擎"), T("原生引擎：GOG 下载"), ADVANCED,
             BlStoreEngineFlag.PREF_KEY_GOG, BlStoreEngineFlag.DEFAULT,
-            hint = T("默认开启，对下次下载生效。关闭则使用 Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
+            hint = T("默认开启。应用于下次下载。关闭：Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
         switch("app.downloads.amazonEngine", CAT_DOWNLOADS, T("下载引擎"), T("原生引擎：Amazon 下载"), ADVANCED,
             BlStoreEngineFlag.PREF_KEY_AMAZON, BlStoreEngineFlag.DEFAULT,
-            hint = T("默认开启，对下次下载生效。关闭则使用 Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
+            hint = T("默认开启。应用于下次下载。关闭：Java 下载器。"), help = LogCopy.RUST_STORE_ENGINES),
         row(
             "app.downloads.speedTier", CAT_DOWNLOADS, T("下载引擎"), T("商店下载速度"), ADVANCED,
-            hint = T("Epic、GOG 和 Amazon 原生引擎的上限。连接较弱时会低于此值。对下次下载生效。"),
+            hint = T("Epic、GOG 和 Amazon 原生引擎的上限。弱连接会稳定在它之下。应用于下次下载。"),
             help = LogCopy.RUST_STORE_ENGINES, tech = StoreDownloadTier.PREF_KEY,
             control = { Control.Select(StoreDownloadTier.ALL.map { Opt(it.toString(), StoreDownloadTier.label(it)) }) },
             binding = AppBinding(

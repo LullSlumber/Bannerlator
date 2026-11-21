@@ -559,7 +559,7 @@ fun UnpackArchiveScreen(
                                 }
                             },
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        ) { Text("应用设置", color = MaterialTheme.colorScheme.onBackground) }
+                        ) { Text("应用设置s", color = MaterialTheme.colorScheme.onBackground) }
                         Spacer(Modifier.width(8.dp))
                         OutlinedButton(
                             onClick = {

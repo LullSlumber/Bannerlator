@@ -1538,7 +1538,7 @@ internal fun ControlsPage(state: XServerDrawerState, kind: InGameSessionKind) {
                 L("触摸") to listOf(game),
                 L("瞄准模式") to listOf(game),
                 L("触摸手势") to listOf(SaveScope.ALL),
-                L("禁用鼠标") to listOf(SaveScope.SESSION),
+                L("禁用光标") to listOf(SaveScope.SESSION),
             )
             2 -> SaveNotes(
                 L("震动开/关以及每个槽位的开关") to listOf(SaveScope.ALL),

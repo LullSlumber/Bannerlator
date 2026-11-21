@@ -118,7 +118,7 @@ internal fun LabSteamClientPanel(state: XServerDrawerState) {
             scopes = game,
             wideControl = true,
         ) {
-            IgSegmented(listOf("" to L("应用设置"), "1" to L("Touchscreen"), "0" to L("Touchpad")), touch) { v ->
+            IgSegmented(listOf("" to L("应用设置s"), "1" to L("Touchscreen"), "0" to L("Touchpad")), touch) { v ->
                 state.setLinuxTouch(v)
                 state.onLinuxTouch?.accept(v)
             }

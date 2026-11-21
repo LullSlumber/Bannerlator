@@ -126,7 +126,7 @@ internal class FirstContainerSetup(private val app: Application) {
     val wowbox64 = FcPick("WOWBox64")
     val driver = FcPick("显卡驱动")
     val backend = FcPick("显示后端")
-    val fexPreset = FcPick("FEXCore 预设")
+    val fexPreset = FcPick("FEXCore 预设值")
     val box64Preset = FcPick("Box64 预设")
     val audio = FcPick("Audio driver")
     var name by mutableStateOf("")

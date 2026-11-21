@@ -105,7 +105,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                         value = profileItems.getOrElse(profileIndex) { "-- Default --" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("配置") },
+                        label = { Text("布局") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = profileDropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -186,7 +186,7 @@ fun ScreenEffectsDialog(state: XServerDialogState) {
                 OutlinedTextField(
                     value = newProfileName,
                     onValueChange = { newProfileName = it },
-                    label = { Text("配置名称") },
+                    label = { Text("配置名字") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )

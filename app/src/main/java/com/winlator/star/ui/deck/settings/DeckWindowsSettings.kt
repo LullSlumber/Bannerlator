@@ -134,7 +134,7 @@ internal object WindowsRows {
             control = { _, _ ->
                 Control.Segmented(listOf(
                     Opt("${WineThemeManager.BackgroundScope.GLOBAL.ordinal}", L("所有容器")),
-                    Opt("${WineThemeManager.BackgroundScope.CONTAINER.ordinal}", L("此容器")),
+                    Opt("${WineThemeManager.BackgroundScope.CONTAINER.ordinal}", L("这容器")),
                 ))
             },
             vm = VmBinding(

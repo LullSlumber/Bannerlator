@@ -88,7 +88,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * The game actions that are not tied to a list on screen: the "添加游戏" flows (one exe, a games
+ * The game actions that are not tied to a list on screen: the "添加游戏s" flows (one exe, a games
  * folder scanned for its games with the review and Confirm game dialogs, Android games), and the
  * one-shot requests other screens post (GamesScreenRequests, AccountUiBus's My account, the
  * component-install return to a game's settings). Lifted out of the Games screen so the Deck shell
@@ -263,7 +263,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
         }?.let { settingsShortcut = it }
     }
 
-    // One-shot requests (see GamesScreenRequests): the + button, the Deck's "添加游戏", and the game
+    // One-shot requests (see GamesScreenRequests): the + button, the Deck's "添加游戏s", and the game
     // actions the Deck settings pages hand over (Game details, Copy to Drive C, Change executable, Move).
     LaunchedEffect(GamesScreenRequests.pending) {
         val req = GamesScreenRequests.pending ?: return@LaunchedEffect
@@ -520,7 +520,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
     } else if (showImportMethodPicker) {
         OutlinedAlertDialog(
             onDismissRequest = { showImportMethodPicker = false },
-            title = { Text("添加游戏") },
+            title = { Text("添加游戏s") },
             text = {
                 Column {
                     MenuOptionCard(
@@ -533,7 +533,7 @@ fun GameActionsHost(vm: ShortcutsViewModel, actions: ShortcutActions) {
                         showImportContainerPicker = true
                     }
                     MenuOptionCard(
-                        title = "添加游戏文件夹",
+                        title = "添加一个游戏文件夹",
                         subtitle = "选择存放所有游戏的文件夹——每个游戏都会扫描其.exe文件",
                         icon = Icons.Default.Folder,
                     ) {
@@ -1466,7 +1466,7 @@ private fun WindowsSteamUninstallDialog(offer: WindowsSteamClient.UninstallOffer
 }
 
 /**
- * The Deck shell's game actions, mounted once over every Deck page: "添加游戏", My account and the
+ * The Deck shell's game actions, mounted once over every Deck page: "添加游戏s", My account and the
  * game actions the Deck settings pages hand over open in place, never on the classic All games list.
  * Its list refreshes reach every other library on screen (the Deck home, a game page), so a game added
  * or renamed here shows up there at once.

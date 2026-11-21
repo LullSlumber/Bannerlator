@@ -492,7 +492,7 @@ internal fun isStepped(c: Control): Boolean =
 
 private fun originLabel(o: Origin, scope: EditorScope): String? = when (o) {
     Origin.SET_HERE -> if (scope == EditorScope.GAME) "Set for this game" else "Changed"
-    Origin.FROM_CONTAINER -> "来自容器"
+    Origin.FROM_CONTAINER -> "来自此容器"
     Origin.FROM_APP -> "From the app"
     Origin.CONTAINER_ONLY -> "Container setting"
     else -> null

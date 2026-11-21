@@ -582,7 +582,7 @@ internal fun LabHudPanel(state: XServerDrawerState) {
     }
 
     // ── Appearance ──
-    IgSectionLabel(L("外观"))
+    IgSectionLabel(L("外型"))
     IgCard {
         IgSliderRow(
             title = L("Scale"), value = scaleValue, range = 50f..150f, step = 5f,
@@ -606,14 +606,14 @@ internal fun LabHudPanel(state: XServerDrawerState) {
         }
         if (gameHub || gameNative || fusion) {
             IgDivider()
-            LabPerfHudChoiceRow(L("颜色"), listOf(L("柔和"), L("适中"), L("鲜艳")), colors.indexOf(color), scopes) { color = colors[it]; applyHud() }
+            LabPerfHudChoiceRow(L("色度"), listOf(L("柔和"), L("适中"), L("鲜艳")), colors.indexOf(color), scopes) { color = colors[it]; applyHud() }
             IgDivider()
             IgSliderRow(
                 title = L("轮廓"), value = outlineValue, range = 0f..100f, step = 5f,
                 format = { "${it.toInt()}" }, onChange = { outlineValue = it }, onFinished = { applyHud() }, scopes = scopes,
             )
             IgDivider()
-            LabPerfHudChoiceRow(L("轮廓颜色"), listOf(L("灰色"), L("强调色")), if (outlineAccent) 1 else 0, scopes) { outlineAccent = it == 1; applyHud() }
+            LabPerfHudChoiceRow(L("轮廓颜色度"), listOf(L("灰色"), L("强调色")), if (outlineAccent) 1 else 0, scopes) { outlineAccent = it == 1; applyHud() }
         }
     }
 
@@ -885,7 +885,7 @@ internal fun LabTvPanel(state: XServerDrawerState) {
         val capValues = listOf(0, 30, 60, 90, 120)
         val capOptions = capValues.map { if (it == 0) L("Off") else L("%1\$s fps", it) }
         val capIdx = if (!fpsLimiterEnabled) 0 else capValues.indexOf(fpsLimit).let { if (it >= 0) it else 0 }
-        IgPickRow(L("帧率上限"), capOptions, capIdx, scopes = listOf(game)) { i ->
+        IgPickRow(L("帧数上限"), capOptions, capIdx, scopes = listOf(game)) { i ->
             val v = capValues[i]
             state.setFpsLimiterEnabled(v > 0)
             if (v > 0) state.setFpsLimit(v)

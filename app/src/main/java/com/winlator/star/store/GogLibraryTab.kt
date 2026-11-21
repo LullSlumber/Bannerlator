@@ -187,7 +187,7 @@ fun GogLibraryTab(
                 StoreNotice(
                     title = "您的GOG库在此为空",
                     body = "同步以从GOG拉取您的游戏，或打开完整库界面。",
-                    actionLabel = "立即同步",
+                    actionLabel = "立刻同步",
                     onAction = { state.refresh(true) },
                 )
             }

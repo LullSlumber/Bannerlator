@@ -700,7 +700,7 @@ fun BigPictureScreen(navController: NavController) {
                             GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME)
                             navController.popBackStack()
                         } else navController.navigate(Screen.Games.route)
-                    }) { Text("添加游戏") }
+                    }) { Text("添加游戏s") }
                 }
             } else {
                 // Hero — fills the band between the rail and the carousel (a weighted sibling, so its
@@ -1209,7 +1209,7 @@ fun BigPictureScreen(navController: NavController) {
         BpSheetScaffold(
             title = title,
             rows = listOf(
-                BpRow(Icons.Filled.Download, if (available) "立即更新" else "Check online") {
+                BpRow(Icons.Filled.Download, if (available) "立刻更新" else "Check online") {
                     steamUpdateOffer = null
                     runSteamMaintenance(s, verify = false)
                 },

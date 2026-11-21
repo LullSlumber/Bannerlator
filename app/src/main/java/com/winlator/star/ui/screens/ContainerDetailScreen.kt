@@ -251,7 +251,7 @@ fun ContainerDetailScreen(
             else -> "编辑容器"
         }
         val railLinks = buildList {
-            add(RailLink("这些是什么?", Icons.Filled.Help) { glossaryQuery = "" })
+            add(RailLink("这些都是什么?", Icons.Filled.Help) { glossaryQuery = "" })
             if (viewModel.defaultsMode) {
                 add(RailLink(stringResource(R.string.reset_to_app_defaults), Icons.Filled.Restore) { viewModel.resetDefaults() })
             }
@@ -697,7 +697,7 @@ internal fun VulkanSettingsDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.renderer_native), Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_renderer_native }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                     Switch(checked = nativeRender, onCheckedChange = { nativeRender = it })
                 }
@@ -722,7 +722,7 @@ internal fun VulkanSettingsDialog(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_renderer_native_backend }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -746,7 +746,7 @@ internal fun VulkanSettingsDialog(
                         modifier = (if (nativeRender) Modifier.alpha(0.5f) else Modifier).weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.renderer_present_mode_help_content }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 // FG temporarily forces Mailbox; caption the field so FIFO-while-FG-selected isn't confusing.
@@ -781,7 +781,7 @@ internal fun VulkanSettingsDialog(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_renderer_driver }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
 
@@ -807,7 +807,7 @@ internal fun VulkanSettingsDialog(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_renderer_colors }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 // NOTE: "校正 SurfaceFlinger 颜色" (sfCompatMode) is NOT shown here — this
@@ -874,7 +874,7 @@ private fun TopLevelFields(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_screen_size }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
         if (viewModel.selectedScreenSize.equals("custom", ignoreCase = true)) {
@@ -924,7 +924,7 @@ private fun TopLevelFields(
                 )
                 ContentInstallGear(onDownloadFile = onShowWineDownloadSheet)
                 IconButton(onClick = { helpRes = R.string.help_wine_version }) {
-                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                 }
             }
             // Sync (esync / ntsync / fsync / wineserver) — belongs to the layer, so it sits right under
@@ -1050,7 +1050,7 @@ private fun TopLevelFields(
                 )
             }
             IconButton(onClick = { helpRes = R.string.help_graphics_driver }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
             // Wrappers are X11 game-driver shims and driver configuration is X11 tuning (its only
             // live field, the Turnip version, is the Compositor driver dropdown), so both entry
@@ -1364,7 +1364,7 @@ private fun TopLevelFields(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_renderer }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
             if (rendererEnabled && viewModel.selectedRenderer == "Vulkan") {
                 IconButton(onClick = onShowVulkanConfig) {
@@ -1394,7 +1394,7 @@ private fun TopLevelFields(
                     )
                 }
                 IconButton(onClick = { helpRes = R.string.help_renderer_sf_compat }) {
-                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                 }
                 Switch(
                     checked = viewModel.rendererSfCompatMode,
@@ -1473,11 +1473,11 @@ private fun TopLevelFields(
             val audioId = StringUtils.parseIdentifier(viewModel.selectedAudioDriver)
             if (audioId == "pulseaudio" || audioId == "alsa" || audioId == "directaudio") {
                 IconButton(onClick = { showAudioSettings = true }) {
-                    Icon(Icons.Default.Settings, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Settings, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                 }
             }
             IconButton(onClick = { helpRes = R.string.help_audio_driver }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
         if (!directAudioSupported && directAudioEntry != null) {
@@ -1491,7 +1491,7 @@ private fun TopLevelFields(
         if (showAudioSettings) {
             AudioSettingsDialog(
                 initial = audioConfigFromEnv(viewModel.envVarsStr, StringUtils.parseIdentifier(viewModel.selectedAudioDriver)),
-                scopeLabel = "此容器",
+                scopeLabel = "这容器",
                 latencyLive = true,
                 driverLabel = when (StringUtils.parseIdentifier(viewModel.selectedAudioDriver)) {
                     "alsa" -> "ALSA"; "pulseaudio" -> "PulseAudio"; "directaudio" -> "DirectAudio"
@@ -1704,7 +1704,7 @@ private fun TopLevelFields(
                 modifier = (if (!fgVulkan) Modifier.alpha(0.5f) else Modifier).weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_frame_generation }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
         if (!fgVulkan) {
@@ -1857,7 +1857,7 @@ private fun TopLevelFields(
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.fps_limiter), modifier = Modifier.weight(1f))
             IconButton(onClick = { helpRes = R.string.help_fps_limiter }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
         if (viewModel.fpsLimiterEnabled) {
@@ -2062,7 +2062,7 @@ private fun WineConfigTab(
             if (viewModel.desktopBgTypeIndex == WineThemeManager.BackgroundType.IMAGE.ordinal) {
                 val context = LocalContext.current
                 val ioScope = rememberCoroutineScope()
-                val scopeOptions = listOf("所有容器", "此容器")
+                val scopeOptions = listOf("所有容器", "这容器")
                 val currentScope = WineThemeManager.BackgroundScope.values()
                     .getOrElse(viewModel.desktopWallpaperScopeIndex) { WineThemeManager.BackgroundScope.GLOBAL }
                 // File depends on the selected scope; getNextContainerId() is O(1) so recomputing
@@ -2520,7 +2520,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                     ContentInstallGear(onDownloadFile = onShowFexCoreDownloadSheet)
                 }
@@ -2534,7 +2534,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_fexcore_preset }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                     if (fexPresetCustomised) PresetCustomBadge()
                 }
@@ -2567,7 +2567,7 @@ private fun AdvancedTab(
                         )
                     }
                     IconButton(onClick = { helpRes = R.string.help_force_ssbs }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
             }
@@ -2762,7 +2762,7 @@ private fun AdvancedTab(
         // Player Slots section — manual controller->player-slot pins that the launch pre-assignment
         // applies. Same JSON schema and editor the in-game "玩家" drawer tab uses, but here it's a
         // saved default (applied on next launch), not a live reassignment.
-        SectionBox(title = "玩家槽位") {
+        SectionBox(title = "玩家位置") {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "将控制器固定到玩家；将两个分配给一个玩家以共享控制。",
@@ -2771,7 +2771,7 @@ private fun AdvancedTab(
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = { helpRes = R.string.help_player_slots }) {
-                    Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                 }
             }
             // On-screen priority: what happens to the on-screen pad when a physical pad connects mid-game.
@@ -2841,7 +2841,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_mode }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -2866,7 +2866,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_target }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 val gyroActivatorLabels = listOf(
@@ -2888,7 +2888,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_activator }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 // Hold vs Toggle for that button. Pointless with "Always On" (no button to latch), so
@@ -2911,7 +2911,7 @@ private fun AdvancedTab(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { helpRes = R.string.help_gyro_activation_mode }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -2923,7 +2923,7 @@ private fun AdvancedTab(
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gyro_sensitivity }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Slider(
@@ -2978,7 +2978,7 @@ private fun AdvancedTab(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { helpRes = R.string.help_startup_selection }) {
-                Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
             }
         }
 
@@ -3079,7 +3079,7 @@ internal fun StartupServicesToggleList(
     enabled: Set<String>,
     onToggle: (rawName: String, on: Boolean) -> Unit
 ) {
-    SectionBox(title = "自定义服务") {
+    SectionBox(title = "自定义服务支持") {
         Text(
             "Custom starts with every service off — turn on only what you need. " +
                 "Disabling Wine Bus/HID can break controllers.",
@@ -3422,7 +3422,7 @@ internal fun WaylandDriverSettingsDialog(
                 Spacer(Modifier.height(10.dp))
 
                 // ── Profile ────────────────────────────────────────────────────────────────────
-                Text("配置", style = MaterialTheme.typography.titleSmall)
+                Text("布局", style = MaterialTheme.typography.titleSmall)
                 if (perGame) WaylandProfileRow(
                     label = "Inherit the container's (${containerProfile ?: "Auto"})",
                     help = "Use whatever the container is set to.",
@@ -3539,7 +3539,7 @@ internal fun WaylandDriverSettingsDialog(
                         gpuName, { gpuName = it }, modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_gpu_name }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 vendorWarning?.let {
@@ -3552,7 +3552,7 @@ internal fun WaylandDriverSettingsDialog(
                         memoryEntry, { memoryEntry = it }, modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { helpRes = R.string.help_max_device_memory }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -3565,7 +3565,7 @@ internal fun WaylandDriverSettingsDialog(
                     Checkbox(checked = fdDevFeatures, onCheckedChange = { fdDevFeatures = it })
                     Text("OneUI / HyperOS 修复（UBWC 标志提示）", modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_oneui_hyperos_fix }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -4203,14 +4203,14 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_vulkan_version), vulkanVersions, vulkanVersion, { vulkanVersion = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_vulkan_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_version), driverVersions, version, { version = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_graphics_driver_version }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4218,7 +4218,7 @@ internal fun GraphicsDriverConfigDialog(
                     Checkbox(checked = showAllDrivers, onCheckedChange = { showAllDrivers = it })
                     Text(stringResource(R.string.graphics_driver_show_incompatible), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_show_incompatible_drivers }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4239,7 +4239,7 @@ internal fun GraphicsDriverConfigDialog(
                             Text(stringResource(R.string.graphics_driver_available_extensions) + " ($enabled/${allExtensions.size})")
                         }
                         IconButton(onClick = { helpRes = R.string.help_available_extensions }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -4247,28 +4247,28 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.gpu_name), gpuNames, gpuName, { gpuName = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_gpu_name }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_max_device_memory), deviceMemoryEntries, selectedMemoryEntry, { selectedMemoryEntry = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_max_device_memory }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_present_modes), presentModeEntries, presentMode, { presentMode = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_wrapper_present_modes }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_resource_type), resourceTypeEntries, resourceType, { resourceType = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_resource_type }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4285,21 +4285,21 @@ internal fun GraphicsDriverConfigDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation), bcnEmulationEntries, bcnEmulation, { bcnEmulation = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation_type), bcnTypeEntries, bcnEmulationType, { bcnEmulationType = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation_type }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LabeledDropdown(stringResource(R.string.graphics_driver_bcn_emulation_cache), bcnCacheEntries, bcnEmulationCache, { bcnEmulationCache = it }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_bcn_emulation_cache }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -4312,7 +4312,7 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnEmulationAstc, onCheckedChange = { bcnEmulationAstc = it })
                         Text(stringResource(R.string.graphics_driver_bcn_emulation_astc), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_transcode_astc }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (isQualcomm) {
@@ -4334,7 +4334,7 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnTranscodeAstc, onCheckedChange = { bcnTranscodeAstc = it })
                         Text(stringResource(R.string.bcn_layer_transcode_astc), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_transcode_astc }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (isQualcomm) {
@@ -4353,7 +4353,7 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = bcnLayerFast, onCheckedChange = { bcnLayerFast = it })
                         Text(stringResource(R.string.bcn_layer_fast), modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_bcn_layer_fast }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -4361,21 +4361,21 @@ internal fun GraphicsDriverConfigDialog(
                     Checkbox(checked = syncFrame, onCheckedChange = { syncFrame = it })
                     Text(stringResource(R.string.graphics_driver_sync_frame), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_sync_every_frame }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = disablePresentWait, onCheckedChange = { disablePresentWait = it })
                     Text(stringResource(R.string.graphics_driver_disable_present_wait), modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_disable_present_wait }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = fdDevFeatures, onCheckedChange = { fdDevFeatures = it })
                     Text("三星OneUI/小米HyperOS 修复", modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_oneui_hyperos_fix }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
 
@@ -4395,7 +4395,7 @@ internal fun GraphicsDriverConfigDialog(
                         turnipGmem = gmemValues[gmemLabels.indexOf(picked).coerceAtLeast(0)]
                     }, modifier = Modifier.weight(1f))
                     IconButton(onClick = { helpRes = R.string.help_turnip_gmem }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -4433,14 +4433,14 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = turnipForceCb, onCheckedChange = { turnipForceCb = it })
                         Text("forcecb — 强制并发分箱", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_concurrent_binning }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(checked = turnipNoCb, onCheckedChange = { turnipNoCb = it })
                         Text("nocb — 禁用并发分箱", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_concurrent_binning }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     // sysmem is the direct opposite of gmem and Turnip lets it defeat gmem, so when
@@ -4460,7 +4460,7 @@ internal fun GraphicsDriverConfigDialog(
                                     else Color.Unspecified
                         )
                         IconButton(onClick = { helpRes = R.string.help_turnip_sysmem }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     if (sysmemBlockedByGmem) {
@@ -4474,7 +4474,7 @@ internal fun GraphicsDriverConfigDialog(
                         Checkbox(checked = turnipDeckEmu, onCheckedChange = { turnipDeckEmu = it })
                         Text("deck_emu — 伪装为SteamDeck", modifier = Modifier.weight(1f))
                         IconButton(onClick = { helpRes = R.string.help_turnip_deck_emu }) {
-                            Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                         }
                     }
                     Text(
@@ -5376,7 +5376,7 @@ internal fun DxvkConfigDialog(
                     LabeledDropdown("Anisotropic filtering", anisotropyLabels, selectedAnisotropy, { selectedAnisotropy = it },
                         modifier = Modifier.weight(1f))
                     IconButton(onClick = { textureHelpRes = R.string.help_anisotropic_filtering }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -5384,7 +5384,7 @@ internal fun DxvkConfigDialog(
                     LabeledDropdown("Texture sharpness", lodBiasLabels, selectedLodBias, { selectedLodBias = it },
                         modifier = Modifier.weight(1f))
                     IconButton(onClick = { textureHelpRes = R.string.help_texture_sharpness }) {
-                        Icon(Icons.Default.Help, contentDescription = "音频设置", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Help, contentDescription = "这个是什么？", modifier = Modifier.size(18.dp))
                     }
                 }
                 Text(
@@ -5405,7 +5405,7 @@ internal fun DxvkConfigDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         LabeledDropdown(
-                            "D7VK 版本", d7vkVersions.value, selectedD7vk, { selectedD7vk = it },
+                            "D7VK 版别", d7vkVersions.value, selectedD7vk, { selectedD7vk = it },
                             modifier = Modifier.weight(1f)
                         )
                         ContentInstallGear(onDownloadFile = onDownloadD7vk)
@@ -5535,7 +5535,7 @@ internal fun DxvkConfigDialog(
                 }
                 if (isVegas) {
                     Spacer(Modifier.height(8.dp))
-                    SectionLabel("配置")
+                    SectionLabel("布局")
                     // Guidance for the three config audiences (new / customizer / file-savvy).
                     Text(
                         "New to configs? Grab a Stock config via ⬇, then pick it below. " +
@@ -6597,7 +6597,7 @@ internal fun FpsCounterConfigDialog(
                         onValueChange = { outlineValue = it.toInt() },
                         valueRange = 0f..100f, steps = 99
                     )
-                    HudThreeStop("轮廓颜色", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
+                    HudThreeStop("轮廓颜色度", listOf("灰色", "强调色"), if (outlineAccent) 1 else 0) { outlineAccent = it == 1 }
                 } else {
                     Spacer(Modifier.height(4.dp))
                     Text("HUD Transparency: $hudTransparency", style = MaterialTheme.typography.bodySmall)

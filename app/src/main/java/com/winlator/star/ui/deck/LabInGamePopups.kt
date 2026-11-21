@@ -287,7 +287,7 @@ private fun LabPopCtlRail(
     modifier: Modifier,
 ) {
     Column(modifier) {
-        IgSectionLabel(L("玩家槽位"))
+        IgSectionLabel(L("玩家位置"))
         Text(
             L("手柄在游戏中模拟为Xbox 360；图片显示的是您握持的物理手柄。"),
             color = SimpleMuted,
@@ -686,7 +686,7 @@ private fun LabPopBinder(
     Column(modifier) {
         IgCard {
             val shown = (profile?.name ?: L("— none —")).let { if (it.length > 24) it.take(23) + "…" else it }
-            IgRow(L("配置")) {
+            IgRow(L("布局")) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     IgButton("$shown  ▾", null, { profMenu = true })
                     IgButton(L("+ 新建"), null, { showNew = !showNew })
@@ -799,7 +799,7 @@ private fun LabPopBinder(
                 add(MenuAction(L("Delete…"), onDeleteProfile, danger = true))
             }
         }
-        SimpleActionSheet(title = L("配置"), actions = actions, onDismiss = { profMenu = false }) { a ->
+        SimpleActionSheet(title = L("布局"), actions = actions, onDismiss = { profMenu = false }) { a ->
             profMenu = false
             a.run()
         }

@@ -942,7 +942,7 @@ private fun RecentlyPlayedList(c: ProfileTabContent, fillsPane: Boolean = false)
         return
     }
 
-    StoreSectionHeader("最近游玩", "按游玩时间")
+    StoreSectionHeader("最近已游玩", "按游玩时间")
     Column(
         modifier = Modifier
             .fillMaxWidth()

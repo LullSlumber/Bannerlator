@@ -103,7 +103,7 @@ class ShortcutActions internal constructor(
     // expand). deleteUploadRow drives the delete-confirm sub-dialog.
     internal var showMyUploads by mutableStateOf(false)
     // Phase 2 (optional accounts) — the "我的账户" sheet. Opened from the globe browser's person icon;
-    // hosts create/login/reset when logged out and profile + "我的上传" + "退出登录" when signed in.
+    // hosts create/login/reset when logged out and profile + "我的上传" + "注销登录" when signed in.
     internal var showMyAccount by mutableStateOf(false)
     internal var myUploads by mutableStateOf<List<MyUploadRow>?>(null)
     internal var deleteUploadRow by mutableStateOf<MyUploadRow?>(null)

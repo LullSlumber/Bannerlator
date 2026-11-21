@@ -14,7 +14,7 @@ enum class GameMenuAction(val label: String) {
     CHANGE_EXE("更改可执行文件…"),
     ADD_TO_HOME("添加到主屏幕"),
     EXPORT("导出"),
-    GAME_DETAILS("游戏详情"),
+    GAME_DETAILS("游戏明细"),
     CLOUD_SAVES("云端存档"),
     BACKUP_SAVES("备份存档"),
     RESTORE_SAVES("恢复存档"),

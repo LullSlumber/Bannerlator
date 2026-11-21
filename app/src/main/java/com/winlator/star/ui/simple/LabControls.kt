@@ -306,9 +306,9 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
         val g = L("新容器启动时使用")
         add(
             MenuEntry(
-                "a-help", L("玩家槽位"),
+                "a-help", L("玩家位置"),
                 L("新创建容器的默认设置。将两个设备分配给一个玩家以共享控制。仅适用于新容器——现有容器保留其自身设置。"),
-                icon = Icons.Filled.HelpOutline, group = g, onA = { help(L("玩家槽位"), R.string.help_player_slots) },
+                icon = Icons.Filled.HelpOutline, group = g, onA = { help(L("玩家位置"), R.string.help_player_slots) },
             ),
         )
         add(
@@ -323,7 +323,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
                 onA = { autoHide = !autoHide; prefs.setAutoHideControlsOnPad(context, autoHide) },
             ),
         )
-        val pg = L("玩家槽位")
+        val pg = L("玩家位置")
         rows.forEach { r ->
             val status = when {
                 r.override == WinHandler.SLOT_IGNORE -> L("Ignored")
@@ -408,7 +408,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
     var capturing by remember { mutableStateOf(false) }
 
     val device = buildList {
-        val gg = L("陀螺仪")
+        val gg = L("陀螺传感器")
         val summary = when {
             sensor == null -> L("No gyroscope on this device")
             !calibrated -> L("未校准")
@@ -493,7 +493,7 @@ internal fun rememberLabControlsExtra(refresh: Int): LabControlsExtra {
                 actions = buildList {
                     add(MenuAction(L("设置按钮"), { capturing = true }))
                     if (keyCode != 0) add(MenuAction(L("None"), { prefs.setMenuButtonKeyCode(context, 0); keyCode = prefs.getMenuButtonKeyCode(context) }))
-                    add(MenuAction(L("音频设置"), { help(L("菜单按钮"), R.string.help_menu_button) }))
+                    add(MenuAction(L("这个是什么？"), { help(L("菜单按钮"), R.string.help_menu_button) }))
                 },
             ),
         )

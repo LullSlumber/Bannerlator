@@ -572,7 +572,7 @@ private fun DownloadCardBody(
                             shape = deckShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭s", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
 
@@ -590,7 +590,7 @@ private fun DownloadCardBody(
                             shape = deckShape(8.dp),
                             modifier = Modifier.dmButton(look),
                             contentPadding = PaddingValues(horizontal = look.buttonPadH, vertical = 2.dp),
-                        ) { Text("关闭", style = MaterialTheme.typography.labelSmall) }
+                        ) { Text("关闭s", style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }

@@ -11,7 +11,7 @@ sealed class Screen(val route: String, val label: String, val iconName: String) 
     object SaveManager   : Screen("save_manager",   "存档管理器",           "save")
     object FileManager   : Screen("file_manager",   "文件管理器",           "folder_open")
     object Settings      : Screen("settings",       "Settings",               "settings")
-    object Appearance    : Screen("appearance",     "外观",             "palette")
+    object Appearance    : Screen("appearance",     "外型",             "palette")
 
     object Gog    : Screen("gog",    "GOG",          "storefront")
     object Epic   : Screen("epic",   "Epic Games",   "storefront")
@@ -23,7 +23,7 @@ sealed class Screen(val route: String, val label: String, val iconName: String) 
 
     // Couch/TV launcher shown at startup instead of the normal UI when enable_big_picture_mode is on.
     // Registered as a route (see AppNavGraph) but intentionally NOT listed in the drawer.
-    object BigPicture : Screen("big_picture", "大屏幕模式", "sports_esports")
+    object BigPicture : Screen("big_picture", "大屏模式", "sports_esports")
 
     companion object {
         val drawerItems by lazy {

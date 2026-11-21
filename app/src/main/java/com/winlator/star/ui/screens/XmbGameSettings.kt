@@ -243,7 +243,7 @@ internal fun xmbGameDetailsMenu(xmb: XmbScope, s: Shortcut): XmbMenu {
     fun details(): GameDetails = GameDetails.from(s)
     fun write(d: GameDetails) { runCatching { d.writeTo(s) }; xmb.saved(); xmb.refresh() }
     // Opens on the name, not on "从Steam解除关联" (a stray A must not unlink).
-    return XmbMenu("游戏详情", Icons.Filled.Edit, initialKey = "name") {
+    return XmbMenu("游戏明细", Icons.Filled.Edit, initialKey = "name") {
         val d = details()
         val rows = mutableListOf<XmbRow>()
         d.steamAppId?.takeIf { it > 0 }?.let { id ->

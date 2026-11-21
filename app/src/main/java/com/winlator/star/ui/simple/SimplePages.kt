@@ -302,7 +302,7 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
         ),
         MenuEntry("style", L("界面风格"), L("Lab, Deck, XMB or Classic"), trailing = style, icon = Icons.Filled.Dashboard, actions = styles),
         MenuEntry(
-            "look", L("外观"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
+            "look", L("外型"), L("Dark or light; the accent is your theme's"), trailing = if (AppThemeState.labLight) L("Light") else L("Dark"), icon = Icons.Filled.Palette,
             actions = listOf(
                 MenuAction(mark(L("Dark"), !AppThemeState.labLight), { AppThemeState.setLabLight(false) }),
                 MenuAction(mark(L("Light"), AppThemeState.labLight), { AppThemeState.setLabLight(true) }),
@@ -359,9 +359,9 @@ internal fun SimpleAppearancePage(onBack: () -> Unit) {
     }
     SimpleMenuPage(
         overline = L("Settings"),
-        title = L("外观"),
+        title = L("外型"),
         sections = listOf(
-            MenuSection("look", L("外观"), Icons.Filled.Dashboard, look),
+            MenuSection("look", L("外型"), Icons.Filled.Dashboard, look),
             MenuSection("theme", L("主题"), Icons.Filled.Palette, themes),
         ),
         onBack = onBack,

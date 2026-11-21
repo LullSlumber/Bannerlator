@@ -403,8 +403,8 @@ private fun ProfileRow(p: ControlsProfile, s: InputControlsDeckState) {
             val c = counts
             Text(
                 text = if (c == null) " " else listOf(
-                    if (c.first > 0) "${c.first} on-screen controls" else "无虚拟按键布局",
-                    if (c.second > 0) "${c.second} bindings" else "无按键映射",
+                    if (c.first > 0) "${c.first} on-screen controls" else "无屏幕布局",
+                    if (c.second > 0) "${c.second} bindings" else "无绑定",
                 ).joinToString(" · "),
                 color = cs.onSurfaceVariant,
                 fontSize = 12.sp,
@@ -516,7 +516,7 @@ internal fun ctlPadOf(c: ExternalController): CtlPad {
 private fun ctlPadLine(pad: CtlPad, bindings: Int): String {
     val parts = ArrayList<String>()
     if (!pad.connected) parts.add("Not connected")
-    parts.add(if (bindings > 0) "$bindings bindings" else "无按键映射")
+    parts.add(if (bindings > 0) "$bindings bindings" else "无绑定")
     if (pad.battery >= 0) parts.add("battery ${pad.battery}%")
     return parts.joinToString(" · ")
 }
@@ -539,7 +539,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
             DeckCard {
                 Spacer(Modifier.height(4.dp))
                 CtlChoiceRow(
-                    label = "配置",
+                    label = "布局",
                     value = s.current?.getName() ?: "None",
                     options = s.profiles.map { it.getName() },
                     onPick = { i -> s.select(s.profiles.getOrNull(i)) },
@@ -551,7 +551,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                         Text("Default / Any controller", color = cs.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         val n = s.defaultTemplate?.getControllerBindingCount() ?: 0
                         Text(
-                            if (n > 0) "$n bindings · new pads start from these" else "无按键映射 · 新手柄以此为基础",
+                            if (n > 0) "$n bindings · new pads start from these" else "无绑定 · 新控制器从此开始",
                             color = cs.onSurfaceVariant,
                             fontSize = 12.sp,
                             maxLines = 1,
@@ -561,7 +561,7 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                 }
                 if (pads.isEmpty()) {
                     DeckRowDivider()
-                    CtlNote("未连接手柄。连接一个即可在此查看并绑定。")
+                    CtlNote("未连接控制器。请连接一个以在此查看并绑定它。")
                 }
                 for (c in pads) {
                     DeckRowDivider()
@@ -607,10 +607,10 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            DeckButton("编辑按键映射", Icons.Filled.Edit, { s.openBindings(activeId) }, primary = true)
+                            DeckButton("编辑绑定", Icons.Filled.Edit, { s.openBindings(activeId) }, primary = true)
                             val dev = pad?.device
                             if (pad != null && dev != null && pad.vibrator) {
-                                DeckButton("震动", Icons.Filled.Vibration, { pulsePad(dev) })
+                                DeckButton("振动", Icons.Filled.Vibration, { pulsePad(dev) })
                             }
                             if (target != null && !isDefault) {
                                 Box {
@@ -639,8 +639,8 @@ private fun DeckControllerTab(s: InputControlsDeckState, selId: String, onSelId:
                         }
                         if (target == null || count == 0) {
                             Text(
-                                if (isDefault) "尚无默认按键映射。「编辑按键映射」设定新控制器的基础映射。"
-                                else "此手柄没有保存的按键映射。「编辑按键映射」可映射它的按键，或从其他手柄复制。",
+                                if (isDefault) "尚无默认绑定。编辑绑定会设置新控制器从此开始的内容。"
+                                else "此控制器没有保存的绑定。编辑绑定会映射其按钮，或从另一个控制器复制。",
                                 color = cs.onSurfaceVariant,
                                 fontSize = 13.sp,
                                 lineHeight = 18.sp,

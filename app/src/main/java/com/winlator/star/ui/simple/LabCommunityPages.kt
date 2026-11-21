@@ -111,7 +111,7 @@ private fun communityConfigRows(
     val cfg = rememberGameConfigs(vm, game, extraBannerlatorFolders = extraFolders)
     var mine by rememberSaveable(game.identity) { mutableStateOf(false) }
     val hwOn = userSoc != null || userGpu != null
-    val group = L("配置")
+    val group = L("布局")
     val rows = ArrayList<MenuEntry>()
     rows += MenuEntry(
         "mine", L("匹配我的设备"), L("Your device: %1\$s", deviceHeaderLabel(deviceModel, hardwareLabel)),
@@ -194,7 +194,7 @@ internal fun LabCommunityBrowserPage(open: (String) -> Unit, back: () -> Unit, v
         }
     }
     fun storeLabel(f: CatalogStoreFilter) = when (f) { CatalogStoreFilter.ALL -> L("All"); CatalogStoreFilter.STEAM -> "Steam"; CatalogStoreFilter.TITLE -> L("Title") }
-    fun sortLabel(s: CatalogSort) = when (s) { CatalogSort.CONFIGS -> L("配置"); CatalogSort.NAME -> L("Name"); CatalogSort.DEVICES -> L("Devices") }
+    fun sortLabel(s: CatalogSort) = when (s) { CatalogSort.CONFIGS -> L("布局"); CatalogSort.NAME -> L("Name"); CatalogSort.DEVICES -> L("Devices") }
     fun refresh() {
         if (refreshing) return
         refreshing = true
@@ -265,7 +265,7 @@ internal fun LabCommunityGamePage(identity: String, back: () -> Unit, vm: Shortc
     SimpleMenuPage(
         overline = L("社区配置"),
         title = game.name,
-        sections = listOf(MenuSection("configs", L("配置"), Icons.Filled.Public, rows)),
+        sections = listOf(MenuSection("configs", L("布局"), Icons.Filled.Public, rows)),
         onBack = back,
         banner = CanonicalGame.countsLine(game, cat.userGpu) + " · " + storeName(game),
     )
@@ -362,7 +362,7 @@ internal fun LabGameCommunityPage(path: String, open: (String) -> Unit, back: ()
         overline = L("社区配置"),
         title = LabTitles.of(s),
         sections = listOf(
-            MenuSection("configs", L("配置"), Icons.Filled.Public, rows),
+            MenuSection("configs", L("布局"), Icons.Filled.Public, rows),
             MenuSection("share", L("分享"), Icons.Filled.Share, share),
         ),
         onBack = back,
@@ -626,7 +626,7 @@ internal fun LabMyAccountPage(open: (String) -> Unit, back: () -> Unit, vm: Shor
         MenuEntry("key", L("显示我的恢复密钥"), null, icon = Icons.Filled.Visibility, onA = { showKey = true }),
         MenuEntry("uploads", L("我的上传"), null, icon = Icons.Filled.CloudUpload, onA = { open(LabCommunityRoutes.UPLOADS) }),
         MenuEntry(
-            "logout", L("退出登录"), null, icon = Icons.AutoMirrored.Filled.Logout,
+            "logout", L("注销登录"), null, icon = Icons.AutoMirrored.Filled.Logout,
             onA = {
                 AccountManager.logout(context)
                 account = null

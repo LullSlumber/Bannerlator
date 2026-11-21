@@ -131,7 +131,7 @@ internal fun LabAudioTune(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(L("Audio").uppercase(), color = SimpleDim, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
-                    Text(L("音频设置"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Text(L("这个是什么？"), color = SimpleStrong, fontFamily = SoraFamily, fontWeight = FontWeight.Bold, fontSize = 22.sp)
                 }
                 if (driverLabel.isNotBlank()) SimpleChip(driverLabel)
             }
@@ -166,7 +166,7 @@ internal fun LabAudioTune(
                         ) { if (sel) Text("✓", color = accent, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
                     }
                 }
-                item { Heading(if (custom) L("微调") else L("Fine-tune — what this preset applies (Custom to edit)")) }
+                item { Heading(if (custom) L("微调动") else L("Fine-tune — what this preset applies (Custom to edit)")) }
                 item(key = "perf") {
                     TuneRow(
                         title = L("输出模式"), sub = L("AAudio性能模式"), enabled = custom,

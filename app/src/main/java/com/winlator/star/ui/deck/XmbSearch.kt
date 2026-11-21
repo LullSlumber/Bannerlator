@@ -301,7 +301,7 @@ private fun XmbSearchResults(
     ) {
         if (games.isNotEmpty()) {
             item(key = "h-games") {
-                DeckSectionLabel(if (typed.isEmpty()) "最近游玩" else "Games · ${games.size}")
+                DeckSectionLabel(if (typed.isEmpty()) "最近已游玩" else "Games · ${games.size}")
             }
             items(games, key = { "g:" + it.file.path }) { game ->
                 val subtitle = storeLabelOf(game) + " · " + playtimeLabel(stats[game.file.path]?.ms ?: 0L)

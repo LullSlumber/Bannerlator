@@ -139,7 +139,7 @@ fun UpdatePill(
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.5.sp, maxLines = 1,
                     )
                 }
-                PillButton("关闭", MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface, onDismiss)
+                PillButton("关闭s", MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface, onDismiss)
                 PillButton("查看", UpdateGreen, Color.White, onView)
             }
         }
@@ -224,7 +224,7 @@ fun UpdateHighlightsDialog(info: UpdateInfo, onLater: () -> Unit, onUpdate: () -
                 Spacer(Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     CardButton("等待", MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface, onLater, Modifier.weight(1f))
-                    CardButton("立即更新", UpdateGreen, Color.White, onUpdate, Modifier.weight(1f))
+                    CardButton("立刻更新", UpdateGreen, Color.White, onUpdate, Modifier.weight(1f))
                 }
             }
         }

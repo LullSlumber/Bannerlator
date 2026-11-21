@@ -337,7 +337,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Add, group = L("Wayland game drivers"), onA = pick,
                         actions = listOf(
                             MenuAction(L("Import a zip"), pick),
-                            MenuAction(L("音频设置"), {
+                            MenuAction(L("这个是什么？"), {
                                 note = LabHelpText(L("Wayland game drivers"), L("The Vulkan driver a game renders on under the Wayland display backend. Import a zip with a libvulkan_freedreno*.so built for Wayland/Linux (optional libdrm.so, meta.json). Android Turnip zips (vulkan.adXXXX.so) belong under GPU drivers and are rejected here."))
                             }),
                         ),
@@ -365,7 +365,7 @@ internal fun SimpleContentsPage(onNavigate: (String) -> Unit, onBack: () -> Unit
                         icon = Icons.Filled.Add, group = L("Linux runtime drivers"), onA = pick,
                         actions = listOf(
                             MenuAction(L("Import a zip"), pick),
-                            MenuAction(L("音频设置"), {
+                            MenuAction(L("这个是什么？"), {
                                 note = LabHelpText(L("Linux runtime drivers"), L("The Vulkan driver the Linux runtime draws with: the native Steam client's interface and every game it launches. Import a \"-Linux\" Turnip zip (glibc). The client and its games are Linux processes, so an Android (vulkan.adXXXX.so) or \"-Wayland\" zip cannot be loaded by them and is rejected here. Frames still reach the screen through the GPU driver above."))
                             }),
                         ),

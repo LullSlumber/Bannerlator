@@ -2242,7 +2242,7 @@ private fun SteamGameDetailScreen(
                             onClick = { gearMenuExpanded = false; onCancelDeleteClick() })
                         MenuItemDivider()
                     }
-                    GearMenuItem("🌿", "选择分支",
+                    GearMenuItem("🌿", "选择一个分支",
                         onClick = { gearMenuExpanded = false; onBranchLineClick() })
                     MenuItemDivider()
                     GearMenuItem("🧩", "管理DLC", enabled = dlcEntries.isNotEmpty(),
@@ -2672,7 +2672,7 @@ private fun SteamGameDetailScreen(
                     .padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
             ) {
                 Text(
-                    text = "选择分支",
+                    text = "选择一个分支",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -3923,7 +3923,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "这个是什么？",
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -4120,7 +4120,7 @@ private fun DownloadSpeedPickerDialog(
                 IconButton(onClick = { helpRes = R.string.help_download_speed }) {
                     Icon(
                         Icons.Default.Help,
-                        contentDescription = "音频设置",
+                        contentDescription = "这个是什么？",
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -4151,7 +4151,7 @@ private fun DownloadSpeedPickerDialog(
                         IconButton(onClick = { helpRes = tierHelpRes(tier) }) {
                             Icon(
                                 Icons.Default.Help,
-                                contentDescription = "音频设置",
+                                contentDescription = "这个是什么？",
                                 modifier = Modifier.size(18.dp),
                             )
                         }

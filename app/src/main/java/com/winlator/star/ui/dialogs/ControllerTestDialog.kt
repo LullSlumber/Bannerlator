@@ -206,7 +206,7 @@ private fun PlayerRail(
     }
 
     Column(modifier.fillMaxSize()) {
-        Text("玩家槽位", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        Text("玩家位置", color = accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         Spacer(Modifier.height(2.dp))
         Text(
             "手柄在游戏中模拟为Xbox 360；图片显示的是您握持的物理手柄。",

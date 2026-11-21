@@ -222,7 +222,7 @@ private fun ProfileTopBar(onBack: () -> Unit, onViewOnSteam: () -> Unit, onRemov
             )
         }
         Text(
-            text = "配置",
+            text = "布局",
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 4.dp),
@@ -544,7 +544,7 @@ private fun StatCell(label: String, value: String, modifier: Modifier = Modifier
 @Composable
 private fun RecentlyPlayed(games: List<SteamFriendsStore.RecentGame>) {
     if (games.isEmpty()) return
-    Section("最近游玩") {
+    Section("最近已游玩") {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),

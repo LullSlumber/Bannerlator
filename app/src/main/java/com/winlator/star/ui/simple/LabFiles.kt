@@ -818,7 +818,7 @@ private fun LabFileManagerBody(
 
 /** Home's fixed tile names and lines in Lab's language; a container's or a folder's own name stays as it is. */
 private val FIXED_TILE_TEXT = setOf(
-    "Internal", "System", "Drive Z:", "Downloads", "Pictures", "Documents", "游戏", "Drive C:", "此容器",
+    "Internal", "System", "Drive Z:", "Downloads", "Pictures", "Documents", "游戏", "Drive C:", "这容器",
     "Network drives", "再次搜索", "Add drive", "检查中…", "Can't reach", "Needs login", "Searching…", "No Wi-Fi", "Checking the download…",
 )
 private fun labFixed(text: String): String = if (text in FIXED_TILE_TEXT) L(text) else text
@@ -1227,7 +1227,7 @@ private fun LabSortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort)
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { delay(80); runCatching { first.requestFocus() } }
     LabDialog(L("Sort"), onDismiss) {
-        LabToolHeading(L("文件夹"))
+        LabToolHeading(L("文件夹s"))
         listOf(FmSortKey.NAME, FmSortKey.DATE).forEachIndexed { i, k ->
             LabToolRow(L(k.label()), selected = s.folders == k, requester = if (i == 0) first else null) { s = s.copy(folders = k) }
         }

@@ -513,7 +513,7 @@ internal fun gameMenuGroups(s: Shortcut): List<List<Pair<String?, GameMenuEntry>
 
 private fun menuTitle(a: GameMenuAction): String = when (a) {
     GameMenuAction.SETTINGS -> "Game settings"
-    GameMenuAction.GAME_DETAILS -> "游戏详情"
+    GameMenuAction.GAME_DETAILS -> "游戏明细"
     GameMenuAction.SCRAPE_COVER -> "封面图"
     GameMenuAction.COMMUNITY_CONFIGS -> "此游戏的社区配置"
     GameMenuAction.CLOUD_SAVES -> "云存档"

@@ -329,7 +329,7 @@ private fun SaveManagerScreenBody(
     // (same pattern as the store screens). Hoisted here so the bar floats over whichever tab is shown.
     var resultBarMsg by remember { mutableStateOf<String?>(null) }
     // The same one-time third-party cloud disclaimer the game detail page asks for (steam_prefs
-    // "cloud_saves_disclaimer_accepted"). The row buttons and "立即同步" used to skip it, so a user who
+    // "cloud_saves_disclaimer_accepted"). The row buttons and "立刻同步" used to skip it, so a user who
     // only synced from here never set the flag — and the auto-upload on exit, which requires it, never
     // ran. pendingCloudAction = what to run once the user accepts.
     var pendingCloudAction by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -388,7 +388,7 @@ private fun SaveManagerScreenBody(
     // progress line, and a per-row status refresh when it settles — so a bulk sync lights up the
     // individual rows exactly like tapping each one would. Returns true on success, false on error;
     // guards a double-run on the same appId. Must be called from the composition (main) scope. Reused
-    // by the per-row buttons ([runQuickMove]) and the banner's "立即同步" ([runSyncAll]).
+    // by the per-row buttons ([runQuickMove]) and the banner's "立刻同步" ([runSyncAll]).
     suspend fun syncOne(appId: Int, syncFrom: Boolean): Boolean {
         if (appId in busyAppIds) return false
         busyAppIds = busyAppIds + appId
@@ -438,7 +438,7 @@ private fun SaveManagerScreenBody(
     // warning strip below. (Custom rows load inside their own tab, so this is Steam scope only.)
     val needSync = statuses.count { it.state.needsAttention() }
 
-    // ── Banner "立即同步" — one-touch sync of every Steam game that needs attention ──────────────
+    // ── Banner "立刻同步" — one-touch sync of every Steam game that needs attention ──────────────
     // Runs the needs-attention games SEQUENTIALLY (one at a time, so it doesn't hammer the network and
     // each row's progress stays legible), each in its CORRECT direction, reusing the same per-game path
     // as the row buttons ([syncOne]). Best-effort: one game's failure never aborts the rest.
@@ -650,7 +650,7 @@ private fun SaveManagerScreenBody(
                                 Spacer(Modifier.width(8.dp))
                             }
                             Text(
-                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "立即同步",
+                                text = if (syncAllRunning) "Syncing ${syncAllProgress.first}/${syncAllProgress.second}…" else "立刻同步",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = if (canSyncAll) MaterialTheme.colorScheme.onErrorContainer
@@ -800,10 +800,10 @@ private fun LabSyncStrip(needSync: Int, canSyncAll: Boolean, running: Boolean, p
                 Spacer(Modifier.width(8.dp))
                 Text(L("Syncing %1\$s/%2\$s…", progress.first, progress.second), color = com.winlator.star.ui.simple.SimpleMuted, fontSize = 13.sp)
             }
-            canSyncAll -> com.winlator.star.ui.simple.LabButton(L("立即同步"), primary = true, icon = Icons.Filled.Sync, onClick = onSync)
+            canSyncAll -> com.winlator.star.ui.simple.LabButton(L("立刻同步"), primary = true, icon = Icons.Filled.Sync, onClick = onSync)
             // Offline or signed out: shown, not offered (as Classic's disabled button).
             else -> Text(
-                L("立即同步"), color = com.winlator.star.ui.simple.SimpleDim, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                L("立刻同步"), color = com.winlator.star.ui.simple.SimpleDim, fontSize = 14.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
             )
         }
@@ -955,7 +955,7 @@ private fun SaveManagerSettingsSection(modifier: Modifier = Modifier) {
                                 SteamPrefs.setAchievementSyncBackEnabled(context, true)
                                 achvSyncOn = true
                                 pendingToggle = null
-                            }) { Text("开启") }
+                            }) { Text("开始启动") }
                         },
                         dismissButton = {
                             TextButton(onClick = { pendingToggle = null }) { Text("Cancel") }
@@ -2107,7 +2107,7 @@ private fun pillFor(state: SaveState): Pair<Color, String> = when (state) {
     SaveState.CLOUD_AHEAD    -> Color(0xFF4B9CE0) to "云端领先"
     SaveState.NEVER_SYNCED   -> Color(0xFFE07B2E) to "从未同步"
     SaveState.NO_CLOUD_SAVES -> Color(0xFF9AA0A6) to "无云存档"
-    SaveState.NOT_SET_UP     -> Color(0xFF9AA0A6) to "未设置"
+    SaveState.NOT_SET_UP     -> Color(0xFF9AA0A6) to "未设立"
     SaveState.UNKNOWN        -> Color(0xFF9AA0A6) to "Unknown"
 }
 

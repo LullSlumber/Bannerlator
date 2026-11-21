@@ -1291,7 +1291,7 @@ internal fun SteamSignOutDialog(
         onDismissRequest = onDismiss,
         title = { Text("退出Steam登录?") },
         text = { Text("您保存的登录信息将被移除。您将需要重新登录。") },
-        confirmButton = { TextButton(onClick = onConfirm) { Text("退出登录") } },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("注销登录") } },
         // "Change account" is the non-destructive way out: it keeps every saved login (this one too).
         dismissButton = {
             Row {

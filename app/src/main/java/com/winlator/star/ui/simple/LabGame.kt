@@ -285,7 +285,7 @@ internal fun LabGamePage(path: String, onNavigate: (String) -> Unit, onBack: () 
                         GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.MOVE_TO_CONTAINER, shortcut.file.path)
                     } else null,
                     mods?.let { g -> NavTile(L("浏览文件"), g.enabledNames().ifEmpty { "—" }, 2, blocked = locked) { modsOpen = true } },
-                    NavTile(L("游戏详情"), L("Details, artwork, background ›"), 2) { onNavigate(LabRoutes.details(shortcut.file.path)) },
+                    NavTile(L("游戏明细"), L("Details, artwork, background ›"), 2) { onNavigate(LabRoutes.details(shortcut.file.path)) },
                     NavTile(L("其他所有"), L("All settings ›"), 1) { onNavigate(DeckSettingsRoutes.game(shortcut.file.path)) },
                 )
                 nav.chunked(cols).forEach { row ->

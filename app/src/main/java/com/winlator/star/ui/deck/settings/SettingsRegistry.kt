@@ -591,7 +591,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "display.alignment", category = "display", group = T("屏幕"), level = ADVANCED,
-            label = T("画面位置"), hint = T("在折叠屏上有用：将游戏保持在一半屏幕上。"), tech = T("屏幕对齐"),
+            label = T("画面位置"), hint = T("在折叠屏上有用：将游戏保持在一半屏幕上。"), tech = T("屏幕平齐"),
             control = { _, _ -> seg("${Container.ALIGN_CENTER}" to T("居中"), "${Container.ALIGN_TOP}" to T("顶部"), "${Container.ALIGN_BOTTOM}" to T("底部")) },
             vm = vmInt({ it.screenAlignment }, { vm, v -> vm.screenAlignment = v }),
             game = intKey("screenAlignment"),
@@ -839,7 +839,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.nativeRenderer", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
-            label = T("直接到屏幕（原生渲染器）"), hint = T("跳过合成器以降低延迟。会关闭屏幕效果。"), tech = T("原生渲染器"),
+            label = T("直接到屏幕（原生渲染器）"), hint = T("跳过合成器以降低延迟。会关闭屏幕效果。"), tech = T("原生图形渲染器"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.rendererNative }, { vm, v -> vm.rendererNative = v }),
             game = keyTF("native"),
@@ -855,7 +855,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.presentMode", category = "graphics", group = T("画面如何到达屏幕"), level = ADVANCED,
-            label = T("帧呈现"), hint = T("在帧生成运行时锁定为快速垂直同步。"), tech = T("呈现模式"),
+            label = T("帧呈现"), hint = T("在帧生成运行时锁定为快速垂直同步。"), tech = T("呈现方式"),
             control = { _, _ -> seg("fifo" to T("V-Sync"), "mailbox" to T("Fast V-Sync"), "immediate" to T("Off")) },
             vm = vmString({ it.rendererPresentMode }, { vm, v -> vm.rendererPresentMode = v }),
             game = key("presentMode"),
@@ -864,7 +864,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.swapColours", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
-            label = T("颜色字节顺序"), tech = T("颜色"),
+            label = T("颜色字节顺序"), tech = T("色度"),
             control = { _, _ -> seg("0" to T("BGRA (normal)"), "1" to T("RGBA (swap red/blue)")) },
             vm = vmBool({ it.rendererSwapRB }, { vm, v -> vm.rendererSwapRB = v }),
             game = keyTF("swapRB"),
@@ -872,7 +872,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "graphics.rendererDriver", category = "graphics", group = T("画面如何到达屏幕"), level = EXPERT,
-            label = T("屏幕渲染器的驱动程序"), hint = T("不是游戏的驱动程序，只是绘制桌面的那个。"), tech = T("渲染器驱动程序"),
+            label = T("屏幕渲染器的驱动程序"), hint = T("不是游戏的驱动程序，只是绘制桌面的那个。"), tech = T("图形渲染器驱动程序"),
             control = { env, _ -> Control.Select(listOf(Opt("system", T("System driver"))) + env.rendererDrivers.map { Opt(it, it) }) },
             vm = vmString({ it.rendererDriverId }, { vm, v -> vm.rendererDriverId = v }),
             game = key("rendererDriverId"),
@@ -1028,7 +1028,7 @@ internal object SettingsRegistry {
         // The Linux runtime brings its own FEX, but hands this preset to the games the Steam client launches.
         SettingDef(
             id = "performance.fexPreset", category = "performance", group = "FEXCore", level = ADVANCED,
-            label = T("FEX 预设"), hint = T("以速度换取兼容性。在下面的翻译器预设值下编辑其值。"), tech = T("FEXCore 预设"),
+            label = T("FEX 预设"), hint = T("以速度换取兼容性。在下面的翻译器预设值下编辑其值。"), tech = T("FEXCore 预设值"),
             control = { env, _ -> Control.Select(env.fexPresets.map { Opt(it.id, it.name) }) },
             vm = VmBinding(get = { _, vm -> vm.selectedFEXCorePresetId }, set = { _, vm, v -> vm.selectFEXCorePresetById(v) }),
             game = key("fexcorePreset"),
@@ -1060,7 +1060,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "performance.box64ecVersion", category = "performance", group = "Box64EC", level = ADVANCED,
-            label = T("Box64EC 版本"), hint = T("当 64 位翻译器为 Box64EC 时运行 64 位游戏。"), tech = T("Box64EC 版本"),
+            label = T("Box64EC 版本"), hint = T("当 64 位转译器为 Box64EC 时运行 64 位游戏。"), tech = T("Box64EC 版本"),
             control = { env, _ -> Control.Select((env.vm?.box64ECVersionEntries ?: emptyList()).map { Opt(it, it) }) },
             vm = vmString({ it.selectedBox64ECVersion }, { vm, v -> vm.selectedBox64ECVersion = v }),
             game = key("box64ecVersion"),
@@ -1298,7 +1298,7 @@ internal object SettingsRegistry {
             visible = { env, _ -> gameScope(env) },
         ),
         SettingDef(
-            id = "input.hideOnController", category = "input", group = T("玩家槽位"), level = SIMPLE,
+            id = "input.hideOnController", category = "input", group = T("玩家位置"), level = SIMPLE,
             label = T("当控制器连接时隐藏屏幕控制"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.autoHideControlsOnPad }, { vm, v -> vm.autoHideControlsOnPad = v }),
@@ -1306,7 +1306,7 @@ internal object SettingsRegistry {
             worlds = WINE_LINUX,
         ),
         SettingDef(
-            id = "input.onScreenPriority", category = "input", group = T("玩家槽位"), level = ADVANCED,
+            id = "input.onScreenPriority", category = "input", group = T("玩家位置"), level = ADVANCED,
             label = T("屏幕控制与真实手柄"), tech = T("屏幕优先级"),
             control = { _, _ ->
                 seg("${Container.ON_SCREEN_MODE_KEEP}" to T("屏幕控制保持为玩家 1"),
@@ -1365,7 +1365,7 @@ internal object SettingsRegistry {
             visible = { env, _ -> env.scope == EditorScope.CONTAINER },
         ),
         SettingDef(
-            id = "input.vibrationTarget", category = "input", group = T("震动"), level = SIMPLE,
+            id = "input.vibrationTarget", category = "input", group = T("振动"), level = SIMPLE,
             label = T("震动开启"), tech = T("振动模式"),
             help = T("控制器：使游戏手柄震动。设备：使掌机/手机震动（在某些设备上，例如 AYANEO，系统无论如何都会将其路由到游戏手柄）。两者 / 关闭：如名称所示。"),
             control = { _, _ ->
@@ -1376,7 +1376,7 @@ internal object SettingsRegistry {
             game = intKey("vibrationMode"),
         ),
         SettingDef(
-            id = "input.vibrationIntensity", category = "input", group = T("震动"), level = ADVANCED,
+            id = "input.vibrationIntensity", category = "input", group = T("振动"), level = ADVANCED,
             label = T("震动强度"), tech = T("振动强度"),
             help = T("缩放震动强度。注意：在某些掌机上，较低的强度不会减少摇杆变慢。为此请使用震动马达：单马达。"),
             // Lab steps 1 % as Classic's slider does; the Deck and XMB editors keep 5 %.
@@ -1386,7 +1386,7 @@ internal object SettingsRegistry {
             visible = { _, values -> values("input.vibrationTarget") != "${Container.VIBRATION_MODE_OFF}" },
         ),
         SettingDef(
-            id = "input.rumbleMotors", category = "input", group = T("震动"), level = ADVANCED,
+            id = "input.rumbleMotors", category = "input", group = T("振动"), level = ADVANCED,
             label = T("震动马达"), hint = T("对于两个马达同时运行时摇杆会变慢的掌机，单马达可保持摇杆流畅。"),
             help = T("两者（PC 精确）：像 PC 控制器一样分别驱动大马达和小马达。单马达（更流畅的摇杆）：使用一个马达。某些掌机控制器（例如 AYANEO Pocket FIT）在两个马达运行时会使摇杆更新变慢；单马达将这种变慢减半，使瞄准保持流畅。默认：Pocket FIT 上为单马达，其他地方为两者。"),
             tech = RumbleMotors.EXTRA,
@@ -1401,7 +1401,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.gyro.enabled", category = "input", group = T("体感瞄准（陀螺仪）"), level = SIMPLE,
-            label = T("体感瞄准"), hint = T("倾斜设备以瞄准。"), tech = T("启用体感瞄准"),
+            label = T("体感瞄准"), hint = T("倾斜设备以瞄准。"), tech = T("启用体感瞄准器"),
             control = { _, _ -> Control.Toggle },
             vm = vmBool({ it.gyroEnabled }, { vm, v -> vm.gyroEnabled = v }),
             game = key10("gyroEnabled"),
@@ -1409,7 +1409,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.gyro.mode", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
-            label = T("体感风格"), tech = T("体感模式"),
+            label = T("体感风格"), tech = T("体感形式"),
             control = { _, _ -> seg("${Container.GYRO_MODE_RATE}" to T("Turn speed"), "${Container.GYRO_MODE_ORIENTATION}" to T("Tilt to aim")) },
             // Tilt to aim can't drive the mouse, so it moves a mouse target to the right stick, as the classic editors do.
             vm = VmBinding(
@@ -1432,7 +1432,7 @@ internal object SettingsRegistry {
         ),
         SettingDef(
             id = "input.gyro.target", category = "input", group = T("体感瞄准（陀螺仪）"), level = ADVANCED,
-            label = T("体感移动"), tech = T("体感目标"),
+            label = T("体感移动"), tech = T("体感指标"),
             control = { _, values ->
                 Control.Segmented(listOf(
                     Opt("${Container.GYRO_TARGET_RIGHT_STICK}", T("右摇杆")),
@@ -1685,7 +1685,7 @@ internal object SettingsRegistry {
             label = T("触摸"), hint = T("触摸屏将手指作为真实触摸发送给 Steam；触控板通过拖动移动指针，点击即为单击。"), tech = LinuxTuning.EXTRA_TOUCH,
             control = { _, _ ->
                 Control.Segmented(LinuxTuning.TOUCH_CHOICES.map {
-                    Opt(it, when (it) { "" -> T("应用设置"); "1" -> T("Touchscreen"); else -> T("Touchpad") })
+                    Opt(it, when (it) { "" -> T("应用设置s"); "1" -> T("Touchscreen"); else -> T("Touchpad") })
                 })
             },
             game = linuxChoice(LinuxTuning.EXTRA_TOUCH, LinuxTuning.TOUCH_CHOICES.toList()),

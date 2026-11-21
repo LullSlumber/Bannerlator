@@ -490,7 +490,7 @@ internal fun SimpleHome(
                 value = layoutLabel(layout),
                 cycle = { d -> AppThemeState.setSimpleLayout(LAYOUTS[wrapIndex(LAYOUTS.indexOf(layout) + d, LAYOUTS.size)]) },
             ),
-            SimpleItem("appearance", "外观", "Interface style, theme and accent colour", Icons.Filled.Palette, open = { navigate(Screen.Appearance.route) }),
+            SimpleItem("appearance", "外型", "Interface style, theme and accent colour", Icons.Filled.Palette, open = { navigate(Screen.Appearance.route) }),
             SimpleItem("settings", "Settings", "Everything else about the app", Icons.Filled.Settings, open = { navigate(Screen.Settings.route) }),
             SimpleItem("defaults", "Container defaults", "What every new container starts with", Icons.Filled.Tune, open = { navigate(DeckSettingsRoutes.DEFAULTS) }),
             SimpleItem("about", "关于", "Version and credits", Icons.Filled.Info, open = { about() }),

@@ -301,7 +301,7 @@ internal fun LabAboutDialog(onDismiss: () -> Unit) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
                 val newer = update?.takeIf { it.isNewer }
                 if (newer != null) {
-                    LabButton(L("立即更新"), onClick = { context.labSetActivity()?.let { UpdateManager.downloadAndInstall(it, newer) {} } })
+                    LabButton(L("立刻更新"), onClick = { context.labSetActivity()?.let { UpdateManager.downloadAndInstall(it, newer) {} } })
                 }
                 LabButton(L("Close"), primary = true, requester = close, onClick = onDismiss)
             }

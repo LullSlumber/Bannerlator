@@ -811,7 +811,7 @@ private fun AmazonGameDetailScreen(
         if (downloading) add(StoreGearItem("🗑", "Cancel download", danger = true, onClick = onInstallClick))
         if (setExeBtnVisible) add(StoreGearItem("🎯", "设置 .exe…", onClick = onSetExeClick))
         if (installed) add(StoreGearItem("🔄", "检查更新", enabled = checkUpdatesEnabled, onClick = onCheckUpdatesClick))
-        if (updateBtnVisible) add(StoreGearItem("⬆️", "立即更新", onClick = onUpdateNowClick))
+        if (updateBtnVisible) add(StoreGearItem("⬆️", "立刻更新", onClick = onUpdateNowClick))
         if (uninstallBtnVisible) add(StoreGearItem("🗑️", "Uninstall", danger = true, onClick = onUninstallClick))
     }
     val dlcCount = remember(dlcJson) {
@@ -884,7 +884,7 @@ private fun AmazonGameDetailScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                StoreSection(title = "更新") {
+                StoreSection(title = "更新s") {
                     AmazonUpdatesContent(
                         updateStatusText = updateStatusText,
                         checkUpdatesEnabled = checkUpdatesEnabled,
@@ -935,7 +935,7 @@ private fun AmazonUpdatesContent(
     Spacer(Modifier.height(8.dp))
     if (updateBtnVisible) {
         StoreActionButton(
-            text = "立即更新",
+            text = "立刻更新",
             onClick = onUpdateNowClick,
             modifier = Modifier.fillMaxWidth(),
         )

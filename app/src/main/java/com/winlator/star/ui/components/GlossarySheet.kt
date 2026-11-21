@@ -47,7 +47,7 @@ internal data class GlossarySection(val title: String, val entries: List<Glossar
 internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
     GlossarySection("图形转译（DirectX → Vulkan）", listOf(
         GlossaryEntry("DXVK",
-            "将游戏的 DirectX 9/10/11 图形翻译为 Vulkan —— 这是您手机 GPU 真正使用的语言。它是默认选项，通常也是最快选项。"),
+            "将游戏的 DirectX 9/10/11 图形转译为 Vulkan —— 这是您手机 GPU 真正使用的语言。它是默认选项，通常也是最快选项。"),
         GlossaryEntry("VKD3D",
             "与 DXVK 理念相同，但针对 DirectX 12 游戏。它需要更新版本的 Vulkan 环境，因此并非所有wrapper或 GPU 都能使用。"),
         GlossaryEntry("WineD3D",
@@ -77,8 +77,8 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
         GlossaryEntry("box64",
             "经典的 x86/x64 转 ARM 指令转换器 —— 可替代 FEXCore，按容器选用。"),
         GlossaryEntry("arm64ec",
-            "一种构建格式，允许原生 ARM 代码和翻译后的 x86 代码高效协同运行。现代 Proton 构建已采用此格式。"),
-        GlossaryEntry("FEXCore 预设",
+            "一种构建格式，允许原生 ARM 代码和转译后的 x86 代码高效协同运行。现代 Proton 构建已采用此格式。"),
+        GlossaryEntry("FEXCore 预设值",
             "通过调整 FEXCore 复制 PC 内存顺序（TSO）的保真程度，在模拟精度和速度之间做取舍。稳定性/兼容性保持完全精确（最安全）；性能模式放宽限制以换取更高 FPS（可能破坏某些游戏）；均衡模式和 Denuvo D加密模式是折中选项。从默认值开始。"),
     )),
     GlossarySection("GPU 及其绘制方式", listOf(
@@ -108,7 +108,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "强制 GPU 直接绘制到主内存，而不是快速的片上分块内存——与 GMEM 相反。这是最具兼容性的选项（也是默认值），但会消耗更多内存带宽。如果强制 GMEM 导致游戏出现异常，请使用此选项。"),
         GlossaryEntry("Sync同步每帧",
             "让 GPU 在开始下一帧之前完全完成并显示每一帧。开启可修复画面撕裂、闪烁或屏幕上帧异常；关闭可获得最佳性能，因为它会阻止 CPU 和 GPU 超前工作，从而可能损失一些 FPS。"),
-        GlossaryEntry("并发分箱（forcecb / nocb）",
+        GlossaryEntry("并发分块（forcecb / nocb）",
             "分块（Binning）是 GPU 对每个屏幕分块内容进行排序的步骤。'forcecb' 强制它与渲染同时运行（有助于提升性能）；'nocb' 将其关闭（可修复某些游戏的图形异常）。这些是 Turnip 专家选项——仅在特定游戏需要时才去调整。"),
         GlossaryEntry("deck_emu",
             "让 GPU 向游戏报告自身为 Steam Deck，这可以在某些游戏中解锁更好的图形设置或代码路径。仅在 Bannerlator 自带的（Banners-Turnip）驱动程序上有效——在原生 Turnip 上会被忽略。"),
@@ -123,7 +123,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
         GlossaryEntry("渲染缩放 / 超采样",
             "以更高分辨率渲染游戏并缩小以获得更清晰图像（消耗性能），或以较低分辨率获得更高 FPS。"),
         GlossaryEntry("帧率",
-            "插入额外的中间帧使运动看起来更流畅。插值总是会增加大约一帧的输入延迟，并且可能偶尔产生伪影，因此它是可选的。两个引擎都运行在 Bannerlator 自身内部，因此额外帧直接到达屏幕：Win-FG Native（内置，无需任何东西）和 LSFG Native（运行 Lossless Scaling 着色器，并且需要您自己导入的 Lossless.dll）。需要 Vulkan 渲染器。"),
+            "插入额外的中间帧使运动看起来更流畅。插值总是会增加大约一帧的输入延迟，并且可能偶尔产生伪影，因此它是可选的。两个引擎都运行在Bannerlator自身内部，因此额外帧直接到达屏幕：Win-FG原生（内置，无需任何东西）和LSFG原生（运行Lossless Scaling着色器，并且需要您自己导入的Lossless.dll）。需要Vulkan渲染器。"),
         GlossaryEntry("FPS 限制器",
             "限制游戏每秒渲染的帧数。限制可降低发热和电池消耗，并能稳定不稳定的帧率。开启它只是加载限制器——实际限制值需在游戏内 FPS 菜单中实时设置。"),
         GlossaryEntry("原生渲染",
@@ -132,7 +132,7 @@ internal val CONTAINER_GLOSSARY: List<GlossarySection> = listOf(
             "开启帧生成后，两个应用的 FPS 读数不会一致——它们在不同节点计数。读取游戏原始输出的计数器会显示干净的 2倍/3倍/4倍（看起来可观，但计入了屏幕实际不会显示的帧）。Bannerlator 的 HUD 在帧到达显示管线时计数，因此显示的是真实增益——不是完美的倍数，并且始终受屏幕刷新率限制。这两个数字都不是“屏幕上显示的帧数”；屏幕刷新率才是真正的上限。"),
         GlossaryEntry("DXVK HUD / 覆盖层",
             "用于诊断性能的屏幕数据显示（FPS、帧时间、GPU 负载、驱动信息）。仅提供信息 —— 不会改变游戏运行。"),
-        GlossaryEntry("呈现模式",
+        GlossaryEntry("呈现方式",
             "将完成的帧如何交付给屏幕的方式——在流畅度、输入延迟和电量之间权衡。FIFO 是安全的默认选项；Mailbox 最适合帧生成；Immediate 追求最低延迟，但可能出现画面撕裂。"),
         GlossaryEntry("FIFO（呈现模式）",
             "默认的“vsync垂直同步开启”：每帧按顺序排队，在下次屏幕刷新时显示。流畅、无撕裂且最省电——但它会让游戏等待显示，这可能会制约帧生成。"),
@@ -191,7 +191,7 @@ fun ContainerGlossarySheet(onDismiss: () -> Unit, initialQuery: String = "") {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val cs = MaterialTheme.colorScheme
     // A per-field help icon opens the sheet pre-filtered to that term (initialQuery); the general
-    // "这些是什么?" button opens it unfiltered (initialQuery == "").
+    // "这些都是什么?" button opens it unfiltered (initialQuery == "").
     var query by remember { mutableStateOf(initialQuery) }
 
     // Flatten + filter. A section is shown only if it has any matching entries.
@@ -211,7 +211,7 @@ fun ContainerGlossarySheet(onDismiss: () -> Unit, initialQuery: String = "") {
         DeckDialogScaled {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Text(
-                    "这些是什么?",
+                    "这些都是什么?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )

@@ -267,7 +267,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         var name by remember { mutableStateOf("") }
         OutlinedAlertDialog(
             onDismissRequest = { promptCreateName = false },
-            title = { Text("配置名称") },
+            title = { Text("配置名字") },
             text = {
                 OutlinedTextField(
                     value = name,
@@ -295,7 +295,7 @@ fun InputControlsScreen(deckHost: (@Composable (InputControlsDeckState) -> Unit)
         var name by remember { mutableStateOf(promptRenameOldName ?: "") }
         OutlinedAlertDialog(
             onDismissRequest = { promptRenameOldName = null },
-            title = { Text("配置名称") },
+            title = { Text("配置名字") },
             text = {
                 OutlinedTextField(
                     value = name,
@@ -1311,7 +1311,7 @@ internal fun GyroscopeSection() {
     val context = LocalContext.current
     val sensor = remember { GyroCalibrator.getSensor(context) }
 
-    Text("陀螺仪", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+    Text("陀螺传感器", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 
     if (sensor == null) {
         Text("No gyroscope on this device", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
@@ -1559,10 +1559,10 @@ internal fun GlobalPlayerSlotsSection() {
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("玩家槽位", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
+        Text("玩家位置", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_player_slots }, modifier = Modifier.xmbBtn(CircleShape)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }
@@ -1628,7 +1628,7 @@ internal fun MenuButtonSection() {
         Text("菜单按钮", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
         IconButton(onClick = { helpRes = R.string.help_menu_button }, modifier = Modifier.xmbBtn(CircleShape)) {
-            Icon(Icons.Default.Help, contentDescription = "音频设置",
+            Icon(Icons.Default.Help, contentDescription = "这个是什么？",
                 tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
         }
     }

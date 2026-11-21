@@ -1653,7 +1653,7 @@ public final class SteamRepository {
         loggedIn = true;
         logoffRecoveryAttempts = 0;   // fresh session established — reset involuntary-logoff recovery budget
         lastSessionStatus = "LoggedIn";
-        setStatus(SteamStatus.ONLINE, "已登录");
+        setStatus(SteamStatus.ONLINE, "已登入");
         emit("LoggedIn:" + sid64);
         Log.i(TAG, SteamLogRedactor.redact("Logged in as " + pGet("username", "")));
     }

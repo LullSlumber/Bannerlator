@@ -620,7 +620,7 @@ private fun LabFxLooksRow(selected: Int?, enabled: Boolean, onPick: (Int) -> Uni
     } else {
         L("已调整 — 以下所有都是您的。点击外观以返回。")
     }
-    IgRow(L("外观"), hint = line, scopes = listOf(SaveScope.SESSION), enabled = enabled, wideControl = true) {
+    IgRow(L("外型"), hint = line, scopes = listOf(SaveScope.SESSION), enabled = enabled, wideControl = true) {
         IgChips(options, selected ?: LABFX_CUSTOM, enabled = enabled) { if (it != LABFX_CUSTOM) onPick(it) }
     }
 }

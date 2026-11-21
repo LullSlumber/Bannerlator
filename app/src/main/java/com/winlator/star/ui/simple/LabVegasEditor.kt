@@ -479,17 +479,17 @@ internal fun LabVegasConfigEditor(
     val renderEntries = buildList {
         add(MenuEntry("aniso", L("Anisotropic filtering"), texNote, trailing = L(selectedAnisotropy), icon = Icons.Filled.Tune, group = L("纹理过滤"),
             onA = { choose(L("Anisotropic filtering"), VEGAS_ANISOTROPY_LABELS, selectedAnisotropy) { selectedAnisotropy = it } },
-            actions = listOf(MenuAction(L("音频设置"), { help(R.string.help_anisotropic_filtering) }))))
+            actions = listOf(MenuAction(L("这个是什么？"), { help(R.string.help_anisotropic_filtering) }))))
         add(MenuEntry("lod", L("Texture sharpness"), texNote, trailing = L(selectedLodBias), icon = Icons.Filled.Tune, group = L("纹理过滤"),
             onA = { choose(L("Texture sharpness"), VEGAS_LOD_BIAS_LABELS, selectedLodBias) { selectedLodBias = it } },
-            actions = listOf(MenuAction(L("音频设置"), { help(R.string.help_texture_sharpness) }))))
+            actions = listOf(MenuAction(L("这个是什么？"), { help(R.string.help_texture_sharpness) }))))
         add(MenuEntry("level", L("API feature level"), trailing = selectedFeatureLevel, group = L("Direct3D"),
             onA = { choose(L("API feature level"), featureLevelEntries, selectedFeatureLevel) { selectedFeatureLevel = it } }))
         add(MenuEntry("ddraw", L("DDraw Wrapper图形加速层"), trailing = selectedDdraw, group = L("Direct3D"),
             onA = { choose(L("DDraw Wrapper图形加速层"), ddrawEntries, selectedDdraw) { selectedDdraw = it } }))
         if (StringUtils.parseIdentifier(selectedDdraw) == "d7vk") {
-            add(MenuEntry("d7vk", L("D7VK 版本"), trailing = selectedD7vk, group = L("Direct3D"),
-                onA = { choose(L("D7VK 版本"), d7vkVersions, selectedD7vk) { selectedD7vk = it } },
+            add(MenuEntry("d7vk", L("D7VK 版别"), trailing = selectedD7vk, group = L("Direct3D"),
+                onA = { choose(L("D7VK 版别"), d7vkVersions, selectedD7vk) { selectedD7vk = it } },
                 actions = listOf(MenuAction(L("Download D7VK versions"), onDownloadD7vk))))
             add(MenuEntry("dl-d7vk", L("Download D7VK versions"), icon = Icons.Filled.CloudDownload, group = L("Direct3D"), onA = onDownloadD7vk))
         }
@@ -658,7 +658,7 @@ internal fun LabVegasConfigEditor(
                         applyValue(typo, row.value)
                         scope.launch { delay(300); applyDeleteKey(row.key) }
                     }))
-                    add(MenuAction(L("音频设置"), { note = row.key to vegasKeyDefinition(row.key) }))
+                    add(MenuAction(L("这个是什么？"), { note = row.key to vegasKeyDefinition(row.key) }))
                     if (!gated) add(MenuAction(L("Remove key"), { pendingDeleteKey = row.key }, danger = true))
                 },
             ))

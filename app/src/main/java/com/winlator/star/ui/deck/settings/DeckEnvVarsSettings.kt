@@ -321,7 +321,7 @@ internal class DeckEnvVarsSection(
                     L("优先使用游戏文件夹中的 DLL"),
                     hint = (if (linux) L("用于客户端启动的游戏，而非客户端本身，并且对每个游戏都适用：会话只有一个环境。 ")
                         else "") +
-                        L("加载游戏自带的 ") + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
+                        L("加载游戏自身带的 ") + DllOverrides.PREFER_GAME_FOLDER.joinToString(", ") +
                         L(" 而非 Wine 的。许多包装器和模组加载器需要它。图形 DLL 绝不包含在内：DXVK 和 VKD3D 拥有那些。") +
                         (if (anyOn && !allOn) L(" 部分已开启：见下方。") else ""),
                     icon = Icons.Filled.Extension,
@@ -384,7 +384,7 @@ internal class DeckEnvVarsSection(
         }
         add(PageExtra("env-add") {
             GroupCard(first = false, last = false, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("添加变量"), L("选择已知变量或输入您自己的：NAME 或 NAME=VALUE。")) { adding = true })
+                DeckActionRow(DeckAction("add", Icons.Filled.Add, L("添加一个变量"), L("选择已知变量或输入您自己的：NAME 或 NAME=VALUE。")) { adding = true })
             }
         })
         add(PageExtra("env-raw") {
@@ -396,7 +396,7 @@ internal class DeckEnvVarsSection(
         // The container's variables this game doesn't set itself: it starts with them as they are.
         val inherited = containerVars.values.filter { c -> vars.none { it.name == c.name } }
         if (inherited.isNotEmpty()) {
-            add(PageExtra("env-container-label") { GroupLabel(L("来自容器")) })
+            add(PageExtra("env-container-label") { GroupLabel(L("来自此容器")) })
             inherited.forEachIndexed { i, c ->
                 add(PageExtra("env-container:${c.name}") {
                     GroupCard(first = i == 0, last = i == inherited.lastIndex, highlight = false) {
@@ -513,7 +513,7 @@ private fun EnvAddDialog(s: DeckEnvVarsSection) {
     val candidates = KnownEnvVars.names.filter { it !in existing && (name.isEmpty() || it.contains(name, ignoreCase = true)) }
     OutlinedAlertDialog(
         onDismissRequest = { s.adding = false },
-        title = { Text(L("添加变量")) },
+        title = { Text(L("添加一个变量")) },
         text = {
             Column {
                 OutlinedTextField(

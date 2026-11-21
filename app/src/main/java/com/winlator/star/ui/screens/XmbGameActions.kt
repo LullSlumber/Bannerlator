@@ -50,7 +50,7 @@ internal fun xmbGameActions(
 ): List<XmbAction> = buildList {
     // An Android game has no Wine side: no settings, saves, configs, logs or container moves.
     if (AndroidGames.isAndroidEntry(shortcut)) {
-        add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
+        add(XmbAction("游戏明细", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
         add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
         add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
         add(XmbAction("移除", Icons.Filled.Delete, "会先要求确认", danger = true, menu = { xmbRemoveMenu(it, shortcut, host) }))
@@ -59,7 +59,7 @@ internal fun xmbGameActions(
     // The Linux Steam entry: its settings page holds the Linux-side ones only, and none of the Wine actions apply.
     if (LinuxShortcuts.isLinuxEntry(shortcut)) {
         add(XmbAction("Settings", Icons.Filled.Settings, "Steam (Linux) display, driver, controls…") { openSettings(shortcut) })
-        add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
+        add(XmbAction("游戏明细", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
         add(XmbAction("获取封面", Icons.Filled.Search, menu = { xmbScrapeCoverMenu(it, shortcut) }))
         add(XmbAction("添加到主屏幕", Icons.Filled.AddToHomeScreen, "Android的固定提示") { addToHomeScreen(context, shortcut) })
         add(XmbAction("属性", Icons.Filled.Info, "游玩次数、游玩时间", menu = { xmbPropertiesMenu(it, shortcut) }))
@@ -70,7 +70,7 @@ internal fun xmbGameActions(
     if (communityThird) {
         add(XmbAction("社区配置", Icons.Filled.Public, "此游戏的共享设置", menu = { xmbCommunityConfigsMenu(it, shortcut) }))
     }
-    add(XmbAction("游戏详情", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
+    add(XmbAction("游戏明细", Icons.Filled.Edit, "名称、类型、年份、描述", menu = { xmbGameDetailsMenu(it, shortcut) }))
     if (isSteamOriginShortcut(shortcut)) {
         add(XmbAction("云端存档", Icons.Filled.CloudSync, "Steam云同步 — 打开其独立界面") { launchSaveManager(context, steamAppIdOf(shortcut)) })
     }

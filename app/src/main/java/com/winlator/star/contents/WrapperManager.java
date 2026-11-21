@@ -110,7 +110,7 @@ public class WrapperManager {
      * add noise (and risk). Matched as an UPPERCASE substring so vendor-prefixed variants
      * (MESA_VK_TRACE_TRIGGER, *_LOG_LEVEL, BCN_DUMP_*, *_PROFILE, *_WATERMARK, *_HEADLESS, …) are all
      * caught. Shared, single source of truth: called from the Kotlin config dialog AND the Java XSDA
-     * emission loop. NOTE: the read-only "环境变量" list still shows these — only the
+     * emission loop. NOTE: the read-only "环境变量值" list still shows these — only the
      * editable settings path filters. Never throws.
      */
     private static final String[] DEBUG_ENV_MARKERS = {

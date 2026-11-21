@@ -276,7 +276,7 @@ internal fun DiskPropertiesDialog(file: File, location: FavLocation?, onDismiss:
                 if (location != null && location.storage == FavStorage.CONTAINER) {
                     PropLine("In Windows", (location.containerName?.let { "$it · " } ?: "") + location.displayPath)
                 }
-                PropLine("Type", if (file.isDirectory) "文件夹" else file.extension.uppercase().ifBlank { "File" }.let { if (it == "File") it else "$it file" })
+                PropLine("Type", if (file.isDirectory) "文件夹s" else file.extension.uppercase().ifBlank { "File" }.let { if (it == "File") it else "$it file" })
                 if (file.isDirectory) {
                     val t = tree
                     PropLine("Size", if (t == null) "Counting…" else "${StringUtils.formatBytes(t.first)} · ${t.second} files")
@@ -346,7 +346,7 @@ internal fun EntryPropertiesDialog(item: FmItem.Entry, onDismiss: () -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 PropLine("Archive", item.archive.name)
                 PropLine("Path", e.path)
-                PropLine("Type", if (e.isDir) "文件夹" else e.name.substringAfterLast('.', "").uppercase().ifBlank { "File" })
+                PropLine("Type", if (e.isDir) "文件夹s" else e.name.substringAfterLast('.', "").uppercase().ifBlank { "File" })
                 PropLine("Size", StringUtils.formatBytes(item.size))
                 if (e.packedSize >= 0 && !e.isDir) PropLine("Packed", StringUtils.formatBytes(e.packedSize))
                 PropLine("修改时间", fmDateTime(e.modified))
@@ -368,7 +368,7 @@ internal fun SortDialog(sort: FmSort, onDismiss: () -> Unit, onApply: (FmSort) -
         title = { Text("Sort") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text("文件夹", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("文件夹s", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 listOf(FmSortKey.NAME, FmSortKey.DATE).forEach { k ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { s = s.copy(folders = k) }) {
                         RadioButton(selected = s.folders == k, onClick = { s = s.copy(folders = k) })

@@ -737,7 +737,7 @@ class GogGamesActivity : ComponentActivity() {
                         progress = 100,
                         status = "Installed",
                         isInstalled = true,
-                        buttonText = "添加游戏",
+                        buttonText = "添加游戏s",
                         buttonColor = 0xFF0055FF.toInt(),
                         progressVisible = true,
                     )
@@ -1269,7 +1269,7 @@ private fun ExpandedSection(
             onClick = {
                 when (btnText) {
                     "Cancel" -> onCancelClick()
-                    "添加游戏", "添加到启动器" -> onAddToLauncher()
+                    "添加游戏s", "添加到启动器" -> onAddToLauncher()
                     else -> onInstallClick()
                 }
             },
@@ -1402,7 +1402,7 @@ private fun GameGridTile(
                     onClick = {
                         when (btnText) {
                             "Cancel" -> onCancelClick()
-                            "添加游戏", "添加到启动器" -> onAddToLauncher()
+                            "添加游戏s", "添加到启动器" -> onAddToLauncher()
                             else -> onInstallClick()
                         }
                     },

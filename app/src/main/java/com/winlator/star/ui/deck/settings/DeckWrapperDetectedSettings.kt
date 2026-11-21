@@ -259,7 +259,7 @@ private fun DetectedLine(section: DeckWrapperDetectedSection, key: String) {
         WrapperSettingsDictionary.Type.TEXT -> DeckLine(
             label = def.label, hint = hint, enabled = enabled,
             onClick = { section.textFor = key },
-        ) { ValueText(value.ifEmpty { L("未设置") }) }
+        ) { ValueText(value.ifEmpty { L("未设立") }) }
     }
 }
 

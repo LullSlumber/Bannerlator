@@ -55,8 +55,8 @@ internal object AppSettingsRegistry {
 
     val categories: List<SettingsCategory> = listOf(
         SettingsCategory("app.general", T("General"), T("启动屏幕和更新。"), Icons.Filled.Tune),
-        SettingsCategory("app.appearance", T("外观"), T("主题、强调色、大小和方向。"), Icons.Filled.Palette),
-        SettingsCategory("app.sounds", T("音效"), T("菜单音效与音效包。"), Icons.Filled.MusicNote),
+        SettingsCategory("app.appearance", T("外型"), T("主题、强调色、大小和方向。"), Icons.Filled.Palette),
+        SettingsCategory("app.sounds", T("音效"), T("菜单音效和音效包。"), Icons.Filled.MusicNote),
         SettingsCategory("app.library", T("游戏与库"), T("封面图和默认 MIDI 音色库。"), Icons.AutoMirrored.Filled.LibraryBooks),
         SettingsCategory("app.performance", T("Performance"), T("每个游戏的电源默认值和翻译器预设。"), Icons.Filled.Speed),
         SettingsCategory("app.network", T("下载与网络"), T("商店下载引擎、速度和 Steam 连接。"), Icons.Filled.CloudDownload),
@@ -117,7 +117,7 @@ internal object AppSettingsRegistry {
         fun lab(label: String, hint: String, route: String) = Handoff(label, hint, TARGET_LAB + route)
         val r = com.winlator.star.ui.simple.LabSettingsRoutes
         mapOf(
-            "app.general" to listOf(lab(T("更新"), T("Installed and latest version, what's new, Download & install, Check for updates."), r.UPDATES)),
+            "app.general" to listOf(lab(T("更新s"), T("Installed and latest version, what's new, Download & install, Check for updates."), r.UPDATES)),
             "app.appearance" to handoffs.getValue("app.appearance"),
             "app.library" to listOf(
                 lab(T("Steam library locations"), T("Games folders on shared storage or an SD card."), r.STEAM_LIBRARIES),
@@ -125,7 +125,7 @@ internal object AppSettingsRegistry {
                 Handoff(T("Get a SteamGridDB API key"), T("Opens steamgriddb.com."), TARGET_URL + "https://www.steamgriddb.com/profile/preferences/api"),
             ),
             "app.performance" to listOf(
-                lab(T("Root 控制与散热保护"), T("CPU 调频策略与频率锁定、可用内存和温度看门狗。"), r.PERFORMANCE),
+                lab(T("Root 控制和温度安全"), T("CPU 调度器和频率锁定、释放内存和温度看门狗。"), r.PERFORMANCE),
                 lab(T("Lossless.dll for frame generation"), T("Detect, import or remove the DLL LSFG Native needs."), r.LOSSLESS),
                 lab(T("Translator presets"), T("New, edit, duplicate, remove, export or import Box64 and FEX presets."), r.PRESETS),
             ) + handoffs.getValue("app.performance").filter { it.target == TARGET_DEFAULTS },
@@ -228,7 +228,7 @@ internal object AppSettingsRegistry {
             "app.general.landing", "app.general", T("启动"), T("打开应用时"), SIMPLE,
             hint = T("在 Deck 界面中，游戏和大屏幕模式都会在主页打开。"),
             tech = T("default_landing_screen · enable_big_picture_mode"),
-            control = { Control.Segmented(listOf(Opt("games", T("游戏")), Opt("containers", T("容器管理")), Opt("bigpicture", T("大屏幕模式")))) },
+            control = { Control.Segmented(listOf(Opt("games", T("游戏")), Opt("containers", T("容器管理")), Opt("bigpicture", T("大屏模式")))) },
             binding = AppBinding(
                 get = { c ->
                     val p = prefs(c)
@@ -244,13 +244,13 @@ internal object AppSettingsRegistry {
             ),
         ),
         app(
-            "app.general.updateNotify", "app.general", T("更新"), T("告知我新版本"), SIMPLE,
+            "app.general.updateNotify", "app.general", T("更新s"), T("告知我新版本"), SIMPLE,
             hint = T("新版本发布时显示更新通知。"), tech = T("有更新时通知我"),
             control = { Control.Toggle },
             binding = AppBinding({ c -> onOff(UpdateManager.isNotifyEnabled(c)) }, { c, v -> UpdateManager.setNotifyEnabled(c, v == "1") }),
         ),
         app(
-            "app.general.updatePrerelease", "app.general", T("更新"), T("包含测试版构建"), ADVANCED,
+            "app.general.updatePrerelease", "app.general", T("更新s"), T("包含测试版构建"), ADVANCED,
             hint = T("预发布版本可能不太稳定。"), tech = T("包含预发布版本"),
             control = { Control.Toggle },
             // A channel switch re-checks at once, as classic Settings does: an unforced check would answer from the 6 h cache.
@@ -466,7 +466,7 @@ internal object AppSettingsRegistry {
                 if (v == "1") Confirm(
                     T("将成就同步到Steam？"),
                     T("开启此功能会将您在游戏中解锁的成就写回您的真实Steam账号和个人资料。这是第三方同步——在Steam上无法撤销，并且可能与官方Steam记录不匹配。保持关闭可将解锁保留在此设备本地。仍然开启？"),
-                    T("开启"),
+                    T("开始启动"),
                 ) else null
             },
         ),

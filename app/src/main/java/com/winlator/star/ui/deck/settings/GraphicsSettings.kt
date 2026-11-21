@@ -244,7 +244,7 @@ internal object GraphicsRows {
         list: List<String>,
         current: String,
         loaded: Boolean,
-        label: (String) -> String = { it.ifEmpty { L("未设置") } },
+        label: (String) -> String = { it.ifEmpty { L("未设立") } },
         missing: (String) -> String = { "${label(it)} (not installed)" },
         disabledReason: (String) -> String? = { null },
     ): Control.Select {
@@ -397,7 +397,7 @@ internal object GraphicsRows {
             decode = { _, r -> r?.ifEmpty { null } ?: Container.DEFAULT_DDRAWRAPPER },
         ),
         packedRow(
-            DX_CFG, "graphics.dx.d7vkVersion", "d7vkVersion", L("DirectDraw"), L("D7VK 版本"), ADVANCED,
+            DX_CFG, "graphics.dx.d7vkVersion", "d7vkVersion", L("DirectDraw"), L("D7VK 版别"), ADVANCED,
             control = { env, values ->
                 versions(env.graphics.d7vk, values("graphics.dx.d7vkVersion"), env.graphics.loaded,
                     label = { if (it == DXVKConfigDialog.D7VK_BUNDLED) L("Bundled with the app") else it })
@@ -455,7 +455,7 @@ internal object GraphicsRows {
             DX_CFG, "graphics.wined3d.gpuName", "gpuName", L("WineD3D"), L("游戏看到的 GPU"), ADVANCED,
             hint = L("WineD3D 向游戏报告的显卡。"),
             control = { env, values ->
-                versions(env.graphics.wined3dGpus, values("graphics.wined3d.gpuName"), env.graphics.loaded, missing = { it.ifEmpty { L("未设置") } })
+                versions(env.graphics.wined3dGpus, values("graphics.wined3d.gpuName"), env.graphics.loaded, missing = { it.ifEmpty { L("未设立") } })
             },
             visible = { _, values -> wineD3D(values) },
         ),
@@ -832,7 +832,7 @@ internal object GraphicsRows {
         ),
         adapterRow(
             "graphics.wl.adapterZeroCopy", WaylandAdapterSettings.KEY_ZERO_COPY, L("零拷贝呈现"),
-            L("游戏自身的缓冲区无需复制即可上屏（延迟最低、发热更少）。需要驱动程序支持同步文件栅栏（见适配器报告）。如果出现画面撕裂或残帧，请关闭此项。"),
+            L("游戏自身的缓冲区无需复制即可上屏（延迟最低、发热更少）。需要驱动程序支持同步文件栅栏（见适配器报告）。如果出现撕裂或残帧，请关闭。"),
         ),
         adapterRow(
             "graphics.wl.adapterClientFence", WaylandAdapterSettings.KEY_CLIENT_FENCE, L("客户端渲染栅栏"),

@@ -546,7 +546,7 @@ internal fun xmbCommunityConfigsMenu(xmb: XmbScope, shortcut: Shortcut): XmbMenu
             key = "mine", label = "匹配我的设备", icon = Icons.Filled.Memory, value = matchesMine,
             disabledReason = if (hwKnown) null else "Couldn't detect your device's chip",
         ) { matchesMine = it }
-        rows += XmbRow.Header("configs", "配置")
+        rows += XmbRow.Header("configs", "布局")
 
         val list = configs
         if (list == null) {

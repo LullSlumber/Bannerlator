@@ -141,7 +141,7 @@ class GogMainActivity : ComponentActivity() {
 private val GOG_TABS = listOf(
     StoreSectionTab("store", "Store", Icons.Filled.Storefront),
     StoreSectionTab("library", "Library", Icons.Filled.VideoLibrary),
-    StoreSectionTab("profile", "配置", Icons.Filled.AccountCircle),
+    StoreSectionTab("profile", "布局", Icons.Filled.AccountCircle),
 )
 
 @Composable
@@ -217,7 +217,7 @@ private fun GogStorefrontHost(
             }
             DownloadsButton()
             IconButton(onClick = onSignOut, modifier = Modifier.steamFocusRing()) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "退出登录", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "注销登录", tint = MaterialTheme.colorScheme.primary)
             }
         },
         railActions = {
@@ -292,7 +292,7 @@ fun StoreRailOverflow(
             }
             if (items.isNotEmpty()) HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
             DropdownMenuItem(
-                text = { Text("退出登录", color = MaterialTheme.colorScheme.error) },
+                text = { Text("注销登录", color = MaterialTheme.colorScheme.error) },
                 leadingIcon = {
                     Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 },

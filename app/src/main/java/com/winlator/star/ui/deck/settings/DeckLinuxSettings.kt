@@ -315,7 +315,7 @@ internal class DeckLinuxSection(
         }
         add(PageExtra("linux-folders-add") {
             GroupCard(first = list.isEmpty(), last = true, highlight = false) {
-                DeckActionRow(DeckAction("add", Icons.Filled.CreateNewFolder, L("添加游戏文件夹"),
+                DeckActionRow(DeckAction("add", Icons.Filled.CreateNewFolder, L("添加一个游戏文件夹"),
                     L("其中的每个文件夹即为一款游戏；应用会选择要启动的程序。它们会像您游戏选项卡中的游戏一样显示在 Steam 中。")) { pickFolder = true })
             }
         })

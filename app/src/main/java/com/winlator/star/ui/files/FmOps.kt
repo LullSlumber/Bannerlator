@@ -490,7 +490,7 @@ internal class FmOps(
         }
         val drivesC = buildList {
             val seen = HashSet<String>()
-            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "此容器")); seen.add(it.absolutePath) }
+            driveCPath?.takeIf { it.isDirectory }?.let { add(FmHomeTile("Drive C:", HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), it, subtitle = "这容器")); seen.add(it.absolutePath) }
             containers.forEach { c ->
                 val dc = File(c.rootDir, ".wine/drive_c")
                 if (dc.isDirectory && seen.add(dc.absolutePath)) add(FmHomeTile(c.name, HomeIcons.container, androidx.compose.ui.graphics.Color(0xFFD9A030), dc, subtitle = "Drive C:"))

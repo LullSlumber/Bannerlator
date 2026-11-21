@@ -414,7 +414,7 @@ internal class AppSettingsExtras(
         val shaders = lsfgShaderStatus
         lines += infoLine("status", L("Lossless.dll"), lsfgStatus + (if (shaders.isNotEmpty()) "\n" + shaders else ""))
         lines += actionLine(DeckAction("detect", Icons.Filled.Download, L("从 Steam 商店检测"),
-            L("先在应用内 Steam 商店下载 Lossless Scaling。DLL 会复制进应用，供所有帧生成引擎为 LSFG Native 的容器使用。")) { detectLosslessDll() })
+            L("请先在应用内 Steam 商店下载 Lossless Scaling。该 DLL 会被复制到应用中，并由每个帧生成引擎为 LSFG Native 的容器使用。")) { detectLosslessDll() })
         lines += actionLine(DeckAction("import", Icons.Filled.FileDownload, L("导入 Lossless.dll"),
             L("Pick a Lossless.dll yourself (in-app file picker).")) {
             startInApp(InAppFilePicker.buildIntent(context, InAppFilePicker.DLL, L("选择 Lossless.dll"))) { data ->
@@ -422,7 +422,7 @@ internal class AppSettingsExtras(
             }
         })
         lines += actionLine(DeckAction("import-system", Icons.Filled.FileDownload, L("Import Lossless.dll with the system picker"),
-            L("同上，但使用 Android 自带的文件选择器。")) {
+            L("相同，但使用 Android 自身的文件选择器。")) {
             startDoc { uri -> importLosslessDll(uri) }
         })
         if (lsfgDllFile.isFile) {
@@ -434,8 +434,8 @@ internal class AppSettingsExtras(
 
     private fun performanceBottom(): List<PageExtra> =
         actionItems("perf-root", L("Root 与散热"), listOf(
-            DeckAction("root", Icons.Filled.Speed, L("Root 控制与散热保护"),
-                L("CPU 调频策略与频率锁定、可用内存和温度看门狗。")) { showPerf = true },
+            DeckAction("root", Icons.Filled.Speed, L("Root 控制和温度安全"),
+                L("CPU 调度器和频率锁定、释放内存和温度看门狗。")) { showPerf = true },
         )) + cardItems("lsfg", L("帧生成：LSFG Native"), lsfgLines())
 
     // ── Storage & data ──────────────────────────────────────────────────────────────────────────
@@ -544,7 +544,7 @@ internal class AppSettingsExtras(
             }
         })
         soundLines += actionLine(DeckAction("add-system", Icons.Filled.Add, L("用系统选择器添加音色库"),
-            L("同上，但使用 Android 自带的文件选择器。")) {
+            L("相同，但使用 Android 自身的文件选择器。")) {
             startDoc { uri -> installSoundBank(uri) }
         })
 
@@ -569,7 +569,7 @@ internal class AppSettingsExtras(
                 }
             },
             DeckAction("restore-system", Icons.Filled.Archive, L("用系统选择器恢复应用数据"),
-                L("同上，但使用 Android 自带的文件选择器。")) {
+                L("相同，但使用 Android 自身的文件选择器。")) {
                 startDoc { uri -> restoreUri = uri }
             },
         )
@@ -577,7 +577,7 @@ internal class AppSettingsExtras(
         return listOf(
             PageExtra("space-label") { GroupLabel(L("已用空间")) },
             PageExtra("space") { Column { StorageWidget() } },
-        ) + actionItems("folders", L("文件夹"), folders) +
+        ) + actionItems("folders", L("文件夹s"), folders) +
             cardItems("banks", L("音色库"), soundLines) +
             actionItems("backup", L("备份与恢复"), backup)
     }

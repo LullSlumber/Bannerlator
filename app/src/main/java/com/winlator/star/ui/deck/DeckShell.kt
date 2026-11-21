@@ -798,7 +798,7 @@ private fun DeckShellContent(
                                                 } else DeckHome(
                                                     onOpenGame = { shortcut -> nav.open(DeckRoutes.game(shortcut.file.path)) },
                                                     onOpenContainer = { id -> nav.open(DeckSettingsRoutes.containerEditorFor(id) ?: "container_detail?id=$id") },
-                                                    // "添加游戏" opens over Home (DeckGameActionsHost).
+                                                    // "添加游戏s" opens over Home (DeckGameActionsHost).
                                                     onAddGame = {
                                                         GamesScreenRequests.pending = GamesScreenRequests.Request(GameMenuAction.ADD_GAME)
                                                     },

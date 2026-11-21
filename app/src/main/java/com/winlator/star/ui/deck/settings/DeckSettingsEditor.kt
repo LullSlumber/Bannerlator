@@ -1493,7 +1493,7 @@ private fun RowInfo(
                         .clip(CircleShape)
                         .clickable(onClick = onHelp),
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "音频设置", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "这个是什么？", tint = cs.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
             // After the "?"; takes the Right-from-the-row request only when there is no "?".
@@ -1548,8 +1548,8 @@ private fun SourceLine(origin: Origin, baselineLabel: String?, scope: EditorScop
     when (origin) {
         Origin.NONE -> Unit
         Origin.DEFAULT -> SourcePill("Default")
-        Origin.FROM_CONTAINER -> SourcePill("来自容器")
-        Origin.FROM_APP -> SourcePill("应用设置")
+        Origin.FROM_CONTAINER -> SourcePill("来自此容器")
+        Origin.FROM_APP -> SourcePill("应用设置s")
         Origin.CONTAINER_ONLY -> SourcePill("容器设置 · 在容器中更改")
         Origin.SET_HERE -> Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -105,7 +105,7 @@ private enum class StoreTab(val label: String, val icon: ImageVector) {
     LIBRARY("Library", Icons.Filled.VideoLibrary),
     STORE("Store", Icons.Filled.ShoppingBag),
     FRIENDS("Friends", Icons.Filled.People),
-    PROFILE("配置", Icons.Filled.AccountCircle),
+    PROFILE("布局", Icons.Filled.AccountCircle),
     DOWNLOADS("Downloads", Icons.Filled.Download),
 }
 

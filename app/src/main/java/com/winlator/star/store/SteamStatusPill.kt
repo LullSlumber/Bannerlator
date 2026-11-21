@@ -51,7 +51,7 @@ fun SteamStatusPill(
         SteamRepository.SteamStatus.OFFLINE ->
             Triple(Color(0xFFCB4B4B), "Offline", true)
         SteamRepository.SteamStatus.SIGNED_OUT ->
-            Triple(Color(0xFF9AA0A6), "已登出", true)
+            Triple(Color(0xFF9AA0A6), "已经登出", true)
         // A real-Steam (SteamLite) game holds the account in-container; the app's own session is
         // deliberately down and comes back on game exit. Not an error, not tappable (a tap would tug).
         SteamRepository.SteamStatus.PAUSED_FOR_GAME ->

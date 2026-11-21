@@ -449,7 +449,7 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
     }
     fun setGame(key: String, v: String?) = LabArt.putGame(s, key, v)
 
-    val notSet = L("未设置")
+    val notSet = L("未设立")
     val detailsRows = listOf(
         MenuEntry("d-name", L("Name"), s.name, icon = Icons.Filled.TextFields, onA = { textFor = "name" }),
         MenuEntry(
@@ -524,7 +524,7 @@ internal fun LabGameDetailsPage(path: String, tab: Int, onNavigate: (String) -> 
         ),
     )
     SimpleMenuPage(
-        overline = L("游戏详情"),
+        overline = L("游戏明细"),
         title = LabTitles.of(s),
         sections = listOf(
             MenuSection("details", L("Details"), Icons.Filled.Info, detailsRows),
@@ -648,7 +648,7 @@ private fun LabSteamResults(hits: List<SteamStoreSearch.SteamSuggestion>, onDism
 @Composable
 private fun LabSteamReview(r: SteamReview, onChange: (SteamReview) -> Unit, onDismiss: () -> Unit, onSave: () -> Unit) {
     var editing by remember { mutableStateOf<String?>(null) }
-    val notSet = L("未设置")
+    val notSet = L("未设立")
     LabPanelDialog(
         L("Link to Steam app %1\$s", r.appId),
         onDismiss = onDismiss,
